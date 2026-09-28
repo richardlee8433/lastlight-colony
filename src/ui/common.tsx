@@ -1,5 +1,6 @@
 import { game } from '../store/gameStore';
-import { Cost, ResKey, RES_NAME } from '../engine/state';
+import { Cost, ResKey } from '../engine/state';
+import { lang, resName, t } from '../i18n';
 import { storageCap } from '../engine/formulas';
 import { iconURL } from './assets';
 
@@ -13,7 +14,8 @@ export const fmt = (n: number) => {
 export const fmtTime = (sec: number) => {
   sec = Math.max(0, Math.floor(sec));
   const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-  return h ? `${h} 小時 ${m} 分` : m ? `${m} 分 ${String(s).padStart(2, '0')} 秒` : `${s} 秒`;
+  if (lang() === 'zh') return h ? `${h} 小時 ${m} 分` : m ? `${m} 分 ${String(s).padStart(2, '0')} 秒` : `${s} 秒`;
+  return h ? `${h}h ${m}m` : m ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`;
 };
 
 export function Icon({ k, size = 18 }: { k: string; size?: number }) {
@@ -27,11 +29,11 @@ export function CostList({ cost }: { cost: Cost }) {
   return (
     <div className="cost">
       {entries.map(([k, v]) => (
-        <span key={k} className={'cost-item' + (s.res[k] >= v ? '' : ' short')} title={RES_NAME[k]}>
+        <span key={k} className={'cost-item' + (s.res[k] >= v ? '' : ' short')} title={resName(k)}>
           <Icon k={k} size={14} />{fmt(v)}
         </span>
       ))}
-      {over && <span className="cost-warn">超過儲存上限 {cap}，先蓋或升級貨櫃</span>}
+      {over && <span className="cost-warn">{t('cost.over', { n: cap })}</span>}
     </div>
   );
 }

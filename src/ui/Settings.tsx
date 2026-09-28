@@ -1,0 +1,72 @@
+import { useState } from 'react';
+import { useGame, game } from '../store/gameStore';
+import { CHAPTERS } from '../engine/story';
+import { LANGS, t, useLang, useSettings } from '../i18n';
+import { fmtTime } from './common';
+import { Modal } from './Modals';
+
+export const VERSION = '0.4';
+
+// 設定頁：語言、存檔、重新開始、關於
+export function Settings() {
+  useGame((st) => st.v);
+  const lang = useLang(), setLang = useSettings((st) => st.setLang);
+  const [open, setOpen] = useState(false), [confirm, setConfirm] = useState(false);
+  const act = useGame.getState(), s = game.s;
+  const close = () => { setOpen(false); setConfirm(false); };
+  return (
+    <>
+      <div className="settings">
+        <button type="button" className="btn sq gear" onClick={() => setOpen(true)} aria-label={t('set.title')} title={t('set.title')}>≡</button>
+      </div>
+      {open && (
+        <Modal label={t('set.title')} className="settings-page">
+          <header className="trade-head">
+            <h2>{t('set.title')}</h2>
+            <button type="button" className="close" onClick={close} aria-label={t('close')}>×</button>
+          </header>
+
+          <section className="block">
+            <h3>{t('set.lang')}</h3>
+            <div className="seg" role="radiogroup" aria-label={t('set.lang')}>
+              {LANGS.map((l) => (
+                <button key={l.id} type="button" role="radio" aria-checked={lang === l.id} lang={l.id === 'zh' ? 'zh-Hant' : 'en'}
+                  className={'btn' + (lang === l.id ? '' : ' alt')} onClick={() => { setLang(l.id); act.bump(); }}>{l.label}</button>
+              ))}
+            </div>
+          </section>
+
+          <section className="block">
+            <h3>{t('set.save')}</h3>
+            <dl className="stats">
+              <div><dt>{t('set.chapter')}</dt><dd>{t('ch.n', { n: Math.min(s.stage, CHAPTERS.length) })}</dd></div>
+              <div><dt>{t('fin.time')}</dt><dd>{fmtTime(s.t)}</dd></div>
+              <div><dt>{t('set.lastSaved')}</dt><dd>{t('set.ago', { t: fmtTime((Date.now() - s.lastSaved) / 1000) })}</dd></div>
+            </dl>
+            <p className="muted small">{t('set.saveInfo')}</p>
+            <button type="button" className="btn wide alt" onClick={act.saveNow}>{t('set.saveNow')}</button>
+          </section>
+
+          <section className="block">
+            <h3>{t('set.restart')}</h3>
+            {!confirm
+              ? <button type="button" className="btn wide alt" onClick={() => setConfirm(true)}>{t('set.restartBtn')}</button>
+              : <>
+                  <p className="warn">{t('set.confirm')}</p>
+                  <div className="choices">
+                    <button type="button" className="btn wide danger" onClick={() => { act.reset(); close(); }}>{t('set.confirmYes')}</button>
+                    <button type="button" className="btn wide alt" onClick={() => setConfirm(false)}>{t('cancel')}</button>
+                  </div>
+                </>}
+          </section>
+
+          <section className="block about">
+            <h3>{t('set.about')}</h3>
+            <p className="small">{t('set.aboutText', { v: VERSION })}</p>
+            <p className="small"><a href="https://github.com/richardlee8433/lastlight-colony" target="_blank" rel="noreferrer">github.com/richardlee8433/lastlight-colony</a></p>
+          </section>
+        </Modal>
+      )}
+    </>
+  );
+}

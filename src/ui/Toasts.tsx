@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame, game } from '../store/gameStore';
 import { Notice } from '../engine/state';
+import { tm } from '../i18n';
 
 export function Toasts() {
   const v = useGame((st) => st.v);
@@ -15,7 +16,7 @@ export function Toasts() {
   }, [v]);
   return (
     <div className="toasts" role="status" aria-live="polite">
-      {list.map((n) => <div key={n.id} className={'toast px ' + (n.tone ?? '')}>{n.text}</div>)}
+      {list.map((n) => <div key={n.id} className={'toast px ' + (n.tone ?? '')}>{tm(n.msg)}</div>)}
     </div>
   );
 }

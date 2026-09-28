@@ -9,6 +9,7 @@ import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY } from './layout';
 import { WARNING } from '../engine/combat';
+import { bName, lang, resName, t } from '../i18n';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; update: any };
@@ -151,13 +152,13 @@ export class GameScene {
       let v = this.views.get(site.id);
       if (!v || v.key !== key) { if (v) this.dropView(v); v = this.makeView(site, bid, key) ?? undefined; if (v) this.views.set(site.id, v); else this.views.delete(site.id); }
       if (!v || !bid) continue;
-      const text = lvl > 0 ? (DEF[bid].kind === 'command' || DEF[bid].maxLevel === 1 ? DEF[bid].name : `${DEF[bid].name} Lv${lvl}`) : `建造：${DEF[bid].name}`;
+      const text = lvl > 0 ? (DEF[bid].kind === 'command' || DEF[bid].maxLevel === 1 ? bName(bid) : `${bName(bid)} Lv${lvl}`) : t('sc.build', { b: bName(bid) });
       const dis = lvl > 0 && disabled(s, bid);
       const card = lvl > 0 && DEF[bid].clickable;
-      const plateKey = card ? `card|${bid}|${this.Z}|${Math.min(6, s.stage)}` : `${text}|${dis}|${this.Z}`;
+      const plateKey = card ? `card|${bid}|${this.Z}|${Math.min(6, s.stage)}|${lang()}` : `${text}|${dis}|${this.Z}`;
       if (!v.plate || (v.plate as any).k !== plateKey) {
         v.plate?.destroy({ children: true });
-        v.plate = card ? this.makeCard(v) : this.makePlate(dis ? `${text}（停工）` : text, lvl > 0 ? (dis ? 'inset' : 'plate') : 'inset');
+        v.plate = card ? this.makeCard(v) : this.makePlate(dis ? t('sc.stopped', { x: text }) : text, lvl > 0 ? (dis ? 'inset' : 'plate') : 'inset');
         (v.plate as any).k = plateKey; this.hud.addChild(v.plate);
       }
       (v.plate as any).refresh?.();
@@ -263,8 +264,12 @@ export class GameScene {
   makeCard(v: View) {
     const Z = this.Z, st = Math.min(6, game.s.stage), id = v.bid!, d = DEF[id];
     const res = (d.produce?.res ?? d.recipe!.out) as string;
-    const W = 52, H = 37, CW = 34, CH = 14, fs = Z >= 3 ? 15 : Z >= 2 ? 12 : 10;
+    const fs = Z >= 3 ? 15 : Z >= 2 ? 12 : 10;
     const txt = (text: string, size: number, fill: number) => new Text({ text, style: { fontFamily: '"Noto Sans TC", sans-serif', fontSize: size, fontWeight: '900', fill, stroke: { color: 0x120e18, width: size >= 12 ? 3 : 2 } } });
+    // 卡片寬度跟著最長的按鈕文字（英文資源名比中文長）
+    const words = [resName(res), t('sc.halt'), t('sc.paused')];
+    const textW = Math.max(...words.map((w) => { const m = txt(w, fs, 0); const n = m.width; m.destroy(); return n; })) / Z;
+    const CW = Math.max(34, Math.ceil(textW) + 18), W = Math.max(52, Math.ceil(textW) + 24), H = 37, CH = 14;
     const c: any = new Container();
     const bg = createPixelSprite(renderPanel(W, H, st, 'panel')); bg.scale.set(Z);
     c.addChild(bg);
@@ -273,7 +278,7 @@ export class GameScene {
     const texBig = pixelTexture(renderPanel(W - 6, 14, st, 'plate')), texSmall = pixelTexture(renderPanel(CW, CH, st, 'plate'));
     const face = new Sprite(texBig); face.scale.set(Z);
     const icon = createPixelSprite(renderIcon(res)); icon.scale.set(Z); icon.position.set(3 * Z, 1.5 * Z);
-    const label = txt(RES[res].name, fs, 0xfff8ec); label.anchor.set(0.5);
+    const label = txt(resName(res), fs, 0xfff8ec); label.anchor.set(0.5);
     btn.addChild(face, icon, label);
     btn.eventMode = 'static'; btn.cursor = 'pointer';
     btn.on('pointerdown', (e: any) => {
@@ -285,7 +290,7 @@ export class GameScene {
     c.addChild(btn);
     // 工人列（只在展開時顯示）
     const row = new Container();
-    const wl = txt('工人', fs - 3, 0xc9c3d6); wl.anchor.set(0.5); wl.position.set((W / 2) * Z, 5 * Z);
+    const wl = txt(t('bp.workers'), fs - 3, 0xc9c3d6); wl.anchor.set(0.5); wl.position.set((W / 2) * Z, 5 * Z);
     const minus = createPixelSprite(renderPanel(9, 9, st, 'button', '-')); minus.scale.set(Z); minus.position.set(4 * Z, 9 * Z);
     const plus = createPixelSprite(renderPanel(9, 9, st, 'button', '+')); plus.scale.set(Z); plus.position.set((W - 13) * Z, 9 * Z);
     const inset = createPixelSprite(renderPanel(W - 30, 9, st, 'inset')); inset.scale.set(Z); inset.position.set(15 * Z, 9 * Z);
@@ -320,7 +325,7 @@ export class GameScene {
       const s = game.s, dis = disabled(s, id), buff = buffActive(s, id);
       cnt.text = `${s.b[id].workers}/${workerCap(s, id)}`;
       const paused = !!s.b[id].paused;
-      label.text = dis ? '停工' : paused ? '暫停' : RES[res].name;
+      label.text = dis ? t('sc.halt') : paused ? t('sc.paused') : resName(res);
       const tint = dis || paused ? 0x6a6a74 : 0xffffff;
       if (face.tint !== tint) { face.tint = tint; icon.tint = tint; }
       label.style.fill = dis ? 0xb0aabb : buff ? 0xffe08a : 0xfff8ec;
@@ -335,9 +340,9 @@ export class GameScene {
     if (!r) return;
     const b = v.building;
     const [sx, sy] = at ?? this.toScreen(v.x, v.y - b.art.ay + 4);
-    const name = RES[r.res].name;
-    if (r.amount > 0) this.fx.pop(sx, sy, `${r.crit ? '暴擊 ' : ''}+${Math.round(r.amount * 10) / 10} ${name}`, RES[r.res].color, r.crit);
-    else this.fx.pop(sx, sy, `原料不足`, 0xc8c2d6, false);
+    const name = resName(r.res);
+    if (r.amount > 0) this.fx.pop(sx, sy, `${r.crit ? t('sc.crit') + ' ' : ''}+${Math.round(r.amount * 10) / 10} ${name}`, RES[r.res].color, r.crit);
+    else this.fx.pop(sx, sy, t('sc.noInput'), 0xc8c2d6, false);
     const [cx, cy] = this.toScreen(v.x, v.y - b.art.ay / 2);
     this.fx.burst(cx, cy, RES[r.res].color, r.crit ? 14 : 4);
     if (r.crit) b.flash();

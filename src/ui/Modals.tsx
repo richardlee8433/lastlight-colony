@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { useGame, game } from '../store/gameStore';
-import { DEF, RES_KEYS, RES_NAME, ResKey } from '../engine/state';
+import { RES_KEYS, ResKey } from '../engine/state';
 import { canAfford, idle } from '../engine/formulas';
 import { CHAPTERS } from '../engine/story';
-import EVENTS from '../data/events.json';
-import { RAID_NAME } from '../engine/combat';
+import { bName, chapterText, costText, eventText, raidName, resName, t, tm } from '../i18n';
 import { Icon, fmt, fmtTime } from './common';
 
-function Modal({ children, label }: { children: React.ReactNode; label: string }) {
-  return <div className="modal-bg"><div className="modal px" role="dialog" aria-modal="true" aria-label={label}>{children}</div></div>;
+export function Modal({ children, label, className = '' }: { children: React.ReactNode; label: string; className?: string }) {
+  return <div className="modal-bg"><div className={'modal px ' + className} role="dialog" aria-modal="true" aria-label={label}>{children}</div></div>;
 }
 
 export function Modals() {
@@ -20,17 +19,17 @@ export function Modals() {
 
   if (s.failed) {
     return (
-      <Modal label="殖民地瓦解">
-        <p className="eyebrow">殖民地瓦解</p>
-        <h2>最後一盞燈熄了</h2>
-        <p>糧食斷了太久，殖民者一個接一個收拾行李，往荒原深處去找別的出路。逃生艙的廣播還在重複同一句話，但已經沒有人在聽。</p>
+      <Modal label={t('fail.eyebrow')}>
+        <p className="eyebrow">{t('fail.eyebrow')}</p>
+        <h2>{t('fail.title')}</h2>
+        <p>{t('fail.text')}</p>
         <ul className="gains">
-          <li>撐了 <b>{fmtTime(s.t)}</b></li>
-          <li>走到 <b>第 {Math.min(s.stage, CHAPTERS.length)} 章</b></li>
+          <li>{t('fail.lasted')} <b>{fmtTime(s.t)}</b></li>
+          <li>{t('fail.reached')} <b>{t('ch.n', { n: Math.min(s.stage, CHAPTERS.length) })}</b></li>
         </ul>
         <div className="choices">
-          <button type="button" className="btn wide" onClick={act.restoreCheckpoint}>回到本章開頭</button>
-          <button type="button" className="btn wide alt" onClick={act.reset}>重新開始</button>
+          <button type="button" className="btn wide" onClick={act.restoreCheckpoint}>{t('fail.checkpoint')}</button>
+          <button type="button" className="btn wide alt" onClick={act.reset}>{t('fail.restart')}</button>
         </div>
       </Modal>
     );
@@ -39,62 +38,64 @@ export function Modals() {
   if (offline) {
     const gains = RES_KEYS.filter((k) => offline.gains[k] > 0.5) as ResKey[];
     return (
-      <Modal label="離線收益">
-        <p className="eyebrow">歡迎回來</p>
-        <h2>你離開了 {fmtTime(offline.seconds)}</h2>
-        <p>殖民者照常工作，效率 50%。</p>
+      <Modal label={t('off.label')}>
+        <p className="eyebrow">{t('off.eyebrow')}</p>
+        <h2>{t('off.title', { t: fmtTime(offline.seconds) })}</h2>
+        <p>{t('off.text')}</p>
         <ul className="gains">
-          {gains.map((k) => <li key={k}><Icon k={k} /> {RES_NAME[k]} <b>+{fmt(offline.gains[k])}</b></li>)}
-          {offline.pop > 0 && <li>新殖民者 <b>+{offline.pop}</b></li>}
-          {!gains.length && !offline.pop && <li className="muted">沒有工人在崗位上，所以沒有收益。</li>}
+          {gains.map((k) => <li key={k}><Icon k={k} /> {resName(k)} <b>+{fmt(offline.gains[k])}</b></li>)}
+          {offline.pop > 0 && <li>{t('off.pop')} <b>+{offline.pop}</b></li>}
+          {!gains.length && !offline.pop && <li className="muted">{t('off.none')}</li>}
         </ul>
-        <button type="button" className="btn wide" onClick={act.closeOffline}>收下</button>
+        <button type="button" className="btn wide" onClick={act.closeOffline}>{t('off.ok')}</button>
       </Modal>
     );
   }
 
   if (!s.finished && s.story.seenIntro < chIdx) {
-    const ch = CHAPTERS[chIdx - 1];
+    const ch = CHAPTERS[chIdx - 1], tx = chapterText(ch);
     return (
-      <Modal label={`第 ${ch.chapter} 章`}>
-        <p className="eyebrow">第 {ch.chapter} 章</p>
-        <h2>{ch.title}<small>{ch.subtitle}</small></h2>
-        {ch.intro.map((p) => <p key={p}>{p}</p>)}
-        {ch.chapter === 1 && <p className="hint">操作：按住建築上方的資源按鈕可以手動採集，用下方的 − ／ + 派閒置的殖民者去工作。點建築本身可以看升級與詳細資訊。拖曳地面可以移動視角。</p>}
-        <button type="button" className="btn wide" onClick={act.seenIntro}>{ch.chapter === 1 ? '開始' : '繼續'}</button>
+      <Modal label={t('ch.n', { n: ch.chapter })}>
+        <p className="eyebrow">{t('ch.n', { n: ch.chapter })}</p>
+        <h2>{tx.title}<small>{tx.subtitle}</small></h2>
+        {tx.intro.map((p) => <p key={p}>{p}</p>)}
+        {ch.chapter === 1 && <p className="hint">{t('intro.hint')}</p>}
+        <button type="button" className="btn wide" onClick={act.seenIntro}>{t(ch.chapter === 1 ? 'intro.start' : 'intro.next')}</button>
       </Modal>
     );
   }
 
   if (s.finished && !finishSeen) {
     return (
-      <Modal label="MVP 完成">
-        <p className="eyebrow">第 5 章完成</p>
-        <h2>星城穹頂落成了</h2>
-        <p>玻璃穹頂在晨光裡合攏，殖民地第一次有了天空以外的屋頂。赫利昂的運輸艦還停在軌道上，但它已經不能再決定這裡的事。</p>
+      <Modal label={t('fin.eyebrow')}>
+        <p className="eyebrow">{t('fin.eyebrow')}</p>
+        <h2>{t('fin.title')}</h2>
+        <p>{t('fin.text')}</p>
         <ul className="gains">
-          <li>遊玩時間 <b>{fmtTime(s.t)}</b></li>
-          <li>人口 <b>{s.pop}</b></li>
-          <li>點擊 <b>{s.stats.clicks}</b>，暴擊 <b>{s.stats.crits}</b></li>
+          <li>{t('fin.time')} <b>{fmtTime(s.t)}</b></li>
+          <li>{t('fin.pop')} <b>{s.pop}</b></li>
+          <li>{t('fin.clicks', { n: s.stats.clicks, c: s.stats.crits })}</li>
         </ul>
-        <p className="muted">第 6 章「信標」開發中。你可以繼續經營殖民地。</p>
-        <button type="button" className="btn wide" onClick={() => setFinishSeen(true)}>繼續經營</button>
+        <p className="muted">{t('fin.more')}</p>
+        <button type="button" className="btn wide" onClick={() => setFinishSeen(true)}>{t('fin.ok')}</button>
       </Modal>
     );
   }
 
   const br = s.raid?.report;
   if (br) {
+    const kind = br.kind ?? 'alien', p = { kind: raidName(kind), unit: t('unit.' + kind), n: br.enemies };
+    const fought = br.guards || br.turrets;
     return (
-      <Modal label="戰報">
-        <p className="eyebrow">戰報 · 第 {br.raid} 次襲擊</p>
-        <h2>{br.won ? `擊退了${RAID_NAME[(br.kind ?? 'alien') as 'alien']}` : br.guards || br.turrets ? '防線被突破了' : '沒有人迎戰'}</h2>
-        <p>{br.guards || br.turrets ? `${br.guards} 位保全（${br.armed} 位持武器）${br.turrets ? `和 ${br.turrets} 座砲塔` : ''}迎戰 ${br.enemies} ${br.kind && br.kind !== 'alien' ? '名' : '隻'}${RAID_NAME[(br.kind ?? 'alien') as 'alien']}。` : `${br.enemies} ${br.kind && br.kind !== 'alien' ? '名' : '隻'}${RAID_NAME[(br.kind ?? 'alien') as 'alien']}闖進了殖民地，沒有人擋得住。`}</p>
+      <Modal label={t('br.label')}>
+        <p className="eyebrow">{t('br.eyebrow', { n: br.raid })}</p>
+        <h2>{br.won ? t('br.won', p) : fought ? t('br.lost') : t('br.noDef')}</h2>
+        <p>{fought ? t('br.fought', { ...p, g: br.guards, a: br.armed }) + (br.turrets ? t('br.turrets', { t: br.turrets }) : '') + t('br.vs', p) : t('br.overrun', p)}</p>
         {br.rounds.length > 1 && (
-          <ol className="rounds" aria-label="各回合雙方剩餘血量">
+          <ol className="rounds" aria-label={t('br.rounds')}>
             {br.rounds.map((r, i) => (
               <li key={i}>
-                <span>{i === 0 ? '開戰' : `第 ${i} 回合`}</span>
+                <span>{i === 0 ? t('br.start') : t('br.round', { n: i })}</span>
                 <div className="duel">
                   <i className="ours" style={{ width: `${(r.ours / Math.max(1, r.oursMax)) * 100}%` }} />
                   <i className="theirs" style={{ width: `${(r.theirs / Math.max(1, r.theirsMax)) * 100}%` }} />
@@ -103,9 +104,9 @@ export function Modals() {
             ))}
           </ol>
         )}
-        {br.rounds.length > 1 && <p className="legend-duel"><i className="ours" />我方血量　<i className="theirs" />敵方血量</p>}
-        <ul className="gains">{br.lines.map((l) => <li key={l}>{l}</li>)}</ul>
-        <button type="button" className="btn wide" onClick={act.dismissBattle}>好</button>
+        {br.rounds.length > 1 && <p className="legend-duel"><i className="ours" />{t('br.oursHp')}　<i className="theirs" />{t('br.theirsHp')}</p>}
+        <ul className="gains">{br.lines.map((l, i) => <li key={i}>{tm(l)}</li>)}</ul>
+        <button type="button" className="btn wide" onClick={act.dismissBattle}>{t('ok')}</button>
       </Modal>
     );
   }
@@ -113,35 +114,35 @@ export function Modals() {
   const rep = s.events.report;
   if (rep) {
     return (
-      <Modal label={rep.title}>
-        <p className="eyebrow">事件結果</p>
-        <h2>{rep.title}</h2>
-        <p>{rep.text}</p>
-        <ul className="gains">{rep.gains.map((g) => <li key={g}>{g}</li>)}</ul>
-        <button type="button" className="btn wide" onClick={act.dismissReport}>好</button>
+      <Modal label={tm(rep.title)}>
+        <p className="eyebrow">{t('ev.result')}</p>
+        <h2>{tm(rep.title)}</h2>
+        <p>{tm(rep.text)}</p>
+        <ul className="gains">{rep.gains.map((g, i) => <li key={i}>{tm(g)}</li>)}</ul>
+        <button type="button" className="btn wide" onClick={act.dismissReport}>{t('ok')}</button>
       </Modal>
     );
   }
 
   const ev = s.events.active;
   if (ev) {
-    const E = (EVENTS as any)[ev.kind];
-    const bname = ev.target ? DEF[ev.target].name : '';
+    const E = eventText(ev.kind);
+    const bname = ev.target ? bName(ev.target) : '';
     const dm = s.gov?.corp.demand;
-    const demand = dm ? Object.entries(dm).map(([k, v]) => `${v} ${RES_NAME[k as ResKey]}`).join('、') : '';
-    const fill = (t: string) => t.replace('{building}', bname).replace('{cost}', String(ev.cost ?? '')).replace(/\{demand\}/g, demand).replace('{refusals}', String(s.gov?.corp.refusals ?? 0));
-    const blocked = (i: number) => (ev.kind === 'envoy' && i === 0 && dm && !canAfford(s, dm)) ? '資源不足'
-      : (ev.kind === 'meteor' && i === 0 && !canAfford(s, { rock: ev.cost! })) ? '岩材不足'
-      : (ev.kind === 'rescue' && i === 0 && idle(s) < 2) ? '閒置殖民者不足 2 位' : null;
+    const demand = dm ? costText(dm) : '';
+    const fill = (x: string) => x.replace(/\{building\}/g, bname).replace('{cost}', String(ev.cost ?? '')).replace(/\{demand\}/g, demand).replace('{refusals}', String(s.gov?.corp.refusals ?? 0));
+    const blocked = (i: number) => (ev.kind === 'envoy' && i === 0 && dm && !canAfford(s, dm)) ? t('why.afford')
+      : (ev.kind === 'meteor' && i === 0 && !canAfford(s, { rock: ev.cost! })) ? t('ev.noRock')
+      : (ev.kind === 'rescue' && i === 0 && idle(s) < 2) ? t('ev.noIdle') : null;
     return (
       <Modal label={E.title}>
-        <p className="eyebrow">事件</p>
+        <p className="eyebrow">{t('ev.eyebrow')}</p>
         <h2>{E.title}</h2>
         <p>{fill(E.text)}</p>
         <div className="choices">
-          {E.options.map((o: string, i: number) => (
+          {E.options.map((o, i) => (
             <button key={o} type="button" className={'btn wide' + (i ? ' alt' : '')} disabled={!!blocked(i)} onClick={() => act.choose(i)}>
-              {fill(o)}{blocked(i) ? `（${blocked(i)}）` : ''}
+              {fill(o)}{blocked(i) ? t('paren', { x: blocked(i) }) : ''}
             </button>
           ))}
         </div>
@@ -149,28 +150,4 @@ export function Modals() {
     );
   }
   return null;
-}
-
-export function Settings() {
-  const [open, setOpen] = useState(false), [confirm, setConfirm] = useState(false);
-  const reset = useGame((st) => st.reset);
-  return (
-    <div className="settings">
-      <button type="button" className="btn sq gear" onClick={() => { setOpen(!open); setConfirm(false); }} aria-label="設定" aria-expanded={open}>≡</button>
-      {open && (
-        <div className="menu px">
-          <p className="muted">進度每 10 秒自動存在這個瀏覽器裡。離線時殖民者照常工作（效率 50%，最多 8 小時）。</p>
-          {!confirm
-            ? <button type="button" className="btn wide alt" onClick={() => setConfirm(true)}>重新開始</button>
-            : <>
-                <p className="warn">確定要刪除存檔、從頭開始嗎？</p>
-                <div className="choices">
-                  <button type="button" className="btn wide danger" onClick={() => { reset(); setOpen(false); }}>刪除並重來</button>
-                  <button type="button" className="btn wide alt" onClick={() => setConfirm(false)}>取消</button>
-                </div>
-              </>}
-        </div>
-      )}
-    </div>
-  );
 }

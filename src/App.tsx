@@ -8,20 +8,24 @@ import { QuickBar } from './ui/QuickBar';
 import { Toasts } from './ui/Toasts';
 import { RaidBanner } from './ui/RaidBanner';
 import { TradeModal } from './ui/TradeModal';
-import { Modals, Settings } from './ui/Modals';
+import { Modals } from './ui/Modals';
+import { Settings } from './ui/Settings';
 import { useGame, game } from './store/gameStore';
+import { applyDocLang, t, useLang } from './i18n';
 
 export function App() {
   const host = useRef<HTMLDivElement>(null);
   const stage = useGame(() => Math.min(6, game.s.stage));
+  const lang = useLang();
+  useEffect(() => applyDocLang(lang), [lang]);
   useEffect(() => {
     const scene = new GameScene();
     let failed = false;
-    scene.init(host.current!).catch(() => { failed = true; host.current!.innerHTML = '<p class="nogl">這個瀏覽器無法啟動 WebGL，遊戲畫面無法顯示。請改用桌面版 Chrome、Edge 或 Safari。</p>'; });
+    scene.init(host.current!).catch(() => { failed = true; host.current!.innerHTML = `<p class="nogl">${t('app.noGL')}</p>`; });
     return () => { if (!failed) scene.app.destroy(true); };
   }, []);
   return (
-    <div className={`game stage-${stage}`}>
+    <div className={`game stage-${stage} lang-${lang}`}>
       <div className="stage-host" ref={host} />
       <TopBar />
       <QuestLog />
