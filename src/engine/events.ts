@@ -1,6 +1,7 @@
 // 隨機事件：隕石雨、求救訊號（GDD §12，頻率上限每 5–8 分鐘一次）
 import { DEFS, GameState, notify } from './state';
 import { add, built, canAfford, idle, pay, popCap } from './formulas';
+import { resolveEnvoy } from './governance';
 
 export function scheduleNext(s: GameState, rng = Math.random) {
   s.events.nextAt = s.t + 300 + rng() * 180;
@@ -52,6 +53,7 @@ export function events(s: GameState, rng = Math.random) {
 export function resolveEvent(s: GameState, choice: number) {
   const a = s.events.active;
   if (!a) return;
+  if (a.kind === 'envoy') { if (resolveEnvoy(s, choice)) s.events.active = null; return; }
   if (a.kind === 'meteor') {
     if (choice === 0) {
       if (!canAfford(s, { rock: a.cost! })) return;

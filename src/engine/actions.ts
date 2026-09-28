@@ -16,6 +16,7 @@ export function levelBlock(s: GameState, id: string): Why {
   if (L > 0 && !built(s, 'emergency_camp')) return '建成緊急營地後才能升級';
   if (d.requires?.pop && s.pop < d.requires.pop) return `需要人口 ${d.requires.pop}`;
   if (d.requires?.raids && s.raid.won < d.requires.raids) return `需要擊退 ${d.requires.raids} 次襲擊`;
+  if (d.requires?.credits && s.gov.creditsEarned < d.requires.credits) return `需要累計賺進 ${d.requires.credits} 信用點`;
   if (!canAfford(s, levelCost(s, id))) return '資源不足';
   return null;
 }
@@ -26,7 +27,7 @@ export function levelUp(s: GameState, id: string): boolean {
   s.b[id].level++;
   if (d.kind === 'command') {
     s.stage = d.commandLevel! + 1;
-    if (id === 'colony_core') { s.finished = true; notify(s, '殖民地核心啟動了！第 4 章完成。', 'good'); }
+    if (id === 'star_dome') { s.finished = true; notify(s, '星城穹頂落成了！第 5 章完成。', 'good'); }
     else { notify(s, `${d.name}建成，進入階段 ${s.stage}！`, 'good'); makeCheckpoint(s); }
   } else notify(s, s.b[id].level === 1 ? `${d.name}建成了。` : `${d.name}升到 Lv${s.b[id].level}。`, 'good');
   return true;
@@ -77,6 +78,7 @@ export function researchBlock(s: GameState, rid: string): Why {
   if (s.research.done.includes(rid)) return '已完成';
   if (s.research.active) return '正在研究其他項目';
   if (r.requires && !s.research.done.includes(r.requires)) return '需要先完成前一項';
+  if (r.lab && !built(s, 'xeno_lab')) return '需要異星研究院';
   if (!canAfford(s, r.cost)) return '資源不足';
   return null;
 }

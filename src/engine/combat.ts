@@ -17,15 +17,30 @@ export function guardAtk(s: GameState, armed: boolean) {
   return base + nodeEffect(s, 'security', 'guardAtk');
 }
 export const enemyStats = (n: number) => ({ enemies: 3 + 2 * n, atk: 2 * Math.pow(1.1, n), hp: 8 * Math.pow(1.1, n) });
+/** 階段 5 起的襲擊：掠奪者數量較少、單體較強；拒絕企業 3 次以上改派突擊隊（強度 ×1.5） */
+export function raidFor(s: GameState) {
+  const e = enemyStats(s.raid.won);
+  if (s.stage < 5) return { ...e, kind: 'alien' as const };
+  const commando = s.gov.corp.refusals >= 3 && s.raid.count % 2 === 1;
+  const m = commando ? 1.5 : 1;
+  // 掠奪者強度從階段 5 重新起算（假設階段 4 大約擊退 3 次）：3 名起跳，每次擊退 +1 名、數值 ×1.1
+  const n = Math.max(0, s.raid.won - 3);
+  return { enemies: 3 + n, atk: 5 * Math.pow(1.1, n) * m, hp: 18 * Math.pow(1.1, n) * m, kind: commando ? ('commando' as const) : ('raider' as const) };
+}
+export const RAID_NAME = { alien: '異星生物', raider: '掠奪者', commando: '企業突擊隊' };
+export const turrets = (s: GameState) => (built(s, 'turret') ? s.b.turret.level : 0);
+export const turretAtk = (s: GameState) => 8 + researchEffect(s, 'turretAtk');
+export const TURRET_HP = 40;
 
 /** 我方可參戰戰力（給 UI 估算用） */
 export function defense(s: GameState) {
   const g = guards(s), ready = Math.max(0, g - injuredCount(s));
   const armedReady = Math.min(s.raid.armed, ready);
+  const t = turrets(s);
   return {
-    guards: g, ready, armed: s.raid.armed, armedReady,
-    atk: armedReady * guardAtk(s, true) + (ready - armedReady) * guardAtk(s, false),
-    hp: ready * guardHp(s),
+    guards: g, ready, armed: s.raid.armed, armedReady, turrets: t,
+    atk: armedReady * guardAtk(s, true) + (ready - armedReady) * guardAtk(s, false) + t * turretAtk(s),
+    hp: ready * guardHp(s) + t * TURRET_HP,
   };
 }
 
@@ -44,9 +59,9 @@ export function combat(s: GameState, offline = false, rng = Math.random) {
   if (offline) { if (r.nextAt < s.t + WARNING + 30) r.nextAt = s.t + WARNING + 30; r.incoming = null; return; }
   if (!r.incoming && s.t >= r.nextAt - WARNING) {
     // 強度只隨「擊退次數」成長：輸了不會越打越難，避免死亡螺旋（GDD 原本按總襲擊次數）
-    const e = enemyStats(r.won);
-    r.incoming = { at: r.nextAt, enemies: e.enemies, atk: e.atk, hp: e.hp, side: Math.floor(rng() * 4) };
-    notify(s, `警報：${e.enemies} 隻異星生物正在接近，${WARNING} 秒後抵達！`, 'warn');
+    const e = raidFor(s);
+    r.incoming = { at: r.nextAt, enemies: e.enemies, atk: e.atk, hp: e.hp, side: Math.floor(rng() * 4), kind: e.kind };
+    notify(s, `警報：${e.enemies} ${e.kind === 'alien' ? '隻' : '名'}${RAID_NAME[e.kind]}正在接近，${WARNING} 秒後抵達！`, 'warn');
   }
   if (r.incoming && s.t >= r.incoming.at) fight(s, rng);
 }
@@ -56,7 +71,12 @@ function fight(s: GameState, rng: () => number) {
   r.incoming = null;
   const ready = Math.max(0, guards(s) - injuredCount(s));
   const armedReady = Math.min(r.armed, ready);
-  const ours = Array.from({ length: ready }, (_, i) => ({ hp: guardHp(s), atk: guardAtk(s, i < armedReady) }));
+  const nt = turrets(s);
+  // 砲塔排在最前面吸收傷害；保全倒下會受傷，砲塔戰後自動修復
+  const ours = [
+    ...Array.from({ length: nt }, () => ({ hp: TURRET_HP, atk: turretAtk(s), turret: true })),
+    ...Array.from({ length: ready }, (_, i) => ({ hp: guardHp(s), atk: guardAtk(s, i < armedReady), turret: false })),
+  ];
   const theirs = Array.from({ length: inc.enemies }, () => ({ hp: inc.hp, atk: inc.atk }));
   const oursMax = ours.reduce((a, u) => a + u.hp, 0), theirsMax = theirs.reduce((a, u) => a + u.hp, 0);
   const sum = (xs: { hp: number }[]) => xs.reduce((a, u) => a + Math.max(0, u.hp), 0);
@@ -68,8 +88,8 @@ function fight(s: GameState, rng: () => number) {
     hit(theirs, a); hit(ours, b);
     rounds.push({ ours: sum(ours), theirs: sum(theirs), oursMax, theirsMax });
   }
-  const won = ready > 0 && sum(theirs) <= 0;
-  const down = ours.filter((u) => u.hp <= 0).length;
+  const won = ours.length > 0 && sum(theirs) <= 0;
+  const down = ours.filter((u) => u.hp <= 0 && !u.turret).length;
   const heal = INJURY * Math.max(0.2, 1 + nodeEffect(s, 'security', 'injuryMul'));
   for (let i = 0; i < down; i++) r.injured.push(s.t + heal);
   const lines: string[] = [];
@@ -79,7 +99,8 @@ function fight(s: GameState, rng: () => number) {
     const n = inc.enemies;
     const loot: [ResKey, number][] = [['rock', 40 * n], ['metal', 15 * n], ['crystal', 2 * n]];
     for (const [k, v] of loot) { add(s, k, v); lines.push(`${RES_NAME[k]} +${v}`); }
-    notify(s, `擊退了異星生物！（第 ${r.won} 次）`, 'good');
+    if (inc.kind === 'commando') { add(s, 'credit', 500); lines.push('信用點 +500（突擊隊的裝備）'); }
+    notify(s, `擊退了${RAID_NAME[inc.kind ?? 'alien']}！（第 ${r.won} 次）`, 'good');
   } else {
     const pool = (Object.keys(s.res) as ResKey[]).filter((k) => RES_UNLOCK[k] <= s.stage && s.res[k] >= 10);
     if (pool.length) {
@@ -89,9 +110,9 @@ function fight(s: GameState, rng: () => number) {
     }
     s.morale = Math.max(0, s.morale - 10);
     lines.push('士氣 −10');
-    notify(s, ready ? '防線被突破了，異星生物搶走了物資。' : '沒有保全迎戰，異星生物在殖民地裡大肆破壞。', 'warn');
+    notify(s, ours.length ? `防線被突破了，${RAID_NAME[inc.kind ?? 'alien']}搶走了物資。` : `沒有人迎戰，${RAID_NAME[inc.kind ?? 'alien']}在殖民地裡大肆破壞。`, 'warn');
   }
   if (down) lines.push(`${down} 位保全受傷，休養 ${Math.round(heal / 60 * 10) / 10} 分鐘`);
-  r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, rounds, injured: down, lines };
+  r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, turrets: nt, kind: inc.kind ?? 'alien', rounds, injured: down, lines };
   r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
 }

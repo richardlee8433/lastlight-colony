@@ -1,8 +1,27 @@
 // 所有數值公式集中在這裡（GDD §7、§8）
 import RESEARCH from '../data/research.json';
-import { DEF, DEFS, GameState, ResKey, RES_KEYS, Cost, Effect } from './state';
+import { DEF, DEFS, GameState, ResKey, RES_KEYS, UNCAPPED, Cost, Effect } from './state';
+import CHARTERS from '../data/charters.json';
 
-export const RESEARCH_DEFS = RESEARCH as unknown as { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; requires?: string }[];
+export const CHARTER_DEFS = CHARTERS as unknown as { id: string; name: string; desc: string; cost: string; effect: Record<string, number> }[];
+const CDEF = Object.fromEntries(CHARTER_DEFS.map((c) => [c.id, c]));
+/** 已生效憲章的某項效果加總 */
+export function charterEffect(s: GameState, key: string): number {
+  let v = 0;
+  for (const id of s.gov?.charters ?? []) v += CDEF[id]?.effect[key] ?? 0;
+  return v;
+}
+/** 全域產量倍率（憲章：雙班制、休息日） */
+export const prodMul = (s: GameState) => 1 + charterEffect(s, 'prodMul');
+/** 單一資源產量加成（憲章與研究：異晶、金屬） */
+export function resBonus(s: GameState, k: ResKey): number {
+  if (k === 'crystal') return charterEffect(s, 'crystalAdd') + researchEffect(s, 'crystalAdd');
+  if (k === 'metal') return charterEffect(s, 'metalAdd');
+  if (k === 'credit') return charterEffect(s, 'creditMul');
+  return 0;
+}
+
+export const RESEARCH_DEFS = RESEARCH as unknown as { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; requires?: string; lab?: boolean }[];
 const RDEF = Object.fromEntries(RESEARCH_DEFS.map((r) => [r.id, r]));
 
 export const built = (s: GameState, id: string) => s.b[id].level > 0;
@@ -48,6 +67,7 @@ export function popCap(s: GameState): number {
   }
   // 水循環站：每級生活艙多住 1 人
   if (built(s, 'water_cycle')) cap += (DEF.water_cycle.effects?.habBonus ?? 0) * s.b.hab_pod.level;
+  cap += researchEffect(s, 'habBonus') * s.b.hab_pod.level;
   return cap;
 }
 export function workerCap(s: GameState, id: string): number {
@@ -67,7 +87,7 @@ export const idle = (s: GameState) => s.pop - assignedTotal(s) - rescueWorkers(s
 export let FOOD_PER_POP = 0.25;
 export const setFoodPerPop = (v: number) => { FOOD_PER_POP = v; };
 export const consumption = (s: GameState) => {
-  let mul = researchEffect(s, 'consumeMul');
+  let mul = researchEffect(s, 'consumeMul') + charterEffect(s, 'consumeMul');
   for (const d of DEFS) if (d.effects?.consumeMul && built(s, d.id)) mul += d.effects.consumeMul;
   return s.pop * FOOD_PER_POP * Math.max(0.3, 1 + mul);
 };
@@ -81,7 +101,7 @@ export function foodSafety(s: GameState): number {
   return Math.min(1, (s.res.nutrient / need) * bonus);
 }
 export const birthBonus = (s: GameState) => {
-  let v = sumNodes(s, 'birthAdd');
+  let v = sumNodes(s, 'birthAdd') + charterEffect(s, 'birthAdd');
   for (const d of DEFS) if (d.effects?.birth) v += d.effects.birth * s.b[d.id].level;
   return v;
 };
@@ -94,6 +114,7 @@ export function moraleTarget(s: GameState): number {
   if (s.pop >= popCap(s) * 0.9) m -= 10;
   for (const d of DEFS) if (d.effects?.morale) m += d.effects.morale * s.b[d.id].level;
   m += sumNodes(s, 'moraleAdd');
+  m += charterEffect(s, 'morale') - 5 * (s.gov?.tax ?? 0);
   return Math.max(0, Math.min(100, m));
 }
 export const moraleMult = (s: GameState) => 0.8 + 0.4 * (s.morale / 100);
@@ -112,13 +133,13 @@ export function gatherBonus(s: GameState): number {
 export function gatherRate(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.produce || !built(s, id) || disabled(s, id)) return 0;
-  return s.b[id].workers * d.produce.rate * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s)) * moraleMult(s) * clickBuff(s, id);
+  return s.b[id].workers * d.produce.rate * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
 }
 /** 加工建築每秒「最多」消耗的原料 */
 export function processInput(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.recipe || !built(s, id) || disabled(s, id) || s.b[id].paused) return 0;
-  return s.b[id].workers * 1 * (1 + researchEffect(s, 'processAdd')) * moraleMult(s) * clickBuff(s, id);
+  return s.b[id].workers * 1 * (1 + researchEffect(s, 'processAdd')) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
 }
 export function recipeRatio(s: GameState, id: string): number {
   const d = DEF[id];
@@ -128,7 +149,11 @@ export function recipeRatio(s: GameState, id: string): number {
 export const clickAmount = (s: GameState, id: string) => 1 + nodeEffect(s, id, 'clickAdd') + researchEffect(s, 'clickAdd');
 export const critChance = (s: GameState, id: string) => 0.05 + nodeEffect(s, id, 'critAdd') + researchEffect(s, 'critAdd');
 export const critMult = (s: GameState, id: string) => 5 * nodeEffect(s, id, 'critMul');
-export const researchSpeed = (s: GameState) => (built(s, 'databank') ? s.b.databank.workers : 0) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
+export const researchSpeed = (s: GameState) =>
+  ((built(s, 'databank') ? s.b.databank.workers : 0) + (built(s, 'xeno_lab') ? s.b.xeno_lab.workers : 0)) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
+/** 稅收：人口 × 0.02 × 稅率等級（GDD §11），受「企業合約」加成 */
+export const taxIncome = (s: GameState) => (built(s, 'admin') ? s.pop * 0.02 * (s.gov?.tax ?? 0) * (1 + resBonus(s, 'credit')) : 0);
+export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffect(s, 'admin', 'charterSlot') : 0);
 
 /** 建造／升級成本：初始成本 × 1.15^(目前等級)；Lv5 以上每級另需 工具 × 等級 */
 export function levelCost(s: GameState, id: string): Cost {
@@ -138,11 +163,16 @@ export function levelCost(s: GameState, id: string): Cost {
   return out;
 }
 export const canAfford = (s: GameState, c: Cost) => (Object.entries(c) as [ResKey, number][]).every(([k, v]) => s.res[k] >= v);
-export const overCap = (s: GameState, c: Cost) => (Object.entries(c) as [ResKey, number][]).some(([, v]) => v > storageCap(s));
+export const overCap = (s: GameState, c: Cost) => (Object.entries(c) as [ResKey, number][]).some(([k, v]) => !UNCAPPED.includes(k) && v > storageCap(s));
 export function pay(s: GameState, c: Cost) {
   for (const [k, v] of Object.entries(c) as [ResKey, number][]) s.res[k] -= v;
 }
 export function add(s: GameState, k: ResKey, v: number, cap = storageCap(s)) {
+  if (UNCAPPED.includes(k)) {
+    s.res[k] += v;
+    if (k === 'credit' && v > 0 && s.gov) s.gov.creditsEarned += v;
+    return;
+  }
   s.res[k] = Math.min(cap, s.res[k] + v);
 }
 
@@ -170,5 +200,6 @@ export function netRates(s: GameState): Record<ResKey, number> {
     }
   }
   r.nutrient -= consumption(s);
+  r.credit += taxIncome(s);
   return r;
 }
