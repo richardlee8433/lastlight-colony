@@ -5,12 +5,13 @@ import {
   gatherRate, idle, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
 } from '../engine/formulas';
 import { levelBlock, nodeBlock, researchBlock } from '../engine/actions';
-import { defense, guardAtk, guardHp, injuredCount } from '../engine/combat';
+import { defense, guardAtk, guardHp, injuredCount, turretAtk, TURRET_HP } from '../engine/combat';
+import { Governance } from './Governance';
 import { weaponShare, WEAPON_RATIO } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
 import { buildingURL } from './assets';
 
-const KIND: Record<string, string> = { start: '起點', gather: '採集', process: '加工', command: '指揮艙', house: '住宅', storage: '儲存', morale: '士氣', research: '研究', rail: '設施', defense: '防衛', utility: '設施' };
+const KIND: Record<string, string> = { start: '起點', gather: '採集', process: '加工', command: '指揮艙', house: '住宅', storage: '儲存', morale: '士氣', research: '研究', rail: '設施', defense: '防衛', utility: '設施', governance: '治理', trade: '貿易' };
 
 export function BuildingPanel() {
   useGame((st) => st.v);
@@ -59,6 +60,21 @@ export function BuildingPanel() {
       )}
       {L > 0 && id === 'forge' && s.stage >= 4 && <ForgeSplit />}
       {L > 0 && id === 'security' && <Defense />}
+      {L > 0 && id === 'admin' && <Governance />}
+      {L > 0 && (id === 'trade_post' || id === 'spaceport') && (
+        <section className="block">
+          <button type="button" className="btn wide" onClick={() => act.openTrade(id === 'trade_post' ? 'corp' : 'alliance')}>開啟貿易</button>
+        </section>
+      )}
+      {L > 0 && id === 'turret' && (
+        <section className="block">
+          <dl className="stats">
+            <div><dt>砲塔</dt><dd>{L} 座</dd></div>
+            <div><dt>每座</dt><dd>攻擊 {turretAtk(s)}，血量 {TURRET_HP}</dd></div>
+          </dl>
+          <p className="muted small">砲塔站在最前線吸收傷害，不佔人口，戰後自動修復。</p>
+        </section>
+      )}
 
       {isCmd && (
         <section className="block">
@@ -67,7 +83,7 @@ export function BuildingPanel() {
             {COMMAND_CHAIN.map((c) => <li key={c} className={built(s, c) ? 'ok' : c === nextCmd ? 'next' : ''}>{DEF[c].name}<small>Lv{DEF[c].commandLevel}</small></li>)}
           </ol>
           {nextCmd && nextCmd !== id && <BuildBox id={nextCmd} title={`下一級：${DEF[nextCmd].name}`} />}
-          {!nextCmd && <p className="muted">目前內容到此為止。第 5 章「企業的影子」開發中。</p>}
+          {!nextCmd && <p className="muted">目前內容到此為止。第 6 章「信標」開發中。</p>}
         </section>
       )}
 
@@ -91,7 +107,7 @@ export function BuildingPanel() {
         </section>
       ) : null}
 
-      {id === 'databank' && L > 0 && <Research />}
+      {(id === 'databank' || id === 'xeno_lab') && L > 0 && <Research />}
     </aside>
   );
 }
@@ -105,6 +121,7 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
       <CostList cost={levelCost(s, id)} />
       {d.requires?.pop ? <p className={'req ' + (s.pop >= d.requires.pop ? 'ok' : '')}>需要人口 {d.requires.pop}（目前 {s.pop}）</p> : null}
       {d.requires?.raids ? <p className={'req ' + (s.raid.won >= d.requires.raids ? 'ok' : '')}>需要擊退 {d.requires.raids} 次襲擊（目前 {s.raid.won}）</p> : null}
+      {d.requires?.credits ? <p className={'req ' + (s.gov.creditsEarned >= d.requires.credits ? 'ok' : '')}>需要累計賺進 {d.requires.credits} 信用點（目前 {Math.floor(s.gov.creditsEarned)}）</p> : null}
       <button type="button" className="btn wide" disabled={!!why} onClick={() => act.levelUp(id)}>
         {why && why !== '資源不足' ? why : L ? '升級' : `建造${d.name}`}
       </button>

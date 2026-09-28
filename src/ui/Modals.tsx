@@ -4,6 +4,7 @@ import { DEF, RES_KEYS, RES_NAME, ResKey } from '../engine/state';
 import { canAfford, idle } from '../engine/formulas';
 import { CHAPTERS } from '../engine/story';
 import EVENTS from '../data/events.json';
+import { RAID_NAME } from '../engine/combat';
 import { Icon, fmt, fmtTime } from './common';
 
 function Modal({ children, label }: { children: React.ReactNode; label: string }) {
@@ -15,7 +16,7 @@ export function Modals() {
   const offline = useGame((st) => st.offline);
   const [finishSeen, setFinishSeen] = useState(false);
   const s = game.s, act = useGame.getState();
-  const chIdx = Math.min(s.stage, 4);
+  const chIdx = Math.min(s.stage, CHAPTERS.length);
 
   if (s.failed) {
     return (
@@ -25,7 +26,7 @@ export function Modals() {
         <p>糧食斷了太久，殖民者一個接一個收拾行李，往荒原深處去找別的出路。逃生艙的廣播還在重複同一句話，但已經沒有人在聽。</p>
         <ul className="gains">
           <li>撐了 <b>{fmtTime(s.t)}</b></li>
-          <li>走到 <b>第 {Math.min(s.stage, 4)} 章</b></li>
+          <li>走到 <b>第 {Math.min(s.stage, CHAPTERS.length)} 章</b></li>
         </ul>
         <div className="choices">
           <button type="button" className="btn wide" onClick={act.restoreCheckpoint}>回到本章開頭</button>
@@ -68,15 +69,15 @@ export function Modals() {
   if (s.finished && !finishSeen) {
     return (
       <Modal label="MVP 完成">
-        <p className="eyebrow">第 4 章完成</p>
-        <h2>殖民地核心啟動了</h2>
-        <p>異晶反應爐的紫光從地底透上來，整座殖民地第一次在夜裡不用節約用電。遠方的通訊頻道裡，傳來一個陌生的企業標誌。</p>
+        <p className="eyebrow">第 5 章完成</p>
+        <h2>星城穹頂落成了</h2>
+        <p>玻璃穹頂在晨光裡合攏，殖民地第一次有了天空以外的屋頂。赫利昂的運輸艦還停在軌道上，但它已經不能再決定這裡的事。</p>
         <ul className="gains">
           <li>遊玩時間 <b>{fmtTime(s.t)}</b></li>
           <li>人口 <b>{s.pop}</b></li>
           <li>點擊 <b>{s.stats.clicks}</b>，暴擊 <b>{s.stats.crits}</b></li>
         </ul>
-        <p className="muted">第 5 章「企業的影子」（治理、貿易）開發中。你可以繼續經營殖民地。</p>
+        <p className="muted">第 6 章「信標」開發中。你可以繼續經營殖民地。</p>
         <button type="button" className="btn wide" onClick={() => setFinishSeen(true)}>繼續經營</button>
       </Modal>
     );
@@ -87,8 +88,8 @@ export function Modals() {
     return (
       <Modal label="戰報">
         <p className="eyebrow">戰報 · 第 {br.raid} 次襲擊</p>
-        <h2>{br.won ? '擊退了異星生物' : br.guards ? '防線被突破了' : '沒有保全迎戰'}</h2>
-        <p>{br.guards ? `${br.guards} 位保全（${br.armed} 位持武器）迎戰 ${br.enemies} 隻異星生物。` : `${br.enemies} 隻異星生物闖進了殖民地，沒有人擋得住牠們。`}</p>
+        <h2>{br.won ? `擊退了${RAID_NAME[(br.kind ?? 'alien') as 'alien']}` : br.guards || br.turrets ? '防線被突破了' : '沒有人迎戰'}</h2>
+        <p>{br.guards || br.turrets ? `${br.guards} 位保全（${br.armed} 位持武器）${br.turrets ? `和 ${br.turrets} 座砲塔` : ''}迎戰 ${br.enemies} ${br.kind && br.kind !== 'alien' ? '名' : '隻'}${RAID_NAME[(br.kind ?? 'alien') as 'alien']}。` : `${br.enemies} ${br.kind && br.kind !== 'alien' ? '名' : '隻'}${RAID_NAME[(br.kind ?? 'alien') as 'alien']}闖進了殖民地，沒有人擋得住。`}</p>
         {br.rounds.length > 1 && (
           <ol className="rounds" aria-label="各回合雙方剩餘血量">
             {br.rounds.map((r, i) => (
@@ -126,8 +127,11 @@ export function Modals() {
   if (ev) {
     const E = (EVENTS as any)[ev.kind];
     const bname = ev.target ? DEF[ev.target].name : '';
-    const fill = (t: string) => t.replace('{building}', bname).replace('{cost}', String(ev.cost ?? ''));
-    const blocked = (i: number) => (ev.kind === 'meteor' && i === 0 && !canAfford(s, { rock: ev.cost! })) ? '岩材不足'
+    const dm = s.gov?.corp.demand;
+    const demand = dm ? Object.entries(dm).map(([k, v]) => `${v} ${RES_NAME[k as ResKey]}`).join('、') : '';
+    const fill = (t: string) => t.replace('{building}', bname).replace('{cost}', String(ev.cost ?? '')).replace(/\{demand\}/g, demand).replace('{refusals}', String(s.gov?.corp.refusals ?? 0));
+    const blocked = (i: number) => (ev.kind === 'envoy' && i === 0 && dm && !canAfford(s, dm)) ? '資源不足'
+      : (ev.kind === 'meteor' && i === 0 && !canAfford(s, { rock: ev.cost! })) ? '岩材不足'
       : (ev.kind === 'rescue' && i === 0 && idle(s) < 2) ? '閒置殖民者不足 2 位' : null;
     return (
       <Modal label={E.title}>
