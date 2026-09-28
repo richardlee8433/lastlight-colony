@@ -1,0 +1,63 @@
+[
+  {
+    "id": "rationing",
+    "name": "配給制",
+    "desc": "營養消耗 −20%",
+    "cost": "士氣 −10",
+    "effect": {
+      "consumeMul": -0.2,
+      "morale": -10
+    }
+  },
+  {
+    "id": "double_shift",
+    "name": "雙班制",
+    "desc": "所有產量 +15%",
+    "cost": "士氣 −10",
+    "effect": {
+      "prodMul": 0.15,
+      "morale": -10
+    }
+  },
+  {
+    "id": "open_immigration",
+    "name": "開放移民",
+    "desc": "出生率 +30%",
+    "cost": "士氣 −5",
+    "effect": {
+      "birthAdd": 0.3,
+      "morale": -5
+    }
+  },
+  {
+    "id": "rest_day",
+    "name": "休息日",
+    "desc": "士氣 +15",
+    "cost": "所有產量 −10%",
+    "effect": {
+      "prodMul": -0.1,
+      "morale": 15
+    }
+  },
+  {
+    "id": "corp_contract",
+    "name": "企業合約",
+    "desc": "信用點收入 +40%",
+    "cost": "企業關係 +1，士氣 −5",
+    "effect": {
+      "creditMul": 0.4,
+      "morale": -5,
+      "corp": 1
+    }
+  },
+  {
+    "id": "alien_first",
+    "name": "異星優先",
+    "desc": "異晶產量 +25%",
+    "cost": "金屬產量 −15%",
+    "effect": {
+      "crystalAdd": 0.25,
+      "metalAdd": -0.15
+    }
+  }
+]

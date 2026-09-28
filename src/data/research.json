@@ -127,5 +127,60 @@
     "effect": {
       "gatherAdd": 0.1
     }
+  },
+  {
+    "id": "warehouse",
+    "name": "倉儲擴建",
+    "desc": "所有儲存上限 +50%",
+    "cost": {
+      "rock": 800,
+      "credit": 500
+    },
+    "time": 180,
+    "effect": {
+      "storageMul": 0.5
+    }
+  },
+  {
+    "id": "xeno_growth",
+    "name": "異晶催化",
+    "desc": "異晶產量 +40%",
+    "cost": {
+      "crystal": 80,
+      "credit": 400
+    },
+    "time": 200,
+    "effect": {
+      "crystalAdd": 0.4
+    },
+    "lab": true
+  },
+  {
+    "id": "xeno_hab",
+    "name": "晶格建材",
+    "desc": "每級生活艙多住 1 人",
+    "cost": {
+      "crystal": 120,
+      "rock": 600
+    },
+    "time": 240,
+    "effect": {
+      "habBonus": 1
+    },
+    "lab": true
+  },
+  {
+    "id": "xeno_turret",
+    "name": "異晶砲管",
+    "desc": "砲塔攻擊 +6",
+    "cost": {
+      "crystal": 100,
+      "metal": 400
+    },
+    "time": 200,
+    "effect": {
+      "turretAtk": 6
+    },
+    "lab": true
   }
 ]

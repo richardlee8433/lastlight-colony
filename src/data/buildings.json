@@ -191,7 +191,7 @@
     "name": "生活艙",
     "stage": 2,
     "kind": "house",
-    "maxLevel": 12,
+    "maxLevel": 20,
     "desc": "每級提供 2 人的居住空間。人口上限決定殖民者能不能繼續抵達。",
     "baseCost": {
       "scrap": 30
@@ -290,7 +290,7 @@
     "name": "貨櫃",
     "stage": 2,
     "kind": "storage",
-    "maxLevel": 15,
+    "maxLevel": 25,
     "desc": "每級讓所有資源的儲存上限 +100。",
     "baseCost": {
       "scrap": 25
@@ -900,6 +900,140 @@
     "effects": {
       "housing": 6,
       "storage": 200
+    }
+  },
+  {
+    "id": "admin",
+    "name": "行政中心",
+    "stage": 5,
+    "kind": "governance",
+    "maxLevel": 1,
+    "desc": "殖民地的議事廳。解鎖稅制與殖民憲章，稅收會帶來信用點，但每一級稅率都讓士氣 −5。",
+    "baseCost": {
+      "rock": 800,
+      "metal": 300,
+      "parts": 200
+    },
+    "upgrades": [
+      {
+        "id": "council",
+        "name": "議會擴編",
+        "desc": "憲章欄位 +1",
+        "minLevel": 1,
+        "cost": {
+          "parts": 400,
+          "credit": 800
+        },
+        "effect": {
+          "charterSlot": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "trade_post",
+    "name": "交易站",
+    "stage": 5,
+    "kind": "gather",
+    "maxLevel": 8,
+    "clickable": true,
+    "desc": "殖民地的市集，工人在這裡賺進信用點，也能在這裡和赫利昂企業交易。",
+    "baseCost": {
+      "rock": 500,
+      "parts": 200
+    },
+    "produce": {
+      "res": "credit",
+      "rate": 0.15
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "prod_30",
+        "name": "夜市",
+        "desc": "產量 +30%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 400,
+          "credit": 300
+        },
+        "effect": {
+          "prodAdd": 0.3
+        }
+      },
+      {
+        "id": "cap_2",
+        "name": "攤位擴建",
+        "desc": "工人上限 +2",
+        "minLevel": 2,
+        "cost": {
+          "parts": 300,
+          "credit": 500
+        },
+        "effect": {
+          "workerCapAdd": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "spaceport",
+    "name": "太空港",
+    "stage": 5,
+    "kind": "trade",
+    "maxLevel": 1,
+    "desc": "能接收其他殖民地的運輸艇。開放自由殖民地聯盟貿易；再建成異星研究院，就能回應那個神秘訊號。",
+    "baseCost": {
+      "metal": 800,
+      "credit": 400
+    }
+  },
+  {
+    "id": "turret",
+    "name": "防禦砲塔",
+    "stage": 5,
+    "kind": "defense",
+    "maxLevel": 6,
+    "desc": "固定防禦單位。每級一座砲塔（攻擊 8、血量 40），不佔人口，戰後自動修復。",
+    "baseCost": {
+      "metal": 300,
+      "tools": 100
+    }
+  },
+  {
+    "id": "xeno_lab",
+    "name": "異星研究院",
+    "stage": 5,
+    "kind": "research",
+    "maxLevel": 5,
+    "desc": "專門研究異晶的實驗室。解鎖異晶研究線，駐點研究員也會加快所有研究。",
+    "baseCost": {
+      "rock": 1500,
+      "crystal": 200
+    },
+    "workersPerLevel": 2
+  },
+  {
+    "id": "star_dome",
+    "name": "星城穹頂",
+    "stage": 5,
+    "kind": "command",
+    "commandLevel": 5,
+    "maxLevel": 1,
+    "requires": {
+      "pop": 80,
+      "credits": 5000
+    },
+    "desc": "指揮艙 Lv5。覆蓋整座殖民地的玻璃穹頂，從這天起這裡是一座城。需要人口 80、累計賺進 5,000 信用點。",
+    "baseCost": {
+      "rock": 3000,
+      "metal": 1200,
+      "credit": 3000,
+      "crystal": 300
+    },
+    "effects": {
+      "housing": 10,
+      "storage": 500
     }
   }
 ]
