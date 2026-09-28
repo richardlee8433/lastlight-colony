@@ -1,23 +1,23 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
-import { COMMAND_CHAIN, DEF, GameState, makeCheckpoint, notify } from './state';
+import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
 import { RESEARCH_DEFS, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
 
-export type Why = string | null;
+export type Why = Msg | null;
 
 /** 不能建造／升級的原因；null 表示可以 */
 export function levelBlock(s: GameState, id: string): Why {
   const d = DEF[id], L = s.b[id].level;
-  if (d.stage > s.stage) return `階段 ${d.stage} 解鎖`;
-  if (L >= d.maxLevel) return '已達最高等級';
+  if (d.stage > s.stage) return msg('why.stage', { n: d.stage });
+  if (L >= d.maxLevel) return msg('why.maxLevel');
   if (d.kind === 'command') {
     const prev = COMMAND_CHAIN[COMMAND_CHAIN.indexOf(id) - 1];
-    if (prev && !built(s, prev)) return `需要先建成${DEF[prev].name}`;
+    if (prev && !built(s, prev)) return msg('why.needPrev', { b: prev });
   }
-  if (L > 0 && !built(s, 'emergency_camp')) return '建成緊急營地後才能升級';
-  if (d.requires?.pop && s.pop < d.requires.pop) return `需要人口 ${d.requires.pop}`;
-  if (d.requires?.raids && s.raid.won < d.requires.raids) return `需要擊退 ${d.requires.raids} 次襲擊`;
-  if (d.requires?.credits && s.gov.creditsEarned < d.requires.credits) return `需要累計賺進 ${d.requires.credits} 信用點`;
-  if (!canAfford(s, levelCost(s, id))) return '資源不足';
+  if (L > 0 && !built(s, 'emergency_camp')) return msg('why.needCamp');
+  if (d.requires?.pop && s.pop < d.requires.pop) return msg('why.pop', { n: d.requires.pop });
+  if (d.requires?.raids && s.raid.won < d.requires.raids) return msg('why.raids', { n: d.requires.raids });
+  if (d.requires?.credits && s.gov.creditsEarned < d.requires.credits) return msg('why.credits', { n: d.requires.credits });
+  if (!canAfford(s, levelCost(s, id))) return msg('why.afford');
   return null;
 }
 export function levelUp(s: GameState, id: string): boolean {
@@ -27,20 +27,20 @@ export function levelUp(s: GameState, id: string): boolean {
   s.b[id].level++;
   if (d.kind === 'command') {
     s.stage = d.commandLevel! + 1;
-    if (id === 'star_dome') { s.finished = true; notify(s, '星城穹頂落成了！第 5 章完成。', 'good'); }
-    else { notify(s, `${d.name}建成，進入階段 ${s.stage}！`, 'good'); makeCheckpoint(s); }
-  } else notify(s, s.b[id].level === 1 ? `${d.name}建成了。` : `${d.name}升到 Lv${s.b[id].level}。`, 'good');
+    if (id === 'star_dome') { s.finished = true; notify(s, 'n.domeDone', undefined, 'good'); }
+    else { notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s); }
+  } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
   return true;
 }
 
 export function nodeBlock(s: GameState, id: string, nodeId: string): Why {
   const n = DEF[id].upgrades?.find((u) => u.id === nodeId);
-  if (!n) return '不存在';
-  if (s.b[id].nodes.includes(nodeId)) return '已完成';
-  if (!built(s, 'emergency_camp')) return '建成緊急營地後解鎖';
-  if (n.stage && s.stage < n.stage) return `階段 ${n.stage} 解鎖`;
-  if (s.b[id].level < n.minLevel) return `需要 Lv${n.minLevel}`;
-  if (!canAfford(s, n.cost)) return '資源不足';
+  if (!n) return msg('why.none');
+  if (s.b[id].nodes.includes(nodeId)) return msg('why.done');
+  if (!built(s, 'emergency_camp')) return msg('why.campNode');
+  if (n.stage && s.stage < n.stage) return msg('why.stage', { n: n.stage });
+  if (s.b[id].level < n.minLevel) return msg('why.minLevel', { n: n.minLevel });
+  if (!canAfford(s, n.cost)) return msg('why.afford');
   return null;
 }
 export function buyNode(s: GameState, id: string, nodeId: string): boolean {
@@ -48,7 +48,7 @@ export function buyNode(s: GameState, id: string, nodeId: string): boolean {
   const n = DEF[id].upgrades!.find((u) => u.id === nodeId)!;
   pay(s, n.cost);
   s.b[id].nodes.push(nodeId);
-  notify(s, `${DEF[id].name}：${n.name}（${n.desc}）`, 'good');
+  notify(s, 'n.node', { b: id, node: nodeId }, 'good');
   return true;
 }
 
@@ -74,12 +74,12 @@ export function setSplit(s: GameState, id: string, n: number) {
 
 export function researchBlock(s: GameState, rid: string): Why {
   const r = RESEARCH_DEFS.find((x) => x.id === rid)!;
-  if (!built(s, 'databank')) return '需要資料庫';
-  if (s.research.done.includes(rid)) return '已完成';
-  if (s.research.active) return '正在研究其他項目';
-  if (r.requires && !s.research.done.includes(r.requires)) return '需要先完成前一項';
-  if (r.lab && !built(s, 'xeno_lab')) return '需要異星研究院';
-  if (!canAfford(s, r.cost)) return '資源不足';
+  if (!built(s, 'databank')) return msg('why.databank');
+  if (s.research.done.includes(rid)) return msg('why.done');
+  if (s.research.active) return msg('why.busy');
+  if (r.requires && !s.research.done.includes(r.requires)) return msg('why.prevResearch');
+  if (r.lab && !built(s, 'xeno_lab')) return msg('why.lab');
+  if (!canAfford(s, r.cost)) return msg('why.afford');
   return null;
 }
 export function startResearch(s: GameState, rid: string): boolean {
@@ -96,6 +96,6 @@ export function research(s: GameState, dt: number, speed: number, quiet = false)
   s.research.progress += dt * speed;
   if (s.research.progress >= r.time) {
     s.research.done.push(rid); s.research.active = null; s.research.progress = 0;
-    if (!quiet) notify(s, `研究完成：${r.name}（${r.desc}）`, 'good');
+    if (!quiet) notify(s, 'n.research', { rs: rid }, 'good');
   }
 }

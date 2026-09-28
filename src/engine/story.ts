@@ -3,9 +3,19 @@ import STORY from '../data/story.json';
 import { GameState } from './state';
 import { built } from './formulas';
 
-export interface Goal { type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits'; res?: string; id?: string; amount?: number; label: string }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits'; res?: string; id?: string; amount?: number; label: string }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
-export const CHAPTERS = STORY as unknown as Chapter[];
+export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => ({ ...c, goals: c.goals.map((g, i) => ({ ...g, gid: `${c.chapter}-${i}` })) }));
+
+/** 舊存檔的 story.done 存的是中文目標文字，換成 id */
+export function migrateStoryDone(done: string[]): string[] {
+  const out = new Set<string>();
+  for (const x of done) {
+    const g = CHAPTERS.flatMap((c) => c.goals).find((g) => g.label === x);
+    out.add(g ? g.gid : x);
+  }
+  return [...out];
+}
 
 function liveDone(s: GameState, g: Goal): boolean {
   switch (g.type) {
@@ -20,10 +30,10 @@ function liveDone(s: GameState, g: Goal): boolean {
   }
 }
 /** 目標達成一次就算完成（資源花掉後不會取消勾選） */
-export const goalDone = (s: GameState, g: Goal) => s.story.done.includes(g.label) || liveDone(s, g);
+export const goalDone = (s: GameState, g: Goal) => s.story.done.includes(g.gid) || liveDone(s, g);
 export const currentChapter = (s: GameState) => CHAPTERS[Math.min(s.stage, CHAPTERS.length) - 1];
 export function updateStory(s: GameState) {
   const ch = currentChapter(s);
   if (!ch) return;
-  for (const g of ch.goals) if (!s.story.done.includes(g.label) && liveDone(s, g)) s.story.done.push(g.label);
+  for (const g of ch.goals) if (!s.story.done.includes(g.gid) && liveDone(s, g)) s.story.done.push(g.gid);
 }

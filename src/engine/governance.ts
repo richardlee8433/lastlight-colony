@@ -1,5 +1,5 @@
 // 階段 5：治理（稅制、殖民憲章，GDD §11）、企業使者（§12）、貿易（§13）
-import { GameState, RES_NAME, ResKey, notify } from './state';
+import { GameState, Msg, ResKey, msg, notify } from './state';
 import { CHARTER_DEFS, add, built, canAfford, charterSlots, pay, storageCap, taxIncome } from './formulas';
 
 // ── 稅與憲章 ──
@@ -7,22 +7,21 @@ export function setTax(s: GameState, level: number) {
   if (!built(s, 'admin')) return;
   s.gov.tax = Math.max(0, Math.min(4, level));
 }
-export function charterBlock(s: GameState, id: string): string | null {
-  if (!built(s, 'admin')) return '需要行政中心';
+export function charterBlock(s: GameState, id: string): Msg | null {
+  if (!built(s, 'admin')) return msg('why.admin');
   if (s.gov.charters.includes(id)) return null;
-  if (s.gov.charters.length >= charterSlots(s)) return '憲章欄位已滿';
+  if (s.gov.charters.length >= charterSlots(s)) return msg('why.slots');
   return null;
 }
 export function toggleCharter(s: GameState, id: string) {
   const g = s.gov;
-  if (g.charters.includes(id)) { g.charters = g.charters.filter((c) => c !== id); notify(s, `廢止憲章：${name(id)}`, 'info'); return; }
+  if (g.charters.includes(id)) { g.charters = g.charters.filter((c) => c !== id); notify(s, 'n.charterOff', { c: id }); return; }
   if (charterBlock(s, id)) return;
   g.charters.push(id);
   const c = CHARTER_DEFS.find((x) => x.id === id)!;
   if (c.effect.corp) g.corp.relation += c.effect.corp;
-  notify(s, `通過憲章：${c.name}（${c.desc}）`, 'good');
+  notify(s, 'n.charterOn', { c: id }, 'good');
 }
-const name = (id: string) => CHARTER_DEFS.find((x) => x.id === id)?.name ?? id;
 
 // ── 貿易：以信用點計價。赫利昂匯率最好；聯盟匯率普通但完成委託會變好 ──
 export const PRICE: Partial<Record<ResKey, number>> = { nutrient: 0.5, scrap: 0.3, rock: 0.6, parts: 1.5, metal: 2, tools: 4, weapon: 5, crystal: 20 };
@@ -37,12 +36,12 @@ export function partnerOpen(s: GameState, who: Partner) {
   return who === 'corp' ? built(s, 'trade_post') : built(s, 'spaceport');
 }
 export const TRADE_LOT = 100;
-export function tradeBlock(s: GameState, who: Partner, k: ResKey, dir: 'sell' | 'buy', lot = TRADE_LOT): string | null {
-  if (!partnerOpen(s, who)) return who === 'corp' ? '需要交易站' : '需要太空港';
+export function tradeBlock(s: GameState, who: Partner, k: ResKey, dir: 'sell' | 'buy', lot = TRADE_LOT): Msg | null {
+  if (!partnerOpen(s, who)) return msg(who === 'corp' ? 'why.tradePost' : 'why.spaceport');
   const r = rates(s, who, k);
-  if (dir === 'sell') return s.res[k] >= lot ? null : `${RES_NAME[k]}不足 ${lot}`;
-  if (s.res.credit < Math.ceil(r.buy * lot)) return '信用點不足';
-  if (s.res[k] + lot > storageCap(s)) return '倉庫放不下';
+  if (dir === 'sell') return s.res[k] >= lot ? null : msg('why.short', { r: k, n: lot });
+  if (s.res.credit < Math.ceil(r.buy * lot)) return msg('why.credit');
+  if (s.res[k] + lot > storageCap(s)) return msg('why.storage');
   return null;
 }
 export function trade(s: GameState, who: Partner, k: ResKey, dir: 'sell' | 'buy', lot = TRADE_LOT) {
@@ -58,7 +57,7 @@ const CONTRACT_RES: ResKey[] = ['metal', 'parts', 'rock', 'tools', 'nutrient'];
 export function contractTick(s: GameState, rng = Math.random) {
   const a = s.gov.alliance;
   if (!built(s, 'spaceport')) return;
-  if (a.contract && s.t > a.contract.until) { a.contract = null; a.nextContract = s.t + 60; notify(s, '聯盟委託逾期，對方取消了訂單。', 'warn'); }
+  if (a.contract && s.t > a.contract.until) { a.contract = null; a.nextContract = s.t + 60; notify(s, 'n.contractLate', undefined, 'warn'); }
   if (!a.contract && s.t >= a.nextContract) {
     const res = CONTRACT_RES[Math.floor(rng() * CONTRACT_RES.length)];
     const amount = Math.round((200 + a.rep * 80) / 50) * 50;
@@ -71,7 +70,7 @@ export function fulfillContract(s: GameState) {
   s.res[c.res] -= c.amount;
   add(s, 'credit', c.reward);
   a.rep++; a.contract = null; a.nextContract = s.t + 45;
-  notify(s, `完成聯盟委託：+${c.reward} 信用點，聯盟聲望 ${a.rep}（匯率變好）`, 'good');
+  notify(s, 'n.contractDone', { n: c.reward, rep: a.rep }, 'good');
 }
 
 // 神秘訊號：唯一能用廢料換異晶的管道，每 10 分鐘限量 30 異晶
@@ -110,10 +109,10 @@ export function resolveEnvoy(s: GameState, choice: number) {
     if (!c.demand || !canAfford(s, c.demand)) return false;
     pay(s, c.demand);
     c.paid++; c.relation++;
-    notify(s, '使者滿意地離開了。企業關係 +1。', 'info');
+    notify(s, 'n.envoyPaid');
   } else {
     c.refusals++; c.relation--;
-    notify(s, c.refusals >= 3 ? '使者冷冷地說：「企業會記住的。」下一次襲擊可能是企業突擊隊。' : '你拒絕了使者。企業關係 −1。', 'warn');
+    notify(s, c.refusals >= 3 ? 'n.envoyThreat' : 'n.envoyRefused', undefined, 'warn');
   }
   c.envoys++; c.demand = null; c.nextEnvoy = s.t + ENVOY_GAP;
   return true;

@@ -3,7 +3,6 @@ import BUILDINGS from '../data/buildings.json';
 export type ResKey = 'nutrient' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
 export const RES_KEYS: ResKey[] = ['nutrient', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
 export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 4, credit: 5 };
-export const RES_NAME: Record<ResKey, string> = { nutrient: '營養', scrap: '廢料', rock: '岩材', parts: '零件', metal: '金屬', tools: '工具', weapon: '武器', crystal: '異晶', credit: '信用點' };
 /** 貨幣不受倉容上限限制 */
 export const UNCAPPED: ResKey[] = ['credit'];
 
@@ -37,7 +36,9 @@ export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'envoy'; target?: str
 export interface BattleReport {
   won: boolean; raid: number; enemies: number; guards: number; armed: number; turrets?: number; kind?: string;
   rounds: { ours: number; theirs: number; oursMax: number; theirsMax: number }[];
-  injured: number; lines: string[];
+  injured: number;
+  /** 舊存檔是中文字串，新的是 Msg */
+  lines: (Msg | string)[];
 }
 export interface RaidState {
   count: number; won: number; nextAt: number;
@@ -59,7 +60,10 @@ export const newGov = (): GovState => ({
   alliance: { rep: 0, contract: null, nextContract: 0 },
   signal: { used: 0, resetAt: 0 },
 });
-export interface Notice { id: number; text: string; tone?: 'good' | 'warn' | 'info' }
+/** 顯示文字一律由 UI 依語言翻譯：k 是 i18n 代碼，p 是參數（b=建築 id、r=資源、rs=研究、c=憲章、kind=襲擊者種類會自動換成名稱） */
+export interface Msg { k: string; p?: Record<string, string | number> }
+export const msg = (k: string, p?: Msg['p']): Msg => (p ? { k, p } : { k });
+export interface Notice { id: number; msg: Msg; tone?: 'good' | 'warn' | 'info' }
 
 export interface GameState {
   v: 1;
@@ -81,8 +85,9 @@ export interface GameState {
   events: {
     nextAt: number; active: ActiveEvent | null; rescue: { until: number; workers: number } | null;
     /** 事件結果（例如救援隊回來），UI 以對話框顯示，玩家關閉後清除 */
-    report?: { title: string; text: string; gains: string[] } | null;
+    report?: { title: Msg | string; text: Msg | string; gains: (Msg | string)[] } | null;
   };
+  /** done：已完成的目標 id（`章-序號`，例如 "2-0"） */
   story: { seenIntro: number; assigned: boolean; done: string[] };
   stats: { clicks: number; crits: number };
   raid: RaidState;
@@ -117,7 +122,7 @@ export function makeCheckpoint(s: GameState) {
 }
 
 let noticeId = 1;
-export function notify(s: GameState, text: string, tone: Notice['tone'] = 'info') {
-  s.notices.push({ id: noticeId++, text, tone });
+export function notify(s: GameState, k: string, p?: Msg['p'], tone: Notice['tone'] = 'info') {
+  s.notices.push({ id: noticeId++, msg: msg(k, p), tone });
   if (s.notices.length > 6) s.notices.shift();
 }

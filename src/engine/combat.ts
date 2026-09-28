@@ -1,7 +1,7 @@
 // 異星生物襲擊與自動戰鬥（GDD §10）
 // 預警 60 秒 → 回合制自動結算（最多 10 回合）→ 勝利拿戰利品；失敗被搶走某資源 15%、士氣 −10。
 // 保全不會死亡，倒下的只會「受傷」一段時間無法參戰。
-import { BattleReport, GameState, RES_NAME, RES_UNLOCK, ResKey, notify } from './state';
+import { BattleReport, GameState, Msg, RES_UNLOCK, ResKey, msg, notify } from './state';
 import { add, built, nodeEffect, researchEffect } from './formulas';
 
 export const FIRST_RAID = 480;      // 進入階段 4 後幾秒發生第一次襲擊
@@ -27,7 +27,6 @@ export function raidFor(s: GameState) {
   const n = Math.max(0, s.raid.won - 3);
   return { enemies: 3 + n, atk: 5 * Math.pow(1.1, n) * m, hp: 18 * Math.pow(1.1, n) * m, kind: commando ? ('commando' as const) : ('raider' as const) };
 }
-export const RAID_NAME = { alien: '異星生物', raider: '掠奪者', commando: '企業突擊隊' };
 export const turrets = (s: GameState) => (built(s, 'turret') ? s.b.turret.level : 0);
 export const turretAtk = (s: GameState) => 8 + researchEffect(s, 'turretAtk');
 export const TURRET_HP = 40;
@@ -61,7 +60,7 @@ export function combat(s: GameState, offline = false, rng = Math.random) {
     // 強度只隨「擊退次數」成長：輸了不會越打越難，避免死亡螺旋（GDD 原本按總襲擊次數）
     const e = raidFor(s);
     r.incoming = { at: r.nextAt, enemies: e.enemies, atk: e.atk, hp: e.hp, side: Math.floor(rng() * 4), kind: e.kind };
-    notify(s, `警報：${e.enemies} ${e.kind === 'alien' ? '隻' : '名'}${RAID_NAME[e.kind]}正在接近，${WARNING} 秒後抵達！`, 'warn');
+    notify(s, 'n.raidWarn', { n: e.enemies, kind: e.kind, s: WARNING }, 'warn');
   }
   if (r.incoming && s.t >= r.incoming.at) fight(s, rng);
 }
@@ -92,27 +91,27 @@ function fight(s: GameState, rng: () => number) {
   const down = ours.filter((u) => u.hp <= 0 && !u.turret).length;
   const heal = INJURY * Math.max(0.2, 1 + nodeEffect(s, 'security', 'injuryMul'));
   for (let i = 0; i < down; i++) r.injured.push(s.t + heal);
-  const lines: string[] = [];
+  const lines: Msg[] = [];
   r.count++;
   if (won) {
     r.won++;
     const n = inc.enemies;
     const loot: [ResKey, number][] = [['rock', 40 * n], ['metal', 15 * n], ['crystal', 2 * n]];
-    for (const [k, v] of loot) { add(s, k, v); lines.push(`${RES_NAME[k]} +${v}`); }
-    if (inc.kind === 'commando') { add(s, 'credit', 500); lines.push('信用點 +500（突擊隊的裝備）'); }
-    notify(s, `擊退了${RAID_NAME[inc.kind ?? 'alien']}！（第 ${r.won} 次）`, 'good');
+    for (const [k, v] of loot) { add(s, k, v); lines.push(msg('l.gain', { r: k, n: v })); }
+    if (inc.kind === 'commando') { add(s, 'credit', 500); lines.push(msg('l.commando')); }
+    notify(s, 'n.raidWon', { kind: inc.kind ?? 'alien', n: r.won }, 'good');
   } else {
     const pool = (Object.keys(s.res) as ResKey[]).filter((k) => RES_UNLOCK[k] <= s.stage && s.res[k] >= 10);
     if (pool.length) {
       const k = pool[Math.floor(rng() * pool.length)], v = Math.floor(s.res[k] * 0.15);
       s.res[k] -= v;
-      lines.push(`被搶走 ${RES_NAME[k]} ${v}`);
+      lines.push(msg('l.stolen', { r: k, n: v }));
     }
     s.morale = Math.max(0, s.morale - 10);
-    lines.push('士氣 −10');
-    notify(s, ours.length ? `防線被突破了，${RAID_NAME[inc.kind ?? 'alien']}搶走了物資。` : `沒有人迎戰，${RAID_NAME[inc.kind ?? 'alien']}在殖民地裡大肆破壞。`, 'warn');
+    lines.push(msg('l.morale10'));
+    notify(s, ours.length ? 'n.raidLost' : 'n.raidNoDef', { kind: inc.kind ?? 'alien' }, 'warn');
   }
-  if (down) lines.push(`${down} 位保全受傷，休養 ${Math.round(heal / 60 * 10) / 10} 分鐘`);
+  if (down) lines.push(msg('l.injured', { n: down, m: Math.round(heal / 60 * 10) / 10 }));
   r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, turrets: nt, kind: inc.kind ?? 'alien', rounds, injured: down, lines };
   r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
 }
