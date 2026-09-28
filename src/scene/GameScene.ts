@@ -141,7 +141,7 @@ export class GameScene {
 
   sync() {
     const s = game.s;
-    const gStage = Math.min(4, s.stage);
+    const gStage = Math.min(6, s.stage);
     if (gStage !== this.groundStage) this.buildMap(gStage);
     const selected = useGame.getState().selected;
     for (const site of SITES) {
@@ -154,7 +154,7 @@ export class GameScene {
       const text = lvl > 0 ? (DEF[bid].kind === 'command' || DEF[bid].maxLevel === 1 ? DEF[bid].name : `${DEF[bid].name} Lv${lvl}`) : `建造：${DEF[bid].name}`;
       const dis = lvl > 0 && disabled(s, bid);
       const card = lvl > 0 && DEF[bid].clickable;
-      const plateKey = card ? `card|${bid}|${this.Z}|${Math.min(4, s.stage)}` : `${text}|${dis}|${this.Z}`;
+      const plateKey = card ? `card|${bid}|${this.Z}|${Math.min(6, s.stage)}` : `${text}|${dis}|${this.Z}`;
       if (!v.plate || (v.plate as any).k !== plateKey) {
         v.plate?.destroy({ children: true });
         v.plate = card ? this.makeCard(v) : this.makePlate(dis ? `${text}（停工）` : text, lvl > 0 ? (dis ? 'inset' : 'plate') : 'inset');
@@ -201,7 +201,7 @@ export class GameScene {
     const tx = new Text({ text, style: { fontFamily: '"Noto Sans TC", sans-serif', fontSize: fs, fontWeight: '700', fill: kind === 'plate' ? 0xfff8ec : 0xc9c3d6, stroke: { color: 0x120e18, width: fs >= 12 ? 3 : 2 } } });
     const w = Math.ceil(tx.width / Z) + 8;
     const c = new Container() as any;
-    const bg = createPixelSprite(renderPanel(w, 11, Math.min(4, game.s.stage), kind));
+    const bg = createPixelSprite(renderPanel(w, 11, Math.min(6, game.s.stage), kind));
     bg.scale.set(Z);
     tx.anchor.set(0.5); tx.position.set((w * Z) / 2, 5.5 * Z);
     c.addChild(bg, tx); c.pw = w; c.ph = 11;
@@ -228,7 +228,7 @@ export class GameScene {
       b.sprite.tint = 0xb8c0d8;
       v.addChild(b);
       b.lights.destroy({ children: true });
-      const sign = createProp('site', Math.min(4, s.stage), 3);
+      const sign = createProp('site', Math.min(6, s.stage), 3);
       sign.position.set(0, 6);
       sign.lights.destroy({ children: true });
       v.addChild(sign);
@@ -261,7 +261,7 @@ export class GameScene {
 
   /** 浮在建築上方的採集卡。平常收合成一顆採集按鈕；滑鼠停留或選中時展開，多出工人 −／＋ 列 */
   makeCard(v: View) {
-    const Z = this.Z, st = Math.min(4, game.s.stage), id = v.bid!, d = DEF[id];
+    const Z = this.Z, st = Math.min(6, game.s.stage), id = v.bid!, d = DEF[id];
     const res = (d.produce?.res ?? d.recipe!.out) as string;
     const W = 52, H = 37, CW = 34, CH = 14, fs = Z >= 3 ? 15 : Z >= 2 ? 12 : 10;
     const txt = (text: string, size: number, fill: number) => new Text({ text, style: { fontFamily: '"Noto Sans TC", sans-serif', fontSize: size, fontWeight: '900', fill, stroke: { color: 0x120e18, width: size >= 12 ? 3 : 2 } } });
@@ -387,6 +387,8 @@ export class GameScene {
       a.from = { x: from.x + jx, y: from.y + jy };
       a.to = { x: to.x + jx * 0.8, y: to.y + jy * 0.8 };
       a.lag = Math.random() * 0.15;
+      // 掠奪者偏橘褐、企業突擊隊偏鋼藍，和異星生物區分
+      if (inc.kind === 'raider') a.tint = 0xe0b080; else if (inc.kind === 'commando') a.tint = 0x9fb8e0;
       a.position.set(a.from.x, a.from.y);
       this.obj.addChild(a);
       this.aliens.push(a);
@@ -428,7 +430,7 @@ export class GameScene {
     }
   }
   addWalker(bid: string | null) {
-    const w = createWorker(Math.min(4, game.s.stage)) as Walker;
+    const w = createWorker(Math.min(6, game.s.stage)) as Walker;
     const j = () => Math.round((Math.random() - 0.5) * 18);
     const site = bid ? SITES.find((x) => x.id === bid || (x.id === 'command' && COMMAND_CHAIN.includes(bid)))! : null;
     const home = built(game.s, 'emergency_camp') ? HOME : { x: 241 + 14, y: 210 };

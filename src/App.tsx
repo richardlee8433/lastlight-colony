@@ -7,12 +7,13 @@ import { BuildingPanel } from './ui/BuildingPanel';
 import { QuickBar } from './ui/QuickBar';
 import { Toasts } from './ui/Toasts';
 import { RaidBanner } from './ui/RaidBanner';
+import { TradeModal } from './ui/TradeModal';
 import { Modals, Settings } from './ui/Modals';
 import { useGame, game } from './store/gameStore';
 
 export function App() {
   const host = useRef<HTMLDivElement>(null);
-  const stage = useGame(() => Math.min(4, game.s.stage));
+  const stage = useGame(() => Math.min(6, game.s.stage));
   useEffect(() => {
     const scene = new GameScene();
     let failed = false;
@@ -30,6 +31,7 @@ export function App() {
       <RaidBanner />
       <Toasts />
       <Settings />
+      <TradeModal />
       <Modals />
     </div>
   );

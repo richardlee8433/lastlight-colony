@@ -1,12 +1,14 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
-import { GameState, makeCheckpoint, newGame, newRaid } from '../engine/state';
+import { GameState, makeCheckpoint, newGame, newGov, newRaid } from '../engine/state';
+import { CHAPTERS } from '../engine/story';
 import { built } from '../engine/formulas';
 import { step, TICK } from '../engine/tick';
 import { click as engineClick, ClickResult } from '../engine/click';
 import { applyOffline } from '../engine/offline';
 import * as A from '../engine/actions';
 import { resolveEvent } from '../engine/events';
+import * as G from '../engine/governance';
 
 const SAVE_KEY = 'lastlight-colony-save-v1';
 export type OfflineReport = NonNullable<ReturnType<typeof applyOffline>>;
@@ -21,9 +23,10 @@ function load(): { s: GameState; offline: OfflineReport | null } {
         for (const id of Object.keys(fresh.b)) s.b[id] ??= fresh.b[id];
         s.starveTime ??= 0; s.failed ??= false; s.checkpoint ??= null;
         s.raid ??= newRaid();
-        s.res.weapon ??= 0; s.res.crystal ??= 0;
+        s.res.weapon ??= 0; s.res.crystal ??= 0; s.res.credit ??= 0;
+        s.gov ??= newGov();
         // 舊存檔：原本前哨站就算 MVP 完成，現在接續第 4 章
-        if (s.finished && s.b.colony_core && !built(s, 'colony_core')) s.finished = false;
+        if (s.finished && !built(s, 'star_dome')) s.finished = false;
         if (!s.checkpoint) makeCheckpoint(s);
         s.notices = [];
         const offline = applyOffline(s, (Date.now() - s.lastSaved) / 1000);
@@ -62,6 +65,13 @@ interface Store {
   dismissBattle: () => void;
   setSplit: (id: string, n: number) => void;
   togglePause: (id: string) => void;
+  trade: null | 'corp' | 'alliance' | 'signal';
+  openTrade: (t: null | 'corp' | 'alliance' | 'signal') => void;
+  doTrade: (who: G.Partner, k: any, dir: 'sell' | 'buy') => void;
+  fulfill: () => void;
+  signal: () => void;
+  setTax: (n: number) => void;
+  toggleCharter: (id: string) => void;
   restoreCheckpoint: () => void;
   seenIntro: () => void;
   reset: () => void;
@@ -85,7 +95,14 @@ export const useGame = create<Store>((set, get) => {
     dismissBattle: () => run((s) => { s.raid.report = null; }),
     setSplit: (id, n) => run((s) => A.setSplit(s, id, n)),
     togglePause: (id) => run((s) => A.togglePause(s, id)),
-    seenIntro: () => run((s) => { s.story.seenIntro = Math.min(s.stage, 4); }),
+    trade: null,
+    openTrade: (t) => set({ trade: t }),
+    doTrade: (who, k, dir) => run((s) => G.trade(s, who, k, dir)),
+    fulfill: () => run((s) => G.fulfillContract(s)),
+    signal: () => run((s) => G.signalTrade(s, 5)),
+    setTax: (n) => run((s) => G.setTax(s, n)),
+    toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),
+    seenIntro: () => run((s) => { s.story.seenIntro = Math.min(s.stage, CHAPTERS.length); }),
     restoreCheckpoint: () => {
       const cp = game.s.checkpoint;
       if (!cp) return get().reset();
