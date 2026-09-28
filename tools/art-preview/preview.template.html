@@ -1,0 +1,182 @@
+<title>末光殖民地美術素材</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0c12;
+    --surface: #121621;
+    --surface-2: #191e2c;
+    --line: #272e40;
+    --text: #ece6d8;
+    --muted: #9097aa;
+    --accent: #ffb347;
+    --accent-ink: #1a1206;
+    --display: "Chakra Petch", "Noto Sans TC", system-ui, sans-serif;
+    --body: "Noto Sans TC", system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  html, body { background: var(--bg); color: var(--text); }
+  body { font-family: var(--body); font-size: 15px; line-height: 1.6; padding-inline: 16px; padding-block: 28px 64px; }
+  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 48px; }
+  h1, h2 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: 0.01em; }
+  h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.1; }
+  h2 { font-size: 22px; }
+  p { margin: 0; }
+  .eyebrow { font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase; }
+  .top { display: grid; gap: 10px; max-width: 68ch; }
+  .lede { color: var(--muted); }
+  .section-head { display: grid; gap: 6px; margin-bottom: 18px; }
+  .section-head p { color: var(--muted); max-width: 68ch; }
+
+  .viewer { display: grid; gap: 12px; }
+  .stage-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  .stage-tab {
+    appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+    border-radius: 6px; padding: 8px 10px 9px; text-align: left; cursor: pointer; display: grid; gap: 6px;
+    font: inherit; font-size: 13px; transition: border-color .15s, color .15s;
+  }
+  .stage-tab .sw { height: 5px; border-radius: 3px; }
+  .stage-tab b { font-family: var(--display); font-weight: 600; color: var(--text); margin-right: 4px; }
+  .stage-tab:hover { border-color: #3a4358; color: var(--text); }
+  .stage-tab[aria-selected="true"] { border-color: var(--accent); color: var(--text); background: var(--surface-2); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { appearance: none; border: 0; background: var(--surface); color: var(--muted); font-family: var(--display); font-weight: 600; font-size: 13px; padding: 6px 14px; cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .toggle { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  .toggle[aria-pressed="true"] { border-color: #ffd24a; color: #ffd24a; box-shadow: 0 0 0 1px #ffd24a33, 0 0 16px #ffd24a33; }
+  .hint { color: var(--muted); font-size: 13px; }
+
+  .scene { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #0a0c12; aspect-ratio: 16 / 9; max-width: 100%; user-select: none; -webkit-user-select: none; }
+  .scene canvas { display: block; touch-action: none; image-rendering: pixelated; cursor: grab; }
+  .scene .err { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; color: var(--muted); text-align: center; }
+
+  .meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; align-items: center; }
+  .stage-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .stage-meta .name { font-family: var(--display); font-weight: 600; font-size: 16px; }
+  .stage-meta .mood { color: var(--muted); font-size: 13px; }
+  .stage-meta .en { color: var(--muted); font-weight: 500; }
+  .swatches { display: inline-flex; gap: 3px; }
+  .swatches i { width: 16px; height: 16px; border-radius: 3px; border: 1px solid #ffffff1a; }
+  .totals { display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text); white-space: nowrap; }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+  .totals .empty { color: var(--muted); font-family: var(--body); }
+
+  .stage-group { display: grid; gap: 14px; }
+  .stage-group + .stage-group { margin-top: 36px; }
+  .group-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .group-head h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 17px; }
+  .group-head .n { font-family: var(--display); color: var(--accent); font-weight: 700; }
+  .group-head span.mood { color: var(--muted); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px; }
+  .card { appearance: none; text-align: left; font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 10px; cursor: pointer; transition: border-color .15s; }
+  .card:hover { border-color: #3a4358; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .card-head .title { display: grid; gap: 1px; }
+  .card-head .title strong { font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+  .card-head .title em { font-style: normal; font-family: var(--display); font-size: 10px; letter-spacing: 0.08em; color: var(--accent-ink); background: var(--accent); border-radius: 3px; padding: 0 5px; }
+  .card-head code { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .lv { display: grid; gap: 4px; }
+  .lv canvas, .lv .ph { width: 100%; aspect-ratio: 80 / 68; border-radius: 4px; display: block; background: #0e111a; image-rendering: pixelated; }
+  .lv span { font-family: var(--display); font-weight: 600; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .legend .chip { border-radius: 6px; padding: 8px 10px; justify-content: flex-start; }
+  .legend .icon { width: 22px; height: 22px; image-rendering: pixelated; }
+  .pal .strip { width: 100%; height: auto; border-radius: 4px; image-rendering: pixelated; display: block; }
+  .legend code { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: auto; }
+  .palettes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 10px; margin-top: 16px; }
+  .pal { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 8px; }
+  .pal .row { display: flex; gap: 4px; }
+  .pal .row i { flex: 1; height: 22px; border-radius: 3px; border: 1px solid #ffffff14; }
+  .pal .lbl { display: flex; justify-content: space-between; font-size: 13px; }
+  .pal .lbl span { color: var(--muted); }
+
+  .code { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+  .code pre { margin: 0; padding: 16px; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: #d8d3c6; }
+  .code .c { color: #7d8499; }
+  .api { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 8px 20px; margin-top: 16px; font-size: 14px; }
+  .api div { display: grid; gap: 2px; }
+  .api code { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .api span { color: var(--muted); }
+
+  @media (max-width: 720px) {
+    .stage-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Lastlight Colony · Pixel Art Kit v0.2</p>
+    <h1>末光殖民地 美術素材</h1>
+    <p class="lede">俯視 3/4 視角的像素風殖民地：6 個階段的地圖與地表、32 棟建築的 Lv1、Lv3、Lv5 外觀、道具、殖民者和介面面板。全部在程式裡逐像素畫出，再交給 Pixi.js v8 顯示，不需要任何圖檔。</p>
+  </header>
+
+  <section class="viewer" aria-label="場景預覽">
+    <div class="stage-tabs" role="tablist" id="tabs"></div>
+    <div class="toolbar">
+      <div class="seg" id="lv" role="group" aria-label="建築等級">
+        <button type="button" id="lv1" data-lv="1" aria-pressed="true">Lv1</button>
+        <button type="button" id="lv3" data-lv="3" aria-pressed="false">Lv3</button>
+        <button type="button" id="lv5" data-lv="5" aria-pressed="false">Lv5</button>
+      </div>
+      <button type="button" class="toggle" id="buff" aria-pressed="false">Buff 光環</button>
+      <span class="hint">拖曳地面移動視角。點建築產出資源並打開工人面板，長按連續點擊，15% 機率暴擊 ×5。</span>
+    </div>
+    <div class="scene" id="scene"></div>
+    <div class="meta">
+      <div class="stage-meta" id="stage-meta"></div>
+      <div class="totals" id="totals"><span class="empty">本場尚未產出</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>建築圖鑑</h2>
+      <p>每張卡片由左到右是 Lv1、Lv3、Lv5。升級會加蓋模組、天線與燈光，Lv5 換上該階段的點綴色。標「核心」的是該階段地圖中央的建築。點卡片可切到對應階段的場景。</p>
+    </div>
+    <div id="catalog"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>色票與道具</h2>
+      <p>資源色用在圖示、工人搬運的貨物和點擊數字。階段色調依 GDD 的順序：鏽紅 → 冷白 → 鋼灰 → 暖燈 → 異晶紫 → 紫金，但整體調亮，保持溫暖的氛圍。每張色票下方是該階段的樹、岩石、灌木、燈柱、貨箱和殖民者走路影格。</p>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="palettes" id="palettes"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>接進專案</h2>
+      <p>把 <code>art.js</code> 放進 Vite 專案的 <code>src/</code>，它只依賴 <code>pixi.js</code> v8。世界容器以美術像素為單位、整數倍放大；建築、道具和工人的原點都是正面地面中心，用 y 值排序就有前後遮擋。</p>
+    </div>
+    <div class="code"><pre>__SNIPPET__</pre></div>
+    <div class="api">
+      <div><code>planMap(stage, MW, MH)</code><span>建築位置、道路與道具配置。核心建築在中央。</span></div>
+      <div><code>createGround(stage, plan)</code><span>整張地圖的地表：草地、泥土路、地基、花與地面特徵。</span></div>
+      <div><code>createBuilding(id, level)</code><span>Lv1–2 / 3–4 / 5+ 三種外觀；.lights 放發光層，.flash() 暴擊閃光。</span></div>
+      <div><code>createProp(kind, stage, seed)</code><span>tree、rock、bush、lamp、crate、barrel、debris、snow、pipe、statue。</span></div>
+      <div><code>createWorker(stage)</code><span>殖民者：setMoving、setDir、setCarry(資源色)。</span></div>
+      <div><code>renderPanel / renderIcon</code><span>像素面板、名牌、數字框、+/- 按鈕與 9 種資源圖示（canvas）。</span></div>
+      <div><code>createBuffRing / createAmbient</code><span>Buff 光環與各階段氣氛粒子（餘燼、雪、螢火…）。</span></div>
+      <div><code>createFx(layer, Z)</code><span>點擊數字彈出與像素碎片。</span></div>
+    </div>
+  </section>
+</div>
+
+<script src="__PIXI_SRC__"></script>
+<script>
+__BUNDLE__
+</script>
