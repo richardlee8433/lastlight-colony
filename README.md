@@ -1,4 +1,4 @@
-# 末光殖民地 Lastlight Colony — v0.3（第 1–5 章）
+# 末光殖民地 Lastlight Colony — v0.4（第 1–5 章，English／繁體中文）
 
 依 GDD v0.2 §16 的 MVP 範圍實作，並加上第 4 章（戰鬥、武器、異晶）與第 5 章（治理、貿易）：階段 1–3（16 棟建築）、點擊暴擊與工人 buff、建築升級線、資料庫研究、
 食物安全度與人口成長、主線第 1–3 章、事件（隕石雨、求救訊號）、離線收益、本機存檔、數值模擬器。
@@ -21,10 +21,19 @@ src/
   engine/      純邏輯，不碰畫面：state、formulas、production、population、click、events、story、actions、tick、offline
   store/       gameStore.ts：Zustand store、200ms 時間累加器、自動存檔
   scene/       GameScene.ts（Pixi）：地圖、建築／工地、工人、點擊回饋；layout.ts 固定建築位置
-  ui/          React：資源列、主線任務、殖民地狀態、建築面板（工人／升級線／研究）、快捷列、對話框
+  ui/          React：資源列、主線任務、殖民地狀態、建築面板（工人／升級線／研究）、快捷列、對話框、設定頁
+  i18n/        語言切換：strings.ts（介面文字 [英, 中]）、data-en.ts（建築／研究／憲章／章節／事件的英文）
   art/art.js   程序化像素美術模組
 sim/balance.ts 無畫面模擬器
 ```
+
+## 語言與設定
+
+- 預設英文，右上角 ≡ 開啟設定頁可切換繁體中文；選擇存在 localStorage `lastlight-colony-settings`。
+- 引擎不產生顯示文字：通知、不能操作的原因、戰報與事件結果都存成 `{ k, p }`（代碼＋參數），由 `i18n.tm()` 依目前語言翻譯，所以切換語言後舊通知也會跟著換。
+- 中文資料文字仍放在 `data/*.json`，英文放在 `i18n/data-en.ts`；新增建築或研究時兩邊都要補。
+- 主線目標的完成紀錄從中文文字改成 id（`章-序號`），讀取舊存檔時自動轉換。
+- 設定頁另有：存檔資訊、立即存檔、刪除存檔重來、關於。
 
 ## 第 4 章
 
