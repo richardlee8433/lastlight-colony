@@ -1,0 +1,131 @@
+[
+  {
+    "id": "gather_1",
+    "name": "採集效率 I",
+    "desc": "所有採集產量 +10%",
+    "cost": {
+      "rock": 100,
+      "parts": 40
+    },
+    "time": 60,
+    "effect": {
+      "gatherAdd": 0.1
+    }
+  },
+  {
+    "id": "storage_1",
+    "name": "標準化貨架",
+    "desc": "所有儲存上限 +25%",
+    "cost": {
+      "rock": 150,
+      "parts": 60
+    },
+    "time": 90,
+    "effect": {
+      "storageMul": 0.25
+    }
+  },
+  {
+    "id": "crit_1",
+    "name": "精準操作",
+    "desc": "所有點擊暴擊率 +3%",
+    "cost": {
+      "parts": 120
+    },
+    "time": 90,
+    "effect": {
+      "critAdd": 0.03
+    }
+  },
+  {
+    "id": "ration_1",
+    "name": "省糧配方",
+    "desc": "營養消耗 −10%",
+    "cost": {
+      "nutrient": 200,
+      "parts": 50
+    },
+    "time": 120,
+    "effect": {
+      "consumeMul": -0.1
+    }
+  },
+  {
+    "id": "process_1",
+    "name": "加工優化",
+    "desc": "加工速度 +20%",
+    "cost": {
+      "parts": 200
+    },
+    "time": 150,
+    "effect": {
+      "processAdd": 0.2
+    }
+  },
+  {
+    "id": "gather_2",
+    "name": "採集效率 II",
+    "desc": "所有採集產量 +10%",
+    "cost": {
+      "rock": 300,
+      "parts": 150
+    },
+    "time": 180,
+    "effect": {
+      "gatherAdd": 0.1
+    },
+    "requires": "gather_1"
+  },
+  {
+    "id": "click_1",
+    "name": "強化手套",
+    "desc": "所有點擊產量 +1",
+    "cost": {
+      "parts": 150,
+      "tools": 20
+    },
+    "time": 180,
+    "effect": {
+      "clickAdd": 1
+    }
+  },
+  {
+    "id": "crystal_armor",
+    "name": "異晶護甲",
+    "desc": "保全血量 +5",
+    "cost": {
+      "parts": 150,
+      "crystal": 20
+    },
+    "time": 150,
+    "effect": {
+      "guardHp": 5
+    }
+  },
+  {
+    "id": "crystal_ration",
+    "name": "應急口糧",
+    "desc": "營養消耗 −10%",
+    "cost": {
+      "nutrient": 400,
+      "crystal": 15
+    },
+    "time": 120,
+    "effect": {
+      "consumeMul": -0.1
+    }
+  },
+  {
+    "id": "crystal_resonance",
+    "name": "異晶共振",
+    "desc": "所有採集產量 +10%",
+    "cost": {
+      "parts": 200,
+      "crystal": 40
+    },
+    "time": 240,
+    "effect": {
+      "gatherAdd": 0.1
+    }
+  }
+]

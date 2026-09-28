@@ -1,0 +1,905 @@
+[
+  {
+    "id": "escape_pod",
+    "name": "逃生艙",
+    "stage": 1,
+    "kind": "start",
+    "startLevel": 1,
+    "maxLevel": 1,
+    "desc": "墜落的起點。三位倖存者擠在裡面，勉強還能住人。",
+    "baseCost": {
+      "scrap": 0
+    },
+    "effects": {
+      "housing": 4,
+      "storage": 100
+    },
+    "upgrades": [
+      {
+        "id": "beacon",
+        "name": "求救頻段",
+        "desc": "出生率 +10%",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 80,
+          "nutrient": 40
+        },
+        "effect": {
+          "birthAdd": 0.1
+        }
+      }
+    ]
+  },
+  {
+    "id": "scrap_heap",
+    "name": "殘骸堆",
+    "stage": 1,
+    "kind": "gather",
+    "startLevel": 1,
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "逃生艙散落一地的碎片。按住上方的「廢料」按鈕就能撿回來。",
+    "baseCost": {
+      "scrap": 15
+    },
+    "produce": {
+      "res": "scrap",
+      "rate": 0.5
+    },
+    "workersPerLevel": 3,
+    "upgrades": [
+      {
+        "id": "click_1",
+        "name": "磁力手套",
+        "desc": "點擊產量 +1",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 40
+        },
+        "effect": {
+          "clickAdd": 1
+        }
+      },
+      {
+        "id": "crit_1",
+        "name": "眼明手快",
+        "desc": "暴擊率 +5%",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 90,
+          "nutrient": 30
+        },
+        "effect": {
+          "critAdd": 0.05
+        }
+      },
+      {
+        "id": "cap_1",
+        "name": "分區搜索",
+        "desc": "工人上限 +1",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 150
+        },
+        "effect": {
+          "workerCapAdd": 1
+        }
+      },
+      {
+        "id": "critx",
+        "name": "寶藏直覺",
+        "desc": "暴擊倍率 ×2",
+        "minLevel": 3,
+        "cost": {
+          "scrap": 250,
+          "parts": 20
+        },
+        "effect": {
+          "critMul": 2
+        }
+      },
+      {
+        "id": "buff_10",
+        "name": "現場督導",
+        "desc": "點擊 buff 延長至 10 秒",
+        "minLevel": 4,
+        "cost": {
+          "scrap": 300,
+          "parts": 40
+        },
+        "effect": {
+          "buffDuration": 10
+        }
+      }
+    ]
+  },
+  {
+    "id": "algae_tank",
+    "name": "藻類槽",
+    "stage": 1,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "把回收水和藻種放進玻璃槽，慢慢長出能吃的東西。",
+    "baseCost": {
+      "scrap": 20
+    },
+    "produce": {
+      "res": "nutrient",
+      "rate": 0.5
+    },
+    "workersPerLevel": 3,
+    "upgrades": [
+      {
+        "id": "prod_20",
+        "name": "光照調校",
+        "desc": "產量 +20%",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 60,
+          "nutrient": 20
+        },
+        "effect": {
+          "prodAdd": 0.2
+        }
+      },
+      {
+        "id": "cap_1",
+        "name": "加開一槽",
+        "desc": "工人上限 +1",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 120
+        },
+        "effect": {
+          "workerCapAdd": 1
+        }
+      },
+      {
+        "id": "prod_30",
+        "name": "高密度藻種",
+        "desc": "產量 +30%",
+        "minLevel": 3,
+        "cost": {
+          "scrap": 200,
+          "rock": 40
+        },
+        "effect": {
+          "prodAdd": 0.3
+        }
+      }
+    ]
+  },
+  {
+    "id": "emergency_camp",
+    "name": "緊急營地",
+    "stage": 1,
+    "kind": "command",
+    "commandLevel": 1,
+    "maxLevel": 1,
+    "desc": "指揮艙 Lv1。充氣加壓艙和輻射加熱器，讓倖存者終於能在室內摘下頭盔。解鎖建築升級與各建築的升級線，並進入階段 2。",
+    "baseCost": {
+      "scrap": 120,
+      "nutrient": 40
+    },
+    "effects": {
+      "housing": 2
+    }
+  },
+  {
+    "id": "hab_pod",
+    "name": "生活艙",
+    "stage": 2,
+    "kind": "house",
+    "maxLevel": 12,
+    "desc": "每級提供 2 人的居住空間。人口上限決定殖民者能不能繼續抵達。",
+    "baseCost": {
+      "scrap": 30
+    },
+    "effects": {
+      "housing": 2
+    },
+    "upgrades": [
+      {
+        "id": "cap_1",
+        "name": "上下鋪",
+        "desc": "容量 +1",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 80
+        },
+        "effect": {
+          "housingAdd": 1
+        }
+      },
+      {
+        "id": "birth",
+        "name": "育兒角落",
+        "desc": "出生率 +10%",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 120,
+          "nutrient": 60
+        },
+        "effect": {
+          "birthAdd": 0.1
+        }
+      },
+      {
+        "id": "cap_2",
+        "name": "擴建隔間",
+        "desc": "容量 +2",
+        "minLevel": 3,
+        "cost": {
+          "scrap": 200,
+          "rock": 60
+        },
+        "effect": {
+          "housingAdd": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "bio_harvester",
+    "name": "生物採集站",
+    "stage": 2,
+    "kind": "gather",
+    "maxLevel": 8,
+    "clickable": true,
+    "desc": "採集地表的可食生物。效率比藻類槽高，但每級只容得下 2 位工人。",
+    "baseCost": {
+      "scrap": 50
+    },
+    "produce": {
+      "res": "nutrient",
+      "rate": 0.8
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "prod_25",
+        "name": "採集圖鑑",
+        "desc": "產量 +25%",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 100,
+          "nutrient": 40
+        },
+        "effect": {
+          "prodAdd": 0.25
+        }
+      },
+      {
+        "id": "crit_1",
+        "name": "識貨",
+        "desc": "暴擊率 +5%",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 160,
+          "rock": 40
+        },
+        "effect": {
+          "critAdd": 0.05
+        }
+      }
+    ]
+  },
+  {
+    "id": "cargo",
+    "name": "貨櫃",
+    "stage": 2,
+    "kind": "storage",
+    "maxLevel": 15,
+    "desc": "每級讓所有資源的儲存上限 +100。",
+    "baseCost": {
+      "scrap": 25
+    },
+    "effects": {
+      "storage": 100
+    },
+    "upgrades": [
+      {
+        "id": "stack",
+        "name": "疊櫃支架",
+        "desc": "每級儲存再 +50",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 150,
+          "rock": 50
+        },
+        "effect": {
+          "storagePerLevel": 50
+        }
+      }
+    ]
+  },
+  {
+    "id": "lounge",
+    "name": "休閒艙",
+    "stage": 2,
+    "kind": "morale",
+    "maxLevel": 6,
+    "desc": "每級士氣 +5。駐點工人讓大家更安心，每位讓食物安全度 +10%。",
+    "baseCost": {
+      "scrap": 80,
+      "nutrient": 30
+    },
+    "effects": {
+      "morale": 5
+    },
+    "workersPerLevel": 1,
+    "upgrades": [
+      {
+        "id": "morale_5",
+        "name": "週末電影",
+        "desc": "士氣 +5",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 150,
+          "nutrient": 60
+        },
+        "effect": {
+          "moraleAdd": 5
+        }
+      },
+      {
+        "id": "window_90",
+        "name": "共食制度",
+        "desc": "食物安全度門檻改為 90 秒",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 200,
+          "parts": 40
+        },
+        "effect": {
+          "foodWindow": 90
+        }
+      }
+    ]
+  },
+  {
+    "id": "assembly",
+    "name": "組裝工坊",
+    "stage": 2,
+    "kind": "process",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "把廢料拆解重組成零件。廢料不夠時會停工。",
+    "baseCost": {
+      "scrap": 120
+    },
+    "recipe": {
+      "in": "scrap",
+      "out": "parts",
+      "ratio": 0.4
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "ratio_1",
+        "name": "分類流程",
+        "desc": "轉換率 0.4 → 0.5",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 200,
+          "parts": 20
+        },
+        "effect": {
+          "recipeOut": 0.5
+        }
+      },
+      {
+        "id": "ratio_2",
+        "name": "精密治具",
+        "desc": "轉換率 0.5 → 0.6",
+        "minLevel": 2,
+        "cost": {
+          "rock": 150,
+          "parts": 60
+        },
+        "effect": {
+          "recipeOut": 0.6
+        }
+      }
+    ]
+  },
+  {
+    "id": "rock_cutter",
+    "name": "岩層切割機",
+    "stage": 2,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "用逃生艙的雷射切割器改裝，從岩層切下建材。",
+    "baseCost": {
+      "scrap": 100,
+      "parts": 20
+    },
+    "produce": {
+      "res": "rock",
+      "rate": 0.3
+    },
+    "workersPerLevel": 3,
+    "upgrades": [
+      {
+        "id": "prod_20",
+        "name": "鋸片保養",
+        "desc": "產量 +20%",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 150,
+          "rock": 60
+        },
+        "effect": {
+          "prodAdd": 0.2
+        }
+      },
+      {
+        "id": "cap_1",
+        "name": "夜班",
+        "desc": "工人上限 +1",
+        "minLevel": 2,
+        "cost": {
+          "rock": 120,
+          "parts": 40
+        },
+        "effect": {
+          "workerCapAdd": 1
+        }
+      },
+      {
+        "id": "click_1",
+        "name": "手動微調",
+        "desc": "點擊產量 +1",
+        "minLevel": 3,
+        "cost": {
+          "rock": 200,
+          "parts": 60
+        },
+        "effect": {
+          "clickAdd": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "central_hub",
+    "name": "中央艙",
+    "stage": 2,
+    "kind": "command",
+    "commandLevel": 2,
+    "maxLevel": 1,
+    "requires": {
+      "pop": 12
+    },
+    "desc": "指揮艙 Lv2。真正的聚落中心，提供 4 人居住空間與 +100 儲存，並進入階段 3。需要人口 12。",
+    "baseCost": {
+      "scrap": 300,
+      "rock": 100,
+      "parts": 40
+    },
+    "effects": {
+      "housing": 4,
+      "storage": 100
+    }
+  },
+  {
+    "id": "databank",
+    "name": "資料庫",
+    "stage": 3,
+    "kind": "research",
+    "maxLevel": 5,
+    "desc": "整理殖民者記得的一切。需要駐點工人才能進行全域研究。",
+    "baseCost": {
+      "rock": 150,
+      "parts": 60
+    },
+    "workersPerLevel": 1,
+    "upgrades": [
+      {
+        "id": "speed_50",
+        "name": "索引系統",
+        "desc": "研究速度 +50%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 200,
+          "parts": 80
+        },
+        "effect": {
+          "researchSpeed": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "rail_line",
+    "name": "軌道車線",
+    "stage": 3,
+    "kind": "rail",
+    "maxLevel": 1,
+    "desc": "所有採集建築產量 +10%，工人移動加快。",
+    "baseCost": {
+      "rock": 80
+    },
+    "effects": {
+      "gatherAdd": 0.1
+    },
+    "upgrades": [
+      {
+        "id": "double",
+        "name": "雙線運轉",
+        "desc": "採集產量再 +5%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 200,
+          "parts": 80
+        },
+        "effect": {
+          "gatherAdd": 0.05
+        }
+      }
+    ]
+  },
+  {
+    "id": "metal_mine",
+    "name": "金屬礦井",
+    "stage": 3,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "往下挖到金屬礦脈。產量不高，但後面每一步都需要它。",
+    "baseCost": {
+      "scrap": 150,
+      "rock": 100,
+      "parts": 40
+    },
+    "produce": {
+      "res": "metal",
+      "rate": 0.3
+    },
+    "workersPerLevel": 3,
+    "upgrades": [
+      {
+        "id": "prod_20",
+        "name": "支撐架",
+        "desc": "產量 +30%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 150,
+          "parts": 60
+        },
+        "effect": {
+          "prodAdd": 0.3
+        }
+      },
+      {
+        "id": "click_1",
+        "name": "礦脈探測",
+        "desc": "點擊產量 +1",
+        "minLevel": 2,
+        "cost": {
+          "rock": 250,
+          "parts": 100
+        },
+        "effect": {
+          "clickAdd": 1
+        }
+      },
+      {
+        "id": "crystal_sense",
+        "name": "晶脈感應",
+        "desc": "點擊時 10% 機率掉出 1 異晶碎片",
+        "minLevel": 3,
+        "stage": 4,
+        "cost": {
+          "rock": 300,
+          "metal": 100
+        },
+        "effect": {
+          "clickCrystal": 0.1
+        }
+      }
+    ]
+  },
+  {
+    "id": "forge",
+    "name": "鍛造廠",
+    "stage": 3,
+    "kind": "process",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "把金屬鍛成工具或武器。階段 4 起可以分配工人改做武器。建築升到 Lv5 以上都需要工具。",
+    "baseCost": {
+      "rock": 150,
+      "parts": 60,
+      "metal": 40
+    },
+    "recipe": {
+      "in": "metal",
+      "out": "tools",
+      "ratio": 0.3
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "tools_25",
+        "name": "標準模具",
+        "desc": "工具產量 +25%",
+        "minLevel": 1,
+        "cost": {
+          "parts": 150
+        },
+        "effect": {
+          "outMul": 0.25
+        }
+      },
+      {
+        "id": "click_1",
+        "name": "老師傅",
+        "desc": "點擊產量 +1",
+        "minLevel": 2,
+        "cost": {
+          "metal": 200,
+          "tools": 20
+        },
+        "effect": {
+          "clickAdd": 1
+        }
+      },
+      {
+        "id": "weapon_atk",
+        "name": "武器校正",
+        "desc": "武器攻擊力 +1",
+        "minLevel": 2,
+        "stage": 4,
+        "cost": {
+          "metal": 200,
+          "weapon": 10
+        },
+        "effect": {
+          "weaponAtk": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "outpost",
+    "name": "前哨站",
+    "stage": 3,
+    "kind": "command",
+    "commandLevel": 3,
+    "maxLevel": 1,
+    "requires": {
+      "pop": 22
+    },
+    "desc": "指揮艙 Lv3。瞭望塔看得見更遠的地方，也看得見正在靠近的東西。建成後進入階段 4。需要人口 22。",
+    "baseCost": {
+      "rock": 400,
+      "parts": 150,
+      "tools": 60
+    },
+    "effects": {
+      "housing": 4
+    }
+  },
+  {
+    "id": "hydro_farm",
+    "name": "水耕農場",
+    "stage": 4,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "在加壓溫室裡用營養液種菜，是最有效率的糧食來源。",
+    "baseCost": {
+      "rock": 300,
+      "parts": 100
+    },
+    "produce": {
+      "res": "nutrient",
+      "rate": 1.2
+    },
+    "workersPerLevel": 4,
+    "upgrades": [
+      {
+        "id": "prod_25",
+        "name": "補光燈",
+        "desc": "產量 +25%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 300,
+          "parts": 120
+        },
+        "effect": {
+          "prodAdd": 0.25
+        }
+      },
+      {
+        "id": "cap_2",
+        "name": "多層栽培",
+        "desc": "工人上限 +2",
+        "minLevel": 2,
+        "cost": {
+          "rock": 400,
+          "parts": 150
+        },
+        "effect": {
+          "workerCapAdd": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "memorial",
+    "name": "紀念堂",
+    "stage": 4,
+    "kind": "morale",
+    "maxLevel": 5,
+    "desc": "紀念沒能走到這裡的人。每級士氣 +10、出生率 +10%。",
+    "baseCost": {
+      "rock": 400,
+      "parts": 120
+    },
+    "effects": {
+      "morale": 10,
+      "birth": 0.1
+    },
+    "upgrades": [
+      {
+        "id": "morale_5",
+        "name": "長明燈",
+        "desc": "士氣 +5",
+        "minLevel": 1,
+        "cost": {
+          "rock": 300,
+          "crystal": 10
+        },
+        "effect": {
+          "moraleAdd": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "crystal_synth",
+    "name": "異晶合成室",
+    "stage": 4,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "把地底的晶簇溶解再結晶，得到能儲存能量的異晶。產量很低，但異星科技全靠它。",
+    "baseCost": {
+      "parts": 200,
+      "metal": 100,
+      "tools": 40
+    },
+    "produce": {
+      "res": "crystal",
+      "rate": 0.05
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "prod_30",
+        "name": "共振槽",
+        "desc": "產量 +30%",
+        "minLevel": 1,
+        "cost": {
+          "parts": 150,
+          "crystal": 10
+        },
+        "effect": {
+          "prodAdd": 0.3
+        }
+      },
+      {
+        "id": "cap_1",
+        "name": "第二反應爐",
+        "desc": "工人上限 +1",
+        "minLevel": 2,
+        "cost": {
+          "parts": 200,
+          "tools": 40
+        },
+        "effect": {
+          "workerCapAdd": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "security",
+    "name": "保全站",
+    "stage": 4,
+    "kind": "defense",
+    "maxLevel": 8,
+    "desc": "派駐的工人就是保全，每人佔 1 位人口。庫存有武器時會自動配發，攻擊力從 2 提高到 5。",
+    "baseCost": {
+      "rock": 250,
+      "parts": 120,
+      "metal": 40
+    },
+    "workersPerLevel": 4,
+    "upgrades": [
+      {
+        "id": "hp_5",
+        "name": "防護背心",
+        "desc": "保全血量 +5",
+        "minLevel": 1,
+        "cost": {
+          "rock": 200,
+          "parts": 80
+        },
+        "effect": {
+          "guardHp": 5
+        }
+      },
+      {
+        "id": "shift",
+        "name": "輪班醫護",
+        "desc": "受傷休養時間 −50%",
+        "minLevel": 2,
+        "cost": {
+          "parts": 120,
+          "nutrient": 300
+        },
+        "effect": {
+          "injuryMul": -0.5
+        }
+      },
+      {
+        "id": "atk_2",
+        "name": "戰術訓練",
+        "desc": "保全攻擊力 +2",
+        "minLevel": 3,
+        "cost": {
+          "metal": 250,
+          "weapon": 20
+        },
+        "effect": {
+          "guardAtk": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "water_cycle",
+    "name": "水循環站",
+    "stage": 4,
+    "kind": "utility",
+    "maxLevel": 1,
+    "desc": "把廢水和冷凝水回收再用。營養消耗 −10%，每級生活艙多住 1 人。",
+    "baseCost": {
+      "rock": 200,
+      "parts": 60
+    },
+    "effects": {
+      "consumeMul": -0.1,
+      "habBonus": 1
+    }
+  },
+  {
+    "id": "colony_core",
+    "name": "殖民地核心",
+    "stage": 4,
+    "kind": "command",
+    "commandLevel": 4,
+    "maxLevel": 1,
+    "requires": {
+      "pop": 40,
+      "raids": 2
+    },
+    "desc": "指揮艙 Lv4。以異晶驅動的反應爐，讓殖民地不再只是求生。需要人口 40、擊退 2 次襲擊。",
+    "baseCost": {
+      "rock": 1000,
+      "parts": 300,
+      "metal": 200,
+      "tools": 120,
+      "crystal": 50
+    },
+    "effects": {
+      "housing": 6,
+      "storage": 200
+    }
+  }
+]
