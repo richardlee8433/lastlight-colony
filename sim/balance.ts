@@ -4,8 +4,10 @@
 import { newGame, DEF, DEFS, GameState, ResKey, RES_KEYS } from '../src/engine/state';
 import { step, TICK } from '../src/engine/tick';
 import { click } from '../src/engine/click';
-import { assign, buyNode, levelBlock, levelUp, nodeBlock, startResearch, researchBlock, setSplit } from '../src/engine/actions';
+import { assign, buyNode, levelBlock, levelUp, nodeBlock, startResearch, researchBlock, setSplit, togglePause } from '../src/engine/actions';
 import { resolveEvent } from '../src/engine/events';
+import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
+import { canAfford } from '../src/engine/formulas';
 import { setFoodPerPop, built, foodSafety, idle, levelCost, netRates, popCap, storageCap, workerCap, RESEARCH_DEFS } from '../src/engine/formulas';
 
 const duty = Number(process.argv[2] ?? 0.5);
@@ -19,9 +21,9 @@ const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
 const PRODUCER: Record<ResKey, string[]> = {
   nutrient: ['hydro_farm', 'bio_harvester', 'algae_tank'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
-  parts: ['assembly'], metal: ['metal_mine'], tools: ['forge'], weapon: ['forge'], crystal: ['crystal_synth'],
+  parts: ['assembly'], metal: ['metal_mine'], tools: ['forge'], weapon: ['forge'], crystal: ['crystal_synth'], credit: ['trade_post'],
 };
-const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core'];
+const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
 
 function target(s: GameState) { return TARGETS.find((id) => !built(s, id))!; }
 function lacking(s: GameState, id: string | undefined): ResKey | null {
@@ -41,12 +43,30 @@ function producerFor(s: GameState, k: ResKey): string | null {
 }
 
 function decide(s: GameState) {
-  if (s.events.active) resolveEvent(s, s.events.active.kind === 'meteor' ? 0 : 1);
+  if (s.events.active) {
+    const k = s.events.active.kind;
+    resolveEvent(s, k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
+  }
+  if (s.stage >= 5 && built(s, 'admin')) {
+    setTax(s, 2);
+    if (!s.gov.charters.length) toggleCharter(s, 'double_shift');
+  }
+  // 賣掉快滿倉、而且目標用不到那麼多的資源
+  if (partnerOpen(s, 'corp')) for (const k of ['scrap', 'nutrient', 'tools', 'parts', 'rock'] as ResKey[]) {
+    const need = (levelCost(s, target(s) ?? 'star_dome') as any)[k] ?? 0;
+    if (s.res[k] > storageCap(s) * 0.9 && s.res[k] - 100 > need && !tradeBlock(s, 'corp', k, 'sell')) trade(s, 'corp', k, 'sell');
+  }
   const tgt = target(s);
   if (!tgt) return;
   const need = lacking(s, tgt);
   // 1. 蓋目標或必要的生產鏈
   if (tryBuy(s, tgt)) return;
+  if (s.stage >= 5) {
+    for (const id of ['admin', 'trade_post']) if (!built(s, id) && tryBuy(s, id)) return;
+    if (s.b.turret.level < 3 && tryBuy(s, 'turret')) return;
+    if (s.b.security.level < 3 && tryBuy(s, 'security')) return;
+    if (s.pop >= popCap(s) - 1 && tryBuy(s, 'hab_pod')) return;
+  }
   if (s.stage >= 4) {
     if (!built(s, 'security') && tryBuy(s, 'security')) return;
     if (built(s, 'security') && s.b.security.level < 2 && s.b.security.workers >= workerCap(s, 'security') && tryBuy(s, 'security')) return;
@@ -70,6 +90,10 @@ function decide(s: GameState) {
     const p = producerFor(s, 'nutrient');
     if (p && s.b[p].workers >= workerCap(s, p) && tryBuy(s, p)) return;
   }
+  // 需要存廢料時暫停組裝工坊
+  const scrapNeed = Math.max((levelCost(s, tgt) as any).scrap ?? 0, s.pop >= popCap(s) - 1 ? ((levelCost(s, 'hab_pod') as any).scrap ?? 0) : 0);
+  const wantPause = s.res.scrap < scrapNeed && s.res.parts >= 50;
+  if (built(s, 'assembly') && !!s.b.assembly.paused !== wantPause) togglePause(s, 'assembly');
   // 3. 升級節點（產量類）與研究
   for (const d of DEFS) for (const n of d.upgrades ?? []) {
     if (!built(s, d.id) || nodeBlock(s, d.id, n.id)) continue;
@@ -84,16 +108,28 @@ function reassign(s: GameState) {
   const order: string[] = [];
   const rate = netRates(s);
   const food = foodSafety(s) < 0.8 || rate.nutrient < 0.2;
-  if (food) order.push(...PRODUCER.nutrient);
+  // 糧食：一個一個加人，直到營養淨產出轉正（而不是把糧食建築塞滿）
+  for (let g = 0; g < 60 && (netRates(s).nutrient < 0.3 + s.pop * 0.02 || (food && foodSafety(s) < 0.3 && netRates(s).nutrient < 1)); g++) {
+    const id = PRODUCER.nutrient.find((x) => built(s, x) && s.b[x].workers < workerCap(s, x));
+    if (!id || !assign(s, id, 1)) break;
+  }
   if (built(s, 'security')) order.push('security', 'forge');
+  if (s.pop >= popCap(s) - 1 && s.res.scrap < ((levelCost(s, 'hab_pod') as any).scrap ?? 0)) order.push('scrap_heap');
   if (built(s, 'databank') && s.research.active) order.push('databank');
-  const need = lacking(s, tgt);
+  let need = lacking(s, tgt);
+  // 需要的資源還沒有產出建築時，改看「蓋那棟建築缺什麼」
+  for (let depth = 0; depth < 4 && need && !producerFor(s, need); depth++) {
+    const p = PRODUCER[need].find((x) => DEF[x].stage <= s.stage);
+    const next = p ? lacking(s, p) : null;
+    if (!next) break;
+    need = next;
+  }
   if (need) {
     if (need === 'parts') order.push('assembly', 'scrap_heap');
     else if (need === 'tools') order.push('forge', 'metal_mine');
     else order.push(...PRODUCER[need]);
   }
-  order.push('lounge', ...PRODUCER.nutrient, 'rock_cutter', 'assembly', 'metal_mine', 'forge', 'scrap_heap');
+  order.push('lounge', ...PRODUCER.nutrient, 'assembly', 'scrap_heap', 'metal_mine', 'forge', 'rock_cutter');
   order.push('crystal_synth', 'hydro_farm');
   let guard = 0;
   while (idle(s) > 0 && guard++ < 200) {
@@ -133,7 +169,7 @@ for (let i = 0; i < (3 * 3600) / TICK && !s.finished; i++) {
   }
   prevRes = { ...s.res };
   if (foodSafety(s) < 0.25) lowFood += TICK;
-  if (s.raid.report) { raids.push(`襲擊 ${s.raid.report.raid}：${fmt(s.t)} ${s.raid.report.won ? '勝' : '敗'}（敵 ${s.raid.report.enemies}，我方 ${s.raid.report.guards}，武裝 ${s.raid.report.armed}）`); s.raid.report = null; }
+  if (s.raid.report) { raids.push(`襲擊 ${s.raid.report.raid}：${fmt(s.t)} ${s.raid.report.kind} ${s.raid.report.won ? '勝' : '敗'}（敵 ${s.raid.report.enemies}，保全 ${s.raid.report.guards}，武裝 ${s.raid.report.armed}，砲塔 ${s.raid.report.turrets ?? 0}）`); s.raid.report = null; }
   if (s.stage !== lastStage) { marks.push(`階段 ${s.stage}：${fmt(s.t)}（人口 ${s.pop}）`); lastStage = s.stage; }
   if (dumpAt && s.stage === dumpAt && s.t > marksTime(dumpAt)) { s.story.seenIntro = Math.min(3, s.stage); s.lastSaved = Date.now(); console.log(JSON.stringify({ ...s, notices: [] })); process.exit(0); }
 }
