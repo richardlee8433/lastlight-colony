@@ -4,9 +4,9 @@
 import { AIR_ENABLED, DEFS, GameState, newAir, notify } from './state';
 import { add, built, formOf, moraleMult } from './formulas';
 
-export const O2_PER_POP = 0.2;          // 每位殖民者每秒耗氧
+export const O2_PER_POP = 0.12;         // 每位殖民者每秒耗氧（0.2 會讓四分之一人力都在造氧，太重）
 export const AIR_WINDOW = 120;          // 空氣安全度：存量能撐幾秒算 100%
-export const LIFE_SUPPORT = { rate: 1.0, duration: 720 };   // 逃生艙維生系統：開局每秒 1.0，12 分鐘內線性衰減到 0
+export const LIFE_SUPPORT = { rate: 0.6, duration: 600 };   // 逃生艙維生系統：開局每秒 0.6，10 分鐘內線性衰減到 0；三個人大約撐 12 分鐘
 export const HYPOXIA_PROD = 0.5;        // 缺氧時產量倍率
 export const HYPOXIA_MORALE = 1.5;      // 缺氧時士氣每秒下降
 export const HYPOXIA_GRACE = 90;        // 缺氧多久後開始有人倒下
@@ -63,6 +63,8 @@ export function air(s: GameState, dt: number, offline = false) {
   }
   const eff = offline ? 0.5 : 1;
   add(s, 'oxygen', (lifeSupportRate(s) + oxygenByproduct(s)) * dt * eff);
+  // 空氣安全度連續達到 60% 的秒數（第 2 章目標）
+  a.safeTime = airSafety(s) >= 0.6 ? (a.safeTime ?? 0) + dt : 0;
   // 消耗
   const need = oxygenUse(s) * dt;
   if (s.res.oxygen >= need) {

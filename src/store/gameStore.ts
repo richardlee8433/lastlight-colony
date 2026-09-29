@@ -1,9 +1,10 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
-import { DEF, GameState, makeCheckpoint, newAir, newGame, newGov, newRaid } from '../engine/state';
+import { AIR_ENABLED, DEF, DEFS, GameState, makeCheckpoint, newAir, newGame, newGov, newRaid, notify } from '../engine/state';
 import { LIFE_SUPPORT } from '../engine/air';
 import { CHAPTERS, migrateStoryDone } from '../engine/story';
-import { built, storageCap } from '../engine/formulas';
+import { built, idle, storageCap, workerCap } from '../engine/formulas';
+import { oxygenByproduct, oxygenUse } from '../engine/air';
 import { step, TICK } from '../engine/tick';
 import { click as engineClick, ClickResult } from '../engine/click';
 import { applyOffline } from '../engine/offline';
@@ -33,6 +34,25 @@ function load(): { s: GameState; offline: OfflineReport | null } {
   makeCheckpoint(s);
   return { s, offline: null };
 }
+/** 舊存檔（v0.6 以前）補建氧氣設施：電解站等級與工人足夠呼吸，不夠的人手從工人最多的建築調過來 */
+function giveAirSupply(s: GameState) {
+  const need = oxygenUse(s) * 1.25 - oxygenByproduct(s);
+  s.b.o2_scrubber.level = Math.max(1, s.b.o2_scrubber.level);
+  const elec = s.b.electrolyzer, per = DEF.electrolyzer.produce!.rate, wpl = DEF.electrolyzer.workersPerLevel!;
+  const workers = Math.max(1, Math.ceil(need / per));
+  elec.level = Math.min(DEF.electrolyzer.maxLevel, Math.max(elec.level, Math.ceil(workers / wpl)));
+  for (let i = 0; i < workers && elec.workers < workerCap(s, 'electrolyzer'); i++) {
+    if (idle(s) <= 0) {
+      let best: string | null = null;
+      for (const d of DEFS) if (!['security', 'algae_tank', 'electrolyzer', 'o2_scrubber'].includes(d.id) && s.b[d.id].workers > 0 && (!best || s.b[d.id].workers > s.b[best].workers)) best = d.id;
+      if (!best) break;
+      s.b[best].workers--;
+    }
+    elec.workers++;
+  }
+  s.pendingNotice = 'n.airMigrated';
+}
+
 /** 舊存檔補上新欄位 */
 function migrate(s: GameState) {
   const fresh = newGame();
@@ -61,9 +81,13 @@ function migrate(s: GameState) {
   if (s.finished && s.b.orbital_beacon.level < DEF.orbital_beacon.maxLevel) s.finished = false;
   s.boost ??= { until: 0, uses: 0 };
   // v0.6 氧氣：舊存檔補上氧氣（裝滿）；已經離開第 1 章的，維生系統視為已經衰竭
+  const hadAir = !!s.air;
   s.res.oxygen ??= s.stage >= 2 ? storageCap(s) : 120;
   s.air ??= { ...newAir(), elapsed: s.stage >= 2 ? LIFE_SUPPORT.duration : 0, graceUsed: s.stage >= 2 };
+  // 已經過了第 1 章的舊存檔：免費蓋好氧氣再生器與電解站並派人，讀進來不會立刻缺氧
+  if (!hadAir && AIR_ENABLED && s.stage >= 2) giveAirSupply(s);
   s.notices = [];
+  if (s.pendingNotice) { notify(s, s.pendingNotice, undefined, 'info'); delete s.pendingNotice; }
 }
 function save(s: GameState) {
   s.lastSaved = Date.now();

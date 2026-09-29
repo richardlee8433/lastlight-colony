@@ -1,9 +1,9 @@
 // 主線章節與目標（GDD §2，MVP 第 1–3 章）
 import STORY from '../data/story.json';
-import { GameState } from './state';
+import { AIR_ENABLED, GameState } from './state';
 import { built } from './formulas';
 
-export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level'; res?: string; id?: string; amount?: number; label: string }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air'; res?: string; id?: string; amount?: number; label: string }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 // 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
@@ -12,7 +12,11 @@ export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
 });
 
 /** 改過文字的目標：舊文字 → 新文字 */
-const LEGACY_LABEL: Record<string, string> = { 建造保全站並派駐保全: '建造陸戰隊營區並派駐陸戰隊員' };
+const LEGACY_LABEL: Record<string, string> = {
+  '建造保全站並派駐保全': '建造陸戰隊營區並派駐陸戰隊員',
+  '建造藻類槽，開始生產營養': '建造藻類槽，生產營養（還會順便產一點氧氣）',
+  '建造緊急營地': '建成加壓的緊急營地',
+};
 /** 舊存檔的 story.done 存的是中文目標文字，換成 id */
 export function migrateStoryDone(done: string[]): string[] {
   const out = new Set<string>();
@@ -36,6 +40,7 @@ function liveDone(s: GameState, g: Goal): boolean {
     case 'credits': return s.gov.creditsEarned >= g.amount!;
     case 'boost': return (s.boost?.uses ?? 0) > 0;
     case 'level': return s.b[g.id!].level >= g.amount!;
+    case 'air': return !AIR_ENABLED || (s.air?.safeTime ?? 0) >= g.amount!;
   }
 }
 /** 目標達成一次就算完成（資源花掉後不會取消勾選） */

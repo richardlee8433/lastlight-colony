@@ -8,12 +8,13 @@ import { rebuild, rebuildBlock, assign, boostBlock, buyNode, levelBlock, levelUp
 import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
+import { airSafety } from '../src/engine/air';
 import { setFoodPerPop, built, foodSafety, idle, levelCost, netRates, popCap, storageCap, workerCap, RESEARCH_DEFS } from '../src/engine/formulas';
 
 const duty = Number(process.argv[2] ?? 0.5);
 const dumpAt = Number(process.argv[3] ?? 0);
 if (process.env.FOOD) setFoodPerPop(Number(process.env.FOOD));
-let starve = 0, lowFood = 0, midFood = 0;
+let starve = 0, lowFood = 0, midFood = 0, hypoxic = 0, lowAir = 0;
 const made: Record<string, number> = {}, full: Record<string, number> = {}, empty: Record<string, number> = {};
 let prevRes: Record<string, number> = {};   // 除錯用：到達此階段時輸出存檔 JSON 並結束
 let seed = 7;
@@ -92,6 +93,13 @@ function decide(s: GameState) {
     const popNeed = DEF[tgt].requires?.pop ?? 0;
     if (s.pop >= popCap(s) - 1 && s.pop < popNeed + 2 && tryBuy(s, 'hab_pod')) return;
   }
+  // 氧氣：先蓋再生器、第 2 章蓋電解站；空氣不夠時升級產氧建築
+  if (!built(s, 'o2_scrubber') && tryBuy(s, 'o2_scrubber')) return;
+  if (s.stage >= 2 && !built(s, 'electrolyzer') && tryBuy(s, 'electrolyzer')) return;
+  if (airSafety(s) < 0.5 || netRates(s).oxygen < 0) {
+    const p = ['electrolyzer', 'o2_scrubber'].find((x) => built(s, x));
+    if (p && s.b[p].workers >= workerCap(s, p) && tryBuy(s, p)) return;
+  }
   for (const id of ['algae_tank', 'assembly', 'rock_cutter', 'lounge', 'metal_mine', 'forge', 'databank', 'rail_line', 'security', 'crystal_synth', 'water_cycle'])
     if (!built(s, id) && DEF[id].stage <= s.stage && tryBuy(s, id)) return;
   // 2. 工人位子不夠就升級需要的生產建築
@@ -121,6 +129,11 @@ function reassign(s: GameState) {
   const order: string[] = [];
   const rate = netRates(s);
   const food = foodSafety(s) < 0.8 || rate.nutrient < 0.2;
+  // 氧氣：一個一個加人，直到氧氣淨產出為正（優先電解站）
+  for (let g = 0; g < 60 && (netRates(s).oxygen < 0.15 + s.pop * 0.01 || airSafety(s) < 0.4 && netRates(s).oxygen < 0.6); g++) {
+    const id = ['electrolyzer', 'o2_scrubber'].find((x) => built(s, x) && s.b[x].workers < workerCap(s, x));
+    if (!id || !assign(s, id, 1)) break;
+  }
   // 糧食：一個一個加人，直到營養淨產出轉正（而不是把糧食建築塞滿）
   for (let g = 0; g < 60 && (netRates(s).nutrient < 0.3 + s.pop * 0.02 || (food && foodSafety(s) < 0.3 && netRates(s).nutrient < 1)); g++) {
     const id = PRODUCER.nutrient.find((x) => built(s, x) && s.b[x].workers < workerCap(s, x));
@@ -162,7 +175,7 @@ const stageAt: Record<number, number> = {};
 const marksTime = (st: number) => (stageAt[st] ??= s.t) + 150;
 let lastStage = 1, clickAcc = 0;
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
-for (let i = 0; i < (8 * 3600) / TICK && !s.finished; i++) {
+for (let i = 0; i < (8 * 3600) / TICK && !s.finished && !s.failed; i++) {
   if (i % 5 === 0) { decide(s); if (i % 25 === 0) reassign(s); }
   clickAcc += duty;                          // 每 0.2 秒一次點擊 × 按住比例
   if (clickAcc >= 1) {
@@ -183,6 +196,8 @@ for (let i = 0; i < (8 * 3600) / TICK && !s.finished; i++) {
   }
   prevRes = { ...s.res };
   if (foodSafety(s) < 0.25) lowFood += TICK;
+  if (s.air?.hypoxic) hypoxic += TICK;
+  if (airSafety(s) < 0.25) lowAir += TICK;
   if (s.stage >= 2 && s.stage <= 3 && foodSafety(s) < 0.5) midFood += TICK;
   if (s.raid.report) { raids.push(`襲擊 ${s.raid.report.raid}：${fmt(s.t)} ${s.raid.report.kind} ${s.raid.report.won ? '勝' : '敗'}（敵 ${s.raid.report.enemies}，保全 ${s.raid.report.guards}，武裝 ${s.raid.report.armed}，砲塔 ${s.raid.report.turrets ?? 0}）`); s.raid.report = null; }
   if (s.stage !== lastStage) { marks.push(`階段 ${s.stage}：${fmt(s.t)}（人口 ${s.pop}）`); lastStage = s.stage; }
@@ -195,6 +210,7 @@ for (const m of rebuilt) console.log('  ' + m);
 console.log(`  結束：${s.finished ? '信標點亮' : '未完成'}（信標 ${s.b.orbital_beacon.level}/5），時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
 console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).join('、'));
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
+console.log(`  缺氧累計 ${fmt(hypoxic)}，空氣安全度低於 25% 累計 ${fmt(lowAir)}；${s.failed ? '殖民地瓦解（' + s.failReason + '）' : ''}`);
 console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}；階段 2–3 低於 50% 累計 ${fmt(midFood)}`);
 console.log('  資源（累計產量／滿倉時間／見底時間）：');
 for (const k of RES_KEYS) console.log(`    ${k.padEnd(9)} ${String(Math.round(made[k] ?? 0)).padStart(6)}  滿 ${fmt(full[k] ?? 0)}  空 ${fmt(empty[k] ?? 0)}`);

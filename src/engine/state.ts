@@ -2,7 +2,7 @@ import BUILDINGS from '../data/buildings.json';
 
 export type ResKey = 'nutrient' | 'oxygen' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
 export const RES_KEYS: ResKey[] = ['nutrient', 'oxygen', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
-export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 99, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 4, credit: 5 };
+export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 4, credit: 5 };
 /** 貨幣不受倉容上限限制 */
 export const UNCAPPED: ResKey[] = ['credit'];
 
@@ -65,8 +65,8 @@ export interface GovState {
   alliance: { rep: number; contract: { res: ResKey; amount: number; reward: number; until: number } | null; nextContract: number };
   signal: { used: number; resetAt: number };
 }
-export interface AirState { elapsed: number; hypoxic: boolean; hypoxiaTime: number; pause: number; graceUsed: boolean }
-export const newAir = (): AirState => ({ elapsed: 0, hypoxic: false, hypoxiaTime: 0, pause: 0, graceUsed: false });
+export interface AirState { elapsed: number; hypoxic: boolean; hypoxiaTime: number; pause: number; graceUsed: boolean; safeTime?: number }
+export const newAir = (): AirState => ({ elapsed: 0, hypoxic: false, hypoxiaTime: 0, pause: 0, graceUsed: false, safeTime: 0 });
 export const newGov = (): GovState => ({
   tax: 0, charters: [], creditsEarned: 0,
   corp: { relation: 0, refusals: 0, paid: 0, envoys: 0, traded: 0, nextEnvoy: -1, demand: null },
@@ -113,10 +113,12 @@ export interface GameState {
   boost: { until: number; uses: number };
   lastSaved: number;
   notices: Notice[];
+  /** 讀檔轉換時要顯示的通知（轉換後才加進 notices） */
+  pendingNotice?: string;
 }
 
 /** 氧氣系統的總開關：氧氣建築（v0.6 第 2 步）完成前先關閉，避免遊戲裡沒有產氧來源。模擬器與測試可以先打開 */
-export let AIR_ENABLED = false;
+export let AIR_ENABLED = true;
 export function setAirEnabled(on: boolean) { AIR_ENABLED = on; RES_UNLOCK.oxygen = on ? 1 : 99; }
 
 export const newRaid = (): RaidState => ({ count: 0, won: 0, nextAt: -1, incoming: null, injured: [], armed: 0, report: null });
