@@ -77,9 +77,10 @@ export function researchBlock(s: GameState, rid: string): Why {
   if (!built(s, 'databank')) return msg('why.databank');
   if (s.research.done.includes(rid)) return msg('why.done');
   if (r.stage && s.stage < r.stage) return msg('why.stage', { n: r.stage });
-  if (s.research.active) return msg('why.busy');
-  if (r.requires && !s.research.done.includes(r.requires)) return msg('why.prevResearch');
+  const miss = r.requires?.find((q) => !s.research.done.includes(q));
+  if (miss) return msg('why.needRs', { rs: miss });
   if (r.lab && !built(s, 'xeno_lab')) return msg('why.lab');
+  if (s.research.active) return msg('why.busy');
   if (!canAfford(s, r.cost)) return msg('why.afford');
   return null;
 }

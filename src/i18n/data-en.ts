@@ -24,7 +24,7 @@ const buildings: Record<string, B> = {
   rock_cutter: { name: 'Rock Cutter', desc: 'A laser cutter salvaged from the pod, refitted to slice building stone from the bedrock.', nodes: {
     prod_20: ['Blade Care', 'Output +20%'], cap_1: ['Night Shift', 'Worker cap +1'], click_1: ['Manual Trim', 'Click yield +1'] } },
   central_hub: { name: 'Central Hub', desc: 'Command Lv2. A real settlement center: housing for 4, +100 storage, and advances to Stage 3. Requires population 12.' },
-  databank: { name: 'Databank', desc: 'Catalogs everything the colonists remember. Needs stationed workers to run colony-wide research.', nodes: {
+  databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony’s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more.', nodes: {
     speed_50: ['Index System', 'Research speed +50%'] } },
   rail_line: { name: 'Rail Line', desc: 'All gathering buildings +10% output, and workers move faster.', nodes: {
     double: ['Double Track', 'Gathering output +5% more'] } },
@@ -106,7 +106,7 @@ const chapters = [
     title: 'Metal and Fire', subtitle: 'From scavenging to making',
     intro: [
       'The day the Central Hub lit up, everyone ate a dinner without rations for the first time.',
-      'The old engineer at the databank says that if we can dig up metal, we can make our own tools.',
+      'The old engineer at the Tech Institute says that if we can dig up metal, we can make our own tools.',
       'From scavenging to making — this is the step where the colony truly stands on its own.',
     ],
     goals: ['Build a Metal Mine', 'Build a Forge', 'Forge the first batch of tools (20)', 'Reach population 22', 'Complete the Outpost'],

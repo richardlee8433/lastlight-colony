@@ -10,20 +10,10 @@
     "time": 60,
     "effect": {
       "gatherAdd": 0.1
-    }
-  },
-  {
-    "id": "storage_1",
-    "name": "標準化貨架",
-    "desc": "所有儲存上限 +25%",
-    "cost": {
-      "rock": 150,
-      "parts": 60
     },
-    "time": 90,
-    "effect": {
-      "storageMul": 0.25
-    }
+    "branch": "prod",
+    "tier": 1,
+    "stage": 3
   },
   {
     "id": "crit_1",
@@ -35,32 +25,10 @@
     "time": 90,
     "effect": {
       "critAdd": 0.03
-    }
-  },
-  {
-    "id": "ration_1",
-    "name": "省糧配方",
-    "desc": "營養消耗 −10%",
-    "cost": {
-      "nutrient": 200,
-      "parts": 50
     },
-    "time": 120,
-    "effect": {
-      "consumeMul": -0.1
-    }
-  },
-  {
-    "id": "process_1",
-    "name": "加工優化",
-    "desc": "加工速度 +20%",
-    "cost": {
-      "parts": 200
-    },
-    "time": 150,
-    "effect": {
-      "processAdd": 0.2
-    }
+    "branch": "prod",
+    "tier": 1,
+    "stage": 3
   },
   {
     "id": "gather_2",
@@ -74,7 +42,30 @@
     "effect": {
       "gatherAdd": 0.1
     },
-    "requires": "gather_1"
+    "branch": "prod",
+    "tier": 2,
+    "stage": 3,
+    "requires": [
+      "gather_1"
+    ]
+  },
+  {
+    "id": "process_1",
+    "name": "加工優化",
+    "desc": "加工速度 +20%",
+    "cost": {
+      "parts": 200
+    },
+    "time": 150,
+    "effect": {
+      "processAdd": 0.2
+    },
+    "branch": "prod",
+    "tier": 2,
+    "stage": 3,
+    "requires": [
+      "gather_1"
+    ]
   },
   {
     "id": "click_1",
@@ -87,7 +78,143 @@
     "time": 180,
     "effect": {
       "clickAdd": 1
-    }
+    },
+    "branch": "prod",
+    "tier": 2,
+    "stage": 3,
+    "requires": [
+      "crit_1"
+    ]
+  },
+  {
+    "id": "crystal_resonance",
+    "name": "異晶共振",
+    "desc": "所有採集產量 +10%",
+    "cost": {
+      "parts": 200,
+      "crystal": 40
+    },
+    "time": 240,
+    "effect": {
+      "gatherAdd": 0.1
+    },
+    "branch": "prod",
+    "tier": 3,
+    "stage": 4,
+    "requires": [
+      "gather_2"
+    ]
+  },
+  {
+    "id": "xeno_growth",
+    "name": "異晶催化",
+    "desc": "異晶產量 +40%",
+    "cost": {
+      "crystal": 80,
+      "credit": 400
+    },
+    "time": 200,
+    "effect": {
+      "crystalAdd": 0.4
+    },
+    "branch": "prod",
+    "tier": 4,
+    "stage": 5,
+    "requires": [
+      "crystal_resonance"
+    ],
+    "lab": true
+  },
+  {
+    "id": "storage_1",
+    "name": "標準化貨架",
+    "desc": "所有儲存上限 +25%",
+    "cost": {
+      "rock": 150,
+      "parts": 60
+    },
+    "time": 90,
+    "effect": {
+      "storageMul": 0.25
+    },
+    "branch": "life",
+    "tier": 1,
+    "stage": 3
+  },
+  {
+    "id": "ration_1",
+    "name": "省糧配方",
+    "desc": "營養消耗 −10%",
+    "cost": {
+      "nutrient": 200,
+      "parts": 50
+    },
+    "time": 120,
+    "effect": {
+      "consumeMul": -0.1
+    },
+    "branch": "life",
+    "tier": 1,
+    "stage": 3
+  },
+  {
+    "id": "crystal_ration",
+    "name": "應急口糧",
+    "desc": "營養消耗 −10%",
+    "cost": {
+      "nutrient": 400,
+      "crystal": 15
+    },
+    "time": 120,
+    "effect": {
+      "consumeMul": -0.1
+    },
+    "branch": "life",
+    "tier": 2,
+    "stage": 4,
+    "requires": [
+      "ration_1"
+    ]
+  },
+  {
+    "id": "warehouse",
+    "name": "倉儲擴建",
+    "desc": "所有儲存上限 +50%",
+    "cost": {
+      "rock": 800,
+      "credit": 500
+    },
+    "time": 180,
+    "effect": {
+      "storageMul": 0.5
+    },
+    "branch": "life",
+    "tier": 2,
+    "stage": 5,
+    "requires": [
+      "storage_1"
+    ]
+  },
+  {
+    "id": "xeno_hab",
+    "name": "晶格建材",
+    "desc": "每級生活艙多住 1 人",
+    "cost": {
+      "crystal": 120,
+      "rock": 600
+    },
+    "time": 240,
+    "effect": {
+      "habBonus": 1
+    },
+    "branch": "life",
+    "tier": 3,
+    "stage": 5,
+    "requires": [
+      "warehouse",
+      "crystal_ration"
+    ],
+    "lab": true
   },
   {
     "id": "weapon_1",
@@ -101,22 +228,28 @@
     "effect": {
       "weaponAtk": 2
     },
+    "branch": "war",
+    "tier": 1,
     "stage": 4
   },
   {
-    "id": "arms_line",
-    "name": "兵工產線",
-    "desc": "武器產量 +30%",
+    "id": "crystal_armor",
+    "name": "異晶護甲",
+    "desc": "陸戰隊員血量 +5",
     "cost": {
-      "metal": 400,
-      "tools": 60
+      "parts": 150,
+      "crystal": 20
     },
-    "time": 180,
+    "time": 150,
     "effect": {
-      "weaponOut": 0.3
+      "guardHp": 5
     },
-    "requires": "weapon_1",
-    "stage": 4
+    "branch": "war",
+    "tier": 2,
+    "stage": 4,
+    "requires": [
+      "weapon_1"
+    ]
   },
   {
     "id": "weapon_2",
@@ -131,87 +264,50 @@
     "effect": {
       "weaponAtk": 2
     },
-    "requires": "weapon_1",
-    "stage": 4
+    "branch": "war",
+    "tier": 2,
+    "stage": 4,
+    "requires": [
+      "weapon_1"
+    ]
   },
   {
-    "id": "crystal_armor",
-    "name": "異晶護甲",
-    "desc": "陸戰隊員血量 +5",
+    "id": "arms_line",
+    "name": "兵工產線",
+    "desc": "武器產量 +30%",
     "cost": {
-      "parts": 150,
-      "crystal": 20
-    },
-    "time": 150,
-    "effect": {
-      "guardHp": 5
-    }
-  },
-  {
-    "id": "crystal_ration",
-    "name": "應急口糧",
-    "desc": "營養消耗 −10%",
-    "cost": {
-      "nutrient": 400,
-      "crystal": 15
-    },
-    "time": 120,
-    "effect": {
-      "consumeMul": -0.1
-    }
-  },
-  {
-    "id": "crystal_resonance",
-    "name": "異晶共振",
-    "desc": "所有採集產量 +10%",
-    "cost": {
-      "parts": 200,
-      "crystal": 40
-    },
-    "time": 240,
-    "effect": {
-      "gatherAdd": 0.1
-    }
-  },
-  {
-    "id": "warehouse",
-    "name": "倉儲擴建",
-    "desc": "所有儲存上限 +50%",
-    "cost": {
-      "rock": 800,
-      "credit": 500
+      "metal": 400,
+      "tools": 60
     },
     "time": 180,
     "effect": {
-      "storageMul": 0.5
-    }
+      "weaponOut": 0.3
+    },
+    "branch": "war",
+    "tier": 2,
+    "stage": 4,
+    "requires": [
+      "weapon_1"
+    ]
   },
   {
-    "id": "xeno_growth",
-    "name": "異晶催化",
-    "desc": "異晶產量 +40%",
+    "id": "xeno_blade",
+    "name": "異晶刃",
+    "desc": "武器攻擊力 +3",
     "cost": {
-      "crystal": 80,
-      "credit": 400
-    },
-    "time": 200,
-    "effect": {
-      "crystalAdd": 0.4
-    },
-    "lab": true
-  },
-  {
-    "id": "xeno_hab",
-    "name": "晶格建材",
-    "desc": "每級生活艙多住 1 人",
-    "cost": {
-      "crystal": 120,
-      "rock": 600
+      "crystal": 90,
+      "metal": 500
     },
     "time": 240,
     "effect": {
-      "habBonus": 1
+      "weaponAtk": 3
     },
+    "branch": "war",
+    "tier": 3,
+    "stage": 5,
+    "requires": [
+      "weapon_2"
+    ],
     "lab": true
   },
   {
@@ -226,21 +322,12 @@
     "effect": {
       "turretAtk": 6
     },
+    "branch": "war",
+    "tier": 3,
+    "stage": 5,
+    "requires": [
+      "crystal_armor"
+    ],
     "lab": true
-  },
-  {
-    "id": "xeno_blade",
-    "name": "異晶刃",
-    "desc": "武器攻擊力 +3",
-    "cost": {
-      "crystal": 90,
-      "metal": 500
-    },
-    "time": 240,
-    "effect": {
-      "weaponAtk": 3
-    },
-    "lab": true,
-    "requires": "weapon_2"
   }
 ]

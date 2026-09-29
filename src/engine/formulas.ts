@@ -21,7 +21,9 @@ export function resBonus(s: GameState, k: ResKey): number {
   return 0;
 }
 
-export const RESEARCH_DEFS = RESEARCH as unknown as { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; requires?: string; lab?: boolean; stage?: number }[];
+/** 科技樹：branch＝分支（prod 生產、life 民生、war 軍事），tier＝第幾欄，requires＝前置科技 */
+export interface ResearchDef { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; branch: 'prod' | 'life' | 'war'; tier: number; stage: number; requires?: string[]; lab?: boolean }
+export const RESEARCH_DEFS = RESEARCH as unknown as ResearchDef[];
 const RDEF = Object.fromEntries(RESEARCH_DEFS.map((r) => [r.id, r]));
 
 export const built = (s: GameState, id: string) => s.b[id].level > 0;
