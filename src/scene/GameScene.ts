@@ -10,6 +10,7 @@ import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
+import { sfx } from '../audio/audio';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; update: any };
@@ -318,7 +319,7 @@ export class GameScene {
     const cnt = txt('', fs - 2, 0xf4efe4); cnt.anchor.set(0.5); cnt.position.set((W / 2) * Z, 13.5 * Z);
     for (const [b, dlt] of [[minus, -1], [plus, 1]] as [any, number][]) {
       b.eventMode = 'static'; b.cursor = 'pointer';
-      b.on('pointerdown', (e: any) => { e.stopPropagation(); useGame.getState().assign(id, dlt); });
+      b.on('pointerdown', (e: any) => { e.stopPropagation(); useGame.getState().assign(id, dlt); sfx('assign'); });
     }
     row.addChild(wl, minus, inset, plus, cnt);
     c.addChild(row);
@@ -362,6 +363,7 @@ export class GameScene {
     const b = v.building;
     const [sx, sy] = at ?? this.toScreen(v.x, v.y - b.art.ay + 4);
     const name = resName(r.res);
+    sfx(r.amount <= 0 ? 'empty' : r.crit ? 'crit' : 'collect');
     if (r.amount > 0) this.fx.pop(sx, sy, `${r.crit ? t('sc.crit') + ' ' : ''}+${Math.round(r.amount * 10) / 10} ${name}`, RES[r.res].color, r.crit);
     else this.fx.pop(sx, sy, t('sc.noInput'), 0xc8c2d6, false);
     const [cx, cy] = this.toScreen(v.x, v.y - b.art.ay / 2);
@@ -498,6 +500,7 @@ export class GameScene {
       d.fire();
       const dir = a.x >= d.x ? 1 : -1;
       this.shoot(d.x + dir * 8, d.y - 7, a.x, a.y - 5, a, 'bullet', d.armed ? 0.2 : 0.4);
+      sfx('shot');
     }
     const s = game.s;
     if (built(s, 'turret')) {
@@ -506,6 +509,7 @@ export class GameScene {
         this.turretCd = 1.1 / Math.max(1, s.b.turret.level) + Math.random() * 0.4;
         const site = SITES.find((x) => x.id === 'turret')!, a = pick(this.aliens);
         this.beams.push({ x1: site.x + 2, y1: site.y - 24, x2: a.x, y2: a.y - 5, t: 0 });
+        sfx('laser');
         this.hitAlien(a, 0x7fe8ff);
       }
     }
@@ -514,7 +518,7 @@ export class GameScene {
       if (a.cd > 0) continue;
       a.cd = 1.6 + Math.random() * 1.6;
       const d = pick(this.defenders.filter((x) => x.back == null));
-      if (d) this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3);
+      if (d) { this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3); sfx('spit'); }
     }
   }
   /** 發射一發彈道；miss 是落空機率，落空時子彈從目標旁邊飛過去 */

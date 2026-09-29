@@ -343,6 +343,10 @@ export const STRINGS: Record<string, [string, string]> = {
   // ── 設定 ──
   'set.title': ['Settings', '設定'],
   'set.lang': ['Language', '語言'],
+  'set.audio': ['Sound', '聲音'],
+  'set.music': ['Music', '音樂'],
+  'set.sfx': ['Sound effects', '音效'],
+  'set.mute': ['Mute all', '全部靜音'],
   'set.save': ['Save', '存檔'],
   'set.chapter': ['Progress', '進度'],
   'set.lastSaved': ['Last saved', '上次存檔'],
@@ -354,7 +358,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'set.confirm': ['Delete your save and start from the beginning? This cannot be undone.', '確定要刪除存檔、從頭開始嗎？這個動作無法復原。'],
   'set.confirmYes': ['Delete and restart', '刪除並重來'],
   'set.about': ['About', '關於'],
-  'set.aboutText': ['Lastlight Colony v{v} — an idle colony builder about survivors on a hostile planet. All art is drawn procedurally in code.', '末光殖民地 v{v}：在陌生行星上求生的放置型殖民地經營遊戲。所有美術都由程式即時繪製。'],
+  'set.aboutText': ['Lastlight Colony v{v} — an idle colony builder about survivors on a hostile planet. All art, music and sound are generated procedurally in code.', '末光殖民地 v{v}：在陌生行星上求生的放置型殖民地經營遊戲。所有美術、音樂與音效都由程式即時產生。'],
 
   // ── 場景 ──
   'sc.build': ['Build: {b}', '建造：{b}'],

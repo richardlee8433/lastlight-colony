@@ -5,6 +5,7 @@ import { built } from '../engine/formulas';
 import { LANGS, t, useLang, useSettings } from '../i18n';
 import { fmtTime } from './common';
 import { Modal } from './Modals';
+import { sfx, useAudio } from '../audio/audio';
 
 export const VERSION = '0.5';
 
@@ -14,6 +15,7 @@ export function Settings() {
   const lang = useLang(), setLang = useSettings((st) => st.setLang);
   const [open, setOpen] = useState(false), [confirm, setConfirm] = useState(false);
   const act = useGame.getState(), s = game.s;
+  const audio = useAudio();
   const close = () => { setOpen(false); setConfirm(false); };
   return (
     <>
@@ -36,6 +38,17 @@ export function Settings() {
                   className={'btn' + (lang === l.id ? '' : ' alt')} onClick={() => { setLang(l.id); act.bump(); }}>{l.label}</button>
               ))}
             </div>
+          </section>
+
+          <section className="block">
+            <h3>{t('set.audio')}</h3>
+            <label className="slider"><span>{t('set.music')}</span>
+              <input type="range" min={0} max={100} value={Math.round(audio.music * 100)} onChange={(e) => audio.set({ music: +e.target.value / 100 })} aria-label={t('set.music')} />
+              <b>{Math.round(audio.music * 100)}</b></label>
+            <label className="slider"><span>{t('set.sfx')}</span>
+              <input type="range" min={0} max={100} value={Math.round(audio.sfx * 100)} onChange={(e) => audio.set({ sfx: +e.target.value / 100 })} onPointerUp={() => sfx('collect')} aria-label={t('set.sfx')} />
+              <b>{Math.round(audio.sfx * 100)}</b></label>
+            <label className="check"><input type="checkbox" checked={audio.muted} onChange={(e) => audio.set({ muted: e.target.checked })} /> {t('set.mute')}</label>
           </section>
 
           <section className="block">

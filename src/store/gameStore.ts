@@ -9,6 +9,7 @@ import { applyOffline } from '../engine/offline';
 import * as A from '../engine/actions';
 import { resolveEvent } from '../engine/events';
 import * as G from '../engine/governance';
+import { setMood } from '../audio/audio';
 
 const SAVE_KEY = 'lastlight-colony-save-v1';
 export type OfflineReport = NonNullable<ReturnType<typeof applyOffline>>;
@@ -156,7 +157,10 @@ setInterval(() => {
   }
   let n = 0;
   while (acc >= TICK && n < 50) { step(game.s, TICK); acc -= TICK; n++; sinceSave += TICK; }
-  if (n) useGame.getState().bump();
+  if (n) {
+    useGame.getState().bump();
+    setMood({ stage: Math.min(6, game.s.stage), raid: !!game.s.raid?.incoming, finished: game.s.finished });
+  }
   if (sinceSave >= 10) { save(game.s); sinceSave = 0; }
 }, 100);
 addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(game.s); });

@@ -259,3 +259,8 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .tech-node.done .done { color: #9fe0b0; font-weight: 700; }
 .tech-node.active { box-shadow: inset 2px 2px 0 #b98cff, inset -2px -2px 0 #3a2a5a; }
 .tech-node.locked { opacity: 0.62; }
+.settings-page .slider { display: grid; grid-template-columns: 110px 1fr 34px; align-items: center; gap: 10px; font-size: 13px; }
+.settings-page .slider input { width: 100%; accent-color: var(--trim); }
+.settings-page .slider b { text-align: right; font-variant-numeric: tabular-nums; }
+.settings-page .check { display: flex; gap: 8px; align-items: center; font-size: 13px; margin-top: 4px; }
+.settings-page .check input { accent-color: var(--trim); }
