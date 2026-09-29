@@ -39,7 +39,33 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c2-assembly', when: (s) => built(s, 'assembly') && seen(s, 'c2-ines') },
   { id: 'c2-coaster', when: (s) => seen(s, 'c2-ines') && s.pop >= 11 },
   { id: 'c2-end', when: (s) => s.stage >= 3, chapterEnd: true },
+  { id: 'c3-open', when: (s) => s.stage === 3 && s.story.seenIntro >= 3 },
+  { id: 'c3-mine', when: (s) => built(s, 'metal_mine') },
+  { id: 'c3-forge', when: (s) => built(s, 'forge') },
+  { id: 'c3-tools', when: (s) => s.stage >= 3 && s.res.tools >= 20 },
+  { id: 'c3-pop22', when: (s) => s.stage >= 3 && s.pop >= 22 },
+  { id: 'c3-outpost', when: (s) => built(s, 'outpost') },
+  { id: 'c3-end', when: (s) => s.stage >= 4, chapterEnd: true },
+  { id: 'c4-open', when: (s) => s.stage === 4 && s.story.seenIntro >= 4 },
+  { id: 'c4-sefa', when: (s) => s.stage >= 4 && seen(s, 'c4-open') && s.pop >= 28 },
+  { id: 'c4-synth', when: (s) => built(s, 'crystal_synth') && seen(s, 'c4-sefa') },
+  { id: 'c4-raid1', when: (s) => s.raid.count >= 1 && seen(s, 'c4-sefa') && !s.raid.report },
+  { id: 'c4-med', when: (s) => built(s, 'med_bay') },
+  { id: 'c4-end', when: (s) => s.stage >= 5 && seen(s, 'c4-sefa'), chapterEnd: true },
+  { id: 'c5-open', when: (s) => s.stage === 5 && s.story.seenIntro >= 5 },
+  { id: 'c5-voss', when: (s) => built(s, 'admin') && seen(s, 'c5-open') },
+  { id: 'c5-charter', when: (s) => s.gov.charters.length > 0 && seen(s, 'c5-voss') },
+  { id: 'c5-envoy', when: (s) => s.gov.corp.envoys >= 1 && !s.events.active && seen(s, 'c5-voss') },
+  { id: 'c5-secret', when: (s) => seen(s, 'c5-envoy') && seen(s, 'c5-charter') && s.gov.creditsEarned >= 2000 },
+  { id: 'c5-end', when: (s) => s.stage >= 6, chapterEnd: true },
+  { id: 'c6-open', when: (s) => s.stage === 6 && s.story.seenIntro >= 6 },
+  { id: 'c6-governor', when: (s) => built(s, 'governor') },
+  { id: 'c6-beacon1', when: (s) => s.b.orbital_beacon.level >= 1 },
+  { id: 'c6-lastlight', when: (s) => s.b.orbital_beacon.level >= 3 && seen(s, 'c6-beacon1') },
+  { id: 'c6-end', when: (s) => s.finished, chapterEnd: true },
 ];
+/** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
+export const DIALOG_VERSION = 2;
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);
 const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id));
 
@@ -91,6 +117,11 @@ export function migrateDialogs(s: GameState) {
     s.story.queue = [];
     s.journal = newJournal(s);
     if (s.t > 5) write(s, 'log.migrated');
+  }
+  // 第 3～6 章對話（v0.6.1）加入前的存檔：已經過去的里程碑一樣不補播
+  if ((s.story.dlgV ?? 1) < DIALOG_VERSION) {
+    for (const x of TRIGGERS) if (!s.story.seen.includes(x.id) && x.when(s)) s.story.seen.push(x.id);
+    s.story.dlgV = DIALOG_VERSION;
   }
   // 伊涅絲（v0.6 第 6 步）：已經離開第 2 章的存檔視為早就救回來了，她相關的對話不補播
   if (s.story.ines === undefined && s.stage >= 3) {

@@ -109,6 +109,8 @@ export interface GameState {
     seen?: string[]; queue?: { id: string; d: number }[];
     /** 伊涅絲：固定的第一次求救訊號什麼時候響、是否已經救回 */
     inesAt?: number; ines?: boolean;
+    /** 對話腳本版本（見 dialog.ts 的 DIALOG_VERSION） */
+    dlgV?: number;
   };
   /** 殖民地日誌（朱諾） */
   journal?: import('./dialog').Journal;
@@ -140,7 +142,7 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [] },
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 2 },
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),

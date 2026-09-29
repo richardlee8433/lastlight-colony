@@ -68,7 +68,7 @@ export function Modals() {
     );
   }
 
-  if (s.finished && !finishSeen) {
+  if (s.finished && !finishSeen && !chapterEndPending(s)) {
     return (
       <Modal label={t('fin.eyebrow')}>
         <p className="eyebrow">{t('fin.eyebrow')}</p>

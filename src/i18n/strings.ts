@@ -148,7 +148,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'g.ines': ['Ines the engineer joins the colony', '工程師伊涅絲加入殖民地'],
   'n.inesGo': ['Mara and Juno head for the ice crevasse. Back in 2 minutes.', '瑪拉和朱諾出發前往冰縫，2 分鐘後回來。'],
   'rescue.text.2': ['Whoever sent the signal was gone; only an automatic beacon was still broadcasting. The team brought back everything nearby worth salvaging.', '求救的人已經不在了，只剩一台還在自動廣播的信標。救援隊把附近能拆的都帶了回來。'],
-  'rescue.text.3': ['The one they brought back is a former Helion overseer. He says he escaped too — everyone is still deciding whether to believe him.', '救回來的是赫利昂企業的前監工。他說自己也是逃出來的，大家還在考慮要不要相信他。'],
+  'rescue.text.3': ['The one they brought back is a former Helion bookkeeper. He says he ran away too, and has already offered to sort out the colony accounts.', '救回來的是赫利昂的一名前會計。他說自己也是逃出來的，還主動說要幫殖民地把帳算清楚。'],
 
   // ── 殖民地面板 ──
   'cp.colonists': ['Colonists', '殖民者'],

@@ -9,6 +9,7 @@ import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
 import { airSafety, lifeSupportLeft } from '../src/engine/air';
+import { SCENE_IDS } from '../src/engine/dialog';
 import { setFoodPerPop, built, foodSafety, idle, levelCost, netRates, popCap, storageCap, workerCap, RESEARCH_DEFS } from '../src/engine/formulas';
 
 const duty = Number(process.argv[2] ?? 0.5);
@@ -217,6 +218,8 @@ console.log(`  結束：${s.finished ? '信標點亮' : '未完成'}（信標 ${
 console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).join('、'));
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
 console.log(`  氧氣再生器：${scrubberAt < 0 ? '未蓋' : fmt(scrubberAt) + '（維生系統剩 ' + fmt(lsLeftAtScrubber) + '）'}；伊涅絲：${inesAt < 0 ? '未救回' : fmt(inesAt)}；第 1～2 章空氣安全度最低 ${Math.round(minAir12 * 100)}%`);
+step(s, TICK, { rng });   // 讓結局的對話觸發
+console.log(`  劇情對話：播了 ${s.story.seen?.length ?? 0}/${SCENE_IDS.length} 段；沒觸發：${SCENE_IDS.filter((id) => !s.story.seen?.includes(id)).join('、') || '無'}`);
 console.log(`  缺氧累計 ${fmt(hypoxic)}，空氣安全度低於 25% 累計 ${fmt(lowAir)}；${s.failed ? '殖民地瓦解（' + s.failReason + '）' : ''}`);
 console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}；階段 2–3 低於 50% 累計 ${fmt(midFood)}`);
 console.log('  資源（累計產量／滿倉時間／見底時間）：');
