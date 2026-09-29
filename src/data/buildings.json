@@ -235,8 +235,9 @@
         "workersPerLevel": 3,
         "art": "bio_harvester",
         "cost": {
-          "scrap": 150,
-          "rock": 60
+          "scrap": 400,
+          "rock": 200,
+          "parts": 100
         },
         "baseCost": {
           "scrap": 60,
