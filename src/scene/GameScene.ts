@@ -32,7 +32,11 @@ export class GameScene {
   aliens: any[] = [];
   /** 出去迎戰的陸戰隊員（預警期間從營區走到防線，戰後走回去） */
   defenders: any[] = [];
-  shotT = 0;
+  /** 飛行中的彈道（地圖座標）：bullet 曳光彈、spit 酸液；beam 是瞬間雷射，只淡出 */
+  shots: { x: number; y: number; vx: number; vy: number; t: number; life: number; kind: 'bullet' | 'spit'; hit: any; tx: number; ty: number }[] = [];
+  beams: { x1: number; y1: number; x2: number; y2: number; t: number }[] = [];
+  shotG = new Graphics();
+  turretCd = 0;
   raidKey = '';
   groundStage = 0;
   Z = 3;
@@ -57,10 +61,10 @@ export class GameScene {
     });
     host.appendChild(this.app.canvas);
     this.obj.sortableChildren = true;
-    this.world.addChild(this.obj, this.overlay, this.lightL);
+    this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
     this.app.stage.addChild(this.world, this.hud, this.fxL);
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
-    for (const c of [this.overlay, this.lightL, this.fxL]) c.eventMode = 'none';
+    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG]) c.eventMode = 'none';
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
     this.Z = this.zoomFor(this.app.screen.width);
@@ -387,7 +391,8 @@ export class GameScene {
       a.destroy({ children: true });
     }
     this.aliens = [];
-    // 戰鬥結束：陸戰隊員走回營區
+    // 戰鬥結束：陸戰隊員走回營區，場上的彈道清掉
+    this.shots = []; this.beams = [];
     for (const d of this.defenders) { d.from = { x: d.x, y: d.y }; d.to = d.home; d.back = 0; }
     if (!inc) return;
     const side = inc.side % RAID_SPAWN.length, from = RAID_SPAWN[side], to = RAID_RALLY[side];
@@ -421,6 +426,7 @@ export class GameScene {
     const n = Math.min(10, df.ready);
     for (let i = 0; i < n; i++) {
       const m: any = createMarine(i < df.armedReady);
+      m.armed = i < df.armedReady;
       m.eventMode = 'none';
       const spread = (i - (n - 1) / 2) * 12, depth = 46 + (i % 2) * 10;
       m.home = { x: site.x + (Math.random() - 0.5) * 20, y: site.y + 8 };
@@ -451,17 +457,94 @@ export class GameScene {
       d.position.set(Math.round(x), Math.round(y)); d.zIndex = y;
       d.update(this.T, dt);
     }
-    // 最後幾秒雙方都就位：開火
-    if (inc && p0 > 0.8 && this.defenders.length && this.aliens.length) {
-      this.shotT -= dt;
-      if (this.shotT <= 0) {
-        this.shotT = 0.15 + Math.random() * 0.25;
-        const d = this.defenders[Math.floor(Math.random() * this.defenders.length)];
-        const a = this.aliens[Math.floor(Math.random() * this.aliens.length)];
-        d.fire();
-        const [x, y] = this.toScreen(a.x, a.y - 5);
-        this.fx.burst(x, y, 0xffe08a, 3);
+    // 雙方都就位後交火：陸戰隊點放子彈、砲塔打雷射、異星生物吐酸液（仿 RimWorld 的曳光彈，會有落空）
+    if (inc && p0 > 0.72 && this.defenders.length && this.aliens.length) this.skirmish(dt);
+  }
+  /** 交火：每位陸戰隊員各自冷卻，持槍的一次點放 3 發；砲塔每隔一段時間打一道雷射；異星生物偶爾吐酸液 */
+  skirmish(dt: number) {
+    const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
+    for (const d of this.defenders) {
+      if (d.back != null) continue;
+      d.cd = (d.cd ?? Math.random() * 1.2) - dt;
+      if (d.cd > 0) continue;
+      if (!d.burstLeft) { d.burstLeft = d.armed ? 3 : 1; d.target = pick(this.aliens); }
+      const a = d.target;
+      if (!a || a.destroyed) { d.burstLeft = 0; continue; }
+      d.burstLeft--;
+      d.cd = d.burstLeft ? 0.09 : 0.9 + Math.random() * 0.9;
+      d.fire();
+      const dir = a.x >= d.x ? 1 : -1;
+      this.shoot(d.x + dir * 8, d.y - 7, a.x, a.y - 5, a, 'bullet', d.armed ? 0.2 : 0.4);
+    }
+    const s = game.s;
+    if (built(s, 'turret')) {
+      this.turretCd -= dt;
+      if (this.turretCd <= 0) {
+        this.turretCd = 1.1 / Math.max(1, s.b.turret.level) + Math.random() * 0.4;
+        const site = SITES.find((x) => x.id === 'turret')!, a = pick(this.aliens);
+        this.beams.push({ x1: site.x + 2, y1: site.y - 24, x2: a.x, y2: a.y - 5, t: 0 });
+        this.hitAlien(a, 0x7fe8ff);
       }
+    }
+    for (const a of this.aliens) {
+      a.cd = (a.cd ?? 1 + Math.random() * 2) - dt;
+      if (a.cd > 0) continue;
+      a.cd = 1.6 + Math.random() * 1.6;
+      const d = pick(this.defenders.filter((x) => x.back == null));
+      if (d) this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3);
+    }
+  }
+  /** 發射一發彈道；miss 是落空機率，落空時子彈從目標旁邊飛過去 */
+  shoot(x: number, y: number, tx: number, ty: number, target: any, kind: 'bullet' | 'spit', miss: number) {
+    const hit = Math.random() >= miss;
+    if (!hit) { tx += (Math.random() - 0.5) * 26; ty += (Math.random() - 0.5) * 14; }
+    const dx = tx - x, dy = ty - y, len = Math.hypot(dx, dy) || 1, speed = kind === 'bullet' ? 300 : 110;
+    // 落空的子彈多飛一段才消失
+    const life = (len + (hit ? 0 : 30)) / speed;
+    this.shots.push({ x, y, vx: (dx / len) * speed, vy: (dy / len) * speed, t: 0, life, kind, hit: hit ? target : null, tx, ty });
+  }
+  hitAlien(a: any, color: number) {
+    if (!a || a.destroyed) return;
+    a.hitT = 0.12;
+    const [x, y] = this.toScreen(a.x, a.y - 5);
+    this.fx.burst(x, y, color, 3);
+  }
+  /** 每幀更新彈道與雷射，全部畫在同一個 Graphics 上 */
+  drawShots(dt: number) {
+    const g = this.shotG;
+    g.clear();
+    for (const sh of [...this.shots]) {
+      sh.t += dt;
+      if (sh.t >= sh.life) {
+        this.shots.splice(this.shots.indexOf(sh), 1);
+        if (sh.hit && !sh.hit.destroyed) {
+          if (sh.kind === 'bullet') this.hitAlien(sh.hit, 0xffe08a);
+          else { sh.hit.hitT = 0.12; const [x, y] = this.toScreen(sh.tx, sh.ty); this.fx.burst(x, y, 0x9fff6a, 3); }
+        }
+        continue;
+      }
+      const x = sh.x + sh.vx * sh.t, y = sh.y + sh.vy * sh.t;
+      if (sh.kind === 'bullet') {
+        // 曳光彈：一小段亮線，尾巴往回拖
+        const k = 9 / Math.hypot(sh.vx, sh.vy);
+        g.moveTo(x - sh.vx * k, y - sh.vy * k).lineTo(x, y).stroke({ color: 0xffb347, width: 2, alpha: 0.35 });
+        g.moveTo(x - sh.vx * k * 0.6, y - sh.vy * k * 0.6).lineTo(x, y).stroke({ color: 0xfff6c0, width: 1 });
+      } else {
+        // 酸液：綠色小團，走拋物線
+        const p = sh.t / sh.life, lift = Math.sin(p * Math.PI) * 10;
+        g.rect(Math.round(x) - 1, Math.round(y - lift) - 1, 2, 2).fill({ color: 0x9fff6a });
+      }
+    }
+    for (const b of [...this.beams]) {
+      b.t += dt;
+      if (b.t > 0.22) { this.beams.splice(this.beams.indexOf(b), 1); continue; }
+      const a = 1 - b.t / 0.22;
+      g.moveTo(b.x1, b.y1).lineTo(b.x2, b.y2).stroke({ color: 0x7fe8ff, width: 2, alpha: 0.35 * a });
+      g.moveTo(b.x1, b.y1).lineTo(b.x2, b.y2).stroke({ color: 0xe8ffff, width: 1, alpha: a });
+    }
+    // 被打中的單位閃一下（半透明）
+    for (const u of [...this.aliens, ...this.defenders]) {
+      if (u.hitT > 0) { u.hitT -= dt; u.alpha = 0.55; } else u.alpha = 1;
     }
   }
   /** 敵群目前的中心（地圖座標） */
@@ -628,6 +711,7 @@ export class GameScene {
     for (const w of this.walkers) this.moveWalker(w, dt);
     this.moveAliens();
     this.moveDefenders(dt);
+    this.drawShots(dt);
     this.updateRaidMark();
     if (this.hold) {
       this.hold.next -= dt;
