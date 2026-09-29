@@ -1242,7 +1242,11 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
       sites.push({ id: d.id, x: Math.round(center.x + Math.cos(a) * rx), y: Math.round(center.y + 18 + Math.sin(a) * ry), r: 24 });
     });
   }
-  const segs = sites.filter((s) => !s.hub).map((s) => [center.x, center.y + 22, s.x, s.y + 4]);
+  // 道路：layout 有給折線就照著畫（繞開建築），否則從中心直線連到各建築
+  const segs = layout?.routes
+    ? sites.filter((s) => !s.hub && layout.routes[s.id]).flatMap((s) => layout.routes[s.id].slice(1).map((p, i) => { const a = layout.routes[s.id][i]; return [a.x, a.y, p.x, p.y]; }))
+    : sites.filter((s) => !s.hub).map((s) => [center.x, center.y + 22, s.x, s.y + 4]);
+  { const seen = new Set(); for (let i = segs.length - 1; i >= 0; i--) { const k = segs[i].join(','); if (seen.has(k)) segs.splice(i, 1); else seen.add(k); } }
   const wob = noise2(seed + 3);
   const field = new Float32Array(MW * MH);
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
@@ -1284,6 +1288,7 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
     for (let tries = 0; tries < 12; tries++) if (place(kind, s.x + (R() - 0.5) * (s.r * 2.6), s.y + (R() - 0.3) * 18, 3)) break;
   }
   for (const [x0, y0, x1, y1] of segs) {
+    if (Math.hypot(x1 - x0, y1 - y0) < 50) continue;
     const t = 0.55, nx = -(y1 - y0), ny = x1 - x0, l = Math.hypot(nx, ny);
     place('lamp', x0 + (x1 - x0) * t + (nx / l) * 9, y0 + (y1 - y0) * t + (ny / l) * 9, 2);
   }

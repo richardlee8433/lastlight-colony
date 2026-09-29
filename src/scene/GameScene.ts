@@ -7,7 +7,7 @@ import {
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
-import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY } from './layout';
+import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES } from './layout';
 import { WARNING, defense } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 
@@ -187,7 +187,7 @@ export class GameScene {
     this.ambient?.destroy({ children: true });
     const s = game.s;
     const sites = SITES.filter((x) => x.id === 'command' || DEF[x.id].stage <= s.stage).map((x) => ({ ...x, r: x.r ?? 24 }));
-    const plan = planMap(stage, MW, MH, 90 + stage, { center: CENTER, sites });
+    const plan = planMap(stage, MW, MH, 90 + stage, { center: CENTER, sites, routes: ROUTES });
     const ground: Sprite = createGround(stage, plan);
     ground.eventMode = 'none';
     this.ground = ground;
@@ -636,10 +636,12 @@ export class GameScene {
     const j = () => Math.round((Math.random() - 0.5) * 18);
     const site = bid ? SITES.find((x) => x.id === bid || (x.id === 'command' && COMMAND_CHAIN.includes(bid)))! : null;
     const home = built(game.s, 'emergency_camp') ? HOME : { x: 241 + 14, y: 210 };
+    // 沿著道路走（中間的轉折點），不直線穿過其他建築
+    const via = site && ROUTES[site.id] ? ROUTES[site.id].slice(1, -1).map((p) => ({ x: p.x + (j() >> 2), y: p.y + (j() >> 3) })) : [];
     w.ai = bid
-      ? { bid, phase: 'out', wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + j(), y: site!.y + 6 } }
+      ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + j(), y: site!.y + 6 } }
       : { bid: null, wait: Math.random() * 2, home: { x: home.x + j() * 2, y: home.y + (j() >> 1) } };
-    w.ai.target = w.ai.site ?? w.ai.home;
+    w.ai.target = w.ai.queue?.length ? w.ai.queue.shift() : w.ai.site ?? w.ai.home;
     w.px = w.ai.home.x; w.py = w.ai.home.y;
     w.position.set(w.px, w.py);
     w.eventMode = 'none';
@@ -652,14 +654,15 @@ export class GameScene {
     if (a.wait > 0) { a.wait -= dt; w.setMoving(false); }
     else {
       const dx = a.target.x - w.px, dy = a.target.y - w.py, d = Math.hypot(dx, dy);
-      if (d < 1) {
+      if (d < 1 && a.queue?.length) a.target = a.queue.shift();
+      else if (d < 1) {
         if (!a.bid) { a.wait = 1 + Math.random() * 3; a.target = { x: a.home.x + (Math.random() - 0.5) * 50, y: a.home.y + (Math.random() - 0.5) * 12 }; }
         else if (a.target === a.site) {
-          a.target = a.home; a.wait = 1.2 + Math.random();
+          a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 1.2 + Math.random();
           const d = DEF[a.bid];
           const res = d.produce?.res ?? d.recipe?.out;
           w.setCarry(res ? RES[res].color : null);
-        } else { a.target = a.site; a.wait = 0.4; w.setCarry(null); }
+        } else { a.queue = [...a.via, a.site]; a.target = a.queue.shift(); a.wait = 0.4; w.setCarry(null); }
       } else {
         const st = Math.min(d, speed * dt);
         w.px += (dx / d) * st; w.py += (dy / d) * st;
