@@ -100,10 +100,15 @@ export class GameScene {
     const wx = this.cam.x + ax / this.Z, wy = this.cam.y + ay / this.Z;
     this.userZ = z; this.Z = z;
     this.cam.x = wx - ax / z; this.cam.y = wy - ay / z; this.camGoal = null;
-    this.fx = createFx(this.fxL, z);
+    this.resetFx(z);
     for (const v of this.views.values()) v.key = '';
     this.sync();
     this.clampCam();
+  }
+  /** 縮放改變時重建特效器，並清掉舊特效（不然播到一半的「+1 岩材」會永遠留在畫面上） */
+  resetFx(z: number) {
+    this.fx?.clear();
+    this.fx = createFx(this.fxL, z);
   }
   resize(host: HTMLElement) {
     const w = host.clientWidth, h = host.clientHeight;
@@ -111,7 +116,7 @@ export class GameScene {
     this.app.renderer.resize(w, h);
     this.app.stage.hitArea = this.app.screen;
     const z = this.zoomFor(w);
-    if (z !== this.Z) { this.Z = z; this.fx = createFx(this.fxL, z); for (const v of this.views.values()) v.key = ''; this.sync(); }
+    if (z !== this.Z) { this.Z = z; this.resetFx(z); for (const v of this.views.values()) v.key = ''; this.sync(); }
     this.clampCam();
   }
   clampXY(x: number, y: number) {

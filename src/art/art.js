@@ -1803,5 +1803,10 @@ export function createFx(layer, scale = 2) {
         if (u >= 1) { p.o.destroy(); list.splice(i, 1); }
       }
     },
+    /** 清掉還在播放的特效（縮放時換新的特效器，舊的不清會殘留在畫面上） */
+    clear() {
+      for (const p of list) p.o.destroy();
+      list.length = 0;
+    },
   };
 }
