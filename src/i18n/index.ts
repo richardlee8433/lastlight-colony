@@ -102,6 +102,7 @@ type Pattern = { re: RegExp; key: string; names: string[]; lit: number };
 let patterns: Pattern[] | null = null;
 const rev = (prefix: string) => Object.fromEntries(Object.entries(STRINGS).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => [v[1], k.slice(prefix.length)]));
 function fromLegacy(str: string): Msg | null {
+  str = str.replace(/保全/g, '陸戰隊員');
   if (!patterns) {
     patterns = Object.entries(STRINGS)
       .filter(([k]) => /^(l|g|rescue|n)\./.test(k))

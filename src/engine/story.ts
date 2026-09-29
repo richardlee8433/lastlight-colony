@@ -7,11 +7,14 @@ export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assig
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => ({ ...c, goals: c.goals.map((g, i) => ({ ...g, gid: `${c.chapter}-${i}` })) }));
 
+/** 改過文字的目標：舊文字 → 新文字 */
+const LEGACY_LABEL: Record<string, string> = { 建造保全站並派駐保全: '建造陸戰隊營區並派駐陸戰隊員' };
 /** 舊存檔的 story.done 存的是中文目標文字，換成 id */
 export function migrateStoryDone(done: string[]): string[] {
   const out = new Set<string>();
   for (const x of done) {
-    const g = CHAPTERS.flatMap((c) => c.goals).find((g) => g.label === x);
+    const label = LEGACY_LABEL[x] ?? x;
+    const g = CHAPTERS.flatMap((c) => c.goals).find((g) => g.label === label);
     out.add(g ? g.gid : x);
   }
   return [...out];

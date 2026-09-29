@@ -39,8 +39,8 @@ const buildings: Record<string, B> = {
     morale_5: ['Eternal Lamp', 'Morale +5'] } },
   crystal_synth: { name: 'Crystal Synthesizer', desc: 'Dissolves underground crystal clusters and regrows them into energy-storing xenocrystal. Output is tiny, but all alien tech depends on it.', nodes: {
     prod_30: ['Resonance Tank', 'Output +30%'], cap_1: ['Second Reactor', 'Worker cap +1'] } },
-  security: { name: 'Security Post', desc: 'Stationed workers are guards; each takes 1 population. Weapons in stock are issued automatically, raising attack from 2 to 5.', nodes: {
-    hp_5: ['Armored Vests', 'Guard HP +5'], shift: ['Medic Rotation', 'Injury recovery −50%'], atk_2: ['Tactical Drills', 'Guard attack +2'] } },
+  security: { name: 'Marine Barracks', desc: 'Stationed workers are marines; each takes 1 population. Weapons in stock are issued automatically, raising attack from 2 to 5.', nodes: {
+    hp_5: ['Armored Vests', 'Marine HP +5'], shift: ['Medic Rotation', 'Injury recovery −50%'], atk_2: ['Tactical Drills', 'Marine attack +2'] } },
   water_cycle: { name: 'Water Recycler', desc: 'Reclaims wastewater and condensation. Nutrient consumption −10%, and each Hab Pod level houses 1 more.' },
   colony_core: { name: 'Colony Core', desc: 'Command Lv4. A xenocrystal reactor — the colony is no longer just surviving. Requires population 40 and 2 raids repelled.' },
   admin: { name: 'Administration Hall', desc: 'The colony council chamber. Unlocks taxes and colony charters; taxes bring in credits, but every tax level costs 5 morale.', nodes: {
@@ -64,7 +64,7 @@ const research: Record<string, [string, string]> = {
   weapon_1: ['Weapon Tuning I', 'Weapon attack +2'],
   arms_line: ['Arms Line', 'Weapon output +30%'],
   weapon_2: ['Weapon Tuning II', 'Weapon attack +2'],
-  crystal_armor: ['Crystal Armor', 'Guard HP +5'],
+  crystal_armor: ['Crystal Armor', 'Marine HP +5'],
   crystal_ration: ['Emergency Rations', 'Nutrient consumption −10%'],
   crystal_resonance: ['Crystal Resonance', 'All gathering output +10%'],
   warehouse: ['Warehouse Expansion', 'All storage +50%'],
@@ -116,9 +116,9 @@ const chapters = [
     intro: [
       'The first time the outpost searchlight swept the wasteland, it lit up a pack of things watching us.',
       'They are small, but there are many, and they learn fast. The crystal clusters glow violet at night — that is the light they follow.',
-      'Build a security post, forge weapons, learn to use xenocrystal. This planet does not want you, but you have nowhere else to go.',
+      'Build marine barracks, forge weapons, learn to use xenocrystal. This planet does not want you, but you have nowhere else to go.',
     ],
-    goals: ['Build a Security Post and station guards', 'Build a Crystal Synthesizer', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
+    goals: ['Build the Marine Barracks and station marines', 'Build a Crystal Synthesizer', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
   {
     title: 'The Corporation’s Shadow', subtitle: 'The price of freedom',

@@ -137,7 +137,7 @@
   {
     "id": "crystal_armor",
     "name": "異晶護甲",
-    "desc": "保全血量 +5",
+    "desc": "陸戰隊員血量 +5",
     "cost": {
       "parts": 150,
       "crystal": 20
