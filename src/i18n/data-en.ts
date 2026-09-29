@@ -163,7 +163,7 @@ const events: Record<string, { title: string; text: string; options: string[] }>
   rescue_ines: {
     title: 'A Broken Distress Call',
     text: 'A woman\'s voice crackles through the comm, over the clang of metal: "This is... Ines... my pod is wedged in an ice crevasse... I have tools, but no air. Please hurry."',
-    options: ['Send 2 idle colonists (2 min)', 'Not enough hands right now, go later (the signal will repeat)'],
+    options: ['Mara and Juno drive out (2 min, no workers needed)', 'Later (the signal will repeat)'],
   },
   envoy: {
     title: 'Corporate Envoy',

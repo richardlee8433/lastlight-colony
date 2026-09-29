@@ -83,9 +83,9 @@ export function resolveEvent(s: GameState, choice: number) {
       notify(s, 'n.meteorHit', { b: a.target! }, 'warn');
     }
   } else if (a.kind === 'rescue_ines') {
+    // 瑪拉和朱諾親自去，不佔用工人（第 2 章通常沒有閒置人手，不能卡住主線）
     if (choice === 0) {
-      if (idle(s) < 2) return;
-      s.events.rescue = { until: s.t + INES_TRIP, workers: 2, ines: true };
+      s.events.rescue = { until: s.t + INES_TRIP, workers: 0, ines: true };
       notify(s, 'n.inesGo');
     } else s.story.inesAt = s.t + INES_RETRY;
     s.events.active = null;

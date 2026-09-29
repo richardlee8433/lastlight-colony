@@ -8,7 +8,7 @@ import { rebuild, rebuildBlock, assign, boostBlock, buyNode, levelBlock, levelUp
 import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
-import { airSafety } from '../src/engine/air';
+import { airSafety, lifeSupportLeft } from '../src/engine/air';
 import { setFoodPerPop, built, foodSafety, idle, levelCost, netRates, popCap, storageCap, workerCap, RESEARCH_DEFS } from '../src/engine/formulas';
 
 const duty = Number(process.argv[2] ?? 0.5);
@@ -54,7 +54,7 @@ function decide(s: GameState) {
   s.story.seenIntro = Math.min(s.stage, 6);   // 玩家看完章節開場（劇情對話與伊涅絲事件要靠它觸發）
   if (s.events.active) {
     const k = s.events.active.kind;
-    resolveEvent(s, k === 'rescue_ines' ? (idle(s) >= 2 ? 0 : 1) : k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
+    resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
   }
   if (s.stage >= 5 && built(s, 'admin')) {
     setTax(s, 2);
@@ -175,6 +175,8 @@ const raids: string[] = [];
 const stageAt: Record<number, number> = {};
 const marksTime = (st: number) => (stageAt[st] ??= s.t) + 150;
 let lastStage = 1, clickAcc = 0;
+// v0.6 氧氣與劇情里程碑：再生器蓋好時維生系統還剩幾秒、伊涅絲何時救回、第 1～2 章空氣安全度最低點
+let scrubberAt = -1, lsLeftAtScrubber = 0, inesAt = -1, minAir12 = 1;
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 for (let i = 0; i < (8 * 3600) / TICK && !s.finished && !s.failed; i++) {
   if (i % 5 === 0) { decide(s); if (i % 25 === 0) reassign(s); }
@@ -187,6 +189,9 @@ for (let i = 0; i < (8 * 3600) / TICK && !s.finished && !s.failed; i++) {
   }
   step(s, TICK, { rng });
   if (s.starving) starve += TICK;
+  if (scrubberAt < 0 && built(s, 'o2_scrubber')) { scrubberAt = s.t; lsLeftAtScrubber = lifeSupportLeft(s); }
+  if (inesAt < 0 && s.story.ines) inesAt = s.t;
+  if (s.stage <= 2 && s.t > 5) minAir12 = Math.min(minAir12, airSafety(s));
   // 資源統計：累計產量、滿倉時間、見底時間（用來看哪種資源過剩、哪種卡關）
   const capNow = storageCap(s);
   for (const k of RES_KEYS) {
@@ -211,6 +216,7 @@ for (const m of rebuilt) console.log('  ' + m);
 console.log(`  結束：${s.finished ? '信標點亮' : '未完成'}（信標 ${s.b.orbital_beacon.level}/5），時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
 console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).join('、'));
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
+console.log(`  氧氣再生器：${scrubberAt < 0 ? '未蓋' : fmt(scrubberAt) + '（維生系統剩 ' + fmt(lsLeftAtScrubber) + '）'}；伊涅絲：${inesAt < 0 ? '未救回' : fmt(inesAt)}；第 1～2 章空氣安全度最低 ${Math.round(minAir12 * 100)}%`);
 console.log(`  缺氧累計 ${fmt(hypoxic)}，空氣安全度低於 25% 累計 ${fmt(lowAir)}；${s.failed ? '殖民地瓦解（' + s.failReason + '）' : ''}`);
 console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}；階段 2–3 低於 50% 累計 ${fmt(midFood)}`);
 console.log('  資源（累計產量／滿倉時間／見底時間）：');

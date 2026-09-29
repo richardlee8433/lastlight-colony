@@ -144,9 +144,9 @@ export const STRINGS: Record<string, [string, string]> = {
   'rescue.text.0': ['At the bottom of the canyon was another escape pod — two people crammed inside, surviving three days on their last oxygen canister. They broke down crying when they saw the helmet lights.', '峽谷底下是另一艘逃生艙，裡面擠著兩個人，靠最後一罐氧氣撐了三天。他們一看到頭盔上的燈就哭了。'],
   'rescue.text.1': ['The signal came from a lost miner down to his last bar of oxygen. The team dragged back his broken cart too, for parts.', '訊號來自一位迷路的礦工，氧氣只剩最後一格。救援隊順手把他那台故障的推車也拖回來拆零件。'],
   'rescue.inesTitle': ['Ines is safe', '救回了伊涅絲'],
-  'rescue.inesText': ['The team found her in the crevasse tapping out a rhythm on the pod wall with a wrench, "to stay awake." She refused to leave her toolbox, Dorothy, so they carried both. The moment she reached camp she stared at Wheezy: "Who built... this?"', '救援隊在冰縫裡找到她時，她正用扳手敲著艙壁打拍子，說是為了保持清醒。她不肯丟下工具箱「桃樂絲」，救援隊只好連人帶箱扛回來。她一進營地就盯著阿喘看：「這台……是誰做的？」'],
+  'rescue.inesText': ['Mara and Juno found her in the crevasse tapping out a rhythm on the pod wall with a wrench, "to stay awake." She refused to leave her toolbox, Dorothy, so they hauled both back. The moment she reached camp she stared at Wheezy: "Who built... this?"', '瑪拉和朱諾在冰縫裡找到她時，她正用扳手敲著艙壁打拍子，說是為了保持清醒。她不肯丟下工具箱「桃樂絲」，兩人只好連人帶箱扛回來。她一進營地就盯著阿喘看：「這台……是誰做的？」'],
   'g.ines': ['Ines the engineer joins the colony', '工程師伊涅絲加入殖民地'],
-  'n.inesGo': ['Two colonists head for the ice crevasse. Back in 2 minutes.', '兩位殖民者出發前往冰縫，2 分鐘後回來。'],
+  'n.inesGo': ['Mara and Juno head for the ice crevasse. Back in 2 minutes.', '瑪拉和朱諾出發前往冰縫，2 分鐘後回來。'],
   'rescue.text.2': ['Whoever sent the signal was gone; only an automatic beacon was still broadcasting. The team brought back everything nearby worth salvaging.', '求救的人已經不在了，只剩一台還在自動廣播的信標。救援隊把附近能拆的都帶了回來。'],
   'rescue.text.3': ['The one they brought back is a former Helion overseer. He says he escaped too — everyone is still deciding whether to believe him.', '救回來的是赫利昂企業的前監工。他說自己也是逃出來的，大家還在考慮要不要相信他。'],
 
