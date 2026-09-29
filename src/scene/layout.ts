@@ -31,7 +31,7 @@ export const SITES: Site[] = [
   { id: 'spaceport', x: 132, y: 474 },
 ];
 /** 襲擊時異星生物從哪一側出現（依 incoming.side） */
-export const RAID_SPAWN = [{ x: -30, y: 250 }, { x: 810, y: 240 }, { x: 390, y: -30 }, { x: 400, y: 550 }];
-/** 預警結束時異星生物停下的位置：地圖邊緣內側（殖民地外圍），不會提早闖進建築群 */
-export const RAID_RALLY = [{ x: 34, y: 230 }, { x: 746, y: 220 }, { x: 390, y: 28 }, { x: 440, y: 508 }];
+export const RAID_SPAWN = [{ x: -14, y: 250 }, { x: 794, y: 240 }, { x: 390, y: -14 }, { x: 400, y: 536 }];
+/** 預警結束時異星生物停下的位置：殖民地外圍的空地（避開左上、左下的介面面板），不會提早闖進建築群 */
+export const RAID_RALLY = [{ x: 104, y: 214 }, { x: 706, y: 214 }, { x: 390, y: 44 }, { x: 480, y: 496 }];
 export const HOME = { x: CENTER.x, y: CENTER.y + 30 };

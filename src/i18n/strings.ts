@@ -130,6 +130,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'qb.new': ['Build', '建造'],
 
   // ── 襲擊預警 ──
+  'rb.show': ['Show on map', '在地圖上查看'],
   'rb.noGuards': ['No defenders', '沒有保全迎戰'],
   'rb.ahead': ['We have the edge', '我方佔優勢'],
   'rb.even': ['Evenly matched', '勢均力敵'],

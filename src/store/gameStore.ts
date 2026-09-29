@@ -81,6 +81,8 @@ interface Store {
   restoreCheckpoint: () => void;
   seenIntro: () => void;
   saveNow: () => void;
+  raidLook: number;
+  lookAtRaid: () => void;
   reset: () => void;
 }
 
@@ -110,6 +112,8 @@ export const useGame = create<Store>((set, get) => {
     setTax: (n) => run((s) => G.setTax(s, n)),
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),
     seenIntro: () => run((s) => { s.story.seenIntro = Math.min(s.stage, CHAPTERS.length); }),
+    raidLook: 0,
+    lookAtRaid: () => set((st) => ({ raidLook: st.raidLook + 1 })),
     saveNow: () => { save(game.s); get().bump(); },
     restoreCheckpoint: () => {
       const cp = game.s.checkpoint;

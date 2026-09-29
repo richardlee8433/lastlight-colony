@@ -16,6 +16,7 @@ export function RaidBanner() {
   return (
     <div className={'raid px' + (inc ? ' alert' : '')} role={inc ? 'alert' : 'status'}>
       <b>{inc ? t('rb.incoming', { ...p, n: inc.enemies, s: Math.ceil(inc.at - s.t) }) : t('rb.next', { ...p, n: e.enemies, t: fmtTime(r.nextAt - s.t) })}</b>
+      {inc && <button type="button" className="btn raid-look" onClick={() => useGame.getState().lookAtRaid()}>{t('rb.show')}</button>}
       <span>{t('rb.ours', { r: d.ready, g: d.guards, a: d.armedReady })}{d.turrets ? t('rb.turrets', { n: d.turrets }) : ''} · {t('rb.power', { a: Math.round(d.atk), h: Math.round(d.hp), ea: Math.round(eAtk), eh: Math.round(eHp) })} · {odds}</span>
     </div>
   );

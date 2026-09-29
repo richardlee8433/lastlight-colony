@@ -43,6 +43,8 @@ export class GameScene {
   T = 0;
   unsub: (() => void) | null = null;
   lastFocus = 0;
+  lastRaidLook = 0;
+  raidMark: any = null;
 
   async init(host: HTMLElement) {
     await this.app.init({
@@ -68,6 +70,7 @@ export class GameScene {
     this.unsub = useGame.subscribe((st, prev) => {
       if (st.v !== prev.v || st.selected !== prev.selected) this.sync();
       if (st.focus && st.focus.n !== this.lastFocus) { this.lastFocus = st.focus.n; this.focusOn(st.focus.id); }
+      if (st.raidLook !== this.lastRaidLook) { this.lastRaidLook = st.raidLook; this.lookAtRaid(); }
     });
     this.app.ticker.add((tk) => this.frame(Math.min(0.05, tk.deltaMS / 1000)));
     new ResizeObserver(() => this.resize(host)).observe(host);
@@ -399,6 +402,53 @@ export class GameScene {
       this.aliens.push(a);
     }
   }
+  /** 敵群目前的中心（地圖座標） */
+  raidCenter() {
+    if (!this.aliens.length) return null;
+    let x = 0, y = 0;
+    for (const a of this.aliens) { x += a.x; y += a.y; }
+    return { x: x / this.aliens.length, y: y / this.aliens.length };
+  }
+  lookAtRaid() {
+    if (!this.aliens.length) return;
+    // 鏡頭對準集結點（敵群最後會停在那裡），邊走邊看得到牠們接近
+    const c = { x: 0, y: 0 };
+    for (const a of this.aliens) { c.x += a.to.x / this.aliens.length; c.y += a.to.y / this.aliens.length; }
+    this.camGoal = this.clampXY(c.x - this.app.screen.width / this.Z / 2, c.y - this.app.screen.height / this.Z / 2);
+  }
+  /** 敵群在畫面外時，在畫面邊緣顯示指向牠們的紅色箭頭與數量；點擊就把鏡頭移過去 */
+  updateRaidMark() {
+    const c = this.raidCenter(), inc = game.s.raid?.incoming;
+    if (!c || !inc) { if (this.raidMark) this.raidMark.visible = false; return; }
+    if (!this.raidMark) {
+      const m: any = new Container();
+      const g = new Graphics();
+      g.circle(0, 0, 17).fill({ color: 0x2a0d14 }).stroke({ color: 0xff5a5a, width: 3 });
+      g.poly([22, 0, 12, -8, 12, 8]).fill({ color: 0xff5a5a });
+      const tx = new Text({ text: '', style: { fontFamily: '"Noto Sans TC", sans-serif', fontSize: 14, fontWeight: '900', fill: 0xffd0d0 } });
+      tx.anchor.set(0.5);
+      m.addChild(g, tx); m.arrow = g; m.label = tx;
+      m.eventMode = 'static'; m.cursor = 'pointer';
+      m.on('pointerdown', (e: any) => { e.stopPropagation(); this.lookAtRaid(); });
+      m.zIndex = 1e6;
+      this.hud.addChild(m);
+      this.raidMark = m;
+    }
+    const m = this.raidMark, W = this.app.screen.width, H = this.app.screen.height;
+    const [sx, sy] = this.toScreen(c.x, c.y - 6);
+    const pad = 40, top = 110, bottom = 110;
+    const off = sx < 0 || sx > W || sy < top - 40 || sy > H - bottom + 40;
+    m.visible = off;
+    if (!off) return;
+    const cx = W / 2, cy = H / 2, dx = sx - cx, dy = sy - cy;
+    // 從畫面中心往敵群方向射線，停在畫面邊框內側
+    const k = Math.min(Math.abs((W / 2 - pad) / (dx || 1e-6)), Math.abs((H / 2 - (dy < 0 ? top : bottom)) / (dy || 1e-6)));
+    m.position.set(Math.round(cx + dx * k), Math.round(cy + dy * k));
+    m.arrow.rotation = Math.atan2(dy, dx);
+    m.label.text = String(inc.enemies);
+    const pulse = 1 + 0.08 * Math.sin(this.T * 8);
+    m.scale.set(pulse);
+  }
   /** 位置完全由倒數決定：預警開始在地圖外，倒數結束剛好抵達集結點 */
   moveAliens() {
     const inc = game.s.raid?.incoming;
@@ -513,6 +563,7 @@ export class GameScene {
     this.resolveLabels(labels);
     for (const w of this.walkers) this.moveWalker(w, dt);
     this.moveAliens();
+    this.updateRaidMark();
     if (this.hold) {
       this.hold.next -= dt;
       if (this.hold.next <= 0) {
