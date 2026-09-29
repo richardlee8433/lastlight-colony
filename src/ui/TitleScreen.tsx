@@ -49,7 +49,7 @@ export function TitleScreen() {
       </div>
 
       <header className="title-logo">
-        <h1>{lang === 'zh' ? <>末光殖民地<small>Lastlight Colony</small></> : <>Lastlight Colony<small>末光殖民地</small></>}</h1>
+        <h1>Lastlight Colony</h1>
         <p>{t('title.tagline')}</p>
       </header>
 
