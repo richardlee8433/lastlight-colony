@@ -20,7 +20,7 @@ let seed = 7;
 const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
 const PRODUCER: Record<ResKey, string[]> = {
-  nutrient: ['algae_tank'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
+  nutrient: ['algae_tank'], oxygen: ['o2_scrubber', 'electrolyzer'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
   parts: ['assembly'], metal: ['metal_mine'], tools: ['forge'], weapon: ['forge'], crystal: ['crystal_synth'], credit: ['trade_post'],
 };
 const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
