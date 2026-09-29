@@ -3,7 +3,7 @@ import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { bDesc, bName, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
-  gatherRate, idle, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
+  gatherRate, hurtCivilians, idle, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
 } from '../engine/formulas';
 import { levelBlock, nodeBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
@@ -212,9 +212,10 @@ function Defense() {
 
 /** 研究所頁面只顯示目前研究進度；完整科技樹在另一頁 */
 function MedBay() {
-  const s = game.s, beds = medBeds(s);
+  const s = game.s, beds = medBeds(s), patients = injuredCount(s) + hurtCivilians(s);
   const rows: [string, string][] = [
-    [t('md.beds'), t('md.bedsV', { n: Math.min(injuredCount(s), beds), m: beds })],
+    [t('md.beds'), t('md.bedsV', { n: Math.min(patients, beds), m: beds })],
+    [t('md.patients'), t('md.patientsV', { a: injuredCount(s), b: hurtCivilians(s) })],
     [t('md.rate'), `×${healRate(s).toFixed(1)}`],
   ];
   return (

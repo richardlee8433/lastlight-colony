@@ -11,6 +11,7 @@ function leave(s: GameState) {
     let best: string | null = null;
     for (const d of DEFS) if (s.b[d.id].workers > 0 && (!best || s.b[d.id].workers > s.b[best].workers)) best = d.id;
     if (best) s.b[best].workers--;
+    else if (s.raid?.hurt?.length) s.raid.hurt.pop();
   }
   s.pop -= 1;
 }

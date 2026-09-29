@@ -37,6 +37,8 @@ export interface BattleReport {
   won: boolean; raid: number; enemies: number; guards: number; armed: number; turrets?: number; kind?: string;
   rounds: { ours: number; theirs: number; oursMax: number; theirsMax: number }[];
   injured: number;
+  /** 受傷的一般殖民者人數 */
+  civHurt?: number;
   /** 舊存檔是中文字串，新的是 Msg */
   lines: (Msg | string)[];
 }
@@ -44,6 +46,8 @@ export interface RaidState {
   count: number; won: number; nextAt: number;
   incoming: { at: number; enemies: number; atk: number; hp: number; side: number; kind?: 'alien' | 'raider' | 'commando' } | null;
   injured: number[]; armed: number; report: BattleReport | null;
+  /** 戰鬥中受傷的一般殖民者：復原時間、原本工作的建築（好了會回去） */
+  hurt?: { until: number; b: string | null }[];
 }
 /** 階段 5：治理（稅、憲章）、企業關係、貿易 */
 export interface GovState {

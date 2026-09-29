@@ -584,7 +584,9 @@ export class GameScene {
     const n = !df || fighting ? 0 : Math.min(8, df.ready), armed = df ? Math.min(n, df.armedReady) : 0;
     const walkingHurt = this.defenders.filter((d) => d.patient).length;
     const hurt = !df ? 0 : Math.max(0, Math.min(6, injuredCount(s) - walkingHurt));
-    const key = `${n}|${armed}|${hurt}|${built(s, 'med_bay')}`;
+    // 被戰鬥波及的一般殖民者也在醫療艙（沒有醫療艙就在營地）休養
+    const civ = Math.min(6, s.raid?.hurt?.length ?? 0);
+    const key = `${n}|${armed}|${hurt}|${civ}|${built(s, 'med_bay')}`;
     if (key === this.patrolKey) return;
     this.patrolKey = key;
     for (const m of [...this.patrols, ...this.patients]) m.destroy({ children: true });
@@ -608,6 +610,17 @@ export class GameScene {
       m.update(0, 0);
       this.obj.addChild(m);
       this.patients.push(m);
+    }
+    const civDoor = built(s, 'med_bay') ? door : HOME;
+    for (let i = 0; i < civ; i++) {
+      const w: any = createWorker(Math.min(6, s.stage));
+      w.eventMode = 'none';
+      w.tint = 0xffc4c4; w.alpha = 0.9;
+      w.position.set(Math.round(civDoor.x + 20 + (i % 3) * 9), Math.round(civDoor.y + 2 + Math.floor(i / 3) * 7));
+      w.zIndex = w.y;
+      w.setDir(-1); w.update(0);
+      this.obj.addChild(w);
+      this.patients.push(w);
     }
   }
   movePatrols(dt: number) {

@@ -1,5 +1,5 @@
 import { useGame, game } from '../store/gameStore';
-import { arrivalInterval, foodSafety, idle, moraleMult, netRates, popCap, rescueWorkers } from '../engine/formulas';
+import { arrivalInterval, foodSafety, hurtCivilians, idle, moraleMult, netRates, popCap, rescueWorkers } from '../engine/formulas';
 import { Bar, fmtTime } from './common';
 import { t } from '../i18n';
 
@@ -13,6 +13,7 @@ export function ColonyPanel() {
     <div className="colony px">
       <div className="row"><span>{t('cp.colonists')}</span><b>{s.pop}<small>/{cap}</small></b></div>
       <div className="row"><span>{t('cp.idle')}</span><b className={idle(s) > 0 ? 'hl' : ''}>{idle(s)}</b></div>
+      {hurtCivilians(s) > 0 && <div className="row"><span>{t('cp.hurt')}</span><b className="warn">{hurtCivilians(s)}</b></div>}
       {rescueWorkers(s) > 0 && <div className="row"><span>{t('cp.rescue')}</span><b>{rescueWorkers(s)}</b></div>}
       <div className="meter"><span>{t('cp.food', { n: Math.round(fs * 100) })}</span><Bar value={fs} tone={fs < 0.25 ? 'bad' : fs < 0.6 ? 'mid' : 'good'} /></div>
       <div className="meter"><span>{t('cp.morale', { n: Math.round(s.morale), m: moraleMult(s).toFixed(2) })}</span><Bar value={s.morale / 100} tone="morale" /></div>

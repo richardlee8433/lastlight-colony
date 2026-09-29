@@ -1,8 +1,8 @@
 // 異星生物襲擊與自動戰鬥（GDD §10）
 // 預警 60 秒 → 回合制自動結算（最多 10 回合）→ 勝利拿戰利品；失敗被搶走某資源 15%、士氣 −10。
 // 保全不會死亡，倒下的只會「受傷」一段時間無法參戰。
-import { BattleReport, GameState, Msg, RES_UNLOCK, ResKey, msg, notify } from './state';
-import { add, built, nodeEffect, researchEffect } from './formulas';
+import { BattleReport, DEFS, GameState, Msg, RES_UNLOCK, ResKey, msg, notify } from './state';
+import { add, built, idle, nodeEffect, researchEffect, workerCap } from './formulas';
 
 export const FIRST_RAID = 480;      // 進入階段 4 後幾秒發生第一次襲擊
 export const RAID_GAP: [number, number] = [360, 540];
@@ -17,8 +17,45 @@ function treat(s: GameState, dt: number) {
   const beds = medBeds(s), rate = healRate(s);
   if (!beds || rate <= 1) return;
   const r = s.raid;
-  const order = r.injured.map((u, i) => [u, i]).filter(([u]) => u > s.t).sort((a, b) => a[0] - b[0]).slice(0, beds);
-  for (const [, i] of order) r.injured[i] -= dt * (rate - 1);
+  // 陸戰隊員與受傷的殖民者共用病床，誰先快好就先躺
+  const list: { u: number; set: (v: number) => void }[] = [
+    ...r.injured.map((u, i) => ({ u, set: (v: number) => { r.injured[i] = v; } })),
+    ...(r.hurt ?? []).map((h) => ({ u: h.until, set: (v: number) => { h.until = v; } })),
+  ].filter((x) => x.u > s.t).sort((a, b) => a.u - b.u).slice(0, beds);
+  for (const x of list) x.set(x.u - dt * (rate - 1));
+}
+/** 受傷的殖民者好了：回到原本的崗位（還有空位的話），否則變成閒置 */
+function recover(s: GameState) {
+  const r = s.raid;
+  if (!r.hurt?.length) return;
+  const done = r.hurt.filter((h) => h.until <= s.t);
+  if (!done.length) return;
+  r.hurt = r.hurt.filter((h) => h.until > s.t);
+  for (const h of done) if (h.b && built(s, h.b) && s.b[h.b].workers < workerCap(s, h.b)) s.b[h.b].workers++;
+  notify(s, 'n.recovered', { n: done.length }, 'good');
+}
+/** 戰鬥波及一般殖民者的機率：一定低於陸戰隊的受傷比例（陸戰隊倒下比例 × 0.3，打輸再 +2%）；沒人迎戰時 10%。一次最多 5 人 */
+export function civHurtChance(won: boolean, fought: number, down: number) {
+  if (!fought) return 0.1;
+  const frac = down / fought;
+  return won ? 0.3 * frac : Math.min(0.12, 0.3 * frac + 0.02);
+}
+function woundCivilians(s: GameState, p: number, heal: number, rng: () => number) {
+  const r = s.raid;
+  r.hurt ??= [];
+  // 候選人：各建築的工人（陸戰隊除外）與閒置的人
+  const pool: (string | null)[] = [];
+  for (const d of DEFS) if (d.id !== 'security' && built(s, d.id)) for (let i = 0; i < s.b[d.id].workers; i++) pool.push(d.id);
+  for (let i = 0; i < idle(s); i++) pool.push(null);
+  let n = 0;
+  for (const b of pool) {
+    if (n >= 5) break;
+    if (rng() >= p) continue;
+    if (b) s.b[b].workers--;
+    r.hurt.push({ until: s.t + heal, b });
+    n++;
+  }
+  return n;
 }
 export const guards = (s: GameState) => (built(s, 'security') ? s.b.security.workers : 0);
 export const injuredCount = (s: GameState) => s.raid.injured.filter((u) => u > s.t).length;
@@ -57,7 +94,9 @@ export function defense(s: GameState) {
 /** 每個 tick：配發武器、排程與預警、開打 */
 export function combat(s: GameState, offline = false, rng = Math.random, dt = 0.2) {
   const r = s.raid;
+  r.hurt ??= [];
   treat(s, dt);
+  if (!offline) recover(s);
   // 武器配發：保全人數變少時武器退回庫存
   const g = guards(s);
   if (r.armed > g) { add(s, 'weapon', r.armed - g); r.armed = g; }
@@ -124,6 +163,8 @@ function fight(s: GameState, rng: () => number) {
     notify(s, ours.length ? 'n.raidLost' : 'n.raidNoDef', { kind: inc.kind ?? 'alien' }, 'warn');
   }
   if (down) lines.push(msg('l.injured', { n: down, m: Math.round(heal / 60 * 10) / 10 }));
-  r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, turrets: nt, kind: inc.kind ?? 'alien', rounds, injured: down, lines };
+  const civ = woundCivilians(s, civHurtChance(won, ready, down), INJURY * 0.8, rng);
+  if (civ) lines.push(msg('l.civHurt', { n: civ, m: Math.round((INJURY * 0.8) / 60 * 10) / 10 }));
+  r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, turrets: nt, kind: inc.kind ?? 'alien', rounds, injured: down, civHurt: civ, lines };
   r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
 }

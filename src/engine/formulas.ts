@@ -83,7 +83,9 @@ export function assignedTotal(s: GameState): number {
   return n;
 }
 export const rescueWorkers = (s: GameState) => s.events.rescue?.workers ?? 0;
-export const idle = (s: GameState) => s.pop - assignedTotal(s) - rescueWorkers(s);
+/** 戰鬥中受傷、正在休養的一般殖民者 */
+export const hurtCivilians = (s: GameState) => s.raid?.hurt?.length ?? 0;
+export const idle = (s: GameState) => s.pop - assignedTotal(s) - rescueWorkers(s) - hurtCivilians(s);
 
 /** 每位殖民者每秒消耗的營養（GDD 原值 0.1，實測糧食幾乎不會不夠，調高到 0.25） */
 export let FOOD_PER_POP = 0.25;
