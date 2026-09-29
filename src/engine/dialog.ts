@@ -84,14 +84,15 @@ export function dialogs(s: GameState) {
 
 /** 舊存檔：已經過去的里程碑視為播過（不補播），日誌從今天開始記 */
 export function migrateDialogs(s: GameState) {
-  // 伊涅絲（v0.6 第 6 步）：已經離開第 2 章的存檔視為早就救回來了，她的對話不補播
+  if (!s.story.seen) {
+    s.story.seen = s.stage >= 2 || s.t > 5 ? TRIGGERS.filter((x) => x.when(s)).map((x) => x.id) : [];
+    s.story.queue = [];
+    s.journal = newJournal(s);
+    if (s.t > 5) write(s, 'log.migrated');
+  }
+  // 伊涅絲（v0.6 第 6 步）：已經離開第 2 章的存檔視為早就救回來了，她相關的對話不補播
   if (s.story.ines === undefined && s.stage >= 3) {
     s.story.ines = true;
-    if (s.story.seen) for (const id of ['c2-ines', 'c2-elec', 'c2-elec-i', 'c2-assembly', 'c2-coaster']) if (!s.story.seen.includes(id)) s.story.seen.push(id);
+    for (const id of ['c2-ines', 'c2-elec', 'c2-elec-i', 'c2-assembly', 'c2-coaster']) if (!s.story.seen.includes(id)) s.story.seen.push(id);
   }
-  if (s.story.seen) return;
-  s.story.seen = s.stage >= 2 || s.t > 5 ? TRIGGERS.filter((x) => x.when(s)).map((x) => x.id) : [];
-  s.story.queue = [];
-  s.journal = newJournal(s);
-  if (s.t > 5) write(s, 'log.migrated');
 }
