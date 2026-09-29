@@ -72,6 +72,10 @@ const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id
 
 /** 章末場景還沒播完：下一章的開場畫面先等一下 */
 export const chapterEndPending = (s: GameState) => !!s.story.queue?.some((q) => CHAPTER_END.has(q.id));
+/** 章末場景屬於第幾章（例如 c3-end → 3）；不是章末場景回傳 0 */
+export const endOfChapter = (id: string) => (CHAPTER_END.has(id) ? Number(id.match(/^c(\d+)-end$/)?.[1] ?? 0) : 0);
+/** 正在等著播的章末場景是第幾章（任務欄在它播完前繼續顯示那一章） */
+export const endingChapter = (s: GameState) => Math.min(...(s.story.queue ?? []).map((q) => endOfChapter(q.id)).filter((n) => n > 0), Infinity);
 
 export function newJournal(s: GameState): Journal {
   return { entries: [], b: DEFS.filter((d) => built(s, d.id)).map((d) => d.id), pop: Math.floor(s.pop / POP_STEP) * POP_STEP, raids: s.raid?.count ?? 0, rs: s.research.done.length, hyp: !!s.air?.hypoxic };

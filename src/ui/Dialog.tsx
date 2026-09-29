@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGame, game } from '../store/gameStore';
 import { SCENES } from '../data/dialogs';
+import { endOfChapter } from '../engine/dialog';
 import { portraitURL } from '../art/portraitArt';
 import { t, useLang } from '../i18n';
 import { sfx } from '../audio/audio';
@@ -45,6 +46,7 @@ function Scene({ id, day }: { id: string; day: number }) {
       <div className="dlg-box px" onClick={next} role="button" tabIndex={0} aria-label={t('dlg.next')}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } }}>
         <span className="dlg-name">{t('who.' + who)}</span>
+        {endOfChapter(id) > 0 && <span className="dlg-ch">{t('dlg.chEnd', { n: endOfChapter(id) })}</span>}
         <p aria-live="polite">{text.slice(0, shown)}<span className="dlg-rest" aria-hidden="true">{text.slice(shown)}</span></p>
         {!typing && <i className="dlg-arrow" aria-hidden="true">▼</i>}
         <span className="dlg-count">{i + 1}/{lines.length}</span>

@@ -403,6 +403,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'who.voss': ['Voss', '沃斯'],
   'who.calder': ['Envoy Calder', '卡爾德使者'],
   'dlg.skip': ['Skip', '跳過'],
+  'dlg.chEnd': ['Chapter {n} · End', '第 {n} 章・終'],
   'dlg.next': ['Next', '下一句'],
   'dlg.label': ['Dialogue', '對話'],
   'log.short': ['Log', '日誌'],
