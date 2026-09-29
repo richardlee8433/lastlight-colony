@@ -23,6 +23,7 @@ export const SITES: Site[] = [
   { id: 'security', x: 654, y: 276 },
   { id: 'water_cycle', x: 390, y: 448 },
   { id: 'crystal_synth', x: 660, y: 452 },
+  { id: 'med_bay', x: 612, y: 336 },
   // 階段 5：四個角落與上緣
   { id: 'admin', x: 560, y: 74 },
   { id: 'trade_post', x: 220, y: 74 },
@@ -46,21 +47,21 @@ function rectOf(s: Site, pad = 0) {
   if (s.hub) return { x0: s.x - 46 - pad, x1: s.x + 46 + pad, y0: s.y - 44 - pad, y1: s.y - 4 };
   return { x0: s.x - 26 - pad, x1: s.x + 26 + pad, y0: s.y - 34 - pad, y1: s.y + 10 + pad };
 }
-function blockedGrid(target: Site, start: Pt, skip?: Site) {
+function blockedGrid(skip: Site[], free: Pt[]) {
   const g = new Uint8Array(GW * GH);
   for (const s of SITES) {
-    if (s === target || s === skip) continue;
+    if (skip.includes(s)) continue;
     const r = rectOf(s, 4);
     for (let gy = Math.max(0, Math.floor(r.y0 / CELL)); gy <= Math.min(GH - 1, Math.floor(r.y1 / CELL)); gy++)
       for (let gx = Math.max(0, Math.floor(r.x0 / CELL)); gx <= Math.min(GW - 1, Math.floor(r.x1 / CELL)); gx++) g[gy * GW + gx] = 1;
   }
-  // 起點附近一律可走（指揮艙門口）
-  for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++)
-    if (Math.hypot(gx * CELL + 3 - start.x, gy * CELL + 3 - start.y) < 14) g[gy * GW + gx] = 0;
+  // 起點、終點附近一律可走（例如指揮艙門口）
+  for (const p of free) for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++)
+    if (Math.hypot(gx * CELL + 3 - p.x, gy * CELL + 3 - p.y) < 14) g[gy * GW + gx] = 0;
   return g;
 }
 function clearLine(g: Uint8Array, a: Pt, b: Pt) {
-  const n = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 2);
+  const n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 2));
   for (let i = 0; i <= n; i++) {
     const x = a.x + ((b.x - a.x) * i) / n, y = a.y + ((b.y - a.y) * i) / n;
     const gx = Math.floor(x / CELL), gy = Math.floor(y / CELL);
@@ -68,12 +69,12 @@ function clearLine(g: Uint8Array, a: Pt, b: Pt) {
   }
   return true;
 }
-function findRoute(target: Site, ROAD_START: Pt = START, skip?: Site): Pt[] {
-  const end: Pt = { x: target.x, y: target.y + 6 };
-  const g = blockedGrid(target, ROAD_START, skip);
-  if (clearLine(g, ROAD_START, end)) return [ROAD_START, end];
+/** A* 網格尋路＋拉直：從 a 走到 b，避開所有建築（skip 裡的除外） */
+function findPath(a: Pt, b: Pt, skip: Site[] = []): Pt[] {
+  const g = blockedGrid(skip, [a, b]);
+  if (clearLine(g, a, b)) return [a, b];
   const idx = (p: Pt) => Math.floor(p.y / CELL) * GW + Math.floor(p.x / CELL);
-  const s0 = idx(ROAD_START), s1 = idx(end);
+  const s0 = idx(a), s1 = idx(b);
   const cost = new Float32Array(GW * GH).fill(Infinity), from = new Int32Array(GW * GH).fill(-1), done = new Uint8Array(GW * GH);
   const h = (i: number) => Math.hypot((i % GW) - (s1 % GW), Math.floor(i / GW) - Math.floor(s1 / GW));
   const open: number[] = [s0];
@@ -96,11 +97,11 @@ function findRoute(target: Site, ROAD_START: Pt = START, skip?: Site): Pt[] {
       if (nc < cost[n]) { cost[n] = nc; from[n] = c; open.push(n); }
     }
   }
-  if (from[s1] < 0) return [ROAD_START, end];
+  if (from[s1] < 0) return [a, b];
   const cells: Pt[] = [];
   for (let c = s1; c !== s0 && c >= 0; c = from[c]) cells.push({ x: (c % GW) * CELL + CELL / 2, y: Math.floor(c / GW) * CELL + CELL / 2 });
   cells.reverse();
-  const pts = [ROAD_START, ...cells.slice(0, -1), end];
+  const pts = [a, ...cells.slice(0, -1), b];
   // 拉直：從目前點直接連到看得到的最遠點
   const out: Pt[] = [pts[0]];
   let i = 0;
@@ -116,6 +117,10 @@ function findRoute(target: Site, ROAD_START: Pt = START, skip?: Site): Pt[] {
   }
   return out;
 }
+const doorOf = (s: Site): Pt => ({ x: s.x, y: s.y + 6 });
+function findRoute(target: Site, start: Pt = START, skip?: Site): Pt[] {
+  return findPath(start, doorOf(target), skip ? [target, skip] : [target]);
+}
 /** 每棟建築的道路折線（第一點是指揮艙門口，最後一點是建築門口） */
 export const ROUTES: Record<string, Pt[]> = Object.fromEntries(SITES.filter((s) => !s.hub).map((s) => [s.id, findRoute(s)]));
 
@@ -127,4 +132,50 @@ export function routeFromPod(id: string): Pt[] {
   const site = SITES.find((s) => s.id === id);
   if (!site || site === podSite) return [POD_DOOR];
   return (podRoutes[id] ??= findRoute(site, POD_DOOR, podSite));
+}
+
+/** 陸戰隊巡邏路線：繞著殖民地外圍的一圈（橢圓上取點，點與點之間用尋路避開建築），首尾相接 */
+function patrolLoop(): Pt[] {
+  const g = blockedGrid([], []);
+  const free = (p: Pt) => {
+    for (let r = 0; r < 60; r += 3) for (let a = 0; a < 16; a++) {
+      const q = { x: Math.round(p.x + Math.cos((a / 16) * Math.PI * 2) * r), y: Math.round(p.y + Math.sin((a / 16) * Math.PI * 2) * r) };
+      const gx = Math.floor(q.x / CELL), gy = Math.floor(q.y / CELL);
+      if (gx > 1 && gy > 1 && gx < GW - 2 && gy < GH - 2 && !g[gy * GW + gx]) return q;
+    }
+    return p;
+  };
+  const N = 14, ring: Pt[] = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * Math.PI * 2;
+    ring.push(free({ x: CENTER.x + Math.cos(a) * 318, y: CENTER.y + 20 + Math.sin(a) * 206 }));
+  }
+  const out: Pt[] = [];
+  for (let i = 0; i < N; i++) out.push(...findPath(ring[i], ring[(i + 1) % N]).slice(0, -1));
+  out.push(out[0]);
+  return out;
+}
+export const PATROL = patrolLoop();
+const PATROL_LEN = PATROL.slice(1).reduce((acc, p, i) => { acc.push(acc[i] + Math.hypot(p.x - PATROL[i].x, p.y - PATROL[i].y)); return acc; }, [0]);
+export const PATROL_TOTAL = PATROL_LEN[PATROL_LEN.length - 1];
+/** 巡邏路線上距離起點 d 的位置與行進方向 */
+export function patrolAt(d: number): { x: number; y: number; dir: number } {
+  d = ((d % PATROL_TOTAL) + PATROL_TOTAL) % PATROL_TOTAL;
+  let i = 1;
+  while (i < PATROL_LEN.length - 1 && PATROL_LEN[i] < d) i++;
+  const a = PATROL[i - 1], b = PATROL[i], seg = PATROL_LEN[i] - PATROL_LEN[i - 1] || 1, t = (d - PATROL_LEN[i - 1]) / seg;
+  return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, dir: Math.sign(b.x - a.x) || 1 };
+}
+
+/** 任意兩點之間繞開建築的路線（陸戰隊出擊、回防用） */
+export const pathBetween = (a: Pt, b: Pt) => findPath(a, b);
+/** 折線上比例 t（0–1）的位置 */
+export function along(pts: Pt[], t: number): Pt & { dir: number } {
+  const lens = [0];
+  for (let i = 1; i < pts.length; i++) lens.push(lens[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+  const d = Math.max(0, Math.min(1, t)) * lens[lens.length - 1];
+  let i = 1;
+  while (i < pts.length - 1 && lens[i] < d) i++;
+  const a = pts[i - 1], b = pts[i] ?? a, seg = lens[i] - lens[i - 1] || 1, u = (d - lens[i - 1]) / seg;
+  return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, dir: Math.sign(b.x - a.x) || 1 };
 }

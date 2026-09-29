@@ -7,8 +7,8 @@ import {
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
-import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod } from './layout';
-import { WARNING, defense } from '../engine/combat';
+import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
+import { WARNING, defense, injuredCount } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
@@ -32,6 +32,10 @@ export class GameScene {
   aliens: any[] = [];
   /** 出去迎戰的陸戰隊員（預警期間從營區走到防線，戰後走回去） */
   defenders: any[] = [];
+  /** 平時沿外圍巡邏的陸戰隊員；受傷的在醫療艙（沒有醫療艙就在營區）門口休養 */
+  patrols: any[] = [];
+  patrolKey = '';
+  patients: any[] = [];
   /** 飛行中的彈道（地圖座標）：bullet 曳光彈、spit 酸液；beam 是瞬間雷射，只淡出 */
   shots: { x: number; y: number; vx: number; vy: number; t: number; life: number; kind: 'bullet' | 'spit'; hit: any; tx: number; ty: number }[] = [];
   beams: { x1: number; y1: number; x2: number; y2: number; t: number }[] = [];
@@ -178,6 +182,7 @@ export class GameScene {
     }
     this.syncWorkers();
     this.syncRaid();
+    this.syncPatrols();
   }
 
   buildMap(stage: number) {
@@ -394,7 +399,15 @@ export class GameScene {
     this.aliens = [];
     // 戰鬥結束：陸戰隊員走回營區，場上的彈道清掉
     this.shots = []; this.beams = [];
-    for (const d of this.defenders) { d.from = { x: d.x, y: d.y }; d.to = d.home; d.back = 0; }
+    const hurt = game.s.raid?.report?.injured ?? 0;
+    this.defenders.forEach((d, i) => {
+      d.from = { x: d.x, y: d.y }; d.back = 0;
+      d.patient = i < hurt;
+      d.to = d.patient ? this.clinicDoor() : this.nearestPatrol(d.x, d.y);
+      d.path = pathBetween(d.from, d.to);
+      // 回程用走的速度（約每秒 22 像素）
+      d.backDur = Math.max(3, d.path.slice(1).reduce((acc: number, q: any, k: number) => acc + Math.hypot(q.x - d.path[k].x, q.y - d.path[k].y), 0) / 22);
+    });
     if (!inc) return;
     const side = inc.side % RAID_SPAWN.length, from = RAID_SPAWN[side], to = RAID_RALLY[side];
     const n = Math.min(18, inc.enemies);
@@ -421,6 +434,8 @@ export class GameScene {
     const s = game.s, df = defense(s);
     const site = SITES.find((x) => x.id === 'security');
     if (!site || !built(s, 'security')) return;
+    // 從巡邏中的位置直接出發
+    const starts = this.patrols.map((m) => ({ x: m.x, y: m.y }));
     const rally = RAID_RALLY[side];
     const vx = CENTER.x - rally.x, vy = CENTER.y - rally.y, len = Math.hypot(vx, vy) || 1;
     const ux = vx / len, uy = vy / len, px = -uy, py = ux;
@@ -431,9 +446,10 @@ export class GameScene {
       m.eventMode = 'none';
       const spread = (i - (n - 1) / 2) * 12, depth = 46 + (i % 2) * 10;
       m.home = { x: site.x + (Math.random() - 0.5) * 20, y: site.y + 8 };
-      m.from = m.home;
+      m.from = starts[i] ?? m.home;
       m.to = { x: rally.x + ux * depth + px * spread, y: rally.y + uy * depth + py * spread * 0.6 };
       m.lag = Math.random() * 0.1;
+      m.path = pathBetween(m.from, m.to);
       m.position.set(m.from.x, m.from.y);
       this.obj.addChild(m);
       this.defenders.push(m);
@@ -445,15 +461,16 @@ export class GameScene {
     for (const d of [...this.defenders]) {
       let p: number;
       if (d.back != null) {
-        d.back += dt / 5;
+        d.back += dt / (d.backDur ?? 5);
         p = Math.min(1, d.back);
-        if (p >= 1) { this.defenders.splice(this.defenders.indexOf(d), 1); d.destroy({ children: true }); continue; }
+        if (p >= 1) { this.defenders.splice(this.defenders.indexOf(d), 1); d.destroy({ children: true }); this.patrolKey = ''; this.syncPatrols(); continue; }
       } else p = Math.max(0, Math.min(1, (p0 - 0.05 - d.lag) / 0.5));
-      const x = d.from.x + (d.to.x - d.from.x) * p, y = d.from.y + (d.to.y - d.from.y) * p;
+      // 沿著繞開建築的路線走
+      const q = along(d.path, p), x = q.x, y = q.y;
       const moving = p > 0 && p < 1;
       // 到了防線就面向敵人
       const target = this.aliens.length ? this.raidCenter()! : d.to;
-      d.setDir(moving ? Math.sign(d.to.x - d.from.x) || 1 : Math.sign(target.x - x) || 1);
+      d.setDir(moving ? q.dir : Math.sign(target.x - x) || 1);
       d.setMoving(moving);
       d.position.set(Math.round(x), Math.round(y)); d.zIndex = y;
       d.update(this.T, dt);
@@ -548,6 +565,59 @@ export class GameScene {
       if (u.hitT > 0) { u.hitT -= dt; u.alpha = 0.55; } else u.alpha = 1;
     }
   }
+  /** 傷員去的地方：有醫療艙就去醫療艙，否則回營區 */
+  clinicDoor() {
+    const id = built(game.s, 'med_bay') ? 'med_bay' : 'security';
+    const site = SITES.find((x) => x.id === id)!;
+    return { x: site.x, y: site.y + 10 };
+  }
+  nearestPatrol(x: number, y: number) {
+    let best = PATROL[0], bd = Infinity;
+    for (const p of PATROL) { const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = p; } }
+    return best;
+  }
+  /** 巡邏隊與傷員的人數跟著遊戲狀態走；襲擊期間巡邏隊改由 defenders 表現 */
+  syncPatrols() {
+    const s = game.s;
+    const fighting = !!s.raid?.incoming || this.defenders.length > 0;
+    const df = built(s, 'security') ? defense(s) : null;
+    const n = !df || fighting ? 0 : Math.min(8, df.ready), armed = df ? Math.min(n, df.armedReady) : 0;
+    const walkingHurt = this.defenders.filter((d) => d.patient).length;
+    const hurt = !df ? 0 : Math.max(0, Math.min(6, injuredCount(s) - walkingHurt));
+    const key = `${n}|${armed}|${hurt}|${built(s, 'med_bay')}`;
+    if (key === this.patrolKey) return;
+    this.patrolKey = key;
+    for (const m of [...this.patrols, ...this.patients]) m.destroy({ children: true });
+    this.patrols = []; this.patients = [];
+    const phase = Math.random() * PATROL_TOTAL;
+    for (let i = 0; i < n; i++) {
+      const m: any = createMarine(i < armed);
+      m.eventMode = 'none';
+      m.offset = phase + (i * PATROL_TOTAL) / n;
+      this.obj.addChild(m);
+      this.patrols.push(m);
+    }
+    const door = this.clinicDoor();
+    for (let i = 0; i < hurt; i++) {
+      const m: any = createMarine(false);
+      m.eventMode = 'none';
+      m.tint = 0xffc4c4; m.alpha = 0.9;
+      m.position.set(Math.round(door.x - 15 + (i % 3) * 12 + (i >= 3 ? 6 : 0)), Math.round(door.y + 4 + (i >= 3 ? 7 : 0)));
+      m.zIndex = m.y;
+      m.setDir(i % 2 ? -1 : 1);
+      m.update(0, 0);
+      this.obj.addChild(m);
+      this.patients.push(m);
+    }
+  }
+  movePatrols(dt: number) {
+    for (const m of this.patrols) {
+      const p = patrolAt(m.offset + this.T * 11);
+      m.position.set(Math.round(p.x), Math.round(p.y)); m.zIndex = p.y;
+      m.setDir(p.dir); m.setMoving(true);
+      m.update(this.T, dt);
+    }
+  }
   /** 敵群目前的中心（地圖座標） */
   raidCenter() {
     if (!this.aliens.length) return null;
@@ -626,7 +696,7 @@ export class GameScene {
       if (bid && built(s, bid) && s.b[bid].workers > 0) want.set(bid, Math.min(5, s.b[bid].workers));
     }
     // 陸戰隊出去迎戰時，營區附近不再顯示閒晃的隊員
-    if (s.raid?.incoming || this.defenders.length) want.delete('security');
+    want.delete('security');
     want.set('__idle', Math.min(8, Math.max(0, idle(s))));
     const have = new Map<string, Walker[]>();
     for (const w of this.walkers) { const k = w.ai.bid ?? '__idle'; if (!have.has(k)) have.set(k, []); have.get(k)!.push(w); }
@@ -725,6 +795,7 @@ export class GameScene {
     for (const w of this.walkers) this.moveWalker(w, dt);
     this.moveAliens();
     this.moveDefenders(dt);
+    this.movePatrols(dt);
     this.drawShots(dt);
     this.updateRaidMark();
     if (this.hold) {
