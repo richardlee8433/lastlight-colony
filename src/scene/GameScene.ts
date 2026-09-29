@@ -8,7 +8,7 @@ import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
-import { WARNING, defense, injuredCount } from '../engine/combat';
+import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
@@ -167,7 +167,12 @@ export class GameScene {
       let v = this.views.get(site.id);
       if (!v || v.key !== key) { if (v) this.dropView(v); v = this.makeView(site, bid, key) ?? undefined; if (v) this.views.set(site.id, v); else this.views.delete(site.id); }
       if (!v || !bid) continue;
-      const text = lvl > 0 ? (DEF[bid].kind === 'command' || DEF[bid].maxLevel === 1 ? bName(bid) : `${bName(bid)} Lv${lvl}`) : t('sc.build', { b: bName(bid) });
+      let text = lvl > 0 ? (DEF[bid].kind === 'command' || DEF[bid].maxLevel === 1 ? bName(bid) : `${bName(bid)} Lv${lvl}`) : t('sc.build', { b: bName(bid) });
+      // 醫療艙（沒有醫療艙時是陸戰隊營區）名稱牌顯示室內休養的傷員人數
+      if (lvl > 0 && (bid === 'med_bay' || (bid === 'security' && !built(s, 'med_bay')))) {
+        const n = bid === 'med_bay' ? this.patientSplit().inside : Math.max(0, injuredCount(s) - this.defenders.filter((d) => d.patient).length);
+        if (n > 0) text += ` ✚${n}`;
+      }
       const dis = lvl > 0 && disabled(s, bid);
       const card = lvl > 0 && DEF[bid].clickable;
       const plateKey = card ? `card|${bid}|${this.Z}|${Math.min(6, s.stage)}|${lang()}` : `${text}|${dis}|${this.Z}`;
@@ -591,10 +596,9 @@ export class GameScene {
     const df = built(s, 'security') ? defense(s) : null;
     const n = !df || fighting ? 0 : Math.min(8, df.ready), armed = df ? Math.min(n, df.armedReady) : 0;
     const walkingHurt = this.defenders.filter((d) => d.patient).length;
-    const hurt = !df ? 0 : Math.max(0, Math.min(6, injuredCount(s) - walkingHurt));
-    // 被戰鬥波及的一般殖民者也在醫療艙（沒有醫療艙就在營地）休養
-    const civ = Math.min(6, s.raid?.hurt?.length ?? 0);
-    const key = `${n}|${armed}|${hurt}|${civ}|${built(s, 'med_bay')}`;
+    // 傷員進醫療艙躺病床；病床不夠的在門口排隊。沒有醫療艙時陸戰隊員在營區、殖民者在家休養（都在室內）
+    const { waiting } = this.patientSplit(walkingHurt);
+    const key = `${n}|${armed}|${waiting.marines}|${waiting.civ}`;
     if (key === this.patrolKey) return;
     this.patrolKey = key;
     for (const m of [...this.patrols, ...this.patients]) m.destroy({ children: true });
@@ -607,29 +611,29 @@ export class GameScene {
       this.obj.addChild(m);
       this.patrols.push(m);
     }
+    // 門口排隊：從門的右邊排出去
     const door = this.clinicDoor();
-    for (let i = 0; i < hurt; i++) {
-      const m: any = createMarine(false);
-      m.eventMode = 'none';
-      m.tint = 0xffc4c4; m.alpha = 0.9;
-      m.position.set(Math.round(door.x - 15 + (i % 3) * 12 + (i >= 3 ? 6 : 0)), Math.round(door.y + 4 + (i >= 3 ? 7 : 0)));
-      m.zIndex = m.y;
-      m.setDir(i % 2 ? -1 : 1);
-      m.update(0, 0);
-      this.obj.addChild(m);
-      this.patients.push(m);
-    }
-    const civDoor = built(s, 'med_bay') ? door : HOME;
-    for (let i = 0; i < civ; i++) {
-      const w: any = createWorker(Math.min(6, s.stage));
-      w.eventMode = 'none';
-      w.tint = 0xffc4c4; w.alpha = 0.9;
-      w.position.set(Math.round(civDoor.x + 20 + (i % 3) * 9), Math.round(civDoor.y + 2 + Math.floor(i / 3) * 7));
-      w.zIndex = w.y;
-      w.setDir(-1); w.update(0);
-      this.obj.addChild(w);
-      this.patients.push(w);
-    }
+    const queue = [...Array(waiting.marines).fill('m'), ...Array(waiting.civ).fill('c')].slice(0, 6);
+    queue.forEach((kind, i) => {
+      const u: any = kind === 'm' ? createMarine(false) : createWorker(Math.min(6, s.stage));
+      u.eventMode = 'none';
+      u.tint = 0xffc4c4; u.alpha = 0.9;
+      u.position.set(Math.round(door.x + 16 + i * 9), Math.round(door.y + 4 + (i % 2) * 2));
+      u.zIndex = u.y;
+      u.setDir(-1); u.update(0, 0);
+      this.obj.addChild(u);
+      this.patients.push(u);
+    });
+  }
+  /** 傷員分配：醫療艙病床上幾人（在室內）、門口排隊幾人 */
+  patientSplit(walkingHurt = this.defenders.filter((d) => d.patient).length) {
+    const s = game.s;
+    const marines = built(s, 'security') ? Math.max(0, injuredCount(s) - walkingHurt) : 0;
+    const civ = s.raid?.hurt?.length ?? 0;
+    if (!built(s, 'med_bay')) return { inside: marines + civ, waiting: { marines: 0, civ: 0 } };
+    const beds = medBeds(s);
+    const mIn = Math.min(marines, beds), cIn = Math.min(civ, beds - mIn);
+    return { inside: mIn + cIn, waiting: { marines: marines - mIn, civ: civ - cIn } };
   }
   movePatrols(dt: number) {
     for (const m of this.patrols) {
