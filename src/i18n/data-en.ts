@@ -120,7 +120,7 @@ const chapters = [
       'They are small, but there are many, and they learn fast. The crystal clusters glow violet at night — that is the light they follow.',
       'Build marine barracks, forge weapons, learn to use xenocrystal. This planet does not want you, but you have nowhere else to go.',
     ],
-    goals: ['Build the Marine Barracks and station marines', 'Build a Crystal Synthesizer', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
+    goals: ['Build the Marine Barracks and station marines', 'Build a Crystal Synthesizer', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
   {
     title: 'The Corporation’s Shadow', subtitle: 'The price of freedom',

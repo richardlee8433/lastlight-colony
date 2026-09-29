@@ -122,6 +122,12 @@
         "label": "建造異晶合成室"
       },
       {
+        "type": "build",
+        "id": "med_bay",
+        "gid": "4-med",
+        "label": "建造醫療艙，讓傷員有地方治療"
+      },
+      {
         "type": "raids",
         "amount": 2,
         "label": "擊退 2 次異星生物襲擊"

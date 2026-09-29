@@ -5,7 +5,11 @@ import { built } from './formulas';
 
 export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits'; res?: string; id?: string; amount?: number; label: string }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
-export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => ({ ...c, goals: c.goals.map((g, i) => ({ ...g, gid: `${c.chapter}-${i}` })) }));
+// 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
+export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
+  let i = 0;
+  return { ...c, goals: c.goals.map((g) => ({ ...g, gid: g.gid ?? `${c.chapter}-${i++}` })) };
+});
 
 /** 改過文字的目標：舊文字 → 新文字 */
 const LEGACY_LABEL: Record<string, string> = { 建造保全站並派駐保全: '建造陸戰隊營區並派駐陸戰隊員' };
