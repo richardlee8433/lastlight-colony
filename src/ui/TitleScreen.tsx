@@ -48,6 +48,7 @@ export function TitleScreen() {
         ))}
       </div>
 
+      <div className="title-main">
       <header className="title-logo">
         <h1>Lastlight Colony</h1>
         <p>{t('title.tagline')}</p>
@@ -73,6 +74,7 @@ export function TitleScreen() {
         <button type="button" className="tm-btn" onClick={() => act.openSettings(true)}>{t('set.title')}</button>
         <button type="button" className="tm-btn" onClick={() => setAbout(true)}>{t('set.about')}</button>
       </nav>
+      </div>
       <span className="title-ver">v{VERSION}</span>
 
       {about && (

@@ -6,7 +6,7 @@ import { chapterText, t } from '../i18n';
 
 export function QuestLog() {
   useGame((st) => st.v);
-  const [open, setOpen] = useState(() => window.innerWidth > 640);
+  const [open, setOpen] = useState(() => window.innerWidth > 640 && window.innerHeight > 640);
   const s = game.s, ending = endingChapter(s);
   // 章末對話還沒播完：任務欄繼續顯示剛結束的那一章（標成完成），播完才換到下一章
   const closing = ending < Math.min(s.stage, CHAPTERS.length);

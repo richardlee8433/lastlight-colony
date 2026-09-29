@@ -330,12 +330,14 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .title-shade { position: absolute; inset: 0; pointer-events: none; background:
   linear-gradient(90deg, rgba(8, 6, 20, 0.78) 0%, rgba(8, 6, 20, 0.45) 30%, rgba(8, 6, 20, 0) 55%),
   linear-gradient(0deg, rgba(8, 6, 20, 0.55) 0%, rgba(8, 6, 20, 0) 35%); }
-.title-logo { position: absolute; left: clamp(20px, 6vw, 96px); top: clamp(24px, 8vh, 90px); max-width: min(560px, calc(100% - 40px)); }
-.title-logo h1 { margin: 0; font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.05; letter-spacing: 0.04em; color: #fff4e2;
+.title-main { position: absolute; left: clamp(20px, 6vw, 96px); top: clamp(14px, 7vh, 90px); bottom: clamp(14px, 7vh, 110px); width: min(620px, calc(100% - 40px));
+  display: flex; flex-direction: column; justify-content: space-between; gap: clamp(10px, 3vh, 28px); }
+.title-logo { flex: none; }
+.title-logo h1 { margin: 0; font-size: clamp(30px, min(6vw, 11vh), 72px); font-weight: 900; line-height: 1.05; letter-spacing: 0.04em; color: #fff4e2;
   text-shadow: 0 0 24px rgba(255, 160, 80, 0.55), 0 3px 0 #3a1a0a, 0 6px 18px rgba(0, 0, 0, 0.6); }
 .title-logo h1 small { display: block; margin-top: 8px; font-size: 0.34em; letter-spacing: 0.32em; color: #ffb775; text-transform: uppercase; font-weight: 700; }
-.title-logo p { margin: 14px 0 0; font-size: clamp(14px, 1.5vw, 18px); color: #d9d0ff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); letter-spacing: 0.08em; }
-.title-menu { position: absolute; left: clamp(20px, 6vw, 96px); bottom: clamp(28px, 10vh, 110px); display: grid; gap: 10px; width: min(320px, calc(100% - 40px)); }
+.title-logo p { margin: clamp(4px, 1.5vh, 14px) 0 0; font-size: clamp(13px, min(1.5vw, 2.6vh), 18px); color: #d9d0ff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); letter-spacing: 0.08em; }
+.title-menu { display: grid; gap: clamp(5px, 1.3vh, 10px); width: min(320px, 100%); min-height: 0; }
 .tm-btn { appearance: none; font: inherit; text-align: left; cursor: pointer; color: #efe8ff; font-size: 17px; font-weight: 700; letter-spacing: 0.06em;
   padding: 11px 18px; background: rgba(18, 14, 36, 0.62); border: 2px solid rgba(190, 150, 255, 0.28); box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(3px); transition: background 0.15s, border-color 0.15s, transform 0.15s; }
@@ -357,7 +359,8 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 @keyframes title-drift { from { transform: scale(1); } to { transform: scale(1.05); } }
 @media (max-width: 640px) {
   .title-shade { background: linear-gradient(0deg, rgba(8, 6, 20, 0.85) 0%, rgba(8, 6, 20, 0.35) 50%, rgba(8, 6, 20, 0.55) 100%); }
-  .title-menu { left: 20px; right: 20px; width: auto; gap: 8px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .title-main { left: 20px; right: 20px; width: auto; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .title-menu { width: 100%; gap: 8px; }
   .tm-btn { padding: 9px 16px; font-size: 16px; }
   .tm-btn.main { font-size: 17px; }
 }
@@ -366,3 +369,16 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 /* 科技樹：藍圖科技的標籤 */
 .tech-node .tag.bp { background: #b98aff; color: #1a0d2a; }
 .dlg-ch { position: absolute; top: 8px; right: 14px; font-size: 11px; font-weight: 900; letter-spacing: 0.12em; color: var(--who, var(--trim)); opacity: 0.85; }
+
+/* 矮畫面（例如 VIVERSE 內嵌的遊戲框）：首頁按鈕縮小；對話框橫跨底部、立繪縮小；避免蓋住殖民地面板 */
+@media (max-height: 640px) {
+  .tm-btn { padding: 7px 14px; font-size: 15px; }
+  .tm-btn.main { font-size: 16px; }
+  .tm-btn small { font-size: 11px; margin-top: 1px; }
+  .dlg { left: 8px; right: 8px; width: auto; min-width: 0; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .dlg-art { height: min(220px, 42vh); width: 150px; left: 0; bottom: -4px; }
+  .dlg-box { min-height: 84px; padding: 16px 16px 12px 164px; }
+  .dlg-box p { font-size: 14.5px; min-height: 3.2em; }
+  .dlg-name { left: 154px; }
+  .colony { max-height: calc(100% - 150px); overflow-y: auto; }
+}
