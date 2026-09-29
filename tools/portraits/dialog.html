@@ -3,15 +3,12 @@
 html,body{margin:0;width:1280px;height:720px;overflow:hidden;background:#0b0d14;font-family:"Noto Sans TC","DejaVu Sans",sans-serif}
 .bg{position:absolute;inset:0;background:url(dialog-bg.png) center/cover}
 .dim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,8,14,.55),rgba(6,8,14,0) 45%)}
-canvas.por{position:absolute;left:24px;bottom:0;width:384px;height:480px;image-rendering:pixelated;filter:drop-shadow(6px 0 0 rgba(0,0,0,.35))}
-.box{position:absolute;left:250px;right:28px;bottom:22px;height:150px;background:rgba(16,18,30,.88);box-shadow:inset 3px 3px 0 #3c4258,inset -3px -3px 0 #0a0b12,0 0 0 3px #0a0b12;padding:34px 36px 20px 190px;color:#f2ede2;font-size:28px;line-height:1.45}
-.name{position:absolute;left:170px;top:-26px;background:#f07a3a;color:#1a1008;font-weight:900;font-size:24px;padding:6px 22px;box-shadow:inset 3px 3px 0 #ffb070,inset -3px -3px 0 #a04818,0 0 0 3px #0a0b12}
+img.por{position:absolute;left:10px;bottom:0;height:560px;filter:drop-shadow(6px 0 0 rgba(0,0,0,.35))}
+.box{position:absolute;left:250px;right:28px;bottom:22px;height:150px;background:rgba(16,18,30,.88);box-shadow:inset 3px 3px 0 #3c4258,inset -3px -3px 0 #0a0b12,0 0 0 3px #0a0b12;padding:34px 36px 20px 250px;color:#f2ede2;font-size:28px;line-height:1.45}
+.name{position:absolute;left:230px;top:-26px;background:#f07a3a;color:#1a1008;font-weight:900;font-size:24px;padding:6px 22px;box-shadow:inset 3px 3px 0 #ffb070,inset -3px -3px 0 #a04818,0 0 0 3px #0a0b12}
 .arrow{position:absolute;right:22px;bottom:16px;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:14px solid #ffcf6a}
 </style></head><body>
 <div class="bg"></div><div class="dim"></div>
 <div class="box"><div class="name">朱諾</div>第 1 晚。我們在加壓帳篷裡摘下了頭盔。<br>空氣有鐵鏽和藻類的味道——但每一口都是我們自己造的。<div class="arrow"></div></div>
-<canvas class="por" id="c" width="64" height="80"></canvas>
-<script type="module">
-import { renderPortrait } from '../../src/art/portraits.js';
-document.getElementById('c').getContext('2d').drawImage(renderPortrait('juno', false), 0, 0);
-</script></body></html>
+<img class="por" id="c" src="../../src/assets/portraits/juno.webp">
+</body></html>
