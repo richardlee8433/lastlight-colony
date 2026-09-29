@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Characters</title>
+<style>
+body{margin:0;background:#0d0f17;color:#f2ede2;font-family:"Noto Sans TC","DejaVu Sans",sans-serif;padding:28px}
+h1{margin:0 0 20px;font-size:26px}
+.grid{display:grid;grid-template-columns:repeat(4,320px);gap:22px}
+.card{background:#1d2130;box-shadow:inset 2px 2px 0 #3c4258,inset -2px -2px 0 #0c0d14;padding:10px}
+canvas{width:300px;height:375px;image-rendering:pixelated;display:block}
+.n{font-size:20px;font-weight:900;margin-top:8px}.n small{font-size:13px;color:#a7a2b6;margin-left:6px}
+.r{font-size:13px;color:#ffcf6a;margin-top:2px}
+</style></head><body><h1>末光殖民地 · 角色立繪（草稿）</h1><div class="grid" id="g"></div>
+<script type="module">
+import { renderPortrait } from '../../src/art/portraits.js';
+const L = [['mara','瑪拉','Mara','逃生艙駕駛'],['teo','老提歐','Teo','礦場老技師'],['juno','朱諾','Juno','殖民地日誌執筆者'],['ines','伊涅絲','Ines','電解站工程師'],['sefa','賽法博士','Dr. Sefa','異星生物學家'],['voss','沃斯','Voss','赫利昂前監工'],['calder','卡爾德使者','Envoy Calder','赫利昂企業使者']];
+for (const [id, zh, en, role] of L) {
+  const d = document.createElement('div'); d.className = 'card';
+  const src = renderPortrait(id), cv = document.createElement('canvas'); cv.width = 64; cv.height = 80;
+  cv.getContext('2d').drawImage(src, 0, 0); d.appendChild(cv);
+  d.insertAdjacentHTML('beforeend', `<div class="n">${zh}<small>${en}</small></div><div class="r">${role}</div>`);
+  document.getElementById('g').appendChild(d);
+}
+document.body.dataset.ready = 1;
+</script></body></html>
