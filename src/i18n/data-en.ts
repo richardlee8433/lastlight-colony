@@ -160,6 +160,11 @@ const events: Record<string, { title: string; text: string; options: string[] }>
     text: 'The comm picks up a broken distress signal from the canyon nearby. It could be other survivors — or just a beacon still broadcasting.',
     options: ['Send 2 idle colonists (3 min)', 'Ignore it'],
   },
+  rescue_ines: {
+    title: 'A Broken Distress Call',
+    text: 'A woman\'s voice crackles through the comm, over the clang of metal: "This is... Ines... my pod is wedged in an ice crevasse... I have tools, but no air. Please hurry."',
+    options: ['Send 2 idle colonists (2 min)', 'Not enough hands right now, go later (the signal will repeat)'],
+  },
   envoy: {
     title: 'Corporate Envoy',
     text: 'A shuttle bearing the Helion logo lands in the plaza. The envoy is polite: mining rights on this planet belong to the corporation, but as long as you pay {demand} on time, the corporation is willing to “temporarily” overlook your breach of contract.',

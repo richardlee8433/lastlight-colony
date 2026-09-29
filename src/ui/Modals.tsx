@@ -141,7 +141,7 @@ export function Modals() {
     const fill = (x: string) => x.replace(/\{building\}/g, bname).replace('{cost}', String(ev.cost ?? '')).replace(/\{demand\}/g, demand).replace('{refusals}', String(s.gov?.corp.refusals ?? 0));
     const blocked = (i: number) => (ev.kind === 'envoy' && i === 0 && dm && !canAfford(s, dm)) ? t('why.afford')
       : (ev.kind === 'meteor' && i === 0 && !canAfford(s, { rock: ev.cost! })) ? t('ev.noRock')
-      : (ev.kind === 'rescue' && i === 0 && idle(s) < 2) ? t('ev.noIdle') : null;
+      : ((ev.kind === 'rescue' || ev.kind === 'rescue_ines') && i === 0 && idle(s) < 2) ? t('ev.noIdle') : null;
     return (
       <Modal label={E.title}>
         <p className="eyebrow">{t('ev.eyebrow')}</p>

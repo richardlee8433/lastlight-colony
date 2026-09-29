@@ -7,8 +7,22 @@ export function scheduleNext(s: GameState, rng = Math.random) {
   s.events.nextAt = s.t + 300 + rng() * 180;
 }
 
+/** 伊涅絲的求救訊號多久後響（第 2 章開場對話後），拒絕後多久再響一次 */
+export const INES_DELAY = 60, INES_RETRY = 90, INES_TRIP = 120;
+
 export function events(s: GameState, rng = Math.random) {
   const ev = s.events;
+  if (ev.rescue?.ines && s.t >= ev.rescue.until) {
+    // 固定事件：救回伊涅絲（帶著工具箱桃樂絲和一些零件）
+    ev.rescue = null;
+    s.story.ines = true;
+    s.pop += 1;
+    add(s, 'parts', 25);
+    const gains: Msg[] = [msg('g.ines'), msg('l.gain', { r: 'parts', n: 25 })];
+    if (s.pop > popCap(s)) gains.push(msg('g.overcap'));
+    ev.report = { title: msg('rescue.inesTitle'), text: msg('rescue.inesText'), gains };
+    notify(s, 'n.rescueBack', undefined, 'good');
+  }
   if (ev.rescue && s.t >= ev.rescue.until) {
     ev.rescue = null;
     const k = s.stage, roll = rng();
@@ -37,6 +51,11 @@ export function events(s: GameState, rng = Math.random) {
     ev.report = { title: msg('rescue.title'), text: msg('rescue.text.' + text), gains };
     notify(s, 'n.rescueBack', undefined, 'good');
   }
+  // 第 2 章的第一個求救訊號必定是伊涅絲（其他隨機事件先讓路）
+  if (s.stage >= 2 && !s.story.ines && s.story.seen?.includes('c2-open')) {
+    s.story.inesAt ??= s.t + INES_DELAY;
+    if (!ev.active && !ev.rescue?.ines && s.t >= s.story.inesAt) { ev.active = { kind: 'rescue_ines' }; return; }
+  }
   if (ev.active || s.t < ev.nextAt) return;
   const producers = DEFS.filter((d) => (d.produce || d.recipe) && built(s, d.id));
   const options: ('meteor' | 'rescue')[] = [];
@@ -63,6 +82,14 @@ export function resolveEvent(s: GameState, choice: number) {
       s.b[a.target!].disabledUntil = s.t + 60;
       notify(s, 'n.meteorHit', { b: a.target! }, 'warn');
     }
+  } else if (a.kind === 'rescue_ines') {
+    if (choice === 0) {
+      if (idle(s) < 2) return;
+      s.events.rescue = { until: s.t + INES_TRIP, workers: 2, ines: true };
+      notify(s, 'n.inesGo');
+    } else s.story.inesAt = s.t + INES_RETRY;
+    s.events.active = null;
+    return;
   } else if (choice === 0) {
     if (idle(s) < 2) return;
     s.events.rescue = { until: s.t + 180, workers: 2 };

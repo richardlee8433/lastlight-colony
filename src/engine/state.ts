@@ -39,7 +39,7 @@ export const DEF: Record<string, BuildingDef> = Object.fromEntries(DEFS.map((d) 
 export const COMMAND_CHAIN = DEFS.filter((d) => d.kind === 'command').sort((a, b) => a.commandLevel! - b.commandLevel!).map((d) => d.id);
 
 export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean; form?: number }
-export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'envoy'; target?: string; cost?: number }
+export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'rescue_ines' | 'envoy'; target?: string; cost?: number }
 export interface BattleReport {
   won: boolean; raid: number; enemies: number; guards: number; armed: number; turrets?: number; kind?: string;
   rounds: { ours: number; theirs: number; oursMax: number; theirsMax: number }[];
@@ -98,7 +98,7 @@ export interface GameState {
   checkpoint: string | null;
   research: { done: string[]; active: string | null; progress: number };
   events: {
-    nextAt: number; active: ActiveEvent | null; rescue: { until: number; workers: number } | null;
+    nextAt: number; active: ActiveEvent | null; rescue: { until: number; workers: number; ines?: boolean } | null;
     /** 事件結果（例如救援隊回來），UI 以對話框顯示，玩家關閉後清除 */
     report?: { title: Msg | string; text: Msg | string; gains: (Msg | string)[] } | null;
   };
@@ -107,6 +107,8 @@ export interface GameState {
     seenIntro: number; assigned: boolean; done: string[]; tips?: string[];
     /** 播過的劇情場景、等著播放的場景（d：觸發時的天數） */
     seen?: string[]; queue?: { id: string; d: number }[];
+    /** 伊涅絲：固定的第一次求救訊號什麼時候響、是否已經救回 */
+    inesAt?: number; ines?: boolean;
   };
   /** 殖民地日誌（朱諾） */
   journal?: import('./dialog').Journal;

@@ -79,6 +79,18 @@ export const SCENES: Record<string, SceneText> = {
       ['mara', '還有更多肺。阿喘一台喘不過來了，我們得讓空氣夠大家分。', 'And more lungs. Wheezy can\'t keep up alone. We need enough air to go around.'],
     ],
   },
+  'c2-ines': {
+    lines: [
+      ['ines', '謝了。先說好，桃樂絲不外借。', 'Thanks. Ground rules: Dorothy is not for loan.'],
+      ['juno', '桃樂絲是誰？', "Who's Dorothy?"],
+      ['ines', '我的工具箱。她比大部分人可靠。', "My toolbox. She's more reliable than most people."],
+      ['teo', '妳剛剛盯著阿喘看很久。有意見？', 'You were staring at Wheezy for a long time. Got a problem?'],
+      ['ines', '有。牠很可愛，但撐不起十個人。地底下有冰層——給我岩材和零件，我幫你們蓋一座電解站，把冰變成空氣。', "Yes. It's adorable, but it won't keep ten people breathing. There's ice under us. Give me stone and parts and I'll build you an electrolyzer that turns ice into air."],
+      ['mara', '歡迎加入，伊涅絲。薪水是不會死。', 'Welcome aboard, Ines. The pay is not dying.'],
+      ['ines', '……我聽說了。福利也是。', '...So I heard. Benefits too.'],
+    ],
+    log: ['我們救回了伊涅絲，還有她的工具箱桃樂絲。她的第一句話是：「桃樂絲不外借。」第二句是批評阿喘。提歐到現在還在生氣。', 'We rescued Ines, and her toolbox Dorothy. Her first words were "Dorothy is not for loan." Her second words criticized Wheezy. Teo is still sulking.'],
+  },
   'c2-elec': {
     lines: [
       ['teo', '電解站鑽到冰層了！冰變水、水變氧氣，剩下的氫……先別點火。', 'The electrolyzer hit the ice! Ice to water, water to oxygen, and the leftover hydrogen... nobody light a match.'],

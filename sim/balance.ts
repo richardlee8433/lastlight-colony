@@ -51,9 +51,10 @@ function producerFor(s: GameState, k: ResKey): string | null {
 }
 
 function decide(s: GameState) {
+  s.story.seenIntro = Math.min(s.stage, 6);   // 玩家看完章節開場（劇情對話與伊涅絲事件要靠它觸發）
   if (s.events.active) {
     const k = s.events.active.kind;
-    resolveEvent(s, k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
+    resolveEvent(s, k === 'rescue_ines' ? (idle(s) >= 2 ? 0 : 1) : k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
   }
   if (s.stage >= 5 && built(s, 'admin')) {
     setTax(s, 2);
