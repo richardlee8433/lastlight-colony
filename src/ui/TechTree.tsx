@@ -20,6 +20,7 @@ export function TechTree() {
 function Tree() {
   const s = game.s, act = useGame.getState(), speed = researchSpeed(s);
   const box = useRef<HTMLDivElement>(null);
+  const pan = useDragPan(box);
   const [lines, setLines] = useState<Line[]>([]);
   const cols = Math.max(...RESEARCH_DEFS.map((r) => r.tier));
   const active = RESEARCH_DEFS.find((r) => r.id === s.research.active);
@@ -52,7 +53,7 @@ function Tree() {
       </div>
       {!built(s, 'databank') ? <p className="banner warn">{t('tt.needBuilding')}</p>
         : speed <= 0 && <p className="banner warn">{t('rs.noWorkers')}</p>}
-      <div className="tree" ref={box}>
+      <div className="tree" ref={box} {...pan}>
         <svg className="tree-lines" aria-hidden="true">
           {lines.map((l, i) => {
             const mx = (l.x1 + l.x2) / 2;
@@ -82,6 +83,35 @@ function Tree() {
       </div>
     </Modal>
   );
+}
+
+/** 按住空白處拖曳捲動科技樹（按鈕上按下不會開始拖曳；拖超過幾像素才算拖曳，避免吃掉點擊） */
+function useDragPan(box: React.RefObject<HTMLDivElement>) {
+  // 用 ref 存拖曳狀態：畫面每 0.2 秒重繪一次，普通變數會在拖曳途中被重設
+  const drag = useRef<{ x: number; y: number; sl: number; st: number; moved: boolean } | null>(null);
+  return {
+    onPointerDown: (e: React.PointerEvent) => {
+      const el = box.current;
+      if (!el || e.button !== 0 || (e.target as HTMLElement).closest('button')) return;
+      drag.current = { x: e.clientX, y: e.clientY, sl: el.scrollLeft, st: el.scrollTop, moved: false };
+      el.setPointerCapture(e.pointerId);
+    },
+    onPointerMove: (e: React.PointerEvent) => {
+      const el = box.current, start = drag.current;
+      if (!el || !start) return;
+      const dx = e.clientX - start.x, dy = e.clientY - start.y;
+      if (!start.moved && Math.hypot(dx, dy) < 4) return;
+      start.moved = true;
+      el.classList.add('dragging');
+      el.scrollLeft = start.sl - dx; el.scrollTop = start.st - dy;
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const el = box.current;
+      drag.current = null;
+      el?.classList.remove('dragging');
+      if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    },
+  };
 }
 
 function Node({ r, col, row }: { r: ResearchDef; col: number; row: number }) {
