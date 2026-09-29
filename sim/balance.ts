@@ -4,7 +4,7 @@
 import { newGame, DEF, DEFS, GameState, ResKey, RES_KEYS } from '../src/engine/state';
 import { step, TICK } from '../src/engine/tick';
 import { click } from '../src/engine/click';
-import { assign, boostBlock, buyNode, levelBlock, levelUp, nodeBlock, startBoost, startResearch, researchBlock, setSplit, togglePause } from '../src/engine/actions';
+import { rebuild, rebuildBlock, assign, boostBlock, buyNode, levelBlock, levelUp, nodeBlock, startBoost, startResearch, researchBlock, setSplit, togglePause } from '../src/engine/actions';
 import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
@@ -20,7 +20,7 @@ let seed = 7;
 const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
 const PRODUCER: Record<ResKey, string[]> = {
-  nutrient: ['hydro_farm', 'bio_harvester', 'algae_tank'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
+  nutrient: ['algae_tank'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
   parts: ['assembly'], metal: ['metal_mine'], tools: ['forge'], weapon: ['forge'], crystal: ['crystal_synth'], credit: ['trade_post'],
 };
 const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
@@ -65,6 +65,7 @@ function decide(s: GameState) {
   const need = lacking(s, tgt);
   // 1. 蓋目標或必要的生產鏈
   if (tryBuy(s, tgt)) return;
+  if (!rebuildBlock(s, 'algae_tank')) { rebuild(s, 'algae_tank'); return; }
   if (s.stage >= 6) {
     for (const id of ['governor', 'bioeng']) if (!built(s, id) && tryBuy(s, id)) return;
     if (s.pop >= popCap(s) - 1 && tryBuy(s, 'sky_residence')) return;
@@ -88,7 +89,7 @@ function decide(s: GameState) {
     const popNeed = DEF[tgt].requires?.pop ?? 0;
     if (s.pop >= popCap(s) - 1 && s.pop < popNeed + 2 && tryBuy(s, 'hab_pod')) return;
   }
-  for (const id of ['algae_tank', 'assembly', 'rock_cutter', 'bio_harvester', 'lounge', 'metal_mine', 'forge', 'databank', 'rail_line', 'security', 'hydro_farm', 'crystal_synth', 'water_cycle'])
+  for (const id of ['algae_tank', 'assembly', 'rock_cutter', 'lounge', 'metal_mine', 'forge', 'databank', 'rail_line', 'security', 'crystal_synth', 'water_cycle'])
     if (!built(s, id) && DEF[id].stage <= s.stage && tryBuy(s, id)) return;
   // 2. 工人位子不夠就升級需要的生產建築
   if (need) {
@@ -139,7 +140,7 @@ function reassign(s: GameState) {
     else order.push(...PRODUCER[need]);
   }
   order.push('lounge', ...PRODUCER.nutrient, 'assembly', 'scrap_heap', 'metal_mine', 'forge', 'rock_cutter');
-  order.push('crystal_synth', 'hydro_farm');
+  order.push('crystal_synth');
   let guard = 0;
   while (idle(s) > 0 && guard++ < 200) {
     const id = order.find((x) => built(s, x) && s.b[x].workers < workerCap(s, x));

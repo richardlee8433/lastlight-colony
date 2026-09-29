@@ -8,7 +8,6 @@ export const SITES: Site[] = [
   { id: 'scrap_heap', x: 469, y: 254 },
   { id: 'algae_tank', x: 390, y: 326 },
   { id: 'hab_pod', x: 222, y: 272 },
-  { id: 'bio_harvester', x: 306, y: 364 },
   { id: 'cargo', x: 306, y: 184 },
   { id: 'lounge', x: 474, y: 184 },
   { id: 'assembly', x: 558, y: 272 },
@@ -19,7 +18,6 @@ export const SITES: Site[] = [
   { id: 'rail_line', x: 212, y: 390 },
   // 階段 4：最外圈
   { id: 'memorial', x: 390, y: 126 },
-  { id: 'hydro_farm', x: 130, y: 282 },
   { id: 'security', x: 654, y: 276 },
   { id: 'water_cycle', x: 390, y: 448 },
   { id: 'crystal_synth', x: 660, y: 452 },

@@ -3,9 +3,9 @@ import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { bDesc, bName, costText, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
-  gatherRate, hurtCivilians, idle, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
+  gatherRate, hurtCivilians, idle, artId, formOf, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
 } from '../engine/formulas';
-import { boostBlock, levelBlock, nodeBlock, researchBlock } from '../engine/actions';
+import { boostBlock, levelBlock, nextForm, nodeBlock, rebuildBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
 import { Governance } from './Governance';
 import { weaponShare, weaponRatio } from '../engine/formulas';
@@ -24,7 +24,7 @@ export function BuildingPanel() {
   return (
     <aside className="panel px" aria-label={t('bp.aria', { b: bName(id) })}>
       <header className="panel-head">
-        <img src={buildingURL(id, L)} alt="" />
+        <img src={buildingURL(artId(s, id), L)} alt="" />
         <div>
           <span className="kind">{kindName(d.kind)}</span>
           <h2>{bName(id)}</h2>
@@ -90,6 +90,7 @@ export function BuildingPanel() {
       )}
 
       {!(isCmd && L > 0) && L < d.maxLevel && <BuildBox id={id} />}
+      {L > 0 && d.forms && <Rebuild id={id} />}
 
       {L > 0 && d.upgrades?.length ? (
         <section className="block">
@@ -136,7 +137,7 @@ function Stats({ id }: { id: string }) {
   const rows: [string, string][] = [];
   if (d.produce) {
     rows.push([t('st.outPerSec', { r: resName(d.produce.res) }), `+${fmt(gatherRate(s, id))}`]);
-    rows.push([t('st.baseRate'), t('perSec', { n: d.produce.rate })]);
+    rows.push([t('st.baseRate'), t('perSec', { n: formOf(s, id)?.rate ?? d.produce.rate })]);
     const bonus = nodeEffect(s, id, 'prodAdd') + gatherBonus(s);
     if (bonus) rows.push([t('st.bonus'), `+${Math.round(bonus * 100)}%`]);
   }
@@ -238,6 +239,27 @@ function Beacon() {
       <p className="muted small">{t('bc.phase', { n: L, m: d.maxLevel })}</p>
       <Bar value={L / d.maxLevel} tone="good" />
       {L >= d.maxLevel && <p className="muted small">{t('bc.done')}</p>}
+    </section>
+  );
+}
+
+/** 改建：糧食設施換成下一個形態 */
+function Rebuild({ id }: { id: string }) {
+  const s = game.s, act = useGame.getState(), f = nextForm(s, id), why = rebuildBlock(s, id);
+  const cur = s.b[id].form ?? 0, forms = DEF[id].forms!;
+  return (
+    <section className="block">
+      <h3>{t('rbd.title')}</h3>
+      <ol className="chain">
+        {[0, ...forms.map((_, i) => i + 1)].map((i) => <li key={i} className={i <= cur ? 'ok' : i === cur + 1 ? 'next' : ''}>{bName(id, i)}</li>)}
+      </ol>
+      {f ? (
+        <>
+          <p className="muted small">{t('rbd.info', { b: bName(id, cur + 1), r: f.rate, w: f.workersPerLevel })}</p>
+          <CostList cost={f.cost} />
+          <button type="button" className="btn wide" disabled={!!why} onClick={() => act.rebuild(id)}>{why && why.k !== 'why.afford' ? tm(why) : t('rbd.btn', { b: bName(id, cur + 1) })}</button>
+        </>
+      ) : <p className="muted small">{t('rbd.done')}</p>}
     </section>
   );
 }

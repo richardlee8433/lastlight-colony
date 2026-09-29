@@ -1,6 +1,6 @@
 import { useGame, game } from '../store/gameStore';
 import { COMMAND_CHAIN, DEFS } from '../engine/state';
-import { built, workerCap } from '../engine/formulas';
+import { artId, built, workerCap } from '../engine/formulas';
 import { buildingURL } from './assets';
 import { bName, t } from '../i18n';
 
@@ -21,7 +21,7 @@ export function QuickBar() {
     const b = s.b[id], cap = workerCap(s, id);
     return (
       <button key={id} type="button" className={'qb' + (sel === id ? ' on' : '') + (b.level ? '' : ' ghost')} onClick={() => focusOn(id)} title={bName(id)}>
-        <img src={buildingURL(id, b.level)} alt="" />
+        <img src={buildingURL(artId(s, id), b.level)} alt="" />
         {cap > 0 && <span className="qb-w">{b.workers}/{cap}</span>}
         {!b.level && <span className="qb-new">{t('qb.new')}</span>}
       </button>

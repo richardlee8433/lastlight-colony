@@ -6,7 +6,7 @@ import {
 } from '../art/art.js';
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
-import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
+import { artId, buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
@@ -164,7 +164,7 @@ export class GameScene {
     for (const site of SITES) {
       const bid = this.siteBuilding(site);
       const lvl = bid ? s.b[bid].level : 0;
-      const key = !bid ? 'none' : lvl > 0 ? `${bid}:${tierOf(lvl)}:${this.Z}` : `site:${bid}:${this.Z}`;
+      const key = !bid ? 'none' : lvl > 0 ? `${artId(s, bid)}:${tierOf(lvl)}:${this.Z}` : `site:${bid}:${this.Z}`;
       let v = this.views.get(site.id);
       if (!v || v.key !== key) { if (v) this.dropView(v); v = this.makeView(site, bid, key) ?? undefined; if (v) this.views.set(site.id, v); else this.views.delete(site.id); }
       if (!v || !bid) continue;
@@ -239,7 +239,7 @@ export class GameScene {
     v.key = key; v.site = site; v.bid = bid; v.squash = 0;
     v.position.set(site.x, site.y); v.zIndex = site.y;
     const L = s.b[bid].level;
-    const b: any = createBuilding(bid, Math.max(1, L));
+    const b: any = createBuilding(artId(s, bid), Math.max(1, L));
     v.building = L > 0 ? b : null;
     if (L > 0) {
       v.addChild(b);
