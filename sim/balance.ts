@@ -4,7 +4,7 @@
 import { newGame, DEF, DEFS, GameState, ResKey, RES_KEYS } from '../src/engine/state';
 import { step, TICK } from '../src/engine/tick';
 import { click } from '../src/engine/click';
-import { assign, buyNode, levelBlock, levelUp, nodeBlock, startResearch, researchBlock, setSplit, togglePause } from '../src/engine/actions';
+import { assign, boostBlock, buyNode, levelBlock, levelUp, nodeBlock, startBoost, startResearch, researchBlock, setSplit, togglePause } from '../src/engine/actions';
 import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
@@ -25,7 +25,11 @@ const PRODUCER: Record<ResKey, string[]> = {
 };
 const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
 
-function target(s: GameState) { return TARGETS.find((id) => !built(s, id))!; }
+function target(s: GameState) {
+  const t = TARGETS.find((id) => !built(s, id));
+  if (t) return t;
+  return s.b.orbital_beacon.level < DEF.orbital_beacon.maxLevel ? 'orbital_beacon' : undefined!;
+}
 function lacking(s: GameState, id: string | undefined): ResKey | null {
   if (!id) return null;
   const c = levelCost(s, id);
@@ -61,6 +65,11 @@ function decide(s: GameState) {
   const need = lacking(s, tgt);
   // 1. 蓋目標或必要的生產鏈
   if (tryBuy(s, tgt)) return;
+  if (s.stage >= 6) {
+    for (const id of ['governor', 'bioeng']) if (!built(s, id) && tryBuy(s, id)) return;
+    if (s.pop >= popCap(s) - 1 && tryBuy(s, 'sky_residence')) return;
+    if (s.res.crystal > 200 && !boostBlock(s)) startBoost(s);
+  }
   if (s.stage >= 5) {
     for (const id of ['admin', 'trade_post']) if (!built(s, id) && tryBuy(s, id)) return;
     if (s.b.turret.level < 3 && tryBuy(s, 'turret')) return;
@@ -148,7 +157,7 @@ const stageAt: Record<number, number> = {};
 const marksTime = (st: number) => (stageAt[st] ??= s.t) + 150;
 let lastStage = 1, clickAcc = 0;
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
-for (let i = 0; i < (3 * 3600) / TICK && !s.finished; i++) {
+for (let i = 0; i < (8 * 3600) / TICK && !s.finished; i++) {
   if (i % 5 === 0) { decide(s); if (i % 25 === 0) reassign(s); }
   clickAcc += duty;                          // 每 0.2 秒一次點擊 × 按住比例
   if (clickAcc >= 1) {
@@ -176,7 +185,7 @@ for (let i = 0; i < (3 * 3600) / TICK && !s.finished; i++) {
 console.log(`按住點擊比例 ${Math.round(duty * 100)}%`);
 for (const m of marks) console.log('  ' + m);
 for (const m of raids) console.log('  ' + m);
-console.log(`  結束：${s.finished ? '完成 MVP' : '未完成'}，時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
+console.log(`  結束：${s.finished ? '信標點亮' : '未完成'}（信標 ${s.b.orbital_beacon.level}/5），時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
 console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).join('、'));
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
 console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}`);
