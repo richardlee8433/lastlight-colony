@@ -2,13 +2,13 @@
 import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine,
 } from '../art/art.js';
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY } from './layout';
-import { WARNING } from '../engine/combat';
+import { WARNING, defense } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
@@ -30,6 +30,9 @@ export class GameScene {
   views = new Map<string, View>();
   walkers: Walker[] = [];
   aliens: any[] = [];
+  /** 出去迎戰的陸戰隊員（預警期間從營區走到防線，戰後走回去） */
+  defenders: any[] = [];
+  shotT = 0;
   raidKey = '';
   groundStage = 0;
   Z = 3;
@@ -384,6 +387,8 @@ export class GameScene {
       a.destroy({ children: true });
     }
     this.aliens = [];
+    // 戰鬥結束：陸戰隊員走回營區
+    for (const d of this.defenders) { d.from = { x: d.x, y: d.y }; d.to = d.home; d.back = 0; }
     if (!inc) return;
     const side = inc.side % RAID_SPAWN.length, from = RAID_SPAWN[side], to = RAID_RALLY[side];
     const n = Math.min(18, inc.enemies);
@@ -400,6 +405,63 @@ export class GameScene {
       a.position.set(a.from.x, a.from.y);
       this.obj.addChild(a);
       this.aliens.push(a);
+    }
+    this.spawnDefenders(side);
+  }
+  /** 可參戰的陸戰隊員從營區出發，走到敵人集結點與殖民地之間的防線 */
+  spawnDefenders(side: number) {
+    for (const d of this.defenders) d.destroy({ children: true });
+    this.defenders = [];
+    const s = game.s, df = defense(s);
+    const site = SITES.find((x) => x.id === 'security');
+    if (!site || !built(s, 'security')) return;
+    const rally = RAID_RALLY[side];
+    const vx = CENTER.x - rally.x, vy = CENTER.y - rally.y, len = Math.hypot(vx, vy) || 1;
+    const ux = vx / len, uy = vy / len, px = -uy, py = ux;
+    const n = Math.min(10, df.ready);
+    for (let i = 0; i < n; i++) {
+      const m: any = createMarine(i < df.armedReady);
+      m.eventMode = 'none';
+      const spread = (i - (n - 1) / 2) * 12, depth = 46 + (i % 2) * 10;
+      m.home = { x: site.x + (Math.random() - 0.5) * 20, y: site.y + 8 };
+      m.from = m.home;
+      m.to = { x: rally.x + ux * depth + px * spread, y: rally.y + uy * depth + py * spread * 0.6 };
+      m.lag = Math.random() * 0.1;
+      m.position.set(m.from.x, m.from.y);
+      this.obj.addChild(m);
+      this.defenders.push(m);
+    }
+  }
+  moveDefenders(dt: number) {
+    const inc = game.s.raid?.incoming;
+    const p0 = inc ? 1 - (inc.at - game.s.t) / WARNING : 1;
+    for (const d of [...this.defenders]) {
+      let p: number;
+      if (d.back != null) {
+        d.back += dt / 5;
+        p = Math.min(1, d.back);
+        if (p >= 1) { this.defenders.splice(this.defenders.indexOf(d), 1); d.destroy({ children: true }); continue; }
+      } else p = Math.max(0, Math.min(1, (p0 - 0.05 - d.lag) / 0.5));
+      const x = d.from.x + (d.to.x - d.from.x) * p, y = d.from.y + (d.to.y - d.from.y) * p;
+      const moving = p > 0 && p < 1;
+      // 到了防線就面向敵人
+      const target = this.aliens.length ? this.raidCenter()! : d.to;
+      d.setDir(moving ? Math.sign(d.to.x - d.from.x) || 1 : Math.sign(target.x - x) || 1);
+      d.setMoving(moving);
+      d.position.set(Math.round(x), Math.round(y)); d.zIndex = y;
+      d.update(this.T, dt);
+    }
+    // 最後幾秒雙方都就位：開火
+    if (inc && p0 > 0.8 && this.defenders.length && this.aliens.length) {
+      this.shotT -= dt;
+      if (this.shotT <= 0) {
+        this.shotT = 0.15 + Math.random() * 0.25;
+        const d = this.defenders[Math.floor(Math.random() * this.defenders.length)];
+        const a = this.aliens[Math.floor(Math.random() * this.aliens.length)];
+        d.fire();
+        const [x, y] = this.toScreen(a.x, a.y - 5);
+        this.fx.burst(x, y, 0xffe08a, 3);
+      }
     }
   }
   /** 敵群目前的中心（地圖座標） */
@@ -472,6 +534,8 @@ export class GameScene {
       const bid = this.siteBuilding(site);
       if (bid && built(s, bid) && s.b[bid].workers > 0) want.set(bid, Math.min(5, s.b[bid].workers));
     }
+    // 陸戰隊出去迎戰時，營區附近不再顯示閒晃的隊員
+    if (s.raid?.incoming || this.defenders.length) want.delete('security');
     want.set('__idle', Math.min(8, Math.max(0, idle(s))));
     const have = new Map<string, Walker[]>();
     for (const w of this.walkers) { const k = w.ai.bid ?? '__idle'; if (!have.has(k)) have.set(k, []); have.get(k)!.push(w); }
@@ -485,7 +549,7 @@ export class GameScene {
     }
   }
   addWalker(bid: string | null) {
-    const w = createWorker(Math.min(6, game.s.stage)) as Walker;
+    const w = (bid === 'security' ? createMarine(true) : createWorker(Math.min(6, game.s.stage))) as Walker;
     const j = () => Math.round((Math.random() - 0.5) * 18);
     const site = bid ? SITES.find((x) => x.id === bid || (x.id === 'command' && COMMAND_CHAIN.includes(bid)))! : null;
     const home = built(game.s, 'emergency_camp') ? HOME : { x: 241 + 14, y: 210 };
@@ -563,6 +627,7 @@ export class GameScene {
     this.resolveLabels(labels);
     for (const w of this.walkers) this.moveWalker(w, dt);
     this.moveAliens();
+    this.moveDefenders(dt);
     this.updateRaidMark();
     if (this.hold) {
       this.hold.next -= dt;

@@ -29,3 +29,5 @@ export const createAmbient: any;
 export const createFx: any;
 export const renderAlien: any;
 export const createAlien: any;
+export const renderMarine: any;
+export const createMarine: any;

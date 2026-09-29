@@ -1391,6 +1391,44 @@ export function renderWorker(stage) {
   });
 }
 
+/** 陸戰隊員：深藍灰裝甲、橘色護目鏡；armed 時手上有步槍。三張影格（站、走 1、走 2），canvas 15×17，原點 (6, 15)。 */
+export function renderMarine(armed) {
+  const A = ramp(0x4a5f7a), Hm = ramp(0x6d84a0), D = ramp(0x262c38), G = ramp(0x2a2e36);
+  return [0, 1, 2].map((f) => {
+    const b = new Pix(15, 17, 6, 15);
+    const legs = f === 0 ? [-1, 1] : f === 1 ? [-2, 1] : [-1, 2];
+    for (const lx of legs) { b.vline(lx, -2, -1, D[1]); b.set(lx, -1, D[0]); }
+    b.rect(-3, -7, 1, 4, D[2]);
+    b.rect(-2, -7, 5, 5, A[2]); b.vline(-2, -7, -3, A[3]); b.vline(2, -7, -3, A[1]); b.hline(-2, 2, -3, A[1]);
+    b.hline(-1, 1, -6, A[3]); b.set(0, -5, 0xffb347);
+    b.rect(-2, -11, 5, 4, Hm[2]); b.hline(-1, 1, -12, Hm[3]); b.vline(-2, -11, -8, Hm[3]); b.vline(2, -11, -8, Hm[1]);
+    b.hline(0, 2, -9, 0xff9a3a); b.set(1, -10, 0xffd08a);
+    if (armed) { b.hline(1, 6, -5, G[2]); b.set(6, -6, G[3]); b.set(2, -4, G[1]); }
+    b.outline(0x10141c);
+    return { canvas: b.toCanvas(), ax: 6, ay: 15 };
+  });
+}
+const marineFrames = new Map();
+/** 陸戰隊員 Container：setMoving、setDir、update(t)、fire()（槍口閃光） */
+export function createMarine(armed) {
+  if (!marineFrames.has(armed)) marineFrames.set(armed, renderMarine(armed).map((f) => pixelTexture(f.canvas)));
+  const tex = marineFrames.get(armed);
+  const c = new Container();
+  const s = new Sprite(tex[0]); s.anchor.set(6 / 15, 15 / 17);
+  const flash = new Sprite(dotTexture()); flash.width = 2; flash.height = 2; flash.tint = 0xffe08a; flash.position.set(7, -7); flash.visible = false;
+  c.addChild(s, flash);
+  let moving = false, flashT = 0;
+  c.setMoving = (m) => { moving = m; };
+  c.setDir = (d) => { s.scale.x = d < 0 ? -1 : 1; flash.x = d < 0 ? -9 : 7; };
+  c.fire = () => { if (armed) flashT = 0.08; };
+  c.setCarry = () => {};
+  c.update = (t, dt = 0) => {
+    s.texture = moving ? tex[1 + (Math.floor(t * 8) % 2)] : tex[0];
+    flashT -= dt; flash.visible = flashT > 0;
+  };
+  return c;
+}
+
 /** 異星生物（襲擊用）：兩張走路影格，canvas 15×13，原點在 (7, 11)。 */
 export function renderAlien() {
   const body = ramp(0x8a3a6a), spike = ramp(0x5a2a5a);
