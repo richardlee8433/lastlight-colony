@@ -1,9 +1,9 @@
 import { useGame, game } from '../store/gameStore';
-import { COMMAND_CHAIN, DEF } from '../engine/state';
+import { AIR_ENABLED, COMMAND_CHAIN, DEF } from '../engine/state';
 import { bDesc, bName, costText, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
-  gatherRate, hurtCivilians, idle, artId, formOf, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
+  gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
 } from '../engine/formulas';
 import { boostBlock, levelBlock, nextForm, nodeBlock, rebuildBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
@@ -140,6 +140,8 @@ function Stats({ id }: { id: string }) {
     rows.push([t('st.baseRate'), t('perSec', { n: formOf(s, id)?.rate ?? d.produce.rate })]);
     const bonus = nodeEffect(s, id, 'prodAdd') + gatherBonus(s);
     if (bonus) rows.push([t('st.bonus'), `+${Math.round(bonus * 100)}%`]);
+    const oxyPer = formOf(s, id)?.oxygen ?? d.oxygen;
+    if (AIR_ENABLED && oxyPer) rows.push([t('st.oxyPerSec'), `+${fmt(s.b[id].workers * oxyPer * moraleMult(s) * (s.air?.hypoxic ? 0.5 : 1))}`]);
   }
   if (d.recipe) {
     const inp = processInput(s, id), r = recipeRatio(s, id);

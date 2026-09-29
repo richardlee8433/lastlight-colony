@@ -8,7 +8,7 @@ import { Sfx, sfx } from '../audio/audio';
 const SOUND: Record<string, Sfx> = {
   'n.raidWarn': 'alarm', 'n.built': 'build', 'n.levelUp': 'build', 'n.node': 'build', 'n.cmdBuilt': 'stage',
   'n.research': 'research', 'n.raidWon': 'win', 'n.raidLost': 'lose', 'n.raidNoDef': 'lose', 'n.boost': 'boost',
-  'n.beaconPhase': 'build', 'n.beaconDone': 'finale',
+  'n.beaconPhase': 'build', 'n.beaconDone': 'finale', 'n.hypoxia': 'alarm', 'n.airBack': 'good', 'n.collapsed': 'warn', 'n.lsGrace': 'alarm',
 };
 
 export function Toasts() {

@@ -156,6 +156,13 @@ export const STRINGS: Record<string, [string, string]> = {
   'cp.starve1': ['Starving for {n} s: a colonist will leave in {m} s', '斷糧 {n} 秒：再 {m} 秒就會有殖民者離開'],
   'cp.starve2': ['Starving: a colonist leaves every 30 s. The colony collapses when only 1 is left', '斷糧中：每 30 秒會有一位殖民者離開，只剩 1 人時殖民地瓦解'],
   'cp.full': ['Population full — build Hab Pods to raise the cap', '人口已滿，蓋生活艙提高上限'],
+  'cp.air': ['Air security {n}%', '空氣安全度 {n}%'],
+  'cp.ls': ['Pod life support: {t} left (+{n}/s)', '逃生艙維生系統：剩 {t}（每秒 +{n}）'],
+  'cp.lsPause': ['Teo is holding life support together: {n} s', '老提歐硬撐著維生系統：{n} 秒'],
+  'cp.airOut': ['Oxygen {n}/s — runs out in about {t}', '氧氣每秒 {n}，約 {t} 後耗盡'],
+  'cp.hypoxia1': ['No oxygen for {n} s: someone will collapse in {m} s', '缺氧 {n} 秒：再 {m} 秒就會有人倒下'],
+  'cp.hypoxia2': ['Suffocating: someone collapses every {n} s. The colony is lost in {t}', '缺氧中：每 {n} 秒有人倒下，{t} 後殖民地瓦解'],
+  'st.oxyPerSec': ['Oxygen per second', '每秒產出氧氣'],
   'cp.next': ['Next colonist in {t}', '下一位殖民者 {t}'],
 
   // ── 任務、快捷列 ──
@@ -313,6 +320,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'fail.eyebrow': ['Colony lost', '殖民地瓦解'],
   'fail.title': ['The last light went out', '最後一盞燈熄了'],
   'fail.text': ['The food ran out for too long. One by one the colonists packed up and headed deeper into the wasteland to find another way. The pod’s beacon still repeats the same message, but no one is listening.', '糧食斷了太久，殖民者一個接一個收拾行李，往荒原深處去找別的出路。逃生艙的廣播還在重複同一句話，但已經沒有人在聽。'],
+  'fail.textAir': ['The air ran out for too long. One by one the colonists slumped over their consoles, and the scrubbers wheezed to a stop. The pod’s beacon still repeats the same message, but no one is breathing to hear it.', '空氣斷了太久。殖民者一個接一個倒在控制台前，再生器的風扇也喘著停了下來。逃生艙的廣播還在重複同一句話，但已經沒有人在呼吸。'],
   'fail.lasted': ['Survived', '撐了'],
   'fail.reached': ['Reached', '走到'],
   'fail.checkpoint': ['Back to the start of this chapter', '回到本章開頭'],

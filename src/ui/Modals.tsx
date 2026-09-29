@@ -22,7 +22,7 @@ export function Modals() {
       <Modal label={t('fail.eyebrow')}>
         <p className="eyebrow">{t('fail.eyebrow')}</p>
         <h2>{t('fail.title')}</h2>
-        <p>{t('fail.text')}</p>
+        <p>{t(s.failReason === 'air' ? 'fail.textAir' : 'fail.text')}</p>
         <ul className="gains">
           <li>{t('fail.lasted')} <b>{fmtTime(s.t)}</b></li>
           <li>{t('fail.reached')} <b>{t('ch.n', { n: Math.min(s.stage, CHAPTERS.length) })}</b></li>
