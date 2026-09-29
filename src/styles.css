@@ -315,3 +315,48 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .modal .journal-body p { color: #3a3226; font-size: 14px; line-height: 1.8; }
 .modal .journal-body p.chapter { text-align: center; font-weight: 900; color: #6a4a8a; }
 .modal .journal-body .muted { color: #8a7f6a; }
+
+/* 首頁 */
+.title-screen { position: absolute; inset: 0; z-index: 9; overflow: hidden; background: #0d0a1c; color: var(--text); }
+.title-bg { position: absolute; animation: title-drift 40s ease-in-out infinite alternate; transform-origin: 60% 60%; }
+.title-bg img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.title-bg .star { position: absolute; border-radius: 50%; background: #fff; box-shadow: 0 0 4px #cbd8ff; opacity: 0.2; animation: twinkle 3.2s ease-in-out infinite; }
+.title-bg .glow { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; mix-blend-mode: screen; animation: glow-pulse 4.5s ease-in-out infinite; pointer-events: none; }
+.title-bg .glow.violet { background: radial-gradient(circle, rgba(190, 110, 255, 0.55), rgba(150, 70, 255, 0) 65%); }
+.title-bg .glow.amber { background: radial-gradient(circle, rgba(255, 170, 80, 0.45), rgba(255, 140, 40, 0) 65%); animation-duration: 2.6s; }
+.title-bg .beacon-light { position: absolute; width: 0.6%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: #ff4050; box-shadow: 0 0 12px 4px rgba(255, 60, 80, 0.8); animation: beacon-blink 2.2s steps(1) infinite; }
+.title-shade { position: absolute; inset: 0; pointer-events: none; background:
+  linear-gradient(90deg, rgba(8, 6, 20, 0.78) 0%, rgba(8, 6, 20, 0.45) 30%, rgba(8, 6, 20, 0) 55%),
+  linear-gradient(0deg, rgba(8, 6, 20, 0.55) 0%, rgba(8, 6, 20, 0) 35%); }
+.title-logo { position: absolute; left: clamp(20px, 6vw, 96px); top: clamp(24px, 8vh, 90px); max-width: min(560px, calc(100% - 40px)); }
+.title-logo h1 { margin: 0; font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.05; letter-spacing: 0.04em; color: #fff4e2;
+  text-shadow: 0 0 24px rgba(255, 160, 80, 0.55), 0 3px 0 #3a1a0a, 0 6px 18px rgba(0, 0, 0, 0.6); }
+.title-logo h1 small { display: block; margin-top: 8px; font-size: 0.34em; letter-spacing: 0.32em; color: #ffb775; text-transform: uppercase; font-weight: 700; }
+.title-logo p { margin: 14px 0 0; font-size: clamp(14px, 1.5vw, 18px); color: #d9d0ff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); letter-spacing: 0.08em; }
+.title-menu { position: absolute; left: clamp(20px, 6vw, 96px); bottom: clamp(28px, 10vh, 110px); display: grid; gap: 10px; width: min(320px, calc(100% - 40px)); }
+.tm-btn { appearance: none; font: inherit; text-align: left; cursor: pointer; color: #efe8ff; font-size: 17px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 11px 18px; background: rgba(18, 14, 36, 0.62); border: 2px solid rgba(190, 150, 255, 0.28); box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(3px); transition: background 0.15s, border-color 0.15s, transform 0.15s; }
+.tm-btn small { display: block; margin-top: 3px; font-size: 12px; font-weight: 500; color: #c9bfe6; letter-spacing: 0.02em; }
+.tm-btn:hover, .tm-btn:focus-visible { background: rgba(60, 40, 110, 0.75); border-color: #c59bff; transform: translateX(4px); outline: none; }
+.tm-btn.main { background: linear-gradient(90deg, #f07a3a, #d8562a); color: #1a0d05; border-color: #ffb775; font-size: 19px; }
+.tm-btn.main small { color: #3a1a08; }
+.tm-btn.main:hover, .tm-btn.main:focus-visible { background: linear-gradient(90deg, #ff9150, #e86434); border-color: #ffe0b8; }
+.tm-confirm { padding: 12px 14px; display: grid; gap: 10px; font-size: 14px; }
+.tm-confirm p { margin: 0; line-height: 1.5; }
+.tm-confirm .row { display: flex; gap: 8px; } .tm-confirm .btn { flex: 1; }
+.title-lang { position: absolute; right: 16px; top: calc(14px + env(safe-area-inset-top, 0px)); display: flex; gap: 2px; padding: 3px; background: rgba(12, 10, 26, 0.6); border: 1px solid rgba(190, 150, 255, 0.3); }
+.title-lang button { appearance: none; border: 0; font: inherit; font-size: 13px; font-weight: 700; padding: 5px 12px; cursor: pointer; background: none; color: #c9bfe6; }
+.title-lang button.on { background: #f07a3a; color: #1a0d05; }
+.title-ver { position: absolute; right: 16px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); font-size: 12px; color: rgba(230, 220, 255, 0.55); }
+@keyframes twinkle { 50% { opacity: 1; } }
+@keyframes glow-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@keyframes beacon-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.15; } }
+@keyframes title-drift { from { transform: scale(1); } to { transform: scale(1.05); } }
+@media (max-width: 640px) {
+  .title-shade { background: linear-gradient(0deg, rgba(8, 6, 20, 0.85) 0%, rgba(8, 6, 20, 0.35) 50%, rgba(8, 6, 20, 0.55) 100%); }
+  .title-menu { left: 20px; right: 20px; width: auto; gap: 8px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .tm-btn { padding: 9px 16px; font-size: 16px; }
+  .tm-btn.main { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) { .title-bg, .title-bg .star, .title-bg .glow, .title-bg .beacon-light { animation: none; } }

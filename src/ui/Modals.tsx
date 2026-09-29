@@ -14,9 +14,11 @@ export function Modal({ children, label, className = '' }: { children: React.Rea
 export function Modals() {
   useGame((st) => st.v);
   const offline = useGame((st) => st.offline);
+  const title = useGame((st) => st.title);
   const [finishSeen, setFinishSeen] = useState(false);
   const s = game.s, act = useGame.getState();
   const chIdx = Math.min(s.stage, CHAPTERS.length);
+  if (title) return null;
 
   if (s.failed) {
     return (

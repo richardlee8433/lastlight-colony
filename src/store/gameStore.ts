@@ -141,6 +141,11 @@ interface Store {
   dialogNext: () => void;
   journal: boolean;
   openJournal: (o: boolean) => void;
+  /** 首頁：開啟時遊戲暫停 */
+  title: boolean;
+  closeTitle: () => void;
+  settings: boolean;
+  openSettings: (o: boolean) => void;
 }
 
 export const useGame = create<Store>((set, get) => {
@@ -170,6 +175,10 @@ export const useGame = create<Store>((set, get) => {
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),
     dialogNext: () => run((s) => { s.story.queue?.shift(); }),
     journal: false,
+    title: true,
+    closeTitle: () => set({ title: false }),
+    settings: false,
+    openSettings: (o) => set({ settings: o }),
     openJournal: (o) => set({ journal: o }),
     seenIntro: () => run((s) => { s.story.seenIntro = Math.min(s.stage, CHAPTERS.length); }),
     raidLook: 0,
@@ -203,6 +212,8 @@ export const useGame = create<Store>((set, get) => {
 let last = performance.now(), acc = 0, sinceSave = 0;
 setInterval(() => {
   const now = performance.now();
+  // 首頁開著時遊戲暫停（不累積時間）
+  if (useGame.getState().title) { last = now; return; }
   acc += (now - last) / 1000;
   last = now;
   if (acc > 60) {

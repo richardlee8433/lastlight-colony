@@ -10,8 +10,9 @@ const CPS = { zh: 28, en: 55 };   // 每秒打出幾個字
 // 劇情對話框：左下半身立繪壓在文字框上、名字標籤、逐字打字。點一下跳完這句，再點下一句。不暫停遊戲。
 export function Dialog() {
   useGame((st) => st.v);
+  const title = useGame((st) => st.title);
   const s = game.s, head = s.story.queue?.[0];
-  if (!head || s.failed || !SCENES[head.id]) return null;
+  if (title || !head || s.failed || !SCENES[head.id]) return null;
   return <Scene key={`${head.id}@${head.d}`} id={head.id} day={head.d} />;
 }
 

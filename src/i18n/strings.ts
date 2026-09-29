@@ -421,4 +421,13 @@ export const STRINGS: Record<string, [string, string]> = {
   'log.hypoxia': ['The oxygen ran out. Nobody talks, to save air. I have never heard the colony this quiet.', '氧氣見底了。大家都不說話，省空氣。我從沒聽過殖民地這麼安靜。'],
   'log.airBack': ['The air is back. Teo gave a speech about it. We let him, since he could breathe.', '空氣回來了。提歐發表了一段感言。大家讓他講，反正他喘得過氣了。'],
   'log.migrated': ['I am starting this log today. Everyone remembers what came before differently, so I will not write it down.', '我從今天開始寫日誌。之前的事，每個人記得的版本都不一樣，我就不寫了。'],
+  // 首頁
+  'title.tagline': ['Every breath, made by hand.', '每一口呼吸，都是自己造的。'],
+  'title.menu': ['Main menu', '主選單'],
+  'title.continue': ['Continue', '繼續遊戲'],
+  'title.pop': ['{n} colonists', '人口 {n}'],
+  'title.new': ['New Game', '新遊戲'],
+  'title.overwrite': ['Starting over will overwrite your current colony. Are you sure?', '開新遊戲會覆蓋目前的殖民地，確定嗎？'],
+  'title.newYes': ['Start over', '確定重新開始'],
+  'title.about': ['A handful of contract workers flee their corporation and crash on a planet with no breathable air. Build every breath yourself, take in other survivors, and uncover blueprints left behind by an unknown civilization.', '一群逃出企業的契約勞工，墜落在一顆沒有可呼吸空氣的行星上。自己造出每一口氧氣、收留更多倖存者，並揭開未知文明留下的藍圖之謎。'],
 };

@@ -13,16 +13,16 @@ export const VERSION = '0.5';
 export function Settings() {
   useGame((st) => st.v);
   const lang = useLang(), setLang = useSettings((st) => st.setLang);
-  const [open, setOpen] = useState(false), [confirm, setConfirm] = useState(false);
+  const open = useGame((st) => st.settings), [confirm, setConfirm] = useState(false);
   const act = useGame.getState(), s = game.s;
   const audio = useAudio();
-  const close = () => { setOpen(false); setConfirm(false); };
+  const close = () => { act.openSettings(false); setConfirm(false); };
   return (
     <>
       <div className="settings">
         {built(s, 'databank') && <button type="button" className="btn tech-btn" onClick={() => act.openTech(true)} title={t('tt.title')}>{t('tt.short')}{s.research.active ? ' ●' : ''}</button>}
         <button type="button" className="btn tech-btn" onClick={() => act.openJournal(true)} title={t('log.title')}>{t('log.short')}</button>
-        <button type="button" className="btn sq gear" onClick={() => setOpen(true)} aria-label={t('set.title')} title={t('set.title')}>≡</button>
+        <button type="button" className="btn sq gear" onClick={() => act.openSettings(true)} aria-label={t('set.title')} title={t('set.title')}>≡</button>
       </div>
       {open && (
         <Modal label={t('set.title')} className="settings-page">
