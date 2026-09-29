@@ -9,6 +9,7 @@
 npm install
 npm run dev      # 開發伺服器
 npm run build    # 輸出 dist/index.html（單一檔案，含全部 JS/CSS）
+npm run package:viverse   # 打包成 VIVERSE 可上傳的 ZIP（release/，根目錄只有 index.html）
 npm run sim      # 數值模擬：貪婪策略玩完 MVP，列出各階段抵達時間
 npm run sim -- 0.15   # 參數＝按住點擊的時間比例（預設 0.5）
 ```

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "sim": "tsx sim/balance.ts"
+    "sim": "tsx sim/balance.ts",
+    "package:viverse": "bash scripts/package-viverse.sh"
   },
   "dependencies": {
     "pixi.js": "8.6.6",
