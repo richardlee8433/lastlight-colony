@@ -89,7 +89,22 @@ export class GameScene {
     new ResizeObserver(() => this.resize(host)).observe(host);
   }
 
-  zoomFor(w: number) { return clampN(Math.round(w / 400), 2, 4); }
+  /** 玩家用滾輪選的縮放；null 表示依視窗寬度自動決定 */
+  userZ: number | null = null;
+  zoomFor(w: number) { return this.userZ ?? clampN(Math.round(w / 400), 2, 4); }
+  /** 換縮放倍率（整數倍，像素才不會糊）；anchor 是螢幕座標，縮放時它底下的地圖點保持不動 */
+  setZoom(z: number, anchor?: [number, number]) {
+    z = clampN(z, 1, 5);
+    if (z === this.Z) return;
+    const [ax, ay] = anchor ?? [this.app.screen.width / 2, this.app.screen.height / 2];
+    const wx = this.cam.x + ax / this.Z, wy = this.cam.y + ay / this.Z;
+    this.userZ = z; this.Z = z;
+    this.cam.x = wx - ax / z; this.cam.y = wy - ay / z; this.camGoal = null;
+    this.fx = createFx(this.fxL, z);
+    for (const v of this.views.values()) v.key = '';
+    this.sync();
+    this.clampCam();
+  }
   resize(host: HTMLElement) {
     const w = host.clientWidth, h = host.clientHeight;
     if (!w || !h || (w === this.app.screen.width && h === this.app.screen.height)) return;
@@ -127,6 +142,21 @@ export class GameScene {
 
   bindInput() {
     const st = this.app.stage;
+    // 滑鼠滾輪縮放（以游標位置為中心），鍵盤 + / - 也可以
+    let wheelAcc = 0;
+    this.app.canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      wheelAcc += e.deltaY;
+      if (Math.abs(wheelAcc) < 60) return;
+      const r = this.app.canvas.getBoundingClientRect();
+      this.setZoom(this.Z + (wheelAcc < 0 ? 1 : -1), [e.clientX - r.left, e.clientY - r.top]);
+      wheelAcc = 0;
+    }, { passive: false });
+    addEventListener('keydown', (e) => {
+      if ((e.target as HTMLElement)?.closest?.('input, textarea')) return;
+      if (e.key === '+' || e.key === '=') this.setZoom(this.Z + 1);
+      else if (e.key === '-' || e.key === '_') this.setZoom(this.Z - 1);
+    });
     st.on('pointerdown', (e) => { this.drag = { x: e.global.x, y: e.global.y, cx: this.cam.x, cy: this.cam.y, moved: false }; this.camGoal = null; });
     st.on('pointermove', (e) => {
       if (!this.drag) return;

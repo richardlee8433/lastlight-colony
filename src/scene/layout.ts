@@ -1,8 +1,10 @@
 // 建築位置固定（GDD §5）：指揮艙在中央，階段 1 內圈、階段 2 中圈、階段 3 外圈。
-export const MW = 780, MH = 520;
-export const CENTER = { x: 390, y: 250 };
+// 地圖四周留一圈空地（OX、OY），邊緣的建築不會被畫面邊界或介面面板擋住；下面的座標都是舊地圖座標，最後統一平移
+const OX = 110, OY = 100;
+export const MW = 780 + OX * 2, MH = 520 + OY * 2;
+export const CENTER = { x: 390 + OX, y: 250 + OY };
 export interface Site { id: string; x: number; y: number; r?: number; hub?: boolean }
-export const SITES: Site[] = [
+const RAW_SITES: Site[] = [
   { id: 'command', x: 390, y: 272, r: 34, hub: true },
   { id: 'escape_pod', x: 311, y: 254 },
   { id: 'scrap_heap', x: 469, y: 254 },
@@ -34,10 +36,11 @@ export const SITES: Site[] = [
   { id: 'turret', x: 712, y: 150 },
   { id: 'spaceport', x: 132, y: 474 },
 ];
-/** 襲擊時異星生物從哪一側出現（依 incoming.side） */
-export const RAID_SPAWN = [{ x: -14, y: 250 }, { x: 794, y: 240 }, { x: 390, y: -14 }, { x: 400, y: 536 }];
-/** 預警結束時異星生物停下的位置：殖民地外圍的空地（避開左上、左下的介面面板），不會提早闖進建築群 */
-export const RAID_RALLY = [{ x: 104, y: 214 }, { x: 706, y: 214 }, { x: 390, y: 44 }, { x: 480, y: 496 }];
+export const SITES: Site[] = RAW_SITES.map((s) => ({ ...s, x: s.x + OX, y: s.y + OY }));
+/** 襲擊時異星生物從哪一側出現（依 incoming.side）：地圖四邊外側 */
+export const RAID_SPAWN = [{ x: -14, y: CENTER.y }, { x: MW + 14, y: CENTER.y - 10 }, { x: CENTER.x, y: -14 }, { x: CENTER.x + 10, y: MH + 14 }];
+/** 預警結束時異星生物停下的位置：殖民地外圍的空地，不會提早闖進建築群 */
+export const RAID_RALLY = [{ x: 60, y: 214 }, { x: 750, y: 214 }, { x: 390, y: 20 }, { x: 480, y: 520 }].map((p) => ({ x: p.x + OX, y: p.y + OY }));
 export const HOME = { x: CENTER.x, y: CENTER.y + 30 };
 
 // ── 道路：從指揮艙前方繞開其他建築走到每棟建築門口（A* 網格尋路＋拉直），道路與工人走路共用 ──
