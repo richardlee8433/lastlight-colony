@@ -12,7 +12,13 @@ export function charterEffect(s: GameState, key: string): number {
   return v;
 }
 /** 全域產量倍率（憲章：雙班制、休息日） */
-export const prodMul = (s: GameState) => 1 + charterEffect(s, 'prodMul');
+export const prodMul = (s: GameState) => 1 + charterEffect(s, 'prodMul') + boostBonus(s);
+/** 生物工程室：注入異晶後全部產量 +30%／+40%／+50%（依等級），持續 90／120／150 秒 */
+export const boostPower = (s: GameState) => 0.2 + 0.1 * (s.b.bioeng?.level ?? 0);
+export const boostDuration = (s: GameState) => 60 + 30 * (s.b.bioeng?.level ?? 0);
+export const BOOST_COST = { crystal: 40, nutrient: 300 };
+export const boostActive = (s: GameState) => !!s.boost && s.t < s.boost.until;
+export const boostBonus = (s: GameState) => (boostActive(s) ? boostPower(s) : 0);
 /** 單一資源產量加成（憲章與研究：異晶、金屬） */
 export function resBonus(s: GameState, k: ResKey): number {
   if (k === 'crystal') return charterEffect(s, 'crystalAdd') + researchEffect(s, 'crystalAdd');
@@ -157,13 +163,13 @@ export const researchSpeed = (s: GameState) =>
   ((built(s, 'databank') ? s.b.databank.workers : 0) + (built(s, 'xeno_lab') ? s.b.xeno_lab.workers : 0)) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
 /** 稅收：人口 × 0.02 × 稅率等級（GDD §11），受「企業合約」加成 */
 export const taxIncome = (s: GameState) => (built(s, 'admin') ? s.pop * 0.02 * (s.gov?.tax ?? 0) * (1 + resBonus(s, 'credit')) : 0);
-export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffect(s, 'admin', 'charterSlot') : 0);
+export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffect(s, 'admin', 'charterSlot') + (built(s, 'governor') ? 1 : 0) : 0);
 
 /** 建造／升級成本：初始成本 × 1.15^(目前等級)；Lv5 以上每級另需 工具 × 等級 */
 export function levelCost(s: GameState, id: string): Cost {
   const d = DEF[id], L = s.b[id].level, out: Cost = {};
-  for (const [k, v] of Object.entries(d.baseCost) as [ResKey, number][]) if (v) out[k] = Math.ceil(v * Math.pow(1.15, L));
-  if (L >= 5) out.tools = (out.tools ?? 0) + L;
+  for (const [k, v] of Object.entries(d.baseCost) as [ResKey, number][]) if (v) out[k] = Math.ceil(v * (d.flatCost ? 1 : Math.pow(1.15, L)));
+  if (L >= 5 && !d.flatCost) out.tools = (out.tools ?? 0) + L;
   return out;
 }
 export const canAfford = (s: GameState, c: Cost) => (Object.entries(c) as [ResKey, number][]).every(([k, v]) => s.res[k] >= v);

@@ -3,7 +3,7 @@ import STORY from '../data/story.json';
 import { GameState } from './state';
 import { built } from './formulas';
 
-export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits'; res?: string; id?: string; amount?: number; label: string }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level'; res?: string; id?: string; amount?: number; label: string }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 // 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
@@ -34,6 +34,8 @@ function liveDone(s: GameState, g: Goal): boolean {
     case 'charter': return s.gov.charters.length > 0;
     case 'envoy': return s.gov.corp.envoys > 0;
     case 'credits': return s.gov.creditsEarned >= g.amount!;
+    case 'boost': return (s.boost?.uses ?? 0) > 0;
+    case 'level': return s.b[g.id!].level >= g.amount!;
   }
 }
 /** 目標達成一次就算完成（資源花掉後不會取消勾選） */

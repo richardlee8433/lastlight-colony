@@ -1,6 +1,6 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
-import { GameState, makeCheckpoint, newGame, newGov, newRaid } from '../engine/state';
+import { DEF, GameState, makeCheckpoint, newGame, newGov, newRaid } from '../engine/state';
 import { CHAPTERS, migrateStoryDone } from '../engine/story';
 import { built } from '../engine/formulas';
 import { step, TICK } from '../engine/tick';
@@ -41,7 +41,9 @@ function migrate(s: GameState) {
   // 目標完成紀錄從中文文字改成 id
   s.story.done = migrateStoryDone(s.story.done);
   // 舊存檔：原本前哨站就算 MVP 完成，現在接續第 4 章
-  if (s.finished && !built(s, 'star_dome')) s.finished = false;
+  // 第 6 章：結局改成軌道信標完成；舊存檔在星城穹頂就結束的，接續第 6 章
+  if (s.finished && s.b.orbital_beacon.level < DEF.orbital_beacon.maxLevel) s.finished = false;
+  s.boost ??= { until: 0, uses: 0 };
   s.notices = [];
 }
 function save(s: GameState) {
@@ -81,6 +83,7 @@ interface Store {
   restoreCheckpoint: () => void;
   seenIntro: () => void;
   saveNow: () => void;
+  boost: () => void;
   raidLook: number;
   tech: boolean;
   openTech: (o: boolean) => void;
@@ -118,6 +121,7 @@ export const useGame = create<Store>((set, get) => {
     tech: false,
     openTech: (o) => set({ tech: o, selected: o ? null : get().selected }),
     lookAtRaid: () => set((st) => ({ raidLook: st.raidLook + 1 })),
+    boost: () => run((s) => A.startBoost(s)),
     saveNow: () => { save(game.s); get().bump(); },
     restoreCheckpoint: () => {
       const cp = game.s.checkpoint;

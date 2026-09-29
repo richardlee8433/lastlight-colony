@@ -18,7 +18,9 @@ export type Effect = Partial<{
 export interface UpgradeNode { id: string; name: string; desc: string; minLevel: number; cost: Cost; effect: Effect; stage?: number }
 export interface BuildingDef {
   id: string; name: string; stage: number; desc: string;
-  kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical';
+  kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical' | 'beacon';
+  /** 每級成本不隨等級成長（軌道信標的分段建造） */
+  flatCost?: boolean;
   baseCost: Cost; maxLevel: number; startLevel?: number; clickable?: boolean; commandLevel?: number;
   produce?: { res: ResKey; rate: number };
   recipe?: { in: ResKey; out: ResKey; ratio: number };
@@ -96,6 +98,8 @@ export interface GameState {
   stats: { clicks: number; crits: number };
   raid: RaidState;
   gov: GovState;
+  /** 生物工程室的產量加成：到期時間、累計注入次數 */
+  boost: { until: number; uses: number };
   lastSaved: number;
   notices: Notice[];
 }
@@ -115,6 +119,7 @@ export function newGame(now = Date.now()): GameState {
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),
+    boost: { until: 0, uses: 0 },
     lastSaved: now,
     notices: [],
   };

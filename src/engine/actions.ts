@@ -1,6 +1,6 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
 import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
-import { RESEARCH_DEFS, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
+import { BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
 
 export type Why = Msg | null;
 
@@ -27,8 +27,11 @@ export function levelUp(s: GameState, id: string): boolean {
   s.b[id].level++;
   if (d.kind === 'command') {
     s.stage = d.commandLevel! + 1;
-    if (id === 'star_dome') { s.finished = true; notify(s, 'n.domeDone', undefined, 'good'); }
-    else { notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s); }
+    notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s);
+  } else if (id === 'orbital_beacon') {
+    // 分段建造：第五段完成就是結局
+    if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, 'n.beaconDone', undefined, 'good'); }
+    else notify(s, 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
   } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
   return true;
 }
@@ -49,6 +52,22 @@ export function buyNode(s: GameState, id: string, nodeId: string): boolean {
   pay(s, n.cost);
   s.b[id].nodes.push(nodeId);
   notify(s, 'n.node', { b: id, node: nodeId }, 'good');
+  return true;
+}
+
+/** 生物工程室：注入異晶，全部產量短時間大幅提高 */
+export function boostBlock(s: GameState): Why {
+  if (!built(s, 'bioeng')) return msg('why.bioeng');
+  if (boostActive(s)) return msg('why.boosting');
+  if (!canAfford(s, BOOST_COST)) return msg('why.afford');
+  return null;
+}
+export function startBoost(s: GameState): boolean {
+  if (boostBlock(s)) return false;
+  pay(s, BOOST_COST);
+  s.boost.until = s.t + boostDuration(s);
+  s.boost.uses++;
+  notify(s, 'n.boost', { n: boostDuration(s) }, 'good');
   return true;
 }
 

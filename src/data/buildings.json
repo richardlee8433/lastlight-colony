@@ -1077,5 +1077,69 @@
       "housing": 10,
       "storage": 500
     }
+  },
+  {
+    "id": "governor",
+    "name": "總督府",
+    "stage": 6,
+    "kind": "governance",
+    "maxLevel": 1,
+    "desc": "星城的行政核心，也是殖民者第一次選出來的總督辦公的地方。士氣 +15，憲章欄位 +1。",
+    "baseCost": {
+      "credit": 4000,
+      "rock": 1200,
+      "metal": 600
+    },
+    "effects": {
+      "morale": 15
+    }
+  },
+  {
+    "id": "sky_residence",
+    "name": "天幕住宅",
+    "stage": 6,
+    "kind": "house",
+    "maxLevel": 5,
+    "desc": "穹頂下的高層住宅，窗外就是星空。每級 +12 人口上限、士氣 +5。",
+    "baseCost": {
+      "rock": 1500,
+      "metal": 500,
+      "credit": 2000
+    },
+    "effects": {
+      "housing": 12,
+      "morale": 5
+    }
+  },
+  {
+    "id": "bioeng",
+    "name": "生物工程室",
+    "stage": 6,
+    "kind": "utility",
+    "maxLevel": 3,
+    "desc": "把異晶注入作物與菌種，短時間內大幅提高整座殖民地的產量。每次注入消耗異晶，建築等級越高效果越強、越久。",
+    "baseCost": {
+      "credit": 1500,
+      "crystal": 100,
+      "parts": 400
+    }
+  },
+  {
+    "id": "orbital_beacon",
+    "name": "軌道信標",
+    "stage": 6,
+    "kind": "beacon",
+    "maxLevel": 5,
+    "flatCost": true,
+    "desc": "向整個星系廣播的信標塔。分五段建造，每段都要一批金屬、工具、異晶與信用點；第五段完成時點亮信標。需要人口 100。",
+    "baseCost": {
+      "metal": 1600,
+      "tools": 100,
+      "crystal": 120,
+      "credit": 2500
+    },
+    "requires": {
+      "pop": 100
+    }
   }
 ]
