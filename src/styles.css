@@ -93,6 +93,7 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .bar i.mid { background: var(--warn); }
 .bar i.bad { background: var(--bad); }
 .bar i.morale { background: #c890ff; }
+.bar i.air { background: #8fd8ff; }
 
 /* 建築面板 */
 .panel {
@@ -267,3 +268,10 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .settings-page .slider b { text-align: right; font-variant-numeric: tabular-nums; }
 .settings-page .check { display: flex; gap: 8px; align-items: center; font-size: 13px; margin-top: 4px; }
 .settings-page .check input { accent-color: var(--trim); }
+
+/* 缺氧暗角：空氣不足時畫面邊緣發暗，缺氧時加上會呼吸般閃動的紅色 */
+.game::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2; opacity: 0; transition: opacity 1.2s; }
+.game.lowair::after { opacity: 1; background: radial-gradient(ellipse at center, transparent 45%, rgba(20, 50, 110, 0.55) 100%); box-shadow: inset 0 0 90px rgba(60, 120, 200, 0.35); }
+.game.hypoxic::after { opacity: 1; background: radial-gradient(ellipse at center, transparent 35%, rgba(150, 10, 30, 0.55) 80%, rgba(90, 0, 20, 0.85) 100%); box-shadow: inset 0 0 120px rgba(255, 40, 60, 0.45); animation: gasp 2.4s ease-in-out infinite; }
+@keyframes gasp { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .game.hypoxic::after { animation: none; } }

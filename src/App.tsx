@@ -13,11 +13,15 @@ import { Modals } from './ui/Modals';
 import { Settings } from './ui/Settings';
 import { useGame, game } from './store/gameStore';
 import { applyDocLang, t, useLang } from './i18n';
+import { AIR_ENABLED } from './engine/state';
+import { airSafety } from './engine/air';
 
 export function App() {
   const host = useRef<HTMLDivElement>(null);
   const stage = useGame(() => Math.min(6, game.s.stage));
   const lang = useLang();
+  // 缺氧／空氣不足時畫面邊緣的暗角
+  const air = useGame(() => (game.s.air?.hypoxic ? 'hypoxic' : AIR_ENABLED && airSafety(game.s) < 0.25 ? 'lowair' : ''));
   useEffect(() => applyDocLang(lang), [lang]);
   useEffect(() => {
     const scene = new GameScene();
@@ -26,7 +30,7 @@ export function App() {
     return () => { if (!failed) scene.app.destroy(true); };
   }, []);
   return (
-    <div className={`game stage-${stage} lang-${lang}`}>
+    <div className={`game stage-${stage} lang-${lang} ${air}`}>
       <div className="stage-host" ref={host} />
       <TopBar />
       <QuestLog />
