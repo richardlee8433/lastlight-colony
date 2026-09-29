@@ -154,7 +154,11 @@ function Stats({ id }: { id: string }) {
   if (d.effects?.consumeMul) rows.push([t('st.consume'), `${Math.round(d.effects.consumeMul * 100)}%`]);
   if (d.effects?.habBonus) rows.push([t('st.habCap'), t('st.habCapV', { n: d.effects.habBonus })]);
   if (d.kind === 'rail') rows.push([t('st.gather'), t('st.railV', { n: Math.round((0.1 + nodeEffect(s, id, 'gatherAdd')) * 100) })]);
-  if (d.kind === 'research') rows.push([t('st.researchSpeed'), `×${researchSpeed(s).toFixed(1)}`]);
+  if (d.kind === 'research') {
+    // 研究速度是全殖民地共用：資料庫和異星研究院的駐點工人加總
+    rows.push([t('st.researchSpeed'), `×${researchSpeed(s).toFixed(1)}`]);
+    rows.push([t('st.researchers'), t('st.researchersV', { a: built(s, 'databank') ? s.b.databank.workers : 0, b: built(s, 'xeno_lab') ? s.b.xeno_lab.workers : 0 })]);
+  }
   return (
     <section className="block">
       <dl className="stats">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
