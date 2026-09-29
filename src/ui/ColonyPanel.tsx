@@ -18,6 +18,7 @@ export function ColonyPanel() {
       <div className="row"><span>{t('cp.idle')}</span><b className={idle(s) > 0 ? 'hl' : ''}>{idle(s)}</b></div>
       {hurtCivilians(s) > 0 && <div className="row"><span>{t('cp.hurt')}</span><b className="warn">{hurtCivilians(s)}</b></div>}
       {rescueWorkers(s) > 0 && <div className="row"><span>{t('cp.rescue')}</span><b>{rescueWorkers(s)}</b></div>}
+      {(s.exp?.team ?? 0) > 0 && <div className="row"><span>{t('cp.exp')}</span><b>{s.exp!.team}</b></div>}
       <div className="meter"><span>{t('cp.food', { n: Math.round(fs * 100) })}</span><Bar value={fs} tone={fs < 0.25 ? 'bad' : fs < 0.6 ? 'mid' : 'good'} /></div>
       {AIR_ENABLED && <div className="meter"><span>{t('cp.air', { n: Math.round(as * 100) })}</span><Bar value={as} tone={as < 0.25 ? 'bad' : as < 0.6 ? 'mid' : 'air'} /></div>}
       {AIR_ENABLED && ls > 0 && (

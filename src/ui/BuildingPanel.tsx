@@ -11,6 +11,7 @@ import { Governance } from './Governance';
 import { weaponShare, weaponRatio } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
 import { buildingURL } from './assets';
+import { EXP_TEAM, EXP_TIME, FRAGS_PER_BP, expBlock, fragChance, nextBlueprint } from '../engine/expedition';
 
 export function BuildingPanel() {
   useGame((st) => st.v);
@@ -60,6 +61,7 @@ export function BuildingPanel() {
       {L > 0 && id === 'forge' && s.stage >= 4 && <ForgeSplit />}
       {L > 0 && id === 'security' && <Defense />}
       {L > 0 && id === 'med_bay' && <MedBay />}
+      {L > 0 && id === 'expedition' && <Expedition />}
       {L > 0 && id === 'bioeng' && <BioLab />}
       {id === 'orbital_beacon' && <Beacon />}
       {L > 0 && id === 'admin' && <Governance />}
@@ -262,6 +264,27 @@ function Rebuild({ id }: { id: string }) {
           <button type="button" className="btn wide" disabled={!!why} onClick={() => act.rebuild(id)}>{why && why.k !== 'why.afford' ? tm(why) : t('rbd.btn', { b: bName(id, cur + 1) })}</button>
         </>
       ) : <p className="muted small">{t('rbd.done')}</p>}
+    </section>
+  );
+}
+
+/** 探勘站：派隊伍出去找藍圖 */
+function Expedition() {
+  const s = game.s, act = useGame.getState(), e = s.exp!, why = expBlock(s), next = nextBlueprint(s);
+  return (
+    <section className="block">
+      <h3>{t('ex.title')}</h3>
+      {e.team > 0
+        ? <><p className="banner good">{t('ex.away', { n: e.team, t: fmtTime(Math.max(0, e.until - s.t)) })}</p><Bar value={1 - (e.until - s.t) / EXP_TIME} tone="good" /></>
+        : <p className="muted small">{t('ex.info', { n: EXP_TEAM, t: fmtTime(EXP_TIME) })}{e.count === 0 ? ' ' + t('ex.first') : ''}</p>}
+      <button type="button" className="btn wide" disabled={!!why} onClick={act.expedition}>{why ? tm(why) : t('ex.btn')}</button>
+      <dl className="stats">
+        <div><dt>{t('ex.trips')}</dt><dd>{e.count}</dd></div>
+        <div><dt>{t('ex.have')}</dt><dd>{e.blueprints.length ? e.blueprints.map((b) => t('blueprint.' + b)).join('、') : t('ex.none')}</dd></div>
+        {e.count > 0 && next && <div><dt>{t('ex.frags', { bp: t('blueprint.' + next) })}</dt><dd>{e.frags}/{FRAGS_PER_BP}</dd></div>}
+        {e.count > 0 && next && <div><dt>{t('ex.chance')}</dt><dd>{Math.round(fragChance(s) * 100)}%</dd></div>}
+      </dl>
+      {e.count > 0 && !next && <p className="muted small">{t('ex.allFound')}</p>}
     </section>
   );
 }

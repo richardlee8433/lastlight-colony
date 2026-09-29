@@ -123,12 +123,13 @@ function Node({ r, col, row }: { r: ResearchDef; col: number; row: number }) {
   const state = done ? 'done' : active ? 'active' : locked ? 'locked' : 'ready';
   return (
     <div className={'tech-node ' + state} data-rs={r.id} style={{ gridColumn: col, gridRow: row }}>
-      <div className="tn-head"><b>{name}</b>{r.lab && <span className="tag">{t('tt.lab')}</span>}</div>
+      <div className="tn-head"><b>{name}</b>{r.lab && <span className="tag">{t('tt.lab')}</span>}{r.blueprint && <span className="tag bp">{t('tt.bp')}</span>}</div>
       <span className="tn-desc">{desc}</span>
       {!done && !active && (
         <div className="tn-req">
           {r.requires?.map((q) => <span key={q} className={s.research.done.includes(q) ? 'ok' : ''}>{s.research.done.includes(q) ? '✓ ' : ''}{researchText(q)[0]}</span>)}
           {s.stage < r.stage && <span>{t('why.stage', { n: r.stage })}</span>}
+          {r.blueprint && <span className={s.exp?.blueprints.includes(r.blueprint) ? 'ok' : ''}>{s.exp?.blueprints.includes(r.blueprint) ? '✓ ' : ''}{t('why.blueprint', { bp: t('blueprint.' + r.blueprint) })}</span>}
         </div>
       )}
       {done ? <span className="done">✓ {t('done')}</span>

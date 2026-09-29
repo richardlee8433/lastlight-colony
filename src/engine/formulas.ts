@@ -24,12 +24,13 @@ export const boostBonus = (s: GameState) => (boostActive(s) ? boostPower(s) : 0)
 export function resBonus(s: GameState, k: ResKey): number {
   if (k === 'crystal') return charterEffect(s, 'crystalAdd') + researchEffect(s, 'crystalAdd');
   if (k === 'metal') return charterEffect(s, 'metalAdd');
+  if (k === 'oxygen') return researchEffect(s, 'o2Add');   // 藍圖科技：高壓濾網
   if (k === 'credit') return charterEffect(s, 'creditMul');
   return 0;
 }
 
 /** 科技樹：branch＝分支（prod 生產、life 民生、war 軍事），tier＝第幾欄，requires＝前置科技 */
-export interface ResearchDef { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; branch: 'prod' | 'life' | 'war'; tier: number; stage: number; requires?: string[]; lab?: boolean }
+export interface ResearchDef { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; branch: 'prod' | 'life' | 'war'; tier: number; stage: number; requires?: string[]; lab?: boolean; /** 需要先從探勘取得的藍圖 */ blueprint?: string }
 export const RESEARCH_DEFS = RESEARCH as unknown as ResearchDef[];
 const RDEF = Object.fromEntries(RESEARCH_DEFS.map((r) => [r.id, r]));
 
@@ -99,7 +100,7 @@ export function assignedTotal(s: GameState): number {
 export const rescueWorkers = (s: GameState) => s.events.rescue?.workers ?? 0;
 /** 戰鬥中受傷、正在休養的一般殖民者 */
 export const hurtCivilians = (s: GameState) => s.raid?.hurt?.length ?? 0;
-export const idle = (s: GameState) => s.pop - assignedTotal(s) - rescueWorkers(s) - hurtCivilians(s);
+export const idle = (s: GameState) => s.pop - assignedTotal(s) - rescueWorkers(s) - hurtCivilians(s) - (s.exp?.team ?? 0);
 
 /** 每位殖民者每秒消耗的營養（GDD 原值 0.1，實測糧食幾乎不會不夠，調高到 0.25） */
 export let FOOD_PER_POP = 0.25;
@@ -176,7 +177,8 @@ export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffec
 /** 建造／升級成本：初始成本 × 1.15^(目前等級)；Lv5 以上每級另需 工具 × 等級 */
 export function levelCost(s: GameState, id: string): Cost {
   const d = DEF[id], L = s.b[id].level, out: Cost = {};
-  for (const [k, v] of Object.entries(formOf(s, id)?.baseCost ?? d.baseCost) as [ResKey, number][]) if (v) out[k] = Math.ceil(v * (d.flatCost ? 1 : Math.pow(1.15, L)));
+  const cut = 1 + researchEffect(s, 'costMul');   // 藍圖科技：共振工具
+  for (const [k, v] of Object.entries(formOf(s, id)?.baseCost ?? d.baseCost) as [ResKey, number][]) if (v) out[k] = Math.ceil(v * (d.flatCost ? 1 : Math.pow(1.15, L)) * cut);
   if (L >= 5 && !d.flatCost) out.tools = (out.tools ?? 0) + L;
   return out;
 }

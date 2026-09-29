@@ -34,6 +34,7 @@ const buildings: Record<string, B> = {
     double: ['Double Track', 'Gathering output +5% more'] } },
   metal_mine: { name: 'Metal Mine', desc: 'Digs down to the metal veins. Output is low, but every step ahead needs it.', nodes: {
     prod_20: ['Shoring', 'Output +30%'], click_1: ['Vein Probe', 'Click yield +1'], crystal_sense: ['Crystal Sense', 'Clicks have a 10% chance to drop 1 xenocrystal shard'] } },
+  expedition: { name: 'Expedition Station', desc: 'Vehicles and gear for sending teams into the wasteland to search for blueprints left by an unknown civilization. Each trip takes 2 colonists for about 3 minutes; the first always brings back a blueprint. Upgrades bring back more loot and make blueprint fragments easier to find.' },
   forge: { name: 'Forge', desc: 'Forges metal into tools or weapons. From Stage 4 you can move workers onto weapons. Buildings need tools from Lv5 onward.', nodes: {
     tools_25: ['Standard Molds', 'Tool output +25%'], click_1: ['Master Smith', 'Click yield +1'], weapon_atk: ['Weapon Calibration', 'Weapon attack +1'] } },
   outpost: { name: 'Outpost', desc: 'Command Lv3. The watchtower sees farther — including what is coming closer. Advances to Stage 4. Requires population 22.' },
@@ -75,6 +76,8 @@ const research: Record<string, [string, string]> = {
   crystal_armor: ['Crystal Armor', 'Marine HP +5'],
   crystal_ration: ['Emergency Rations', 'Nutrient consumption −10%'],
   crystal_resonance: ['Crystal Resonance', 'All gathering output +10%'],
+  bp_filter: ['High-Pressure Filter', 'Blueprint tech: oxygen buildings produce +50%'],
+  bp_resonance: ['Resonance Tools', 'Blueprint tech: building and upgrading costs 15% less'],
   warehouse: ['Warehouse Expansion', 'All storage +50%'],
   xeno_growth: ['Crystal Catalysis', 'Xenocrystal output +40%'],
   xeno_hab: ['Lattice Materials', 'Each Hab Pod level houses 1 more'],
@@ -111,19 +114,19 @@ const chapters = [
     goals: ['Build a Hab Pod to raise the population cap', 'Rebuild the Oxygen Scrubber into an Electrolyzer to split oxygen from the ice', 'Keep air security above 60% for 1 minute', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
   },
   {
-    title: 'Metal and Fire', subtitle: 'From scavenging to making',
+    title: 'Blueprints', subtitle: 'We can use them. We don’t understand them.',
     intro: [
-      'The day the Central Hub lit up, everyone ate a dinner without rations for the first time.',
-      'The old engineer at the Tech Institute says that if we can dig up metal, we can make our own tools.',
-      'From scavenging to making — this is the step where the colony truly stands on its own.',
+      'The night the Central Hub lit up, the scanner at the Tech Institute beeped at Teo’s coaster until dawn.',
+      'Ines checked: the patterns on that crystal plate are step-by-step manufacturing instructions — just not written by humans. Teo says there must be more out in the wasteland.',
+      'Mine, forge, then build an Expedition Station and send people out to search. We don’t need to understand how it works. We just need to use it.',
     ],
-    goals: ['Build a Metal Mine', 'Build a Forge', 'Forge the first batch of tools (20)', 'Reach population 22', 'Complete the Outpost'],
+    goals: ['Build a Metal Mine', 'Build a Forge', 'Build an Expedition Station', 'Complete the first expedition and bring back a blueprint', 'Research the first blueprint tech: High-Pressure Filter', 'Complete the Outpost'],
   },
   {
     title: 'Xenocrystal', subtitle: 'This planet does not want them',
     intro: [
       'The first time the outpost searchlight swept the wasteland, it lit up a pack of things watching us.',
-      'They are small, but there are many, and they learn fast. The crystal clusters glow violet at night — that is the light they follow.',
+      'They are small, but there are many, and they learn fast. The xenocrystal the expeditions brought back glows violet at night — that is the light they followed.',
       'Build marine barracks, forge weapons, learn to use xenocrystal. This planet does not want you, but you have nowhere else to go.',
     ],
     goals: ['Build the Marine Barracks and station marines', 'Build a Crystal Synthesizer', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],

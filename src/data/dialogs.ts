@@ -155,12 +155,13 @@ export const SCENES: Record<string, SceneText> = {
   // ── 第 3 章　金屬與火 ──
   'c3-open': {
     lines: [
-      ['juno', '科技研究院的掃描器一直在叫，對著……提歐的杯墊。', 'The scanner in the Tech Institute keeps beeping... at Teo\'s coaster.'],
-      ['ines', '提歐，你的杯墊在發訊號。', 'Teo, your coaster is transmitting.'],
-      ['teo', '它只是想被注意。跟我年輕的時候一樣。', 'It just wants attention. Like me when I was young.'],
-      ['mara', '先收好，等我們有能力研究它再說。現在我們需要的是金屬。', 'Put it away until we can actually study it. Right now, what we need is metal.'],
+      ['juno', '科技研究院的掃描器一直在叫，對著……提歐的杯墊。', "The scanner in the Tech Institute keeps beeping... at Teo's coaster."],
+      ['ines', '我查過了。上面的紋路是製造指令，一步一步寫得清清楚楚——只是不是人類寫的。', "I checked. The patterns are manufacturing instructions, step by step, perfectly clear. Just not written by humans."],
+      ['teo', '所以我的杯墊是一本說明書？', 'So my coaster is an instruction manual?'],
+      ['mara', '荒原上可能還有更多。先挖金屬、打工具，然後蓋一座探勘站，派人出去找。', "There could be more out in the wasteland. Mine metal, make tools, then build an expedition station and send people out to look."],
     ],
   },
+
   'c3-mine': {
     lines: [
       ['ines', '挖到了！真正的金屬礦脈。不是殘骸，不是廢料。', 'We hit it! A real metal vein. Not wreckage, not scrap.'],
@@ -180,25 +181,35 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ['鍛造廠點火了。提歐講了一段很感人的話，伊涅絲破壞了氣氛。兩段我都記下來了。', 'The forge is lit. Teo gave a moving speech and Ines ruined the mood. I wrote down both.'],
   },
-  'c3-tools': {
+
+
+  'c3-exp1': {
     lines: [
-      ['juno', '第一批工具！我要幫每一支取名字。這支叫小敲，這支叫——', 'Our first batch of tools! I\'m naming every one. This one is Tappy, and this one is—'],
-      ['ines', '不准。', 'No.'],
-      ['teo', '不准。', 'No.'],
-      ['mara', '一致通過。朱諾，名字寫在日誌裡就好。', 'Unanimous. Juno, keep the names in the log.'],
-      ['juno', '……小敲會記得你們的。', '...Tappy will remember this.'],
+      ['ines', '探勘隊回來了！我們在晶簇旁邊挖到一整塊完整的晶板，還有這個——', "The expedition is back! We dug up a whole intact crystal plate next to a cluster, and this—"],
+      ['juno', '石頭在發光！紫色的！可以拿來當夜燈嗎？', "The stones are glowing! Purple! Can I use them as a night light?"],
+      ['ines', '那是異晶，能量密度高得嚇人。先別放在床邊。', "That's xenocrystal. The energy density is terrifying. Not by your bed."],
+      ['teo', '新晶板上寫的是……濾網？氧氣濾網。', "The new plate says... a filter? An oxygen filter."],
+      ['mara', '送去科技研究院。看看我們照著做，造不造得出來。', "Take it to the Tech Institute. Let's see if we can build it by following the steps."],
     ],
+    log: ['第一支探勘隊回來了，帶回一張完整的藍圖和一袋會發光的紫色石頭。我想拿來當夜燈，被伊涅絲沒收了。', 'The first expedition came back with a complete blueprint and a bag of glowing purple stones. I wanted one as a night light. Ines confiscated it.'],
   },
-  'c3-pop22': {
+  'c3-filter': {
     lines: [
-      ['mara', '朱諾，剛剛跟我打招呼的那位是……？', 'Juno, who was that who just said hi to me...?'],
-      ['juno', '雷恩，水管組的，上週來的。', 'Ren, from the plumbing crew. Arrived last week.'],
-      ['mara', '我第一次記不住所有人的名字了。', "It's the first time I can't remember everyone's name."],
-      ['juno', '日誌借妳看。每個人我都寫了，連綽號都有。', "Borrow the log. I wrote everyone down, nicknames too."],
-      ['mara', '……我的綽號還是冷面機長？', '...Am I still Captain Frosty?'],
-      ['juno', '上訴駁回。', 'Appeal denied.'],
+      ['ines', '高壓濾網裝好了。產氧量多了一半。', 'The high-pressure filter is in. Oxygen output is up by half.'],
+      ['juno', '所以它是怎麼運作的？', 'So how does it work?'],
+      ['teo', '我會用，但不知道它為什麼會動。就像我的膝蓋。', "I can use it, but I don't know why it works. Like my knees."],
+      ['ines', '……我照著藍圖一步一步做，每一步都懂，合起來就不懂了。', "...I followed the blueprint step by step. I understood every step. Put together, I don't."],
+      ['mara', '那就先用著。總有一天會懂的。', "Then we use it for now. Someday we'll understand."],
     ],
-    log: ['瑪拉今天第一次記不住所有人的名字。她說這是好事。', 'Today, for the first time, Mara could not remember everyone\'s name. She says that is a good thing.'],
+    log: ['我們照著外星人的藍圖造出了高壓濾網。提歐說：「我會用，但不知道它為什麼會動。就像我的膝蓋。」', 'We built a high-pressure filter from an alien blueprint. Teo said: "I can use it, but I don\'t know why it works. Like my knees."'],
+  },
+  'c3-resonance': {
+    lines: [
+      ['juno', '三片碎片拼起來了！剛好卡在一起，一點縫都沒有。', 'The three fragments fit together! Perfectly, not even a seam.'],
+      ['ines', '是工具的製造方法。敲下去的時候會跟材料共振……能省下不少料。', 'It is a way to make tools. They resonate with the material when you strike... it saves a lot of stock.'],
+      ['teo', '連我的扳手都會嫉妒。', 'Even my wrench is going to be jealous.'],
+    ],
+    log: ['探勘隊帶回的三片碎片拼成了第二張藍圖：共振工具。提歐的扳手看起來有點失落。', "The three fragments the expeditions found fit into a second blueprint: Resonance Tools. Teo's wrench looks a little down."],
   },
   'c3-outpost': {
     lines: [
@@ -213,17 +224,18 @@ export const SCENES: Record<string, SceneText> = {
   'c3-end': {
     lines: [
       ['juno', '殖民地日誌，第 {day} 天。', 'Colony log, day {day}.'],
-      ['juno', '我們不再只是撿別人留下的東西了。今天，我們用自己挖的金屬，打出了自己的工具。', 'We are not just picking up what others left behind anymore. Today we made our own tools, from metal we dug ourselves.'],
+      ['juno', '我們找到了別人留下的藍圖。照著做就造得出來，但沒有人懂為什麼。', 'We found blueprints someone else left behind. Follow them and the thing gets built, but nobody understands why.'],
       ['juno', '東邊的訊號還在響。睡前我會對著窗外說晚安，以防萬一。', 'The signal in the east is still going. Before bed I say goodnight out the window. Just in case.'],
     ],
-    log: ['我們不再只是撿別人留下的東西了，用自己挖的金屬打出了自己的工具。東邊的訊號還在響。', 'We are not just picking up what others left behind anymore. We made our own tools from metal we dug ourselves. The signal in the east is still going.'],
+    log: ['我們找到了別人留下的藍圖。照著做就造得出來，但沒有人懂為什麼。東邊的訊號還在響。', 'We found blueprints someone else left behind. Follow them and the thing gets built, but nobody understands why. The signal in the east is still going.'],
   },
+
 
   // ── 第 4 章　異晶 ──
   'c4-open': {
     lines: [
       ['mara', '前哨站回報：荒原上有東西在看著我們。', 'Outpost report: something out on the flats is watching us.'],
-      ['juno', '牠們好小！像貓一樣，背上還會發光……', "They're so small! Like cats, and their backs glow..."],
+      ['juno', '牠們好小！像貓一樣，背上還會發光……而且一直盯著倉庫裡那袋異晶。', "They're so small! Like cats, and their backs glow... and they keep staring at the bag of xenocrystal in storage."],
       ['ines', '數量很多。而且牠們在學我們巡邏的路線。', "There are a lot of them. And they're learning our patrol routes."],
       ['mara', '建陸戰隊營區。我不想開第一槍，但也不想被咬。', "Build a marine barracks. I don't want to fire first, but I don't want to get bitten either."],
     ],
@@ -321,12 +333,12 @@ export const SCENES: Record<string, SceneText> = {
     lines: [
       ['voss', '有件事你們該知道。赫利昂追到這裡，不是為了幾個逃跑的礦工。', 'There is something you should know. Helion did not come all this way for a few runaway miners.'],
       ['mara', '那是為了什麼？', 'Then what for?'],
-      ['voss', '為了那個。提歐的杯墊。公司找這種晶板找了幾十年。', "For that. Teo's coaster. The company has hunted for plates like it for decades."],
-      ['ines', '上面的紋路……是製造指令？', 'The patterns on it... are manufacturing instructions?'],
-      ['voss', '是藍圖。不是人類畫的。照著做就能造出來，但沒人知道原理。公司想把它們全部拿走。', 'Blueprints. Not drawn by humans. Follow them and you can build the thing, but nobody knows how it works. The company wants every one of them.'],
+      ['voss', '為了你們的藍圖。公司找這種晶板找了幾十年。', 'For your blueprints. The company has hunted for plates like these for decades.'],
+      ['ines', '所以那些藍圖……不是這顆星球的？', 'So those blueprints... are not from this planet?'],
+      ['voss', '不是任何人類的。誰手上的藍圖多，誰就能造出別人造不出的東西。公司想把它們全部拿走。', 'Not from any human. Whoever holds the most blueprints can build what no one else can. The company wants every one of them.'],
       ['teo', '……我以後用它的時候，墊一張紙好了。', "...I'll put a napkin under my mug from now on."],
     ],
-    log: ['沃斯說，提歐的杯墊是某個外星文明留下的藍圖，赫利昂就是為它們來的。提歐現在用它的時候會墊一張紙。', "Voss says Teo's coaster is a blueprint left by some alien civilization, and that's why Helion came. Teo now puts a napkin under his mug."],
+    log: ['沃斯說，赫利昂追到這裡，是為了我們的藍圖。公司找它們找了幾十年。提歐現在用杯墊的時候會墊一張紙。', "Voss says Helion came all this way for our blueprints. The company has hunted for them for decades. Teo now puts a napkin under his mug."],
   },
   'c5-end': {
     lines: [

@@ -2,7 +2,7 @@ import BUILDINGS from '../data/buildings.json';
 
 export type ResKey = 'nutrient' | 'oxygen' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
 export const RES_KEYS: ResKey[] = ['nutrient', 'oxygen', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
-export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 4, credit: 5 };
+export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 3, credit: 5 };
 /** 貨幣不受倉容上限限制 */
 export const UNCAPPED: ResKey[] = ['credit'];
 
@@ -11,7 +11,7 @@ export type Effect = Partial<{
   clickAdd: number; critAdd: number; critMul: number; workerCapAdd: number; buffDuration: number;
   prodAdd: number; housingAdd: number; birthAdd: number; moraleAdd: number; foodWindow: number;
   recipeOut: number; outMul: number; researchSpeed: number; storagePerLevel: number; gatherAdd: number;
-  storageMul: number; consumeMul: number; processAdd: number;
+  storageMul: number; consumeMul: number; processAdd: number; o2Add: number; costMul: number;
   guardHp: number; guardAtk: number; weaponAtk: number; injuryMul: number; clickCrystal: number; habBonus: number;
   charterSlot: number; crystalAdd: number; turretAtk: number; weaponOut: number; healAdd: number; bedAdd: number;
 }>;
@@ -112,6 +112,8 @@ export interface GameState {
     /** 對話腳本版本（見 dialog.ts 的 DIALOG_VERSION） */
     dlgV?: number;
   };
+  /** 探勘站：探勘隊、次數、藍圖碎片、已取得的藍圖 */
+  exp?: import('./expedition').ExpState;
   /** 殖民地日誌（朱諾） */
   journal?: import('./dialog').Journal;
   stats: { clicks: number; crits: number };
@@ -142,11 +144,12 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 2 },
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 3 },
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),
     air: newAir(),
+    exp: { until: 0, team: 0, count: 0, frags: 0, blueprints: [] },
     boost: { until: 0, uses: 0 },
     lastSaved: now,
     notices: [],

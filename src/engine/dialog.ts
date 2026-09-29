@@ -42,8 +42,9 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c3-open', when: (s) => s.stage === 3 && s.story.seenIntro >= 3 },
   { id: 'c3-mine', when: (s) => built(s, 'metal_mine') },
   { id: 'c3-forge', when: (s) => built(s, 'forge') },
-  { id: 'c3-tools', when: (s) => s.stage >= 3 && s.res.tools >= 20 },
-  { id: 'c3-pop22', when: (s) => s.stage >= 3 && s.pop >= 22 },
+  { id: 'c3-exp1', when: (s) => (s.exp?.count ?? 0) >= 1 && !s.events.report },
+  { id: 'c3-filter', when: (s) => s.research.done.includes('bp_filter') },
+  { id: 'c3-resonance', when: (s) => !!s.exp?.blueprints.includes('resonance') && !s.events.report },
   { id: 'c3-outpost', when: (s) => built(s, 'outpost') },
   { id: 'c3-end', when: (s) => s.stage >= 4, chapterEnd: true },
   { id: 'c4-open', when: (s) => s.stage === 4 && s.story.seenIntro >= 4 },
@@ -65,7 +66,7 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c6-end', when: (s) => s.finished, chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 2;
+export const DIALOG_VERSION = 3;
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);
 const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id));
 

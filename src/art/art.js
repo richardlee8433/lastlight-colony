@@ -856,6 +856,34 @@ export const BUILDINGS = [
     }
   }),
 
+  // 探勘站（第 3 章）：車庫、探勘車、天線；屋頂上的偵測燈對異晶發紫光
+  B('expedition', '探勘站', 3, 'crystal', (k, t) => {
+    const { M } = k;
+    const XENO = 0xc08aff;
+    k.box(-22, 0, 30, 12, 11, M.hull, { band: 2 });
+    k.rect(-18, -9, 14, 9, M.dark[0]).hl(-18, -5, -9, M.metal[3]);
+    for (let y = -8; y < -1; y += 2) k.hl(-17, -6, y, M.dark[1]);
+    k.win(0, -8, 3, 3).win(4, -8, 3, 3);
+    const rover = (x) => {
+      k.box(x, 4, 13, 5, 5, M.rust);
+      k.win(x + 8, 0, 3, 2, 0xcfe8ff);
+      k.ell(x + 2, 5, 2, 2, M.dark[0]).ell(x + 10, 5, 2, 2, M.dark[0]);
+      k.px(x + 2, 5, M.metal[3]).px(x + 10, 5, M.metal[3]);
+    };
+    rover(12);
+    if (t >= 2) { rover(-38); k.lamp(-25, -6, 0xffe0a0, 8, 0.35); }
+    k.vl(-18, -30, -12, M.metal[1]).vl(-17, -30, -12, M.metal[3]);
+    k.ellO(-17, -31, 4, 2, M.metal[3]).line(-17, -31, -13, -35, M.metal[2]);
+    k.beacon(-13, -36, 0x6fffc8);
+    k.dome(2, -13, 4, 3, M.glass, { glass: true });
+    k.glow(2, -15, 14, XENO, 0.55, true).px(2, -15, 0xf0e0ff);
+    if (t === 3) {
+      k.lattice(20, -10, 3, 18);
+      k.ellO(21, -30, 6, 3, M.metal[3]).line(21, -30, 26, -35, M.metal[2]);
+      k.beacon(26, -36, XENO);
+    }
+  }),
+
   // ── 階段 4 前哨 ──
   B('hydro_farm', '水耕農場', 4, 'nutrient', (k, t) => {
     const { M, P } = k;

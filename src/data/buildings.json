@@ -804,6 +804,19 @@
     ]
   },
   {
+    "id": "expedition",
+    "name": "探勘站",
+    "stage": 3,
+    "kind": "utility",
+    "maxLevel": 5,
+    "desc": "整備車輛與裝備，派殖民者組隊到荒原搜尋未知文明留下的藍圖。每趟派 2 人、約 3 分鐘；第一次必定帶回藍圖。升級讓每趟帶回更多，也更容易找到藍圖碎片。",
+    "baseCost": {
+      "scrap": 120,
+      "rock": 100,
+      "parts": 40
+    }
+  },
+  {
     "id": "outpost",
     "name": "前哨站",
     "stage": 3,

@@ -7,6 +7,7 @@ import { built, idle, storageCap, workerCap } from '../engine/formulas';
 import { oxygenByproduct, oxygenUse } from '../engine/air';
 import { step, TICK } from '../engine/tick';
 import { migrateDialogs } from '../engine/dialog';
+import { newExp, startExpedition } from '../engine/expedition';
 import { SCENES } from '../data/dialogs';
 import { click as engineClick, ClickResult } from '../engine/click';
 import { applyOffline } from '../engine/offline';
@@ -98,6 +99,8 @@ function migrate(s: GameState) {
   s.air ??= { ...newAir(), elapsed: s.stage >= 2 ? LIFE_SUPPORT.duration : 0, graceUsed: s.stage >= 2 };
   // 已經過了第 1 章的舊存檔：免費蓋好氧氣再生器與電解站並派人，讀進來不會立刻缺氧
   if (!hadAir && AIR_ENABLED && s.stage >= 2) giveAirSupply(s);
+  // 探勘站（第 3 章改版）：已經過了第 3 章的存檔，視為做過第一次探勘、拿到第一張藍圖
+  if (!s.exp) { s.exp = newExp(); if (s.stage >= 4) { s.exp.count = 1; s.exp.blueprints = ['filter']; } }
   // v0.6 對話與日誌：已經過去的里程碑不補播
   migrateDialogs(s);
   s.notices = [];
@@ -148,6 +151,7 @@ interface Store {
   openTech: (o: boolean) => void;
   lookAtRaid: () => void;
   reset: () => void;
+  expedition: () => void;
   /** 目前的對話場景播完（或跳過） */
   dialogNext: () => void;
   journal: boolean;
@@ -184,6 +188,7 @@ export const useGame = create<Store>((set, get) => {
     signal: () => run((s) => G.signalTrade(s, 5)),
     setTax: (n) => run((s) => G.setTax(s, n)),
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),
+    expedition: () => run((s) => startExpedition(s)),
     dialogNext: () => run((s) => { s.story.queue?.shift(); }),
     journal: false,
     title: true,

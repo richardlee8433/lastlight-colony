@@ -18,6 +18,8 @@ const RAW_SITES: Site[] = [
   { id: 'rock_cutter', x: 474, y: 364 },
   { id: 'databank', x: 212, y: 166 },
   { id: 'metal_mine', x: 568, y: 166 },
+  // 第 3 章：探勘站在生活艙下方（原本電解站的位置）
+  { id: 'expedition', x: 222, y: 340 },
   { id: 'forge', x: 568, y: 388 },
   { id: 'rail_line', x: 212, y: 390 },
   // 階段 4：最外圈

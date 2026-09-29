@@ -329,5 +329,41 @@
       "crystal_armor"
     ],
     "lab": true
+  },
+  {
+    "id": "bp_filter",
+    "name": "高壓濾網",
+    "desc": "藍圖科技：產氧建築產量 +50%",
+    "cost": {
+      "parts": 120,
+      "metal": 40,
+      "crystal": 10
+    },
+    "time": 120,
+    "effect": {
+      "o2Add": 0.5
+    },
+    "branch": "life",
+    "tier": 2,
+    "stage": 3,
+    "blueprint": "filter"
+  },
+  {
+    "id": "bp_resonance",
+    "name": "共振工具",
+    "desc": "藍圖科技：建造與升級建築少付 15% 材料",
+    "cost": {
+      "parts": 200,
+      "tools": 40,
+      "crystal": 20
+    },
+    "time": 180,
+    "effect": {
+      "costMul": -0.15
+    },
+    "branch": "prod",
+    "tier": 3,
+    "stage": 3,
+    "blueprint": "resonance"
   }
 ]

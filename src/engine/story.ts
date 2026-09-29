@@ -3,7 +3,7 @@ import STORY from '../data/story.json';
 import { AIR_ENABLED, GameState } from './state';
 import { built } from './formulas';
 
-export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form'; res?: string; id?: string; amount?: number; label: string }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research'; res?: string; id?: string; amount?: number; label: string }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 // 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
@@ -41,6 +41,8 @@ function liveDone(s: GameState, g: Goal): boolean {
     case 'boost': return (s.boost?.uses ?? 0) > 0;
     case 'level': return s.b[g.id!].level >= g.amount!;
     case 'form': return built(s, g.id!) && (s.b[g.id!].form ?? 0) >= g.amount!;
+    case 'expedition': return (s.exp?.count ?? 0) >= g.amount!;
+    case 'research': return s.research.done.includes(g.id!);
     case 'air': return !AIR_ENABLED || (s.air?.safeTime ?? 0) >= g.amount!;
   }
 }

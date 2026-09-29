@@ -122,6 +122,7 @@ export function researchBlock(s: GameState, rid: string): Why {
   const miss = r.requires?.find((q) => !s.research.done.includes(q));
   if (miss) return msg('why.needRs', { rs: miss });
   if (r.lab && !built(s, 'xeno_lab')) return msg('why.lab');
+  if (r.blueprint && !s.exp?.blueprints.includes(r.blueprint)) return msg('why.blueprint', { bp: r.blueprint });
   if (s.research.active) return msg('why.busy');
   if (!canAfford(s, r.cost)) return msg('why.afford');
   return null;

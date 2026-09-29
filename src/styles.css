@@ -362,3 +362,6 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
   .tm-btn.main { font-size: 17px; }
 }
 @media (prefers-reduced-motion: reduce) { .title-bg, .title-bg .star, .title-bg .glow, .title-bg .beacon-light { animation: none; } }
+
+/* 科技樹：藍圖科技的標籤 */
+.tech-node .tag.bp { background: #b98aff; color: #1a0d2a; }

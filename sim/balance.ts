@@ -10,6 +10,7 @@ import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/en
 import { canAfford } from '../src/engine/formulas';
 import { airSafety, lifeSupportLeft } from '../src/engine/air';
 import { SCENE_IDS } from '../src/engine/dialog';
+import { expActive, startExpedition, EXP_TEAM } from '../src/engine/expedition';
 import { setFoodPerPop, built, foodSafety, idle, levelCost, netRates, popCap, storageCap, workerCap, RESEARCH_DEFS } from '../src/engine/formulas';
 
 const duty = Number(process.argv[2] ?? 0.5);
@@ -28,6 +29,7 @@ const PRODUCER: Record<ResKey, string[]> = {
 const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
 
 function target(s: GameState) {
+  if (s.stage === 3) { const g = ['metal_mine', 'forge', 'expedition'].find((id) => !built(s, id)); if (g) return g; }   // 第 3 章照章節目標走
   const t = TARGETS.find((id) => !built(s, id));
   if (t) return t;
   if (s.b.orbital_beacon.level >= DEF.orbital_beacon.maxLevel) return undefined!;
@@ -53,6 +55,7 @@ function producerFor(s: GameState, k: ResKey): string | null {
 
 function decide(s: GameState) {
   s.story.seenIntro = Math.min(s.stage, 6);   // 玩家看完章節開場（劇情對話與伊涅絲事件要靠它觸發）
+  s.events.report = null;   // 玩家看完事件結果（救援、探勘）
   if (s.events.active) {
     const k = s.events.active.kind;
     resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
@@ -65,6 +68,15 @@ function decide(s: GameState) {
   if (partnerOpen(s, 'corp')) for (const k of ['scrap', 'nutrient', 'tools', 'parts', 'rock'] as ResKey[]) {
     const need = (levelCost(s, target(s) ?? 'star_dome') as any)[k] ?? 0;
     if (s.res[k] > storageCap(s) * 0.9 && s.res[k] - 100 > need && !tradeBlock(s, 'corp', k, 'sell')) trade(s, 'corp', k, 'sell');
+  }
+  // 探勘：隊伍在家就派出去（閒置不夠時從工人最多的建築調人）
+  if (built(s, 'expedition') && !expActive(s)) {
+    for (let i = 0; i < 4 && idle(s) < EXP_TEAM; i++) {
+      const top = DEFS.filter((d) => d.id !== 'security' && d.id !== 'o2_scrubber' && s.b[d.id].workers > 0).sort((a, b) => s.b[b.id].workers - s.b[a.id].workers)[0];
+      if (!top) break;
+      s.b[top.id].workers--;
+    }
+    if (startExpedition(s)) expLog.push(fmt(s.t));
   }
   const tgt = target(s);
   if (!tgt) return;
@@ -102,7 +114,7 @@ function decide(s: GameState) {
     const p = ['o2_scrubber'].find((x) => built(s, x));
     if (p && s.b[p].workers >= workerCap(s, p) && tryBuy(s, p)) return;
   }
-  for (const id of ['algae_tank', 'assembly', 'rock_cutter', 'lounge', 'metal_mine', 'forge', 'databank', 'rail_line', 'security', 'crystal_synth', 'water_cycle'])
+  for (const id of ['algae_tank', 'assembly', 'rock_cutter', 'lounge', 'metal_mine', 'forge', 'expedition', 'databank', 'rail_line', 'security', 'crystal_synth', 'water_cycle'])
     if (!built(s, id) && DEF[id].stage <= s.stage && tryBuy(s, id)) return;
   // 2. 工人位子不夠就升級需要的生產建築
   if (need) {
@@ -177,6 +189,7 @@ const stageAt: Record<number, number> = {};
 const marksTime = (st: number) => (stageAt[st] ??= s.t) + 150;
 let lastStage = 1, clickAcc = 0;
 // v0.6 氧氣與劇情里程碑：再生器蓋好時維生系統還剩幾秒、伊涅絲何時救回、第 1～2 章空氣安全度最低點
+const expLog: string[] = [];
 let scrubberAt = -1, lsLeftAtScrubber = 0, inesAt = -1, minAir12 = 1;
 const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 for (let i = 0; i < (8 * 3600) / TICK && !s.finished && !s.failed; i++) {
@@ -219,6 +232,7 @@ console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
 console.log(`  氧氣再生器：${scrubberAt < 0 ? '未蓋' : fmt(scrubberAt) + '（維生系統剩 ' + fmt(lsLeftAtScrubber) + '）'}；伊涅絲：${inesAt < 0 ? '未救回' : fmt(inesAt)}；第 1～2 章空氣安全度最低 ${Math.round(minAir12 * 100)}%`);
 step(s, TICK, { rng });   // 讓結局的對話觸發
+console.log(`  探勘：${s.exp?.count ?? 0} 次（第一次出發 ${expLog[0] ?? '無'}），藍圖 ${s.exp?.blueprints.join('、') || '無'}，碎片 ${s.exp?.frags ?? 0}；藍圖科技：${['bp_filter', 'bp_resonance'].filter((x) => s.research.done.includes(x)).join('、') || '無'}`);
 console.log(`  劇情對話：播了 ${s.story.seen?.length ?? 0}/${SCENE_IDS.length} 段；沒觸發：${SCENE_IDS.filter((id) => !s.story.seen?.includes(id)).join('、') || '無'}`);
 console.log(`  缺氧累計 ${fmt(hypoxic)}，空氣安全度低於 25% 累計 ${fmt(lowAir)}；${s.failed ? '殖民地瓦解（' + s.failReason + '）' : ''}`);
 console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}；階段 2–3 低於 50% 累計 ${fmt(midFood)}`);
