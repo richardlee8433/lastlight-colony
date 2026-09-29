@@ -84,7 +84,7 @@ export const costText = (c: Partial<Record<ResKey, number>>) =>
 /** 引擎訊息（通知、不能操作的原因、戰報、事件結果）。舊存檔可能是純文字，原樣顯示 */
 export function tm(m: Msg | string | null | undefined): string {
   if (!m) return '';
-  if (typeof m === 'string') return m;
+  if (typeof m === 'string') { const x = fromLegacy(m); if (!x) return m; m = x; }
   const p: Params = { ...(m.p ?? {}) };
   if (typeof p.b === 'string') {
     if (typeof p.node === 'string') { const [n, d] = nodeText(p.b, p.node); p.node = n; p.nodeDesc = d; }
@@ -95,6 +95,43 @@ export function tm(m: Msg | string | null | undefined): string {
   if (typeof p.c === 'string') { const [n, d] = charterText(p.c); p.c = n; p.cDesc = d; }
   if (typeof p.kind === 'string') { p.unit = t('unit.' + p.kind); p.kind = raidName(p.kind); }
   return t(m.k, p);
+}
+
+// ── 舊存檔：戰報、事件結果以前直接存中文字串。用中文字典反推回代碼，才能在英文模式下翻譯 ──
+type Pattern = { re: RegExp; key: string; names: string[]; lit: number };
+let patterns: Pattern[] | null = null;
+const rev = (prefix: string) => Object.fromEntries(Object.entries(STRINGS).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => [v[1], k.slice(prefix.length)]));
+function fromLegacy(str: string): Msg | null {
+  if (!patterns) {
+    patterns = Object.entries(STRINGS)
+      .filter(([k]) => /^(l|g|rescue|n)\./.test(k))
+      .map(([key, v]) => {
+        const parts = v[1].split(/\{(\w+)\}/), names: string[] = [];
+        let src = '', lit = 0;
+        parts.forEach((x, i) => {
+          if (i % 2) { names.push(x); src += '(.+?)'; } else { src += x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); lit += x.length; }
+        });
+        return { re: new RegExp('^' + src + '$'), key, names, lit };
+      })
+      .sort((a, b) => b.lit - a.lit);
+  }
+  const res = rev('res.'), raid = rev('raid.');
+  const bld = Object.fromEntries(Object.values(DEF).map((d) => [d.name, d.id]));
+  for (const pt of patterns) {
+    const m = pt.re.exec(str);
+    if (!m) continue;
+    const p: Record<string, string | number> = {};
+    let ok = true;
+    pt.names.forEach((n, i) => {
+      const v = m[i + 1];
+      if (n === 'r') { if (res[v]) p.r = res[v]; else ok = false; }
+      else if (n === 'kind') { if (raid[v]) p.kind = raid[v]; else ok = false; }
+      else if (n === 'b') { if (bld[v]) p.b = bld[v]; else ok = false; }
+      else if (n !== 'unit') p[n] = v;
+    });
+    if (ok) return { k: pt.key, p };
+  }
+  return null;
 }
 
 /** 目前章節（給沒有 import story 的地方用） */
