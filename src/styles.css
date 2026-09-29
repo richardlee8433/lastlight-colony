@@ -275,3 +275,43 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .game.hypoxic::after { opacity: 1; background: radial-gradient(ellipse at center, transparent 35%, rgba(150, 10, 30, 0.55) 80%, rgba(90, 0, 20, 0.85) 100%); box-shadow: inset 0 0 120px rgba(255, 40, 60, 0.45); animation: gasp 2.4s ease-in-out infinite; }
 @keyframes gasp { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .game.hypoxic::after { animation: none; } }
+
+/* 劇情對話框：左下半身立繪壓在文字框上 */
+.dlg { position: absolute; left: 250px; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); width: min(660px, calc(100% - 610px)); min-width: 460px; z-index: 5; pointer-events: none; animation: dlg-in 0.25s ease-out; }
+.dlg-art { position: absolute; left: -14px; bottom: -6px; height: 270px; width: 200px; object-fit: contain; object-position: bottom center; z-index: 1; filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.45)); animation: dlg-art 0.3s ease-out; }
+.dlg-art.pixel { image-rendering: pixelated; height: 160px; width: 160px; left: 10px; bottom: 16px; }
+.dlg-box { position: relative; pointer-events: auto; cursor: pointer; min-height: 104px; padding: 22px 22px 16px 196px; background: rgba(20, 23, 35, 0.94); }
+.dlg-box:focus-visible { outline: 2px solid var(--trim); outline-offset: 2px; }
+.dlg-box p { margin: 0; font-size: 15.5px; line-height: 1.7; color: var(--text); min-height: 3.4em; }
+.dlg-rest { visibility: hidden; }
+.dlg-name { position: absolute; top: -15px; left: 186px; padding: 3px 14px; font-weight: 900; font-size: 14px; letter-spacing: 0.06em; background: var(--who, var(--trim)); color: #140e08; border: 2px solid var(--edge); box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.35); }
+.dlg-arrow { position: absolute; right: 16px; bottom: 8px; font-style: normal; font-size: 12px; color: var(--who, var(--trim)); animation: dlg-bob 0.9s ease-in-out infinite; }
+.dlg-count { position: absolute; right: 36px; bottom: 7px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dlg-skip { position: absolute; right: 0; top: -30px; pointer-events: auto; appearance: none; border: 0; background: rgba(12, 13, 20, 0.75); color: var(--muted); font: inherit; font-size: 12px; padding: 4px 10px; cursor: pointer; }
+.dlg-skip:hover { color: var(--text); }
+.who-mara { --who: #f39a4a; } .who-teo { --who: #d8b27a; } .who-juno { --who: #6fd0c8; } .who-ines { --who: #ffd24a; }
+.who-sefa { --who: #b98aff; } .who-voss { --who: #9fb4e0; } .who-calder { --who: #f0e0b0; }
+@keyframes dlg-in { from { transform: translateY(10px); opacity: 0; } }
+@keyframes dlg-art { from { transform: translateX(-16px); opacity: 0; } }
+@keyframes dlg-bob { 50% { transform: translateY(3px); } }
+@media (max-width: 1100px) { .dlg { left: 250px; right: 8px; width: auto; min-width: 0; } }
+@media (max-width: 640px) {
+  .dlg { left: 8px; right: 8px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .dlg-art { height: 170px; width: 124px; left: -6px; }
+  .dlg-box { padding: 18px 12px 14px 118px; min-height: 90px; }
+  .dlg-box p { font-size: 14px; }
+  .dlg-name { left: 110px; }
+}
+@media (prefers-reduced-motion: reduce) { .dlg, .dlg-art, .dlg-arrow { animation: none; } }
+
+/* 殖民地日誌 */
+.modal.journal { width: min(560px, 100%); max-height: calc(100% - 16px); display: flex; flex-direction: column; overflow: hidden; background: #221f2c; }
+.journal-head { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; }
+.journal-head img { width: 64px; height: 64px; object-fit: cover; object-position: 50% 8%; background: var(--inset); box-shadow: inset 2px 2px 0 #07080d; }
+.journal-head h2 { font-size: 21px; }
+.journal-body { overflow-y: auto; display: grid; gap: 14px; padding: 14px 16px; background: #efe6d2; color: #3a3226; box-shadow: inset 2px 2px 0 #b8ab8e; background-image: repeating-linear-gradient(transparent 0 25px, rgba(90, 120, 170, 0.18) 25px 26px); }
+.journal-body section { display: grid; gap: 6px; }
+.journal-body h3 { margin: 0; font-size: 13px; color: #a0522d; letter-spacing: 0.08em; }
+.modal .journal-body p { color: #3a3226; font-size: 14px; line-height: 1.8; }
+.modal .journal-body p.chapter { text-align: center; font-weight: 900; color: #6a4a8a; }
+.modal .journal-body .muted { color: #8a7f6a; }

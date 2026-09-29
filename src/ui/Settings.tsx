@@ -21,6 +21,7 @@ export function Settings() {
     <>
       <div className="settings">
         {built(s, 'databank') && <button type="button" className="btn tech-btn" onClick={() => act.openTech(true)} title={t('tt.title')}>{t('tt.short')}{s.research.active ? ' ●' : ''}</button>}
+        <button type="button" className="btn tech-btn" onClick={() => act.openJournal(true)} title={t('log.title')}>{t('log.short')}</button>
         <button type="button" className="btn sq gear" onClick={() => setOpen(true)} aria-label={t('set.title')} title={t('set.title')}>≡</button>
       </div>
       {open && (

@@ -103,7 +103,13 @@ export interface GameState {
     report?: { title: Msg | string; text: Msg | string; gains: (Msg | string)[] } | null;
   };
   /** done：已完成的目標 id（`章-序號`，例如 "2-0"） */
-  story: { seenIntro: number; assigned: boolean; done: string[]; tips?: string[] };
+  story: {
+    seenIntro: number; assigned: boolean; done: string[]; tips?: string[];
+    /** 播過的劇情場景、等著播放的場景（d：觸發時的天數） */
+    seen?: string[]; queue?: { id: string; d: number }[];
+  };
+  /** 殖民地日誌（朱諾） */
+  journal?: import('./dialog').Journal;
   stats: { clicks: number; crits: number };
   raid: RaidState;
   gov: GovState;
@@ -132,7 +138,7 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [] },
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [] },
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),

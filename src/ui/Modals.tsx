@@ -3,6 +3,7 @@ import { useGame, game } from '../store/gameStore';
 import { RES_KEYS, ResKey } from '../engine/state';
 import { canAfford, idle } from '../engine/formulas';
 import { CHAPTERS } from '../engine/story';
+import { chapterEndPending } from '../engine/dialog';
 import { bName, chapterText, costText, eventText, raidName, resName, t, tm } from '../i18n';
 import { Icon, fmt, fmtTime } from './common';
 
@@ -52,7 +53,7 @@ export function Modals() {
     );
   }
 
-  if (!s.finished && s.story.seenIntro < chIdx) {
+  if (!s.finished && s.story.seenIntro < chIdx && !chapterEndPending(s)) {
     const ch = CHAPTERS[chIdx - 1], tx = chapterText(ch);
     return (
       <Modal label={t('ch.n', { n: ch.chapter })}>

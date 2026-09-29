@@ -11,6 +11,8 @@ import { TradeModal } from './ui/TradeModal';
 import { TechTree } from './ui/TechTree';
 import { Modals } from './ui/Modals';
 import { Settings } from './ui/Settings';
+import { Dialog } from './ui/Dialog';
+import { Journal } from './ui/Journal';
 import { useGame, game } from './store/gameStore';
 import { applyDocLang, t, useLang } from './i18n';
 import { AIR_ENABLED } from './engine/state';
@@ -42,7 +44,9 @@ export function App() {
       <Settings />
       <TradeModal />
       <TechTree />
+      <Dialog />
       <Modals />
+      <Journal />
     </div>
   );
 }
