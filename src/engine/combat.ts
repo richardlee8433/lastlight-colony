@@ -14,9 +14,15 @@ export const medBeds = (s: GameState) => (built(s, 'med_bay') ? s.b.med_bay.leve
 export const healRate = (s: GameState) => (built(s, 'med_bay') ? 1 + s.b.med_bay.workers * 0.6 * (1 + nodeEffect(s, 'med_bay', 'healAdd')) : 1);
 /** 傷員治療：最快好的那幾位佔用病床，剩餘時間按 healRate 倒數 */
 function treat(s: GameState, dt: number) {
+  const r = s.raid;
+  // 沒有醫療艙：傷員只能自己慢慢好，復原時間變兩倍（倒數速度減半）
+  if (!built(s, 'med_bay')) {
+    for (let i = 0; i < r.injured.length; i++) if (r.injured[i] > s.t) r.injured[i] += dt * 0.5;
+    for (const h of r.hurt ?? []) if (h.until > s.t) h.until += dt * 0.5;
+    return;
+  }
   const beds = medBeds(s), rate = healRate(s);
   if (!beds || rate <= 1) return;
-  const r = s.raid;
   // 陸戰隊員與受傷的殖民者共用病床，誰先快好就先躺
   const list: { u: number; set: (v: number) => void }[] = [
     ...r.injured.map((u, i) => ({ u, set: (v: number) => { r.injured[i] = v; } })),
@@ -162,9 +168,17 @@ function fight(s: GameState, rng: () => number) {
     lines.push(msg('l.morale10'));
     notify(s, ours.length ? 'n.raidLost' : 'n.raidNoDef', { kind: inc.kind ?? 'alien' }, 'warn');
   }
-  if (down) lines.push(msg('l.injured', { n: down, m: Math.round(heal / 60 * 10) / 10 }));
+  // 沒有醫療艙時實際休養時間是兩倍
+  const slow = built(s, 'med_bay') ? 1 : 2;
+  if (down) lines.push(msg('l.injured', { n: down, m: Math.round((heal * slow) / 60 * 10) / 10 }));
   const civ = woundCivilians(s, civHurtChance(won, ready, down), INJURY * 0.8, rng);
-  if (civ) lines.push(msg('l.civHurt', { n: civ, m: Math.round((INJURY * 0.8) / 60 * 10) / 10 }));
+  if (civ) lines.push(msg('l.civHurt', { n: civ, m: Math.round((INJURY * 0.8 * slow) / 60 * 10) / 10 }));
+  // 第一次有人受傷而且還沒有醫療艙：提示去蓋
+  if ((down || civ) && !built(s, 'med_bay') && !s.story.tips?.includes('med')) {
+    (s.story.tips ??= []).push('med');
+    if (!s.events.report) s.events.report = { title: msg('tip.medTitle'), text: msg('tip.medText'), gains: [] };
+    notify(s, 'tip.medTitle', undefined, 'info');
+  }
   r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, turrets: nt, kind: inc.kind ?? 'alien', rounds, injured: down, civHurt: civ, lines };
   r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
 }

@@ -94,7 +94,7 @@ export interface GameState {
     report?: { title: Msg | string; text: Msg | string; gains: (Msg | string)[] } | null;
   };
   /** done：已完成的目標 id（`章-序號`，例如 "2-0"） */
-  story: { seenIntro: number; assigned: boolean; done: string[] };
+  story: { seenIntro: number; assigned: boolean; done: string[]; tips?: string[] };
   stats: { clicks: number; crits: number };
   raid: RaidState;
   gov: GovState;

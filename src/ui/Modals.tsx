@@ -113,13 +113,20 @@ export function Modals() {
 
   const rep = s.events.report;
   if (rep) {
+    // 提示類（例如第一次有人受傷）：多一個按鈕直接帶到相關建築
+    const tip = typeof rep.title === 'object' && rep.title.k === 'tip.medTitle';
     return (
       <Modal label={tm(rep.title)}>
-        <p className="eyebrow">{t('ev.result')}</p>
+        <p className="eyebrow">{t(tip ? 'tip.eyebrow' : 'ev.result')}</p>
         <h2>{tm(rep.title)}</h2>
         <p>{tm(rep.text)}</p>
-        <ul className="gains">{rep.gains.map((g, i) => <li key={i}>{tm(g)}</li>)}</ul>
-        <button type="button" className="btn wide" onClick={act.dismissReport}>{t('ok')}</button>
+        {rep.gains.length > 0 && <ul className="gains">{rep.gains.map((g, i) => <li key={i}>{tm(g)}</li>)}</ul>}
+        {tip ? (
+          <div className="choices">
+            <button type="button" className="btn wide" onClick={() => { act.dismissReport(); act.focusOn('med_bay'); }}>{t('tip.medGo')}</button>
+            <button type="button" className="btn wide alt" onClick={act.dismissReport}>{t('ok')}</button>
+          </div>
+        ) : <button type="button" className="btn wide" onClick={act.dismissReport}>{t('ok')}</button>}
       </Modal>
     );
   }
