@@ -15,6 +15,7 @@ export const STRINGS: Record<string, [string, string]> = {
 
   // ── 資源 ──
   'res.nutrient': ['Nutrients', '營養'],
+  'res.oxygen': ['Oxygen', '氧氣'],
   'res.scrap': ['Scrap', '廢料'],
   'res.rock': ['Stone', '岩材'],
   'res.parts': ['Parts', '零件'],
@@ -102,6 +103,11 @@ export const STRINGS: Record<string, [string, string]> = {
   'n.levelUp': ['{b} reached Lv{n}.', '{b}升到 Lv{n}。'],
   'n.node': ['{b}: {node} ({nodeDesc})', '{b}：{node}（{nodeDesc}）'],
   'n.research': ['Research complete: {rs} ({rsDesc})', '研究完成：{rs}（{rsDesc}）'],
+  'n.hypoxia': ['Out of oxygen! Everyone is gasping — output halved and morale falling.', '氧氣用完了！大家都在喘氣，產量減半、士氣下降。'],
+  'n.airBack': ['The air is breathable again.', '空氣恢復了，大家終於能正常呼吸。'],
+  'n.collapsed': ['A colonist collapsed from lack of oxygen ({n} resting).', '一位殖民者缺氧倒下了（休養中 {n} 人）。'],
+  'n.suffocated': ['The air ran out for too long.', '空氣斷了太久。'],
+  'n.lsGrace': ['Life support is almost out — Teo squeezed out {n} more seconds. Build an Oxygen Scrubber, fast!', '維生系統快撐不住了——老提歐硬是擠出 {n} 秒。快蓋氧氣再生器！'],
   'n.starving': ['Out of nutrients! Colonists have stopped arriving and morale is falling.', '營養耗盡了！殖民者停止增加，士氣正在下降。'],
   'n.arrived': ['A new colonist has arrived (population {n}). Remember to give them a job.', '一位新殖民者抵達了（人口 {n}）。記得派他去工作。'],
   'n.lastLeft': ['The last colonist is gone.', '最後的殖民者也走了。'],

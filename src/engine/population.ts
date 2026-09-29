@@ -40,7 +40,7 @@ export function population(s: GameState, dt: number, quiet = false) {
       const m = before < STARVE_GRACE ? 0 : Math.floor((before - STARVE_GRACE) / LEAVE_EVERY) + 1;
       if (n > m) {
         leave(s);
-        if (s.pop <= 1) { s.failed = true; notify(s, 'n.lastLeft', undefined, 'warn'); }
+        if (s.pop <= 1) { s.failed = true; s.failReason = 'food'; notify(s, 'n.lastLeft', undefined, 'warn'); }
         else notify(s, 'n.left', { n: s.pop }, 'warn');
       }
     }

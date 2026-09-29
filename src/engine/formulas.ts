@@ -1,6 +1,7 @@
 // 所有數值公式集中在這裡（GDD §7、§8）
 import RESEARCH from '../data/research.json';
-import { DEF, DEFS, GameState, ResKey, RES_KEYS, UNCAPPED, Cost, Effect, BuildingForm } from './state';
+import { AIR_ENABLED, DEF, DEFS, GameState, ResKey, RES_KEYS, UNCAPPED, Cost, Effect, BuildingForm } from './state';
+import { HYPOXIA_PROD, lifeSupportRate, oxygenByproduct, oxygenUse } from './air';
 import CHARTERS from '../data/charters.json';
 
 export const CHARTER_DEFS = CHARTERS as unknown as { id: string; name: string; desc: string; cost: string; effect: Record<string, number> }[];
@@ -12,7 +13,7 @@ export function charterEffect(s: GameState, key: string): number {
   return v;
 }
 /** 全域產量倍率（憲章：雙班制、休息日） */
-export const prodMul = (s: GameState) => 1 + charterEffect(s, 'prodMul') + boostBonus(s);
+export const prodMul = (s: GameState) => (1 + charterEffect(s, 'prodMul') + boostBonus(s)) * (s.air?.hypoxic ? HYPOXIA_PROD : 1);
 /** 生物工程室：注入異晶後全部產量 +30%／+40%／+50%（依等級），持續 90／120／150 秒 */
 export const boostPower = (s: GameState) => 0.2 + 0.1 * (s.b.bioeng?.level ?? 0);
 export const boostDuration = (s: GameState) => 60 + 30 * (s.b.bioeng?.level ?? 0);
@@ -219,6 +220,7 @@ export function netRates(s: GameState): Record<ResKey, number> {
     }
   }
   r.nutrient -= consumption(s);
+  if (AIR_ENABLED) r.oxygen += lifeSupportRate(s) + oxygenByproduct(s) - oxygenUse(s);
   r.credit += taxIncome(s);
   return r;
 }

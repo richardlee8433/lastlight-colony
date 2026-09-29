@@ -8,6 +8,7 @@ import { updateStory } from './story';
 import { researchSpeed } from './formulas';
 import { combat } from './combat';
 import { governance } from './governance';
+import { air } from './air';
 
 export const TICK = 0.2;
 
@@ -15,6 +16,7 @@ export function step(s: GameState, dt = TICK, opts: { offline?: boolean; rng?: (
   if (s.failed) return;
   const eff = opts.offline ? 0.5 : 1;
   produce(s, dt, eff);
+  air(s, dt, opts.offline);
   population(s, dt, opts.offline);
   research(s, dt, researchSpeed(s), opts.offline);
   if (!opts.offline) events(s, opts.rng);

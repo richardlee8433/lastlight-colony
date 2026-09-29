@@ -1,8 +1,9 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
-import { DEF, GameState, makeCheckpoint, newGame, newGov, newRaid } from '../engine/state';
+import { DEF, GameState, makeCheckpoint, newAir, newGame, newGov, newRaid } from '../engine/state';
+import { LIFE_SUPPORT } from '../engine/air';
 import { CHAPTERS, migrateStoryDone } from '../engine/story';
-import { built } from '../engine/formulas';
+import { built, storageCap } from '../engine/formulas';
 import { step, TICK } from '../engine/tick';
 import { click as engineClick, ClickResult } from '../engine/click';
 import { applyOffline } from '../engine/offline';
@@ -59,6 +60,9 @@ function migrate(s: GameState) {
   // 第 6 章：結局改成軌道信標完成；舊存檔在星城穹頂就結束的，接續第 6 章
   if (s.finished && s.b.orbital_beacon.level < DEF.orbital_beacon.maxLevel) s.finished = false;
   s.boost ??= { until: 0, uses: 0 };
+  // v0.6 氧氣：舊存檔補上氧氣（裝滿）；已經離開第 1 章的，維生系統視為已經衰竭
+  s.res.oxygen ??= s.stage >= 2 ? storageCap(s) : 120;
+  s.air ??= { ...newAir(), elapsed: s.stage >= 2 ? LIFE_SUPPORT.duration : 0, graceUsed: s.stage >= 2 };
   s.notices = [];
 }
 function save(s: GameState) {

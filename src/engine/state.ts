@@ -1,8 +1,8 @@
 import BUILDINGS from '../data/buildings.json';
 
-export type ResKey = 'nutrient' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
-export const RES_KEYS: ResKey[] = ['nutrient', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
-export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 4, credit: 5 };
+export type ResKey = 'nutrient' | 'oxygen' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
+export const RES_KEYS: ResKey[] = ['nutrient', 'oxygen', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
+export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 99, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 4, credit: 5 };
 /** 貨幣不受倉容上限限制 */
 export const UNCAPPED: ResKey[] = ['credit'];
 
@@ -16,7 +16,7 @@ export type Effect = Partial<{
   charterSlot: number; crystalAdd: number; turretAtk: number; weaponOut: number; healAdd: number; bedAdd: number;
 }>;
 export interface UpgradeNode { id: string; name: string; desc: string; minLevel: number; cost: Cost; effect: Effect; stage?: number }
-export interface BuildingForm { id: string; stage: number; name: string; desc: string; rate: number; workersPerLevel: number; art: string; cost: Cost; baseCost: Cost }
+export interface BuildingForm { id: string; stage: number; name: string; desc: string; rate: number; workersPerLevel: number; art: string; cost: Cost; baseCost: Cost; oxygen?: number }
 export interface BuildingDef {
   id: string; name: string; stage: number; desc: string;
   kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical' | 'beacon';
@@ -26,6 +26,8 @@ export interface BuildingDef {
   flatCost?: boolean;
   baseCost: Cost; maxLevel: number; startLevel?: number; clickable?: boolean; commandLevel?: number;
   produce?: { res: ResKey; rate: number };
+  /** 副產氧氣：每位工人每秒（例如藻類槽） */
+  oxygen?: number;
   recipe?: { in: ResKey; out: ResKey; ratio: number };
   workersPerLevel?: number;
   effects?: Partial<{ housing: number; storage: number; morale: number; gatherAdd: number; birth: number; consumeMul: number; habBonus: number }>;
@@ -63,6 +65,8 @@ export interface GovState {
   alliance: { rep: number; contract: { res: ResKey; amount: number; reward: number; until: number } | null; nextContract: number };
   signal: { used: number; resetAt: number };
 }
+export interface AirState { elapsed: number; hypoxic: boolean; hypoxiaTime: number; pause: number; graceUsed: boolean }
+export const newAir = (): AirState => ({ elapsed: 0, hypoxic: false, hypoxiaTime: 0, pause: 0, graceUsed: false });
 export const newGov = (): GovState => ({
   tax: 0, charters: [], creditsEarned: 0,
   corp: { relation: 0, refusals: 0, paid: 0, envoys: 0, traded: 0, nextEnvoy: -1, demand: null },
@@ -88,6 +92,8 @@ export interface GameState {
   /** 連續斷糧秒數；超過 STARVE_GRACE 後殖民者開始離開 */
   starveTime: number;
   failed: boolean;
+  /** 瓦解原因：斷糧或缺氧（失敗畫面用） */
+  failReason?: 'food' | 'air';
   /** 本章開頭的存檔快照（JSON），失敗時可回到這裡 */
   checkpoint: string | null;
   research: { done: string[]; active: string | null; progress: number };
@@ -101,11 +107,17 @@ export interface GameState {
   stats: { clicks: number; crits: number };
   raid: RaidState;
   gov: GovState;
+  /** 空氣：維生系統已運作秒數、是否缺氧、連續缺氧秒數、新手保護的暫停秒數 */
+  air: AirState;
   /** 生物工程室的產量加成：到期時間、累計注入次數 */
   boost: { until: number; uses: number };
   lastSaved: number;
   notices: Notice[];
 }
+
+/** 氧氣系統的總開關：氧氣建築（v0.6 第 2 步）完成前先關閉，避免遊戲裡沒有產氧來源。模擬器與測試可以先打開 */
+export let AIR_ENABLED = false;
+export function setAirEnabled(on: boolean) { AIR_ENABLED = on; RES_UNLOCK.oxygen = on ? 1 : 99; }
 
 export const newRaid = (): RaidState => ({ count: 0, won: 0, nextAt: -1, incoming: null, injured: [], armed: 0, report: null });
 
@@ -114,7 +126,7 @@ export function newGame(now = Date.now()): GameState {
   for (const d of DEFS) b[d.id] = { level: d.startLevel ?? 0, workers: 0, nodes: [], disabledUntil: 0, lastClick: -99 };
   return {
     v: 1, t: 0, stage: 1, finished: false,
-    res: { nutrient: 60, scrap: 0, rock: 0, parts: 0, metal: 0, tools: 0, weapon: 0, crystal: 0, credit: 0 },
+    res: { nutrient: 60, oxygen: 120, scrap: 0, rock: 0, parts: 0, metal: 0, tools: 0, weapon: 0, crystal: 0, credit: 0 },
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
@@ -122,6 +134,7 @@ export function newGame(now = Date.now()): GameState {
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),
+    air: newAir(),
     boost: { until: 0, uses: 0 },
     lastSaved: now,
     notices: [],

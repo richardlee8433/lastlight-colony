@@ -158,7 +158,7 @@ function fight(s: GameState, rng: () => number) {
     if (inc.kind === 'commando') { add(s, 'credit', 500); lines.push(msg('l.commando')); }
     notify(s, 'n.raidWon', { kind: inc.kind ?? 'alien', n: r.won }, 'good');
   } else {
-    const pool = (Object.keys(s.res) as ResKey[]).filter((k) => RES_UNLOCK[k] <= s.stage && s.res[k] >= 10);
+    const pool = (Object.keys(s.res) as ResKey[]).filter((k) => k !== 'oxygen' && RES_UNLOCK[k] <= s.stage && s.res[k] >= 10);
     if (pool.length) {
       const k = pool[Math.floor(rng() * pool.length)], v = Math.floor(s.res[k] * 0.15);
       s.res[k] -= v;
