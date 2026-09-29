@@ -242,7 +242,8 @@
         "baseCost": {
           "scrap": 60,
           "rock": 20
-        }
+        },
+        "oxygen": 0.12
       },
       {
         "id": "hydro",
@@ -259,6 +260,65 @@
         "baseCost": {
           "rock": 150,
           "parts": 50
+        },
+        "oxygen": 0.2
+      }
+    ],
+    "oxygen": 0.1
+  },
+  {
+    "id": "o2_scrubber",
+    "name": "氧氣再生器",
+    "stage": 1,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "用逃生艙殘骸拼成的氧氣再生器，把二氧化碳拆成可以呼吸的氧氣。老提歐叫它「阿喘」，別嫌它吵。按住上方按鈕可以手動加壓。",
+    "baseCost": {
+      "scrap": 25
+    },
+    "produce": {
+      "res": "oxygen",
+      "rate": 0.35
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "filter",
+        "name": "換新濾網",
+        "desc": "產量 +25%",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 60
+        },
+        "effect": {
+          "prodAdd": 0.25
+        }
+      },
+      {
+        "id": "cap_1",
+        "name": "加裝風扇",
+        "desc": "工人上限 +1",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 120,
+          "parts": 20
+        },
+        "effect": {
+          "workerCapAdd": 1
+        }
+      },
+      {
+        "id": "seal",
+        "name": "密封墊圈",
+        "desc": "產量 +30%",
+        "minLevel": 3,
+        "cost": {
+          "parts": 80,
+          "rock": 60
+        },
+        "effect": {
+          "prodAdd": 0.3
         }
       }
     ]
@@ -329,6 +389,52 @@
         },
         "effect": {
           "housingAdd": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "electrolyzer",
+    "name": "電解站",
+    "stage": 2,
+    "kind": "gather",
+    "maxLevel": 10,
+    "clickable": true,
+    "desc": "往地底冰層鑽井，把冰融成水再電解出氧氣。伊涅絲帶來的設計，每位工人的產氧量是再生器的兩倍多。",
+    "baseCost": {
+      "rock": 60,
+      "parts": 30
+    },
+    "produce": {
+      "res": "oxygen",
+      "rate": 0.8
+    },
+    "workersPerLevel": 2,
+    "upgrades": [
+      {
+        "id": "prod_30",
+        "name": "加熱線圈",
+        "desc": "產量 +30%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 150,
+          "parts": 60
+        },
+        "effect": {
+          "prodAdd": 0.3
+        }
+      },
+      {
+        "id": "cap_1",
+        "name": "第二口井",
+        "desc": "工人上限 +1",
+        "minLevel": 2,
+        "cost": {
+          "rock": 250,
+          "parts": 100
+        },
+        "effect": {
+          "workerCapAdd": 1
         }
       }
     ]

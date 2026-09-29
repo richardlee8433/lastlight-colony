@@ -172,6 +172,7 @@ class Pix {
 
 export const RES = {
   nutrient: { name: '營養', color: 0x6fe38a },
+  oxygen: { name: '氧氣', color: 0x8fd8ff },
   scrap: { name: '廢料', color: 0xd9743e },
   rock: { name: '岩材', color: 0xcdb892 },
   parts: { name: '零件', color: 0x4fb2ff },
@@ -575,6 +576,39 @@ export const BUILDINGS = [
     k.box(9, 2, 8, 5, 6, M.metal);
     k.win(11, -2, 3, 2, 0x8cf09a);
     if (t === 3) { k.post(-22, 2, 14, 0xb8ffb8); k.plant(-18, 3, P.flora[0]).plant(20, 4, P.flora[1]); }
+  }),
+  // 氧氣再生器「阿喘」：用逃生艙殘骸拼成的機器，正面一具大風扇，管線接到儲氣罐
+  B('o2_scrubber', '氧氣再生器', 1, 'oxygen', (k, t) => {
+    const { M } = k;
+    const O2 = 0x8fd8ff;
+    if (t === 3) { k.cyl(-20, 2, 5, 13, M.water, { glass: true }); k.pipe([-15, -6, -11, -6]); k.glow(-20, -6, 14, O2, 0.35); }
+    if (t >= 2) { k.cyl(18, 2, 4, 10, M.metal); k.pipe([10, -5, 14, -5]); k.lamp(18, -10, O2, 8, 0.5); }
+    k.box(-11, 1, 22, 10, 10, M.hull, { seam: 7 });
+    k.box(-9, -9, 6, 3, 4, M.rust);                         // 拼裝的鏽鐵片
+    // 正面風扇
+    k.ellO(1, -4, 5, 4, M.metal[1]);
+    k.ell(1, -4, 4, 3, M.dark[0]);
+    k.line(-2, -6, 4, -2, M.metal[3]).line(-2, -2, 4, -6, M.metal[2]);
+    k.px(1, -4, M.metal[4]);
+    k.vl(9, -18, -9, M.metal[1]).px(9, -19, M.metal[3]);    // 排氣管
+    k.smoke(9, -21, 0xd8f0ff);
+    k.glowRect(-8, -2, 2, 1, O2);
+  }),
+  // 電解站：鑽進冰層的鑽塔，旁邊一藍（氧）一灰（氫）兩個儲氣罐
+  B('electrolyzer', '電解站', 2, 'oxygen', (k, t) => {
+    const { M } = k;
+    const O2 = 0x8fd8ff;
+    if (t === 3) { k.cyl(24, 3, 4, 12, M.water, { glass: true }); k.pipe([12, -6, 20, -6]); }
+    k.box(-16, 2, 20, 10, 7, M.concrete, { seam: 5 });
+    k.lattice(-10, -5, 6, 26);                               // 鑽塔
+    k.hl(-11, -3, -31, M.metal[3]).beacon(-7, -32, 0xffb050);
+    k.vl(-7, -5, 2, M.dark[1]);                               // 鑽桿
+    k.cyl(9, 2, 5, 14, M.water, { glass: true });             // 氧氣罐（藍）
+    k.glow(9, -8, 16, O2, 0.4);
+    k.cyl(17, 3, 3, 9, M.metal);                              // 氫氣罐（灰）
+    k.pipe([4, -3, 6, -3]);
+    if (t >= 2) { k.box(-22, 3, 6, 5, 5, M.metal); k.win(-21, -1, 3, 2, O2); k.smoke(-4, -30, 0xe8f4ff); }
+    for (const [x, y] of [[-14, 3], [-3, 4], [-12, 5]]) k.px(x, y, 0xdff4ff);   // 噴出的冰屑
   }),
   B('emergency_camp', '緊急營地', 1, 'tools', (k, t) => {
     const { M } = k;
@@ -1491,6 +1525,7 @@ export function createAlien() {
 export function renderIcon(key) {
   const b = new Pix(11, 11, 1, 1), Rm = ramp(RES[key].color);
   switch (key) {
+    case 'oxygen': b.ell(4, 5, 4, 4, Rm[2]); b.ell(3, 4, 2, 2, Rm[3]); b.set(2, 3, Rm[4]); b.ell(8, 1, 1, 1, Rm[3]); b.hline(3, 5, 5, Rm[0]); b.set(4, 6, Rm[0]); break;
     case 'nutrient': b.poly([1, 8, 2, 3, 6, 0, 9, 0, 8, 4, 4, 8], Rm[2]); b.line(2, 7, 7, 2, Rm[4]); b.poly([1, 8, 2, 3, 4, 3, 3, 7], Rm[3]); break;
     case 'scrap': b.poly([0, 6, 2, 2, 5, 3, 8, 1, 9, 5, 6, 8, 3, 8], Rm[2]); b.line(2, 3, 5, 4, Rm[4]); b.set(6, 6, Rm[0]); b.set(3, 6, Rm[1]); break;
     case 'rock': b.ell(4, 5, 4, 3, Rm[2]); b.ell(3, 4, 2, 1, Rm[3]); b.set(2, 3, Rm[4]); b.hline(2, 7, 8, Rm[0]); break;

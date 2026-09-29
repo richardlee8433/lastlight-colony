@@ -10,6 +10,9 @@ const RAW_SITES: Site[] = [
   { id: 'scrap_heap', x: 469, y: 254 },
   { id: 'algae_tank', x: 390, y: 326 },
   { id: 'hab_pod', x: 222, y: 272 },
+  // v0.6 氧氣：再生器在逃生艙與藻類槽之間，電解站在生活艙下方
+  { id: 'o2_scrubber', x: 306, y: 352 },
+  { id: 'electrolyzer', x: 222, y: 340 },
   { id: 'cargo', x: 306, y: 184 },
   { id: 'lounge', x: 474, y: 184 },
   { id: 'assembly', x: 558, y: 272 },
