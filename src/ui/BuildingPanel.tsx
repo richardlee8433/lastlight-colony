@@ -6,7 +6,7 @@ import {
   gatherRate, idle, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
 } from '../engine/formulas';
 import { levelBlock, nodeBlock, researchBlock } from '../engine/actions';
-import { defense, guardAtk, guardHp, injuredCount, turretAtk, TURRET_HP } from '../engine/combat';
+import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
 import { Governance } from './Governance';
 import { weaponShare, weaponRatio } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
@@ -59,6 +59,7 @@ export function BuildingPanel() {
       )}
       {L > 0 && id === 'forge' && s.stage >= 4 && <ForgeSplit />}
       {L > 0 && id === 'security' && <Defense />}
+      {L > 0 && id === 'med_bay' && <MedBay />}
       {L > 0 && id === 'admin' && <Governance />}
       {L > 0 && (id === 'trade_post' || id === 'spaceport') && (
         <section className="block">
@@ -204,11 +205,27 @@ function Defense() {
       <h3>{t('df.title')}</h3>
       <dl className="stats">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       <p className="muted small">{t('df.hint')}</p>
+      {built(s, 'med_bay') && injuredCount(s) > 0 && <p className="muted small">{t('df.medbay', { n: Math.min(injuredCount(s), medBeds(s)) })}</p>}
     </section>
   );
 }
 
 /** 研究所頁面只顯示目前研究進度；完整科技樹在另一頁 */
+function MedBay() {
+  const s = game.s, beds = medBeds(s);
+  const rows: [string, string][] = [
+    [t('md.beds'), t('md.bedsV', { n: Math.min(injuredCount(s), beds), m: beds })],
+    [t('md.rate'), `×${healRate(s).toFixed(1)}`],
+  ];
+  return (
+    <section className="block">
+      <h3>{t('md.title')}</h3>
+      <dl className="stats">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      <p className="muted small">{t('md.hint')}</p>
+    </section>
+  );
+}
+
 function Research() {
   const s = game.s, act = useGame.getState(), speed = researchSpeed(s);
   const r = RESEARCH_DEFS.find((x) => x.id === s.research.active);

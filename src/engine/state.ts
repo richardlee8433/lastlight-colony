@@ -13,12 +13,12 @@ export type Effect = Partial<{
   recipeOut: number; outMul: number; researchSpeed: number; storagePerLevel: number; gatherAdd: number;
   storageMul: number; consumeMul: number; processAdd: number;
   guardHp: number; guardAtk: number; weaponAtk: number; injuryMul: number; clickCrystal: number; habBonus: number;
-  charterSlot: number; crystalAdd: number; turretAtk: number; weaponOut: number;
+  charterSlot: number; crystalAdd: number; turretAtk: number; weaponOut: number; healAdd: number; bedAdd: number;
 }>;
 export interface UpgradeNode { id: string; name: string; desc: string; minLevel: number; cost: Cost; effect: Effect; stage?: number }
 export interface BuildingDef {
   id: string; name: string; stage: number; desc: string;
-  kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade';
+  kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical';
   baseCost: Cost; maxLevel: number; startLevel?: number; clickable?: boolean; commandLevel?: number;
   produce?: { res: ResKey; rate: number };
   recipe?: { in: ResKey; out: ResKey; ratio: number };

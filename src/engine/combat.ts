@@ -9,6 +9,17 @@ export const RAID_GAP: [number, number] = [360, 540];
 export const WARNING = 60;
 export const INJURY = 180;
 
+/** 醫療艙：每級 2 張病床（加護病床 +1/級）；躺在病床上的傷員，每位醫護員讓復原速度 +60%（自動診斷再 ×1.5） */
+export const medBeds = (s: GameState) => (built(s, 'med_bay') ? s.b.med_bay.level * (2 + nodeEffect(s, 'med_bay', 'bedAdd')) : 0);
+export const healRate = (s: GameState) => (built(s, 'med_bay') ? 1 + s.b.med_bay.workers * 0.6 * (1 + nodeEffect(s, 'med_bay', 'healAdd')) : 1);
+/** 傷員治療：最快好的那幾位佔用病床，剩餘時間按 healRate 倒數 */
+function treat(s: GameState, dt: number) {
+  const beds = medBeds(s), rate = healRate(s);
+  if (!beds || rate <= 1) return;
+  const r = s.raid;
+  const order = r.injured.map((u, i) => [u, i]).filter(([u]) => u > s.t).sort((a, b) => a[0] - b[0]).slice(0, beds);
+  for (const [, i] of order) r.injured[i] -= dt * (rate - 1);
+}
 export const guards = (s: GameState) => (built(s, 'security') ? s.b.security.workers : 0);
 export const injuredCount = (s: GameState) => s.raid.injured.filter((u) => u > s.t).length;
 export const guardHp = (s: GameState) => 10 + nodeEffect(s, 'security', 'guardHp') + researchEffect(s, 'guardHp');
@@ -44,8 +55,9 @@ export function defense(s: GameState) {
 }
 
 /** 每個 tick：配發武器、排程與預警、開打 */
-export function combat(s: GameState, offline = false, rng = Math.random) {
+export function combat(s: GameState, offline = false, rng = Math.random, dt = 0.2) {
   const r = s.raid;
+  treat(s, dt);
   // 武器配發：保全人數變少時武器退回庫存
   const g = guards(s);
   if (r.armed > g) { add(s, 'weapon', r.armed - g); r.armed = g; }

@@ -879,6 +879,48 @@
     }
   },
   {
+    "id": "med_bay",
+    "name": "醫療艙",
+    "stage": 4,
+    "kind": "medical",
+    "maxLevel": 5,
+    "desc": "加壓的醫療模組，受傷的陸戰隊員會來這裡治療。每級 2 張病床，駐點醫護員讓躺在病床上的傷員好得更快。",
+    "baseCost": {
+      "rock": 350,
+      "parts": 150,
+      "metal": 120
+    },
+    "workersPerLevel": 1,
+    "upgrades": [
+      {
+        "id": "diag",
+        "name": "自動診斷",
+        "desc": "治療速度 +50%",
+        "minLevel": 2,
+        "cost": {
+          "parts": 200,
+          "crystal": 20
+        },
+        "effect": {
+          "healAdd": 0.5
+        }
+      },
+      {
+        "id": "beds",
+        "name": "加護病床",
+        "desc": "每級病床 +1",
+        "minLevel": 3,
+        "cost": {
+          "metal": 300,
+          "tools": 30
+        },
+        "effect": {
+          "bedAdd": 1
+        }
+      }
+    ]
+  },
+  {
     "id": "colony_core",
     "name": "殖民地核心",
     "stage": 4,

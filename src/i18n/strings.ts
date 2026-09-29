@@ -38,6 +38,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'kind.utility': ['Facility', '設施'],
   'kind.governance': ['Governance', '治理'],
   'kind.trade': ['Trade', '貿易'],
+  'kind.medical': ['Medical', '醫療'],
 
   // ── 襲擊者 ──
   'raid.alien': ['aliens', '異星生物'],
@@ -203,6 +204,12 @@ export const STRINGS: Record<string, [string, string]> = {
   'fs.inc': ['More on weapons', '增加做武器的工人'],
   'fs.rest': ['{n} on tools', '其餘 {n} 人做工具'],
   'df.title': ['Defense', '防衛'],
+  'md.title': ['Treatment', '治療'],
+  'md.beds': ['Beds', '病床'],
+  'md.bedsV': ['{n} in use / {m}', '使用中 {n} / {m} 張'],
+  'md.rate': ['Recovery speed', '復原速度'],
+  'md.hint': ['Injured marines recover on their own; patients in a bed recover faster, and each medic adds +60%.', '受傷的陸戰隊員本來就會慢慢復原；躺上病床的會好得更快，每位醫護員 +60%。'],
+  'df.medbay': ['Injured marines are treated at the Med Bay ({n} in beds).', '受傷的陸戰隊員在醫療艙治療（病床上 {n} 人）。'],
   'df.guards': ['Marines', '陸戰隊員'],
   'df.guardsV': ['{n} ({r} ready, {i} injured)', '{n} 人（可參戰 {r}，受傷 {i}）'],
   'df.armed': ['Weapons issued', '已配發武器'],

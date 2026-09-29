@@ -18,7 +18,7 @@ export function step(s: GameState, dt = TICK, opts: { offline?: boolean; rng?: (
   population(s, dt, opts.offline);
   research(s, dt, researchSpeed(s), opts.offline);
   if (!opts.offline) events(s, opts.rng);
-  combat(s, opts.offline, opts.rng);
+  combat(s, opts.offline, opts.rng, dt);
   governance(s, dt, opts.offline ? 0.5 : 1, opts.offline, opts.rng);
   updateStory(s);
   s.t += dt;

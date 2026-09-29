@@ -903,6 +903,24 @@ export const BUILDINGS = [
     if (t >= 2) k.pipe([19, -6, 22, -8]);
     k.glow(14, -6, 16, 0x5fd8ff, 0.3);
   }),
+  // 醫療艙：白色加壓模組＋玻璃治療艙，青綠色十字燈（太空站風格，不用紅十字帳篷）
+  B('med_bay', '醫療艙', 4, 'parts', (k, t) => {
+    const { M } = k;
+    const MED = 0x5fffc8;
+    if (t === 3) {
+      k.box(22, 4, 14, 9, 6, M.hull, { band: 2 }).win(25, -4, 3, 3).win(30, -4, 3, 3);
+      k.box(24, -8, 9, 3, 4, M.metal);
+      k.beacon(28, -14, MED);
+    }
+    if (t >= 2) { k.cyl(-25, 3, 5, 12, M.water, { glass: true }); k.glow(-25, -3, 14, MED, 0.35); k.pipe([-20, -2, -16, -2]); }
+    k.box(-16, 1, 32, 12, 8, M.hull, { band: 2 });
+    k.win(-12, -6, 3, 3).win(9, -6, 3, 3);
+    k.door(-2, -4, 5, 5);
+    k.dome(0, -12, 9, 7, M.glass, { glass: true });
+    k.glowRect(-1, -19, 2, 6, MED).glowRect(-3, -17, 6, 2, MED);
+    k.glow(0, -16, 26, MED, 0.45, true);
+    k.beacon(-14, -12, MED).beacon(14, -12, MED);
+  }),
   B('colony_core', '殖民地核心', 4, 'tools', (k, t) => {
     const { M, P } = k;
     if (t >= 2) {

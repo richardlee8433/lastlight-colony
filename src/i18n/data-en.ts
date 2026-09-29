@@ -42,6 +42,8 @@ const buildings: Record<string, B> = {
   security: { name: 'Marine Barracks', desc: 'Stationed workers are marines; each takes 1 population. Weapons in stock are issued automatically, raising attack from 2 to 5.', nodes: {
     hp_5: ['Armored Vests', 'Marine HP +5'], shift: ['Medic Rotation', 'Injury recovery −50%'], atk_2: ['Tactical Drills', 'Marine attack +2'] } },
   water_cycle: { name: 'Water Recycler', desc: 'Reclaims wastewater and condensation. Nutrient consumption −10%, and each Hab Pod level houses 1 more.' },
+  med_bay: { name: 'Med Bay', desc: 'A pressurized medical module where injured marines are treated. 2 beds per level; stationed medics make patients in those beds recover faster.', nodes: {
+    diag: ['Auto-Diagnostics', 'Healing speed +50%'], beds: ['Intensive Care Beds', '+1 bed per level'] } },
   colony_core: { name: 'Colony Core', desc: 'Command Lv4. A xenocrystal reactor — the colony is no longer just surviving. Requires population 40 and 2 raids repelled.' },
   admin: { name: 'Administration Hall', desc: 'The colony council chamber. Unlocks taxes and colony charters; taxes bring in credits, but every tax level costs 5 morale.', nodes: {
     council: ['Expanded Council', 'Charter slots +1'] } },
