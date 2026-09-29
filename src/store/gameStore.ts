@@ -10,6 +10,7 @@ import * as A from '../engine/actions';
 import { resolveEvent } from '../engine/events';
 import * as G from '../engine/governance';
 import { setMood } from '../audio/audio';
+import { setFormGetter } from '../i18n';
 
 const SAVE_KEY = 'lastlight-colony-save-v1';
 export type OfflineReport = NonNullable<ReturnType<typeof applyOffline>>;
@@ -39,6 +40,19 @@ function migrate(s: GameState) {
   s.raid ??= newRaid();
   s.res.weapon ??= 0; s.res.crystal ??= 0; s.res.credit ??= 0;
   s.gov ??= newGov();
+  // 糧食設施合併：舊存檔的生物採集站、水耕農場併進藻類槽（改建成最高的形態，工人位子不少於原本三棟的總和）
+  const old = s.b as Record<string, any>, bio = old.bio_harvester, hyd = old.hydro_farm;
+  if ((bio?.level ?? 0) > 0 || (hyd?.level ?? 0) > 0) {
+    const a = s.b.algae_tank, form = hyd?.level ? 2 : 1, wpl = DEF.algae_tank.forms![form - 1].workersPerLevel;
+    const capOld = 3 * a.level + 2 * (bio?.level ?? 0) + 4 * (hyd?.level ?? 0) + (hyd?.nodes?.includes('cap_2') ? 2 : 0);
+    a.form = Math.max(a.form ?? 0, form);
+    a.level = Math.min(DEF.algae_tank.maxLevel, Math.max(a.level, 1, Math.ceil(capOld / wpl)));
+    a.workers += (bio?.workers ?? 0) + (hyd?.workers ?? 0);
+    const map: Record<string, string> = { prod_25: 'guide', crit_1: 'crit_1' };
+    for (const n of bio?.nodes ?? []) if (map[n] && !a.nodes.includes(map[n])) a.nodes.push(map[n]);
+    for (const n of hyd?.nodes ?? []) if ((n === 'prod_25' || n === 'cap_2') && !a.nodes.includes(n)) a.nodes.push(n);
+    delete old.bio_harvester; delete old.hydro_farm;
+  }
   // 目標完成紀錄從中文文字改成 id
   s.story.done = migrateStoryDone(s.story.done);
   // 舊存檔：原本前哨站就算 MVP 完成，現在接續第 4 章
@@ -53,6 +67,7 @@ function save(s: GameState) {
 }
 
 const boot = load();
+setFormGetter((id) => game.s.b[id]?.form ?? 0);
 export const game: { s: GameState } = { s: boot.s };
 
 interface Store {
@@ -85,6 +100,7 @@ interface Store {
   seenIntro: () => void;
   saveNow: () => void;
   boost: () => void;
+  rebuild: (id: string) => void;
   raidLook: number;
   tech: boolean;
   openTech: (o: boolean) => void;
@@ -123,6 +139,7 @@ export const useGame = create<Store>((set, get) => {
     openTech: (o) => set({ tech: o, selected: o ? null : get().selected }),
     lookAtRaid: () => set((st) => ({ raidLook: st.raidLook + 1 })),
     boost: () => run((s) => A.startBoost(s)),
+    rebuild: (id) => run((s) => A.rebuild(s, id)),
     saveNow: () => { save(game.s); get().bump(); },
     restoreCheckpoint: () => {
       const cp = game.s.checkpoint;

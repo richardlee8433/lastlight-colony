@@ -1,6 +1,6 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
 import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
-import { BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
+import { formOf, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
 
 export type Why = Msg | null;
 
@@ -54,6 +54,29 @@ export function buyNode(s: GameState, id: string, nodeId: string): boolean {
   notify(s, 'n.node', { b: id, node: nodeId }, 'good');
   return true;
 }
+
+/** 改建：換成下一個形態，保留等級、工人與升級線 */
+export function nextForm(s: GameState, id: string) {
+  const forms = DEF[id].forms;
+  return forms?.[s.b[id].form ?? 0] ?? null;
+}
+export function rebuildBlock(s: GameState, id: string): Why {
+  const f = nextForm(s, id);
+  if (!f) return msg('why.maxForm');
+  if (!built(s, id)) return msg('why.notBuilt');
+  if (s.stage < f.stage) return msg('why.stage', { n: f.stage });
+  if (!canAfford(s, f.cost)) return msg('why.afford');
+  return null;
+}
+export function rebuild(s: GameState, id: string): boolean {
+  if (rebuildBlock(s, id)) return false;
+  const f = nextForm(s, id)!;
+  pay(s, f.cost);
+  s.b[id].form = (s.b[id].form ?? 0) + 1;
+  notify(s, 'n.rebuilt', { b: id }, 'good');
+  return true;
+}
+void formOf;
 
 /** 生物工程室：注入異晶，全部產量短時間大幅提高 */
 export function boostBlock(s: GameState): Why {

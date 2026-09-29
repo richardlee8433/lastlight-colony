@@ -1,6 +1,6 @@
 // 所有數值公式集中在這裡（GDD §7、§8）
 import RESEARCH from '../data/research.json';
-import { DEF, DEFS, GameState, ResKey, RES_KEYS, UNCAPPED, Cost, Effect } from './state';
+import { DEF, DEFS, GameState, ResKey, RES_KEYS, UNCAPPED, Cost, Effect, BuildingForm } from './state';
 import CHARTERS from '../data/charters.json';
 
 export const CHARTER_DEFS = CHARTERS as unknown as { id: string; name: string; desc: string; cost: string; effect: Record<string, number> }[];
@@ -78,10 +78,17 @@ export function popCap(s: GameState): number {
   cap += researchEffect(s, 'habBonus') * s.b.hab_pod.level;
   return cap;
 }
+/** 目前的改建形態（沒有改建過是 null） */
+export function formOf(s: GameState, id: string): BuildingForm | null {
+  const f = s.b[id]?.form ?? 0;
+  return f > 0 ? DEF[id].forms?.[f - 1] ?? null : null;
+}
+/** 畫面用的美術 id（改建後換成新形態的外觀） */
+export const artId = (s: GameState, id: string) => formOf(s, id)?.art ?? id;
 export function workerCap(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.workersPerLevel || !built(s, id)) return 0;
-  return d.workersPerLevel * s.b[id].level + nodeEffect(s, id, 'workerCapAdd');
+  return (formOf(s, id)?.workersPerLevel ?? d.workersPerLevel) * s.b[id].level + nodeEffect(s, id, 'workerCapAdd');
 }
 export function assignedTotal(s: GameState): number {
   let n = 0;
@@ -143,7 +150,7 @@ export function gatherBonus(s: GameState): number {
 export function gatherRate(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.produce || !built(s, id) || disabled(s, id)) return 0;
-  return s.b[id].workers * d.produce.rate * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
+  return s.b[id].workers * (formOf(s, id)?.rate ?? d.produce.rate) * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
 }
 /** 加工建築每秒「最多」消耗的原料 */
 export function processInput(s: GameState, id: string): number {
@@ -168,7 +175,7 @@ export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffec
 /** 建造／升級成本：初始成本 × 1.15^(目前等級)；Lv5 以上每級另需 工具 × 等級 */
 export function levelCost(s: GameState, id: string): Cost {
   const d = DEF[id], L = s.b[id].level, out: Cost = {};
-  for (const [k, v] of Object.entries(d.baseCost) as [ResKey, number][]) if (v) out[k] = Math.ceil(v * (d.flatCost ? 1 : Math.pow(1.15, L)));
+  for (const [k, v] of Object.entries(formOf(s, id)?.baseCost ?? d.baseCost) as [ResKey, number][]) if (v) out[k] = Math.ceil(v * (d.flatCost ? 1 : Math.pow(1.15, L)));
   if (L >= 5 && !d.flatCost) out.tools = (out.tools ?? 0) + L;
   return out;
 }

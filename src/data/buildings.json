@@ -118,9 +118,9 @@
     "name": "藻類槽",
     "stage": 1,
     "kind": "gather",
-    "maxLevel": 10,
+    "maxLevel": 20,
     "clickable": true,
-    "desc": "把回收水和藻種放進玻璃槽，慢慢長出能吃的東西。",
+    "desc": "殖民地的糧食來源。一開始只是幾個玻璃藻類槽；階段 2 起可以改建成生物採集站、階段 4 起改建成水耕農場，每位工人的產量越來越高。改建會保留等級與工人。",
     "baseCost": {
       "scrap": 20
     },
@@ -166,6 +166,98 @@
         },
         "effect": {
           "prodAdd": 0.3
+        }
+      },
+      {
+        "id": "guide",
+        "name": "採集圖鑑",
+        "desc": "產量 +25%",
+        "minLevel": 1,
+        "cost": {
+          "scrap": 100,
+          "nutrient": 40
+        },
+        "effect": {
+          "prodAdd": 0.25
+        },
+        "stage": 2
+      },
+      {
+        "id": "crit_1",
+        "name": "識貨",
+        "desc": "暴擊率 +5%",
+        "minLevel": 2,
+        "cost": {
+          "scrap": 160,
+          "rock": 40
+        },
+        "effect": {
+          "critAdd": 0.05
+        },
+        "stage": 2
+      },
+      {
+        "id": "prod_25",
+        "name": "補光燈",
+        "desc": "產量 +25%",
+        "minLevel": 1,
+        "cost": {
+          "rock": 300,
+          "parts": 120
+        },
+        "effect": {
+          "prodAdd": 0.25
+        },
+        "stage": 4
+      },
+      {
+        "id": "cap_2",
+        "name": "多層栽培",
+        "desc": "工人上限 +2",
+        "minLevel": 2,
+        "cost": {
+          "rock": 400,
+          "parts": 150
+        },
+        "effect": {
+          "workerCapAdd": 2
+        },
+        "stage": 4
+      }
+    ],
+    "forms": [
+      {
+        "id": "bio",
+        "stage": 2,
+        "name": "生物採集站",
+        "desc": "在藻類槽旁加裝培養架，養殖從地表採回的可食生物。每位工人產量比藻類槽高。改建會保留等級與工人。",
+        "rate": 0.8,
+        "workersPerLevel": 3,
+        "art": "bio_harvester",
+        "cost": {
+          "scrap": 150,
+          "rock": 60
+        },
+        "baseCost": {
+          "scrap": 60,
+          "rock": 20
+        }
+      },
+      {
+        "id": "hydro",
+        "stage": 4,
+        "name": "水耕農場",
+        "desc": "把整座設施改建成加壓溫室，用營養液種菜，是最有效率的糧食來源。改建會保留等級與工人。",
+        "rate": 1.2,
+        "workersPerLevel": 4,
+        "art": "hydro_farm",
+        "cost": {
+          "rock": 600,
+          "parts": 200
+        },
+        "baseCost": {
+          "rock": 150,
+          "parts": 50
         }
       }
     ]
@@ -236,51 +328,6 @@
         },
         "effect": {
           "housingAdd": 2
-        }
-      }
-    ]
-  },
-  {
-    "id": "bio_harvester",
-    "name": "生物採集站",
-    "stage": 2,
-    "kind": "gather",
-    "maxLevel": 8,
-    "clickable": true,
-    "desc": "採集地表的可食生物。效率比藻類槽高，但每級只容得下 2 位工人。",
-    "baseCost": {
-      "scrap": 50
-    },
-    "produce": {
-      "res": "nutrient",
-      "rate": 0.8
-    },
-    "workersPerLevel": 2,
-    "upgrades": [
-      {
-        "id": "prod_25",
-        "name": "採集圖鑑",
-        "desc": "產量 +25%",
-        "minLevel": 1,
-        "cost": {
-          "scrap": 100,
-          "nutrient": 40
-        },
-        "effect": {
-          "prodAdd": 0.25
-        }
-      },
-      {
-        "id": "crit_1",
-        "name": "識貨",
-        "desc": "暴擊率 +5%",
-        "minLevel": 2,
-        "cost": {
-          "scrap": 160,
-          "rock": 40
-        },
-        "effect": {
-          "critAdd": 0.05
         }
       }
     ]
@@ -682,52 +729,6 @@
     "effects": {
       "housing": 4
     }
-  },
-  {
-    "id": "hydro_farm",
-    "name": "水耕農場",
-    "stage": 4,
-    "kind": "gather",
-    "maxLevel": 10,
-    "clickable": true,
-    "desc": "在加壓溫室裡用營養液種菜，是最有效率的糧食來源。",
-    "baseCost": {
-      "rock": 300,
-      "parts": 100
-    },
-    "produce": {
-      "res": "nutrient",
-      "rate": 1.2
-    },
-    "workersPerLevel": 4,
-    "upgrades": [
-      {
-        "id": "prod_25",
-        "name": "補光燈",
-        "desc": "產量 +25%",
-        "minLevel": 1,
-        "cost": {
-          "rock": 300,
-          "parts": 120
-        },
-        "effect": {
-          "prodAdd": 0.25
-        }
-      },
-      {
-        "id": "cap_2",
-        "name": "多層栽培",
-        "desc": "工人上限 +2",
-        "minLevel": 2,
-        "cost": {
-          "rock": 400,
-          "parts": 150
-        },
-        "effect": {
-          "workerCapAdd": 2
-        }
-      }
-    ]
   },
   {
     "id": "memorial",

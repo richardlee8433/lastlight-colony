@@ -8,13 +8,14 @@ const buildings: Record<string, B> = {
   scrap_heap: { name: 'Scrap Heap', desc: 'Wreckage from the pod, scattered across the ground. Hold the Scrap button above it to collect.', nodes: {
     click_1: ['Magnetic Gloves', 'Click yield +1'], crit_1: ['Sharp Eyes', 'Crit chance +5%'], cap_1: ['Zoned Search', 'Worker cap +1'],
     critx: ['Treasure Instinct', 'Crit multiplier ×2'], buff_10: ['On-site Supervisor', 'Click buff lasts 10 s'] } },
-  algae_tank: { name: 'Algae Vat', desc: 'Recycled water and algae spores in glass vats, slowly growing something edible.', nodes: {
-    prod_20: ['Light Tuning', 'Output +20%'], cap_1: ['Extra Vat', 'Worker cap +1'], prod_30: ['Dense Strain', 'Output +30%'] } },
+  algae_tank: { name: 'Algae Vat', desc: 'The colony’s food supply. It starts as a few glass algae vats; from Stage 2 it can be rebuilt into a Bio Harvester, and from Stage 4 into a Hydroponic Farm, each producing more per worker. Rebuilding keeps its level and workers.', nodes: {
+    prod_20: ['Light Tuning', 'Output +20%'], cap_1: ['Extra Vat', 'Worker cap +1'], prod_30: ['Dense Strain', 'Output +30%'],
+    guide: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'], prod_25: ['Grow Lights', 'Output +25%'], cap_2: ['Vertical Racks', 'Worker cap +2'] } },
+  'algae_tank:bio': { name: 'Bio Harvester', desc: 'Culture racks added beside the vats raise edible life gathered from the surface. More output per worker than the Algae Vat. Rebuilding keeps its level and workers.' },
+  'algae_tank:hydro': { name: 'Hydroponic Farm', desc: 'The whole facility rebuilt as a pressurized greenhouse growing vegetables in nutrient solution — the most efficient food source. Rebuilding keeps its level and workers.' },
   emergency_camp: { name: 'Emergency Camp', desc: 'Command Lv1. Inflatable pressurized domes and radiant heaters — the survivors can finally take their helmets off indoors. Unlocks building upgrades and upgrade lines, and advances to Stage 2.' },
   hab_pod: { name: 'Hab Pod', desc: 'Houses 2 people per level. The population cap decides whether new colonists can keep arriving.', nodes: {
     cap_1: ['Bunk Beds', 'Capacity +1'], birth: ['Nursery Corner', 'Birth rate +10%'], cap_2: ['Extra Partitions', 'Capacity +2'] } },
-  bio_harvester: { name: 'Bio Harvester', desc: 'Harvests edible surface life. More efficient than the Algae Vat, but only 2 workers per level.', nodes: {
-    prod_25: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'] } },
   cargo: { name: 'Supply Depot', desc: 'Each level raises storage for every resource by 100.', nodes: {
     stack: ['Stacking Frames', '+50 more storage per level'] } },
   lounge: { name: 'Lounge Pod', desc: 'Morale +5 per level. Each stationed worker adds 10% food security.', nodes: {
@@ -33,8 +34,6 @@ const buildings: Record<string, B> = {
   forge: { name: 'Forge', desc: 'Forges metal into tools or weapons. From Stage 4 you can move workers onto weapons. Buildings need tools from Lv5 onward.', nodes: {
     tools_25: ['Standard Molds', 'Tool output +25%'], click_1: ['Master Smith', 'Click yield +1'], weapon_atk: ['Weapon Calibration', 'Weapon attack +1'] } },
   outpost: { name: 'Outpost', desc: 'Command Lv3. The watchtower sees farther — including what is coming closer. Advances to Stage 4. Requires population 22.' },
-  hydro_farm: { name: 'Hydroponic Farm', desc: 'Grows vegetables in nutrient solution inside pressurized greenhouses — the most efficient food source.', nodes: {
-    prod_25: ['Grow Lights', 'Output +25%'], cap_2: ['Vertical Racks', 'Worker cap +2'] } },
   memorial: { name: 'Memorial Hall', desc: 'For those who did not make it here. Morale +10 and birth rate +10% per level.', nodes: {
     morale_5: ['Eternal Lamp', 'Morale +5'] } },
   crystal_synth: { name: 'Crystal Synthesizer', desc: 'Dissolves underground crystal clusters and regrows them into energy-storing xenocrystal. Output is tiny, but all alien tech depends on it.', nodes: {

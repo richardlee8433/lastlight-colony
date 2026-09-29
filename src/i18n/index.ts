@@ -50,8 +50,23 @@ export function t(key: string, p?: Params): string {
 // ── 資料文字 ──
 const zh = () => lang() === 'zh';
 export const resName = (k: ResKey | string) => t('res.' + k);
-export const bName = (id: string) => (zh() ? DEF[id]?.name : EN.buildings[id]?.name) ?? id;
-export const bDesc = (id: string) => (zh() ? DEF[id]?.desc : EN.buildings[id]?.desc) ?? '';
+// 改建過的建築（糧食設施）名稱與說明跟著形態走；形態由 store 提供，i18n 不直接讀遊戲狀態
+let formGetter: (id: string) => number = () => 0;
+export const setFormGetter = (fn: (id: string) => number) => { formGetter = fn; };
+function formKey(id: string, form = formGetter(id)) {
+  const f = form > 0 ? DEF[id]?.forms?.[form - 1] : null;
+  return f ? { f, key: `${id}:${f.id}` } : null;
+}
+export const bName = (id: string, form?: number) => {
+  const k = formKey(id, form);
+  if (k) return (zh() ? k.f.name : EN.buildings[k.key]?.name) ?? k.f.name;
+  return (zh() ? DEF[id]?.name : EN.buildings[id]?.name) ?? id;
+};
+export const bDesc = (id: string, form?: number) => {
+  const k = formKey(id, form);
+  if (k) return (zh() ? k.f.desc : EN.buildings[k.key]?.desc) ?? k.f.desc;
+  return (zh() ? DEF[id]?.desc : EN.buildings[id]?.desc) ?? '';
+};
 export function nodeText(bid: string, nid: string): [string, string] {
   if (!zh()) { const n = EN.buildings[bid]?.nodes?.[nid]; if (n) return n; }
   const n = DEF[bid]?.upgrades?.find((u) => u.id === nid);

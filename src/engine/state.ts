@@ -16,9 +16,12 @@ export type Effect = Partial<{
   charterSlot: number; crystalAdd: number; turretAtk: number; weaponOut: number; healAdd: number; bedAdd: number;
 }>;
 export interface UpgradeNode { id: string; name: string; desc: string; minLevel: number; cost: Cost; effect: Effect; stage?: number }
+export interface BuildingForm { id: string; stage: number; name: string; desc: string; rate: number; workersPerLevel: number; art: string; cost: Cost; baseCost: Cost }
 export interface BuildingDef {
   id: string; name: string; stage: number; desc: string;
   kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical' | 'beacon';
+  /** 改建形態（糧食設施：藻類槽 → 生物採集站 → 水耕農場）；第 0 形態就是建築本身 */
+  forms?: BuildingForm[];
   /** 每級成本不隨等級成長（軌道信標的分段建造） */
   flatCost?: boolean;
   baseCost: Cost; maxLevel: number; startLevel?: number; clickable?: boolean; commandLevel?: number;
@@ -33,7 +36,7 @@ export const DEFS = BUILDINGS as unknown as BuildingDef[];
 export const DEF: Record<string, BuildingDef> = Object.fromEntries(DEFS.map((d) => [d.id, d]));
 export const COMMAND_CHAIN = DEFS.filter((d) => d.kind === 'command').sort((a, b) => a.commandLevel! - b.commandLevel!).map((d) => d.id);
 
-export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean }
+export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean; form?: number }
 export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'envoy'; target?: string; cost?: number }
 export interface BattleReport {
   won: boolean; raid: number; enemies: number; guards: number; armed: number; turrets?: number; kind?: string;
