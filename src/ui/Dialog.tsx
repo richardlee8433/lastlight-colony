@@ -7,7 +7,8 @@ import { sfx } from '../audio/audio';
 
 const CPS = { zh: 28, en: 55 };   // 每秒打出幾個字
 
-// 劇情對話框：左下半身立繪壓在文字框上、名字標籤、逐字打字。點一下跳完這句，再點下一句。不暫停遊戲。
+// 劇情對話框：左下半身立繪壓在文字框上、名字標籤、逐字打字。點一下跳完這句，再點下一句。
+// 對話期間遊戲暫停（見 gameStore 的時間累加器），畫面稍微變暗、點任何地方都能翻頁；播完自動繼續。
 export function Dialog() {
   useGame((st) => st.v);
   const title = useGame((st) => st.title);
@@ -37,6 +38,8 @@ function Scene({ id, day }: { id: string; day: number }) {
   };
   const art = portraitURL(who);
   return (
+    <>
+    <div className="dlg-veil" onClick={next} aria-hidden="true" />
     <div className={'dlg who-' + who} role="dialog" aria-label={t('dlg.label')}>
       <img key={who} className={'dlg-art' + (art.pixel ? ' pixel' : '')} src={art.url} alt="" draggable={false} />
       <div className="dlg-box px" onClick={next} role="button" tabIndex={0} aria-label={t('dlg.next')}
@@ -48,5 +51,6 @@ function Scene({ id, day }: { id: string; day: number }) {
       </div>
       <button type="button" className="dlg-skip" onClick={act.dialogNext}>{t('dlg.skip')} ▸▸</button>
     </div>
+    </>
   );
 }

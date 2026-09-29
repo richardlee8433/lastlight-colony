@@ -7,6 +7,7 @@ import { built, idle, storageCap, workerCap } from '../engine/formulas';
 import { oxygenByproduct, oxygenUse } from '../engine/air';
 import { step, TICK } from '../engine/tick';
 import { migrateDialogs } from '../engine/dialog';
+import { SCENES } from '../data/dialogs';
 import { click as engineClick, ClickResult } from '../engine/click';
 import { applyOffline } from '../engine/offline';
 import * as A from '../engine/actions';
@@ -218,12 +219,15 @@ export const useGame = create<Store>((set, get) => {
   };
 });
 
+/** 有正在播放的劇情對話 */
+const dialogOpen = () => { const q = game.s.story.queue?.[0]; return !!q && !!SCENES[q.id] && !game.s.failed; };
+
 // 200ms 時間累加器（GDD §15 tick.ts）。分頁在背景太久時，超過 60 秒的部分用離線收益結算。
 let last = performance.now(), acc = 0, sinceSave = 0;
 setInterval(() => {
   const now = performance.now();
-  // 首頁開著時遊戲暫停（不累積時間）
-  if (useGame.getState().title) { last = now; return; }
+  // 首頁或劇情對話開著時遊戲暫停（不累積時間），對話播完自動繼續
+  if (useGame.getState().title || dialogOpen()) { last = now; return; }
   acc += (now - last) / 1000;
   last = now;
   if (acc > 60) {

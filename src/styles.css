@@ -276,8 +276,10 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 @keyframes gasp { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .game.hypoxic::after { animation: none; } }
 
-/* 劇情對話框：左下半身立繪壓在文字框上 */
-.dlg { position: absolute; left: 250px; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); width: min(660px, calc(100% - 610px)); min-width: 460px; z-index: 5; pointer-events: none; animation: dlg-in 0.25s ease-out; }
+/* 劇情對話框：左下半身立繪壓在文字框上；對話期間遊戲暫停，地圖稍微變暗，點任何地方都能翻頁 */
+.dlg-veil { position: absolute; inset: 0; z-index: 5; background: rgba(6, 7, 14, 0.28); cursor: pointer; animation: veil-in 0.3s ease-out; }
+@keyframes veil-in { from { opacity: 0; } }
+.dlg { position: absolute; left: 250px; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); width: min(660px, calc(100% - 610px)); min-width: 460px; z-index: 6; pointer-events: none; animation: dlg-in 0.25s ease-out; }
 .dlg-art { position: absolute; left: -14px; bottom: -6px; height: 270px; width: 200px; object-fit: contain; object-position: bottom center; z-index: 1; filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.45)); animation: dlg-art 0.3s ease-out; }
 .dlg-art.pixel { image-rendering: pixelated; height: 160px; width: 160px; left: 10px; bottom: 16px; }
 .dlg-box { position: relative; pointer-events: auto; cursor: pointer; min-height: 104px; padding: 22px 22px 16px 196px; background: rgba(20, 23, 35, 0.94); }
