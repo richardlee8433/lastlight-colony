@@ -8,6 +8,7 @@ import { QuickBar } from './ui/QuickBar';
 import { Toasts } from './ui/Toasts';
 import { RaidBanner } from './ui/RaidBanner';
 import { TradeModal } from './ui/TradeModal';
+import { TechTree } from './ui/TechTree';
 import { Modals } from './ui/Modals';
 import { Settings } from './ui/Settings';
 import { useGame, game } from './store/gameStore';
@@ -36,6 +37,7 @@ export function App() {
       <Toasts />
       <Settings />
       <TradeModal />
+      <TechTree />
       <Modals />
     </div>
   );

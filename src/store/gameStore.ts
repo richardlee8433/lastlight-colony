@@ -82,6 +82,8 @@ interface Store {
   seenIntro: () => void;
   saveNow: () => void;
   raidLook: number;
+  tech: boolean;
+  openTech: (o: boolean) => void;
   lookAtRaid: () => void;
   reset: () => void;
 }
@@ -113,6 +115,8 @@ export const useGame = create<Store>((set, get) => {
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),
     seenIntro: () => run((s) => { s.story.seenIntro = Math.min(s.stage, CHAPTERS.length); }),
     raidLook: 0,
+    tech: false,
+    openTech: (o) => set({ tech: o, selected: o ? null : get().selected }),
     lookAtRaid: () => set((st) => ({ raidLook: st.raidLook + 1 })),
     saveNow: () => { save(game.s); get().bump(); },
     restoreCheckpoint: () => {

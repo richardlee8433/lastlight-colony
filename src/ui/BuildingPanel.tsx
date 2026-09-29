@@ -208,28 +208,24 @@ function Defense() {
   );
 }
 
+/** 研究所頁面只顯示目前研究進度；完整科技樹在另一頁 */
 function Research() {
   const s = game.s, act = useGame.getState(), speed = researchSpeed(s);
+  const r = RESEARCH_DEFS.find((x) => x.id === s.research.active);
+  const done = s.research.done.length, total = RESEARCH_DEFS.length;
   return (
     <section className="block">
       <h3>{t('rs.title')}</h3>
       {speed <= 0 && <p className="banner warn">{t('rs.noWorkers')}</p>}
-      <ul className="nodes">
-        {RESEARCH_DEFS.map((r) => {
-          const done = s.research.done.includes(r.id), active = s.research.active === r.id, why = researchBlock(s, r.id), [rn, rd] = researchText(r.id);
-          return (
-            <li key={r.id} className={done ? 'owned' : ''}>
-              <div className="node-main">
-                <b>{rn}</b><span>{rd} · {fmtTime(r.time)}</span>
-                {active ? <Bar value={s.research.progress / r.time} tone="good" /> : !done && <CostList cost={r.cost} />}
-              </div>
-              {done ? <span className="done">{t('done')}</span>
-                : active ? <span className="done">{speed > 0 ? t('rs.left', { t: fmtTime((r.time - s.research.progress) / speed) }) : t('st.paused')}</span>
-                : <button type="button" className="btn" disabled={!!why} onClick={() => act.research(r.id)}>{why && why.k !== 'why.afford' ? tm(why) : t('rs.start')}</button>}
-            </li>
-          );
-        })}
-      </ul>
+      {r ? (
+        <div className="node-main">
+          <b>{t('tt.active', { rs: researchText(r.id)[0] })}</b>
+          <Bar value={s.research.progress / r.time} tone="good" />
+          <span className="muted small">{speed > 0 ? t('rs.left', { t: fmtTime((r.time - s.research.progress) / speed) }) : t('st.paused')}</span>
+        </div>
+      ) : <p className="muted small">{t('tt.idle')}</p>}
+      <p className="muted small">{t('tt.progress', { n: done, m: total })}</p>
+      <button type="button" className="btn wide" onClick={() => act.openTech(true)}>{t('tt.open')}</button>
     </section>
   );
 }

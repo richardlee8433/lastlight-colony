@@ -231,3 +231,30 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
   .qb { width: 48px; height: 48px; }
 }
 @media (prefers-reduced-motion: reduce) { .toast, .raid.alert { animation: none; } .bar i { transition: none; } }
+
+/* 科技樹 */
+.settings { grid-auto-flow: column; align-items: start; }
+.settings .tech-btn { height: 30px; padding: 0 10px; font-size: 13px; }
+.modal.tech { width: min(1080px, 100%); max-height: calc(100% - 16px); }
+.tech-status { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
+.tech-status b { color: var(--text); }
+.tree { position: relative; overflow: auto; display: grid; gap: 14px; padding-bottom: 4px; }
+.tree-lines { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.tree-lines path { fill: none; stroke: #4a4f66; stroke-width: 2; stroke-dasharray: 4 3; }
+.tree-lines path.on { stroke: #7fd49a; stroke-dasharray: none; }
+.lane h3 { margin: 0 0 6px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lane-grid { display: grid; gap: 10px 34px; align-items: start; }
+.tech-node { position: relative; z-index: 1; display: grid; gap: 5px; padding: 9px 10px; background: var(--panel-2); box-shadow: inset 2px 2px 0 #3c4258, inset -2px -2px 0 #161923; font-size: 12px; }
+.tech-node .tn-head { display: flex; gap: 6px; align-items: center; }
+.tech-node .tn-head b { font-size: 13px; }
+.tech-node .tag { font-size: 10px; padding: 0 4px; background: #5b3a8a; color: #f1e6ff; }
+.tech-node .tn-desc { color: #dcd7cc; }
+.tech-node .tn-req { display: flex; flex-wrap: wrap; gap: 4px; }
+.tech-node .tn-req span { font-size: 11px; padding: 1px 5px; background: #2a1c24; color: #ffb0a8; }
+.tech-node .tn-req span.ok { background: #1c2a22; color: #9fe0b0; }
+.tech-node .tn-cost { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.tech-node .btn { padding: 5px 8px; font-size: 12px; }
+.tech-node.done { box-shadow: inset 2px 2px 0 #3f7a55, inset -2px -2px 0 #16251b; }
+.tech-node.done .done { color: #9fe0b0; font-weight: 700; }
+.tech-node.active { box-shadow: inset 2px 2px 0 #b98cff, inset -2px -2px 0 #3a2a5a; }
+.tech-node.locked { opacity: 0.62; }
