@@ -13,7 +13,7 @@ import { setFoodPerPop, built, foodSafety, idle, levelCost, netRates, popCap, st
 const duty = Number(process.argv[2] ?? 0.5);
 const dumpAt = Number(process.argv[3] ?? 0);
 if (process.env.FOOD) setFoodPerPop(Number(process.env.FOOD));
-let starve = 0, lowFood = 0;
+let starve = 0, lowFood = 0, midFood = 0;
 const made: Record<string, number> = {}, full: Record<string, number> = {}, empty: Record<string, number> = {};
 let prevRes: Record<string, number> = {};   // 除錯用：到達此階段時輸出存檔 JSON 並結束
 let seed = 7;
@@ -28,7 +28,10 @@ const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'sta
 function target(s: GameState) {
   const t = TARGETS.find((id) => !built(s, id));
   if (t) return t;
-  return s.b.orbital_beacon.level < DEF.orbital_beacon.maxLevel ? 'orbital_beacon' : undefined!;
+  if (s.b.orbital_beacon.level >= DEF.orbital_beacon.maxLevel) return undefined!;
+  // 信標要人口 100：人口不夠時先蓋天幕住宅（否則機器人不會去挖岩材）
+  if (s.pop < (DEF.orbital_beacon.requires?.pop ?? 0) && s.b.sky_residence.level < DEF.sky_residence.maxLevel && s.pop >= popCap(s) - 2) return 'sky_residence';
+  return 'orbital_beacon';
 }
 function lacking(s: GameState, id: string | undefined): ResKey | null {
   if (!id) return null;
@@ -65,7 +68,7 @@ function decide(s: GameState) {
   const need = lacking(s, tgt);
   // 1. 蓋目標或必要的生產鏈
   if (tryBuy(s, tgt)) return;
-  if (!rebuildBlock(s, 'algae_tank')) { rebuild(s, 'algae_tank'); return; }
+  if (!rebuildBlock(s, 'algae_tank')) { rebuild(s, 'algae_tank'); rebuilt.push(`改建 ${s.b.algae_tank.form}：${fmt(s.t)}（階段 ${s.stage}、人口 ${s.pop}）`); return; }
   if (s.stage >= 6) {
     for (const id of ['governor', 'bioeng']) if (!built(s, id) && tryBuy(s, id)) return;
     if (s.pop >= popCap(s) - 1 && tryBuy(s, 'sky_residence')) return;
@@ -153,6 +156,7 @@ function reassign(s: GameState) {
 
 const s = newGame(0);
 const marks: string[] = [];
+const rebuilt: string[] = [];
 const raids: string[] = [];
 const stageAt: Record<number, number> = {};
 const marksTime = (st: number) => (stageAt[st] ??= s.t) + 150;
@@ -179,6 +183,7 @@ for (let i = 0; i < (8 * 3600) / TICK && !s.finished; i++) {
   }
   prevRes = { ...s.res };
   if (foodSafety(s) < 0.25) lowFood += TICK;
+  if (s.stage >= 2 && s.stage <= 3 && foodSafety(s) < 0.5) midFood += TICK;
   if (s.raid.report) { raids.push(`襲擊 ${s.raid.report.raid}：${fmt(s.t)} ${s.raid.report.kind} ${s.raid.report.won ? '勝' : '敗'}（敵 ${s.raid.report.enemies}，保全 ${s.raid.report.guards}，武裝 ${s.raid.report.armed}，砲塔 ${s.raid.report.turrets ?? 0}）`); s.raid.report = null; }
   if (s.stage !== lastStage) { marks.push(`階段 ${s.stage}：${fmt(s.t)}（人口 ${s.pop}）`); lastStage = s.stage; }
   if (dumpAt && s.stage === dumpAt && s.t > marksTime(dumpAt)) { s.story.seenIntro = Math.min(3, s.stage); s.lastSaved = Date.now(); console.log(JSON.stringify({ ...s, notices: [] })); process.exit(0); }
@@ -186,10 +191,11 @@ for (let i = 0; i < (8 * 3600) / TICK && !s.finished; i++) {
 console.log(`按住點擊比例 ${Math.round(duty * 100)}%`);
 for (const m of marks) console.log('  ' + m);
 for (const m of raids) console.log('  ' + m);
+for (const m of rebuilt) console.log('  ' + m);
 console.log(`  結束：${s.finished ? '信標點亮' : '未完成'}（信標 ${s.b.orbital_beacon.level}/5），時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
 console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).join('、'));
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
-console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}`);
+console.log(`  缺糧（營養歸零）累計 ${fmt(starve)}，食物安全度低於 25% 累計 ${fmt(lowFood)}；階段 2–3 低於 50% 累計 ${fmt(midFood)}`);
 console.log('  資源（累計產量／滿倉時間／見底時間）：');
 for (const k of RES_KEYS) console.log(`    ${k.padEnd(9)} ${String(Math.round(made[k] ?? 0)).padStart(6)}  滿 ${fmt(full[k] ?? 0)}  空 ${fmt(empty[k] ?? 0)}`);
 console.log('  影片基準：營地 5:00、中央艙 28:00、前哨站 42:00、首次襲擊 65:00');
