@@ -1,11 +1,11 @@
 import { useGame, game } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
-import { bDesc, bName, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
+import { bDesc, bName, costText, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
-  gatherRate, hurtCivilians, idle, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
+  gatherRate, hurtCivilians, idle, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
 } from '../engine/formulas';
-import { levelBlock, nodeBlock, researchBlock } from '../engine/actions';
+import { boostBlock, levelBlock, nodeBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
 import { Governance } from './Governance';
 import { weaponShare, weaponRatio } from '../engine/formulas';
@@ -60,6 +60,8 @@ export function BuildingPanel() {
       {L > 0 && id === 'forge' && s.stage >= 4 && <ForgeSplit />}
       {L > 0 && id === 'security' && <Defense />}
       {L > 0 && id === 'med_bay' && <MedBay />}
+      {L > 0 && id === 'bioeng' && <BioLab />}
+      {id === 'orbital_beacon' && <Beacon />}
       {L > 0 && id === 'admin' && <Governance />}
       {L > 0 && (id === 'trade_post' || id === 'spaceport') && (
         <section className="block">
@@ -117,13 +119,13 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
   const act = useGame.getState();
   return (
     <section className="block buildbox">
-      <h3>{title ?? (L ? t('bp.upgradeTo', { n: L + 1 }) : t('bp.build'))}</h3>
+      <h3>{title ?? (d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgradeTo', { n: L + 1 }) : t('bp.build'))}</h3>
       <CostList cost={levelCost(s, id)} />
       {d.requires?.pop ? <p className={'req ' + (s.pop >= d.requires.pop ? 'ok' : '')}>{t('bp.reqPop', { n: d.requires.pop, c: s.pop })}</p> : null}
       {d.requires?.raids ? <p className={'req ' + (s.raid.won >= d.requires.raids ? 'ok' : '')}>{t('bp.reqRaids', { n: d.requires.raids, c: s.raid.won })}</p> : null}
       {d.requires?.credits ? <p className={'req ' + (s.gov.creditsEarned >= d.requires.credits ? 'ok' : '')}>{t('bp.reqCredits', { n: d.requires.credits, c: Math.floor(s.gov.creditsEarned) })}</p> : null}
       <button type="button" className="btn wide" disabled={!!why} onClick={() => act.levelUp(id)}>
-        {why && why.k !== 'why.afford' ? tm(why) : L ? t('bp.upgrade') : t('bp.buildX', { b: bName(id) })}
+        {why && why.k !== 'why.afford' ? tm(why) : d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgrade') : t('bp.buildX', { b: bName(id) })}
       </button>
     </section>
   );
@@ -211,6 +213,35 @@ function Defense() {
 }
 
 /** 研究所頁面只顯示目前研究進度；完整科技樹在另一頁 */
+/** 生物工程室：注入異晶換限時產量加成 */
+function BioLab() {
+  const s = game.s, act = useGame.getState(), why = boostBlock(s), p = Math.round(boostPower(s) * 100);
+  return (
+    <section className="block">
+      <h3>{t('bio.title')}</h3>
+      {boostActive(s)
+        ? <><p className="banner good">{t('bio.active', { p, t: fmtTime(s.boost.until - s.t) })}</p><Bar value={(s.boost.until - s.t) / boostDuration(s)} tone="good" /></>
+        : <p className="muted small">{t('bio.info', { p, t: fmtTime(boostDuration(s)), c: costText(BOOST_COST) })}</p>}
+      <CostList cost={BOOST_COST} />
+      <button type="button" className="btn wide" disabled={!!why} onClick={act.boost}>{why && why.k !== 'why.afford' ? tm(why) : t('bio.btn')}</button>
+      <p className="muted small">{t('bio.uses', { n: s.boost.uses })}</p>
+    </section>
+  );
+}
+
+/** 軌道信標：五段建造的進度 */
+function Beacon() {
+  const s = game.s, d = DEF.orbital_beacon, L = s.b.orbital_beacon.level;
+  return (
+    <section className="block">
+      <h3>{t('bc.title')}</h3>
+      <p className="muted small">{t('bc.phase', { n: L, m: d.maxLevel })}</p>
+      <Bar value={L / d.maxLevel} tone="good" />
+      {L >= d.maxLevel && <p className="muted small">{t('bc.done')}</p>}
+    </section>
+  );
+}
+
 function MedBay() {
   const s = game.s, beds = medBeds(s), patients = injuredCount(s) + hurtCivilians(s);
   const rows: [string, string][] = [

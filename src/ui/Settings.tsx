@@ -6,7 +6,7 @@ import { LANGS, t, useLang, useSettings } from '../i18n';
 import { fmtTime } from './common';
 import { Modal } from './Modals';
 
-export const VERSION = '0.4';
+export const VERSION = '0.5';
 
 // 設定頁：語言、存檔、重新開始、關於
 export function Settings() {

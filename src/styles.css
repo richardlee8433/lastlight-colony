@@ -109,6 +109,7 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .block { display: grid; gap: 8px; padding-top: 10px; border-top: 2px solid var(--shade); }
 .block h3 { margin: 0; font-size: 13px; letter-spacing: 0.06em; color: var(--muted); }
 .banner { padding: 6px 10px; font-size: 13px; background: #3a2a1c; color: var(--warn); margin: 0; }
+.banner.good { background: #1c3a2a; color: var(--good); }
 .workers { display: flex; align-items: center; gap: 8px; }
 .workers > span:first-child { font-weight: 700; margin-right: 2px; }
 .workers b { min-width: 44px; text-align: center; font-size: 17px; font-variant-numeric: tabular-nums; }

@@ -560,6 +560,14 @@ export class GameScene {
       g.moveTo(b.x1, b.y1).lineTo(b.x2, b.y2).stroke({ color: 0x7fe8ff, width: 2, alpha: 0.35 * a });
       g.moveTo(b.x1, b.y1).lineTo(b.x2, b.y2).stroke({ color: 0xe8ffff, width: 1, alpha: a });
     }
+    // 結局：軌道信標點亮後，一道光束直上天際
+    const bv = [...this.views.values()].find((v) => v.bid === 'orbital_beacon');
+    if (game.s.finished && bv?.building) {
+      const top = bv.y - bv.building.art.ay + 6, a = 0.55 + 0.25 * Math.sin(this.T * 3);
+      g.rect(bv.x - 4, top - 600, 8, 600).fill({ color: 0x7fd8ff, alpha: 0.18 * a });
+      g.rect(bv.x - 2, top - 600, 4, 600).fill({ color: 0x9fe8ff, alpha: 0.45 * a });
+      g.rect(bv.x - 1, top - 600, 2, 600).fill({ color: 0xffffff, alpha: 0.9 * a });
+    }
     // 被打中的單位閃一下（半透明）
     for (const u of [...this.aliens, ...this.defenders]) {
       if (u.hitT > 0) { u.hitT -= dt; u.alpha = 0.55; } else u.alpha = 1;

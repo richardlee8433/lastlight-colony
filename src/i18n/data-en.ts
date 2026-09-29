@@ -52,6 +52,10 @@ const buildings: Record<string, B> = {
   spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; add a Xenology Institute to answer that mysterious signal.' },
   turret: { name: 'Defense Turret', desc: 'Fixed defense. One turret per level (ATK 8, HP 40); uses no population and repairs itself after battle.' },
   xeno_lab: { name: 'Xenology Institute', desc: 'A lab devoted to xenocrystal. Unlocks the xeno research line; stationed researchers also speed up all research.' },
+  governor: { name: 'Governor’s Residence', desc: 'The administrative heart of the city, where the colony’s first elected governor works. Morale +15, charter slots +1.' },
+  sky_residence: { name: 'Skyline Residence', desc: 'High-rise homes under the dome, with the stars right outside the window. +12 population cap and +5 morale per level.' },
+  bioeng: { name: 'Bioengineering Lab', desc: 'Infuses crops and cultures with xenocrystal to boost the whole colony’s output for a short time. Each infusion costs xenocrystal; higher levels make it stronger and longer.' },
+  orbital_beacon: { name: 'Orbital Beacon', desc: 'A beacon tower that broadcasts to the entire system. Built in five phases, each needing metal, tools, xenocrystal and credits; completing the fifth lights the beacon. Requires population 100.' },
   star_dome: { name: 'Star Dome', desc: 'Command Lv5. A glass dome over the whole colony — from this day on, it is a city. Requires population 80 and 5,000 credits earned.' },
 };
 
@@ -130,6 +134,15 @@ const chapters = [
       'To be free, the colony has to pay its own way. Pass laws, collect taxes, trade — and then decide whether to say no to the corporation.',
     ],
     goals: ['Build the Administration Hall', 'Pass your first colony charter', 'Receive the corporate envoy and make a choice', 'Earn 5,000 credits in total', 'Reach population 80', 'Complete the Star Dome'],
+  },
+  {
+    title: 'Beacon', subtitle: 'A message to the stars',
+    intro: [
+      'The first night after the dome closed, the colony’s lights could be seen from orbit.',
+      'Helion’s transport is still up there, and more Alliance ships arrive every week. This planet is no longer a hiding place — it is a coordinate everyone knows.',
+      'Build the Orbital Beacon and announce to the whole system: this is a free city.',
+    ],
+    goals: ['Build the Governor’s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Complete all five phases of the Orbital Beacon'],
   },
 ];
 

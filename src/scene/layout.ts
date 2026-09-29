@@ -24,6 +24,11 @@ export const SITES: Site[] = [
   { id: 'water_cycle', x: 390, y: 448 },
   { id: 'crystal_synth', x: 660, y: 452 },
   { id: 'med_bay', x: 612, y: 336 },
+  // 階段 6：外圍四個角落
+  { id: 'governor', x: 510, y: 466 },
+  { id: 'sky_residence', x: 70, y: 390 },
+  { id: 'bioeng', x: 726, y: 372 },
+  { id: 'orbital_beacon', x: 262, y: 470 },
   // 階段 5：四個角落與上緣
   { id: 'admin', x: 560, y: 74 },
   { id: 'trade_post', x: 220, y: 74 },
