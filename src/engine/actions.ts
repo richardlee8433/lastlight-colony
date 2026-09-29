@@ -76,6 +76,7 @@ export function researchBlock(s: GameState, rid: string): Why {
   const r = RESEARCH_DEFS.find((x) => x.id === rid)!;
   if (!built(s, 'databank')) return msg('why.databank');
   if (s.research.done.includes(rid)) return msg('why.done');
+  if (r.stage && s.stage < r.stage) return msg('why.stage', { n: r.stage });
   if (s.research.active) return msg('why.busy');
   if (r.requires && !s.research.done.includes(r.requires)) return msg('why.prevResearch');
   if (r.lab && !built(s, 'xeno_lab')) return msg('why.lab');

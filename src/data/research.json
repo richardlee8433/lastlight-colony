@@ -90,6 +90,51 @@
     }
   },
   {
+    "id": "weapon_1",
+    "name": "武器改良 I",
+    "desc": "武器攻擊力 +2",
+    "cost": {
+      "metal": 300,
+      "tools": 40
+    },
+    "time": 150,
+    "effect": {
+      "weaponAtk": 2
+    },
+    "stage": 4
+  },
+  {
+    "id": "arms_line",
+    "name": "兵工產線",
+    "desc": "武器產量 +30%",
+    "cost": {
+      "metal": 400,
+      "tools": 60
+    },
+    "time": 180,
+    "effect": {
+      "weaponOut": 0.3
+    },
+    "requires": "weapon_1",
+    "stage": 4
+  },
+  {
+    "id": "weapon_2",
+    "name": "武器改良 II",
+    "desc": "武器攻擊力 +2",
+    "cost": {
+      "metal": 600,
+      "tools": 80,
+      "crystal": 20
+    },
+    "time": 240,
+    "effect": {
+      "weaponAtk": 2
+    },
+    "requires": "weapon_1",
+    "stage": 4
+  },
+  {
     "id": "crystal_armor",
     "name": "異晶護甲",
     "desc": "保全血量 +5",
@@ -182,5 +227,20 @@
       "turretAtk": 6
     },
     "lab": true
+  },
+  {
+    "id": "xeno_blade",
+    "name": "異晶刃",
+    "desc": "武器攻擊力 +3",
+    "cost": {
+      "crystal": 90,
+      "metal": 500
+    },
+    "time": 240,
+    "effect": {
+      "weaponAtk": 3
+    },
+    "lab": true,
+    "requires": "weapon_2"
   }
 ]

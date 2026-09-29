@@ -21,7 +21,7 @@ export function resBonus(s: GameState, k: ResKey): number {
   return 0;
 }
 
-export const RESEARCH_DEFS = RESEARCH as unknown as { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; requires?: string; lab?: boolean }[];
+export const RESEARCH_DEFS = RESEARCH as unknown as { id: string; name: string; desc: string; cost: Cost; time: number; effect: Effect; requires?: string; lab?: boolean; stage?: number }[];
 const RDEF = Object.fromEntries(RESEARCH_DEFS.map((r) => [r.id, r]));
 
 export const built = (s: GameState, id: string) => s.b[id].level > 0;
@@ -178,6 +178,8 @@ export function add(s: GameState, k: ResKey, v: number, cap = storageCap(s)) {
 
 /** 鍛造廠：分配到武器的工人比例（GDD §8：每位工人指定產品） */
 export const WEAPON_RATIO = 0.3;
+/** 金屬換武器的比率，受研究「兵工產線」加成 */
+export const weaponRatio = (s: GameState) => WEAPON_RATIO * (1 + researchEffect(s, 'weaponOut'));
 export function weaponShare(s: GameState, id: string) {
   const b = s.b[id];
   if (id !== 'forge' || s.stage < 4 || !b.workers) return 0;
@@ -196,7 +198,7 @@ export function netRates(s: GameState): Record<ResKey, number> {
       const ws = weaponShare(s, d.id);
       r[d.recipe.in] -= inp;
       r[d.recipe.out] += inp * (1 - ws) * recipeRatio(s, d.id);
-      r.weapon += inp * ws * WEAPON_RATIO;
+      r.weapon += inp * ws * weaponRatio(s);
     }
   }
   r.nutrient -= consumption(s);

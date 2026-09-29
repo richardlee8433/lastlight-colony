@@ -61,6 +61,9 @@ const research: Record<string, [string, string]> = {
   process_1: ['Process Tuning', 'Processing speed +20%'],
   gather_2: ['Gathering II', 'All gathering output +10%'],
   click_1: ['Reinforced Gloves', 'All click yield +1'],
+  weapon_1: ['Weapon Tuning I', 'Weapon attack +2'],
+  arms_line: ['Arms Line', 'Weapon output +30%'],
+  weapon_2: ['Weapon Tuning II', 'Weapon attack +2'],
   crystal_armor: ['Crystal Armor', 'Guard HP +5'],
   crystal_ration: ['Emergency Rations', 'Nutrient consumption −10%'],
   crystal_resonance: ['Crystal Resonance', 'All gathering output +10%'],
@@ -68,6 +71,7 @@ const research: Record<string, [string, string]> = {
   xeno_growth: ['Crystal Catalysis', 'Xenocrystal output +40%'],
   xeno_hab: ['Lattice Materials', 'Each Hab Pod level houses 1 more'],
   xeno_turret: ['Crystal Barrels', 'Turret attack +6'],
+  xeno_blade: ['Crystal Edge', 'Weapon attack +3'],
 };
 
 const charters: Record<string, [string, string, string]> = {

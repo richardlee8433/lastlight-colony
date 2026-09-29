@@ -8,7 +8,7 @@ import {
 import { levelBlock, nodeBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, injuredCount, turretAtk, TURRET_HP } from '../engine/combat';
 import { Governance } from './Governance';
-import { weaponShare, WEAPON_RATIO } from '../engine/formulas';
+import { weaponShare, weaponRatio } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
 import { buildingURL } from './assets';
 
@@ -142,7 +142,7 @@ function Stats({ id }: { id: string }) {
     rows.push([t('st.inPerSec', { r: resName(d.recipe.in) }), `−${fmt(inp)}`]);
     const ws = weaponShare(s, id);
     rows.push([t('st.outPerSec', { r: resName(d.recipe.out) }), `+${fmt(inp * r * (1 - ws))}`]);
-    if (ws > 0) rows.push([t('st.outPerSec', { r: resName('weapon') }), `+${fmt(inp * ws * WEAPON_RATIO)}`]);
+    if (ws > 0) rows.push([t('st.outPerSec', { r: resName('weapon') }), `+${fmt(inp * ws * weaponRatio(s))}`]);
     rows.push([t('st.ratio'), `1 → ${r.toFixed(2)}`]);
     if (s.b[id].paused) rows.push([t('st.status'), t('st.paused')]);
     else if (inp > 0 && s.res[d.recipe.in] < 1) rows.push([t('st.status'), t('st.dry', { r: resName(d.recipe.in) })]);

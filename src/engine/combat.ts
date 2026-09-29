@@ -13,7 +13,7 @@ export const guards = (s: GameState) => (built(s, 'security') ? s.b.security.wor
 export const injuredCount = (s: GameState) => s.raid.injured.filter((u) => u > s.t).length;
 export const guardHp = (s: GameState) => 10 + nodeEffect(s, 'security', 'guardHp') + researchEffect(s, 'guardHp');
 export function guardAtk(s: GameState, armed: boolean) {
-  const base = armed ? 5 + nodeEffect(s, 'forge', 'weaponAtk') : 2;
+  const base = armed ? 5 + nodeEffect(s, 'forge', 'weaponAtk') + researchEffect(s, 'weaponAtk') : 2;
   return base + nodeEffect(s, 'security', 'guardAtk');
 }
 export const enemyStats = (n: number) => ({ enemies: 3 + 2 * n, atk: 2 * Math.pow(1.1, n), hp: 8 * Math.pow(1.1, n) });

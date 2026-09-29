@@ -1,6 +1,6 @@
 // 手動點擊：暴擊、點擊 buff（GDD §6）
 import { DEF, GameState, ResKey } from './state';
-import { add, built, clickAmount, critChance, critMult, disabled, nodeEffect, recipeRatio, weaponShare, WEAPON_RATIO } from './formulas';
+import { add, built, clickAmount, critChance, critMult, disabled, nodeEffect, recipeRatio, weaponShare, weaponRatio } from './formulas';
 
 export interface ClickResult { res: ResKey; amount: number; crit: boolean; bonus?: ResKey; bonusAmount?: number }
 
@@ -24,7 +24,7 @@ export function click(s: GameState, id: string, rng = Math.random): ClickResult 
     if (used <= 0) return { res: d.recipe.out, amount: 0, crit: false };
     s.res[d.recipe.in] -= used;
     // 鍛造廠有工人改做武器時，點擊也依比例產出武器（全部改做武器就只出武器）
-    if (weaponShare(s, id) >= 1) { const w = used * WEAPON_RATIO; add(s, 'weapon', w); return { res: 'weapon', amount: w, crit }; }
+    if (weaponShare(s, id) >= 1) { const w = used * weaponRatio(s); add(s, 'weapon', w); return { res: 'weapon', amount: w, crit }; }
     const out = used * recipeRatio(s, id);
     add(s, d.recipe.out, out);
     return { res: d.recipe.out, amount: out, crit };
