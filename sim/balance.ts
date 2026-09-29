@@ -21,7 +21,7 @@ let seed = 7;
 const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 
 const PRODUCER: Record<ResKey, string[]> = {
-  nutrient: ['algae_tank'], oxygen: ['o2_scrubber', 'electrolyzer'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
+  nutrient: ['algae_tank'], oxygen: ['o2_scrubber'], scrap: ['scrap_heap'], rock: ['rock_cutter'],
   parts: ['assembly'], metal: ['metal_mine'], tools: ['forge'], weapon: ['forge'], crystal: ['crystal_synth'], credit: ['trade_post'],
 };
 const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
@@ -96,9 +96,9 @@ function decide(s: GameState) {
   }
   // 氧氣：先蓋再生器、第 2 章蓋電解站；空氣不夠時升級產氧建築
   if (!built(s, 'o2_scrubber') && tryBuy(s, 'o2_scrubber')) return;
-  if (s.stage >= 2 && !built(s, 'electrolyzer') && tryBuy(s, 'electrolyzer')) return;
+  if (s.stage >= 2 && built(s, 'o2_scrubber') && !s.b.o2_scrubber.form && rebuild(s, 'o2_scrubber')) return;
   if (airSafety(s) < 0.5 || netRates(s).oxygen < 0) {
-    const p = ['electrolyzer', 'o2_scrubber'].find((x) => built(s, x));
+    const p = ['o2_scrubber'].find((x) => built(s, x));
     if (p && s.b[p].workers >= workerCap(s, p) && tryBuy(s, p)) return;
   }
   for (const id of ['algae_tank', 'assembly', 'rock_cutter', 'lounge', 'metal_mine', 'forge', 'databank', 'rail_line', 'security', 'crystal_synth', 'water_cycle'])
@@ -132,7 +132,7 @@ function reassign(s: GameState) {
   const food = foodSafety(s) < 0.8 || rate.nutrient < 0.2;
   // 氧氣：一個一個加人，直到氧氣淨產出為正（優先電解站）
   for (let g = 0; g < 60 && (netRates(s).oxygen < 0.15 + s.pop * 0.01 || airSafety(s) < 0.4 && netRates(s).oxygen < 0.6); g++) {
-    const id = ['electrolyzer', 'o2_scrubber'].find((x) => built(s, x) && s.b[x].workers < workerCap(s, x));
+    const id = ['o2_scrubber'].find((x) => built(s, x) && s.b[x].workers < workerCap(s, x));
     if (!id || !assign(s, id, 1)) break;
   }
   // 糧食：一個一個加人，直到營養淨產出轉正（而不是把糧食建築塞滿）

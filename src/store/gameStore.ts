@@ -35,17 +35,17 @@ function load(): { s: GameState; offline: OfflineReport | null } {
   makeCheckpoint(s);
   return { s, offline: null };
 }
-/** 舊存檔（v0.6 以前）補建氧氣設施：電解站等級與工人足夠呼吸，不夠的人手從工人最多的建築調過來 */
+/** 舊存檔（v0.6 以前）補建氧氣設施：已改建成電解站的氧氣再生器，等級與工人足夠呼吸，不夠的人手從工人最多的建築調過來 */
 function giveAirSupply(s: GameState) {
   const need = oxygenUse(s) * 1.25 - oxygenByproduct(s);
-  s.b.o2_scrubber.level = Math.max(1, s.b.o2_scrubber.level);
-  const elec = s.b.electrolyzer, per = DEF.electrolyzer.produce!.rate, wpl = DEF.electrolyzer.workersPerLevel!;
+  const elec = s.b.o2_scrubber, form = DEF.o2_scrubber.forms![0], per = form.rate, wpl = form.workersPerLevel;
+  elec.form = Math.max(elec.form ?? 0, 1);
   const workers = Math.max(1, Math.ceil(need / per));
-  elec.level = Math.min(DEF.electrolyzer.maxLevel, Math.max(elec.level, Math.ceil(workers / wpl)));
-  for (let i = 0; i < workers && elec.workers < workerCap(s, 'electrolyzer'); i++) {
+  elec.level = Math.min(DEF.o2_scrubber.maxLevel, Math.max(elec.level, 1, Math.ceil(workers / wpl)));
+  for (let i = 0; i < workers && elec.workers < workerCap(s, 'o2_scrubber'); i++) {
     if (idle(s) <= 0) {
       let best: string | null = null;
-      for (const d of DEFS) if (!['security', 'algae_tank', 'electrolyzer', 'o2_scrubber'].includes(d.id) && s.b[d.id].workers > 0 && (!best || s.b[d.id].workers > s.b[best].workers)) best = d.id;
+      for (const d of DEFS) if (!['security', 'algae_tank', 'o2_scrubber'].includes(d.id) && s.b[d.id].workers > 0 && (!best || s.b[d.id].workers > s.b[best].workers)) best = d.id;
       if (!best) break;
       s.b[best].workers--;
     }
@@ -75,6 +75,16 @@ function migrate(s: GameState) {
     for (const n of hyd?.nodes ?? []) if ((n === 'prod_25' || n === 'cap_2') && !a.nodes.includes(n)) a.nodes.push(n);
     delete old.bio_harvester; delete old.hydro_farm;
   }
+  // 氧氣設施合併：舊存檔（v0.6 測試版）的電解站併進氧氣再生器，改建成電解站形態，工人位子不少於原本兩棟的總和
+  const el = old.electrolyzer;
+  if ((el?.level ?? 0) > 0) {
+    const o = s.b.o2_scrubber, capOld = 2 * o.level + (o.nodes.includes('cap_1') ? 1 : 0) + 2 * el.level + (el.nodes?.includes('cap_1') ? 1 : 0);
+    o.form = Math.max(o.form ?? 0, 1);
+    o.level = Math.min(DEF.o2_scrubber.maxLevel, Math.max(o.level, 1, Math.ceil(capOld / 2)));
+    o.workers = Math.min(workerCap(s, 'o2_scrubber'), o.workers + (el.workers ?? 0));   // 超過上限的人變成閒置
+    if (el.nodes?.includes('prod_30') && !o.nodes.includes('coil')) o.nodes.push('coil');
+  }
+  delete old.electrolyzer;
   // 目標完成紀錄從中文文字改成 id
   s.story.done = migrateStoryDone(s.story.done);
   // 舊存檔：原本前哨站就算 MVP 完成，現在接續第 4 章

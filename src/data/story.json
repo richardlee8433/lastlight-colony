@@ -53,10 +53,11 @@
         "label": "建造生活艙，提高人口上限"
       },
       {
-        "type": "build",
-        "id": "electrolyzer",
+        "type": "form",
+        "id": "o2_scrubber",
+        "amount": 1,
         "gid": "2-elec",
-        "label": "建造電解站，從冰層電解出氧氣"
+        "label": "把氧氣再生器改建成電解站，從冰層電解出氧氣"
       },
       {
         "type": "air",

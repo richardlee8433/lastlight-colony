@@ -13,10 +13,9 @@ const buildings: Record<string, B> = {
     guide: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'], prod_25: ['Grow Lights', 'Output +25%'], cap_2: ['Vertical Racks', 'Worker cap +2'] } },
   'algae_tank:bio': { name: 'Bio Harvester', desc: 'Culture racks added beside the vats raise edible life gathered from the surface. More output per worker than the Algae Vat. Rebuilding keeps its level and workers.' },
   'algae_tank:hydro': { name: 'Hydroponic Farm', desc: 'The whole facility rebuilt as a pressurized greenhouse growing vegetables in nutrient solution — the most efficient food source. Rebuilding keeps its level and workers.' },
-  o2_scrubber: { name: 'Oxygen Scrubber', desc: 'An oxygen scrubber cobbled together from escape pod wreckage, splitting carbon dioxide into air you can breathe. Teo calls it “Wheezy” — don’t mind the noise. Hold the button above it to pump by hand.', nodes: {
-    filter: ['Fresh Filters', 'Output +25%'], cap_1: ['Extra Fan', 'Worker cap +1'], seal: ['Sealed Gaskets', 'Output +30%'] } },
-  electrolyzer: { name: 'Electrolyzer', desc: 'Drills down into the ice layer, melts it and splits the water into oxygen. Ines’s design — each worker makes more than twice the oxygen of a scrubber.', nodes: {
-    prod_30: ['Heating Coils', 'Output +30%'], cap_1: ['Second Well', 'Worker cap +1'] } },
+  o2_scrubber: { name: 'Oxygen Scrubber', desc: 'An oxygen scrubber cobbled together from escape pod wreckage, splitting carbon dioxide into air you can breathe. Teo calls it “Wheezy” — don’t mind the noise. Hold the button above it to pump by hand. Can be rebuilt into an Electrolyzer in Chapter 2.', nodes: {
+    filter: ['Fresh Filters', 'Output +25%'], cap_1: ['Extra Fan', 'Worker cap +1'], seal: ['Sealed Gaskets', 'Output +30%'], coil: ['Heating Coils', 'Output +30%'] } },
+  'o2_scrubber:elec': { name: 'Electrolyzer', desc: 'Ines’s design: Wheezy gets a drill bit and bores down to the ice layer, melting it and splitting the water into oxygen. Each worker makes more than twice the oxygen of a scrubber. Rebuilding keeps its level and workers.' },
   emergency_camp: { name: 'Emergency Camp', desc: 'Command Lv1. Inflatable pressurized domes and radiant heaters — the survivors can finally take their helmets off indoors. Unlocks building upgrades and upgrade lines, and advances to Stage 2.' },
   hab_pod: { name: 'Hab Pod', desc: 'Houses 2 people per level. The population cap decides whether new colonists can keep arriving.', nodes: {
     cap_1: ['Bunk Beds', 'Capacity +1'], birth: ['Nursery Corner', 'Birth rate +10%'], cap_2: ['Extra Partitions', 'Capacity +2'] } },
@@ -109,7 +108,7 @@ const chapters = [
       'More people are coming — more mouths, and more lungs. The scrubber alone won’t be enough. The ice under our feet is this planet’s first gift.',
       'Build homes, make enough air to share, and give them a reason to stay.',
     ],
-    goals: ['Build a Hab Pod to raise the population cap', 'Build an Electrolyzer to split oxygen from the ice', 'Keep air security above 60% for 1 minute', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
+    goals: ['Build a Hab Pod to raise the population cap', 'Rebuild the Oxygen Scrubber into an Electrolyzer to split oxygen from the ice', 'Keep air security above 60% for 1 minute', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
   },
   {
     title: 'Metal and Fire', subtitle: 'From scavenging to making',

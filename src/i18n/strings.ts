@@ -82,7 +82,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'why.boosting': ['Boost already active', '加成進行中'],
   'kind.beacon': ['Endgame', '終局'],
   'rbd.title': ['Rebuild', '改建'],
-  'rbd.info': ['Rebuild into a {b}: {r} per worker per second, {w} workers per level. Level, workers and upgrades are kept.', '改建成{b}：每位工人每秒 {r}，每級 {w} 位工人。等級、工人與升級線都會保留。'],
+  'rbd.info': ['Rebuild into {b}: {r} per worker per second, {w} workers per level. Level, workers and upgrades are kept.', '改建成{b}：每位工人每秒 {r}，每級 {w} 位工人。等級、工人與升級線都會保留。'],
   'rbd.btn': ['Rebuild into {b}', '改建成{b}'],
   'rbd.done': ['Fully rebuilt.', '已經改建到最高形態。'],
   'why.maxForm': ['Fully rebuilt', '已是最高形態'],

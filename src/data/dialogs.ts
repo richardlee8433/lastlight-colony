@@ -85,7 +85,7 @@ export const SCENES: Record<string, SceneText> = {
       ['juno', '桃樂絲是誰？', "Who's Dorothy?"],
       ['ines', '我的工具箱。她比大部分人可靠。', "My toolbox. She's more reliable than most people."],
       ['teo', '妳剛剛盯著阿喘看很久。有意見？', 'You were staring at Wheezy for a long time. Got a problem?'],
-      ['ines', '有。牠很可愛，但撐不起十個人。地底下有冰層——給我岩材和零件，我幫你們蓋一座電解站，把冰變成空氣。', "Yes. It's adorable, but it won't keep ten people breathing. There's ice under us. Give me stone and parts and I'll build you an electrolyzer that turns ice into air."],
+      ['ines', '有。牠很可愛，但撐不起十個人。地底下有冰層——給我岩材和零件，我幫牠裝上鑽頭，改建成電解站，把冰變成空氣。', "Yes. It's adorable, but it won't keep ten people breathing. There's ice under us. Give me stone and parts and I'll fit it with a drill and rebuild it into an electrolyzer that turns ice into air."],
       ['mara', '歡迎加入，伊涅絲。薪水是不會死。', 'Welcome aboard, Ines. The pay is not dying.'],
       ['ines', '……我聽說了。福利也是。', '...So I heard. Benefits too.'],
     ],
@@ -93,21 +93,25 @@ export const SCENES: Record<string, SceneText> = {
   },
   'c2-elec': {
     lines: [
-      ['teo', '電解站鑽到冰層了！冰變水、水變氧氣，剩下的氫……先別點火。', 'The electrolyzer hit the ice! Ice to water, water to oxygen, and the leftover hydrogen... nobody light a match.'],
-      ['juno', '我可以取名字嗎？叫「大口吸」！', 'Can I name it? "Big Gulp"!'],
-      ['teo', '不行，名字是我取的。牠叫……大口吸。', 'No. I name the machines. It\'s called... Big Gulp.'],
-      ['mara', '你剛剛只是重複她的話。', 'You just repeated what she said.'],
+      ['teo', '好了，阿喘，忍一下……', 'Alright, Wheezy, hold still...'],
+      ['juno', '提歐，你在跟牠道歉嗎？', 'Teo, are you apologizing to it?'],
+      ['teo', '我幫牠裝了鑽頭，一路挖到冰層。冰變水、水變氧氣——牠現在是電解站了。', "I fitted it with a drill and dug all the way down to the ice. Ice to water, water to oxygen. It's an electrolyzer now."],
+      ['juno', '那牠還叫阿喘嗎？', 'Is it still called Wheezy?'],
+      ['teo', '當然。升官又不用改名。', "Of course. You don't change your name when you get promoted."],
+      ['mara', '剩下的氫氣……大家先別點火。', 'As for the leftover hydrogen... nobody light a match.'],
     ],
-    log: ['電解站開工了，冰層底下有好多好多氧氣。提歐幫它取名「大口吸」（是我取的）。', 'The electrolyzer is running. There is so much oxygen frozen under us. Teo named it Big Gulp (I named it).'],
+    log: ['提歐把阿喘改建成電解站，往地底冰層鑽井。他說升官不用改名，所以牠還是阿喘。資深阿喘。', "Teo rebuilt Wheezy into an electrolyzer that drills down to the ice. He says you don't change your name when you get promoted, so it's still Wheezy. Senior Wheezy."],
   },
   'c2-elec-i': {
     lines: [
-      ['ines', '電解站運轉正常。冰變水、水變氧氣——這才叫工程。', 'Electrolyzer is online. Ice to water, water to oxygen. Now that is engineering.'],
-      ['teo', '阿喘也是工程。', 'Wheezy is engineering too.'],
-      ['ines', '阿喘是奇蹟。奇蹟不能量產。', 'Wheezy is a miracle. Miracles don\'t scale.'],
+      ['ines', '改建完成。鑽頭接到冰層，冰變水、水變氧氣——這才叫工程。', 'Rebuild done. Drill into the ice, ice to water, water to oxygen. Now that is engineering.'],
+      ['teo', '妳把牠的風扇拆掉了。', 'You took its fan off.'],
+      ['ines', '風扇還在，我只是讓它做更有意義的事。', "The fan is still there. I just gave it something meaningful to do."],
+      ['teo', '……牠還叫阿喘嗎？', '...Is it still called Wheezy?'],
+      ['ines', '叫什麼都行。奇蹟不能量產，但可以升級。', "Call it whatever you like. Miracles don't scale, but they can be upgraded."],
       ['juno', '我要把這句寫進日誌！', "I'm putting that in the log!"],
     ],
-    log: ['伊涅絲的電解站開工了。她說阿喘是奇蹟，奇蹟不能量產。提歐假裝沒聽到，但我看到他偷偷拍了拍阿喘。', "Ines's electrolyzer is running. She said Wheezy is a miracle, and miracles don't scale. Teo pretended not to hear, but I saw him pat Wheezy."],
+    log: ['伊涅絲把阿喘改建成電解站。提歐在旁邊看了一整個下午，一直問風扇會不會痛。伊涅絲說：奇蹟不能量產，但可以升級。', "Ines rebuilt Wheezy into an electrolyzer. Teo watched all afternoon, asking whether the fan was in pain. Ines said: miracles don't scale, but they can be upgraded."],
   },
   'c2-pop10': {
     lines: [

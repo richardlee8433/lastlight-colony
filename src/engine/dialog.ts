@@ -19,6 +19,8 @@ const MAX_ENTRIES = 300;
 const POP_STEP = 5;
 
 const seen = (s: GameState, id: string) => !!s.story.seen?.includes(id);
+/** 氧氣再生器已改建成電解站 */
+const isElec = (s: GameState) => built(s, 'o2_scrubber') && (s.b.o2_scrubber.form ?? 0) >= 1;
 /** 場景觸發條件（依序檢查；前一章的場景要在下一章開場前播完） */
 const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: boolean }[] = [
   { id: 'c1-open', when: (s) => s.stage === 1 && s.story.seenIntro >= 1 },
@@ -31,8 +33,8 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c1-end', when: (s) => s.stage >= 2, chapterEnd: true },
   { id: 'c2-open', when: (s) => s.stage === 2 && s.story.seenIntro >= 2 },
   { id: 'c2-ines', when: (s) => !!s.story.ines },
-  { id: 'c2-elec', when: (s) => built(s, 'electrolyzer') && !seen(s, 'c2-ines') && !seen(s, 'c2-elec-i') },
-  { id: 'c2-elec-i', when: (s) => built(s, 'electrolyzer') && seen(s, 'c2-ines') && !seen(s, 'c2-elec') },
+  { id: 'c2-elec', when: (s) => isElec(s) && !seen(s, 'c2-ines') && !seen(s, 'c2-elec-i') },
+  { id: 'c2-elec-i', when: (s) => isElec(s) && seen(s, 'c2-ines') && !seen(s, 'c2-elec') },
   { id: 'c2-pop10', when: (s) => s.stage >= 2 && s.pop >= 10 },
   { id: 'c2-assembly', when: (s) => built(s, 'assembly') && seen(s, 'c2-ines') },
   { id: 'c2-coaster', when: (s) => seen(s, 'c2-ines') && s.pop >= 11 },
