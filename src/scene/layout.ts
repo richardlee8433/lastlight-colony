@@ -39,23 +39,24 @@ export const HOME = { x: CENTER.x, y: CENTER.y + 30 };
 // ── 道路：從指揮艙前方繞開其他建築走到每棟建築門口（A* 網格尋路＋拉直），道路與工人走路共用 ──
 export type Pt = { x: number; y: number };
 export const ROAD_START: Pt = { x: CENTER.x, y: CENTER.y + 22 };
+const START = ROAD_START;
 const CELL = 6, GW = Math.ceil(MW / CELL), GH = Math.ceil(MH / CELL);
 /** 建築佔地（地圖座標）：寬 ±26，往上 34、往下 10；再外擴一點讓路不貼著牆 */
 function rectOf(s: Site, pad = 0) {
   if (s.hub) return { x0: s.x - 46 - pad, x1: s.x + 46 + pad, y0: s.y - 44 - pad, y1: s.y - 4 };
   return { x0: s.x - 26 - pad, x1: s.x + 26 + pad, y0: s.y - 34 - pad, y1: s.y + 10 + pad };
 }
-function blockedGrid(target: Site) {
+function blockedGrid(target: Site, start: Pt, skip?: Site) {
   const g = new Uint8Array(GW * GH);
   for (const s of SITES) {
-    if (s === target) continue;
+    if (s === target || s === skip) continue;
     const r = rectOf(s, 4);
     for (let gy = Math.max(0, Math.floor(r.y0 / CELL)); gy <= Math.min(GH - 1, Math.floor(r.y1 / CELL)); gy++)
       for (let gx = Math.max(0, Math.floor(r.x0 / CELL)); gx <= Math.min(GW - 1, Math.floor(r.x1 / CELL)); gx++) g[gy * GW + gx] = 1;
   }
   // 起點附近一律可走（指揮艙門口）
   for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++)
-    if (Math.hypot(gx * CELL + 3 - ROAD_START.x, gy * CELL + 3 - ROAD_START.y) < 14) g[gy * GW + gx] = 0;
+    if (Math.hypot(gx * CELL + 3 - start.x, gy * CELL + 3 - start.y) < 14) g[gy * GW + gx] = 0;
   return g;
 }
 function clearLine(g: Uint8Array, a: Pt, b: Pt) {
@@ -67,9 +68,9 @@ function clearLine(g: Uint8Array, a: Pt, b: Pt) {
   }
   return true;
 }
-function findRoute(target: Site): Pt[] {
+function findRoute(target: Site, ROAD_START: Pt = START, skip?: Site): Pt[] {
   const end: Pt = { x: target.x, y: target.y + 6 };
-  const g = blockedGrid(target);
+  const g = blockedGrid(target, ROAD_START, skip);
   if (clearLine(g, ROAD_START, end)) return [ROAD_START, end];
   const idx = (p: Pt) => Math.floor(p.y / CELL) * GW + Math.floor(p.x / CELL);
   const s0 = idx(ROAD_START), s1 = idx(end);
@@ -117,3 +118,13 @@ function findRoute(target: Site): Pt[] {
 }
 /** 每棟建築的道路折線（第一點是指揮艙門口，最後一點是建築門口） */
 export const ROUTES: Record<string, Pt[]> = Object.fromEntries(SITES.filter((s) => !s.hub).map((s) => [s.id, findRoute(s)]));
+
+/** 還沒有緊急營地時，殖民者以逃生艙為家：從逃生艙門口走到各建築的路線 */
+const podSite = SITES.find((s) => s.id === 'escape_pod')!;
+export const POD_DOOR: Pt = { x: podSite.x, y: podSite.y + 10 };
+const podRoutes: Record<string, Pt[]> = {};
+export function routeFromPod(id: string): Pt[] {
+  const site = SITES.find((s) => s.id === id);
+  if (!site || site === podSite) return [POD_DOOR];
+  return (podRoutes[id] ??= findRoute(site, POD_DOOR, podSite));
+}

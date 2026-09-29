@@ -15,7 +15,7 @@ const buildings: Record<string, B> = {
     cap_1: ['Bunk Beds', 'Capacity +1'], birth: ['Nursery Corner', 'Birth rate +10%'], cap_2: ['Extra Partitions', 'Capacity +2'] } },
   bio_harvester: { name: 'Bio Harvester', desc: 'Harvests edible surface life. More efficient than the Algae Vat, but only 2 workers per level.', nodes: {
     prod_25: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'] } },
-  cargo: { name: 'Cargo Container', desc: 'Each level raises storage for every resource by 100.', nodes: {
+  cargo: { name: 'Supply Depot', desc: 'Each level raises storage for every resource by 100.', nodes: {
     stack: ['Stacking Frames', '+50 more storage per level'] } },
   lounge: { name: 'Lounge Pod', desc: 'Morale +5 per level. Each stationed worker adds 10% food security.', nodes: {
     morale_5: ['Movie Night', 'Morale +5'], window_90: ['Shared Meals', 'Food security window becomes 90 s'] } },

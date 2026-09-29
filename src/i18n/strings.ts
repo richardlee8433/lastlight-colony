@@ -11,7 +11,7 @@ export const STRINGS: Record<string, [string, string]> = {
   colon: [': ', '：'],
   'ch.n': ['Chapter {n}', '第 {n} 章'],
   'app.noGL': ['This browser cannot start WebGL, so the game cannot be displayed. Please use desktop Chrome, Edge or Safari.', '這個瀏覽器無法啟動 WebGL，遊戲畫面無法顯示。請改用桌面版 Chrome、Edge 或 Safari。'],
-  'cost.over': ['Exceeds storage cap {n} — build or upgrade Cargo Containers first', '超過儲存上限 {n}，先蓋或升級貨櫃'],
+  'cost.over': ['Exceeds storage cap {n} — build or upgrade Supply Depots first', '超過儲存上限 {n}，先蓋或升級物資庫'],
 
   // ── 資源 ──
   'res.nutrient': ['Nutrients', '營養'],

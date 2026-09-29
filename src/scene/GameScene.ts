@@ -7,7 +7,7 @@ import {
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
-import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES } from './layout';
+import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod } from './layout';
 import { WARNING, defense } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 
@@ -51,6 +51,7 @@ export class GameScene {
   unsub: (() => void) | null = null;
   lastFocus = 0;
   lastRaidLook = 0;
+  walkCamp: boolean | null = null;
   raidMark: any = null;
 
   async init(host: HTMLElement) {
@@ -612,6 +613,13 @@ export class GameScene {
   // ── 工人：每棟建築依指派人數顯示走動的殖民者，閒置的在中央廣場附近閒晃 ──
   syncWorkers() {
     const s = game.s;
+    // 緊急營地建成的那一刻，大家的家從逃生艙搬到營地：重新產生工人
+    const camp = built(s, 'emergency_camp');
+    if (camp !== this.walkCamp) {
+      this.walkCamp = camp;
+      for (const w of this.walkers) w.destroy({ children: true });
+      this.walkers = [];
+    }
     const want = new Map<string, number>();
     for (const site of SITES) {
       const bid = this.siteBuilding(site);
@@ -635,9 +643,12 @@ export class GameScene {
     const w = (bid === 'security' ? createMarine(true) : createWorker(Math.min(6, game.s.stage))) as Walker;
     const j = () => Math.round((Math.random() - 0.5) * 18);
     const site = bid ? SITES.find((x) => x.id === bid || (x.id === 'command' && COMMAND_CHAIN.includes(bid)))! : null;
-    const home = built(game.s, 'emergency_camp') ? HOME : { x: 241 + 14, y: 210 };
+    // 還沒有緊急營地時以逃生艙為家，資源搬回逃生艙
+    const camp = built(game.s, 'emergency_camp');
+    const home = camp ? HOME : POD_DOOR;
     // 沿著道路走（中間的轉折點），不直線穿過其他建築
-    const via = site && ROUTES[site.id] ? ROUTES[site.id].slice(1, -1).map((p) => ({ x: p.x + (j() >> 2), y: p.y + (j() >> 3) })) : [];
+    const path = site ? (camp ? ROUTES[site.id] : routeFromPod(site.id)) : null;
+    const via = path ? path.slice(1, -1).map((p) => ({ x: p.x + (j() >> 2), y: p.y + (j() >> 3) })) : [];
     w.ai = bid
       ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + j(), y: site!.y + 6 } }
       : { bid: null, wait: Math.random() * 2, home: { x: home.x + j() * 2, y: home.y + (j() >> 1) } };

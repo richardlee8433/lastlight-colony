@@ -627,7 +627,7 @@ export const BUILDINGS = [
       k.crate(18, 4, 5);
     }
   }),
-  B('cargo', '貨櫃', 2, 'scrap', (k, t) => {
+  B('cargo', '物資庫', 2, 'scrap', (k, t) => {
     const { M } = k;
     if (t >= 2) container(k, -14, -9, 22, 0x4a8ac8);
     container(k, -12, 0, 24, 0xd0703a);
