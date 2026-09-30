@@ -21,6 +21,8 @@ const LIST = [
   { id: 'cargo', w: 66, foot: 0.1 },
   { id: 'lounge', w: 64, foot: 0.1 },
   { id: 'rock_cutter', w: 66, foot: 0.12 },
+  { id: 'assembly', w: 66, foot: 0.12 },
+  { id: 'central_hub', w: 92, foot: 0.1 },
 ];
 
 (async () => {

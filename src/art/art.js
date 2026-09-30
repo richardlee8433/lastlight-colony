@@ -1232,6 +1232,8 @@ const PAINTED_FX = {
   cargo: [[0.59, 0.42, 12, 0xffb040, 0.35]],
   lounge: [[0.28, 0.6, 26, 0xffc060, 0.4], [0.74, 0.6, 26, 0xffc060, 0.4]],
   rock_cutter: [[0.55, 0.45, 18, 0xffa040, 0.35], [0.8, 0.5, 14, 0xffa040, 0.3]],
+  assembly: [[0.5, 0.55, 26, 0xffb040, 0.45], [0.92, 0.6, 12, 0xff9a3a, 0.35]],
+  central_hub: [[0.49, 0.45, 26, 0x6ac8ff, 0.4], [0.49, 0.72, 16, 0xffb040, 0.4]],
 };
 async function loadPainted() {
   const { res, buildings } = paintedMeta;
