@@ -34,7 +34,7 @@ v0.63 上線了。這次有兩個主題：**殖民地裡的建築全部重新手
 
 ## 🔜 下一版預告
 
-第 5～6 章的建築還在繪製中。在那之前，玩到後期會看到一些舊款建築混在裡面，請多包涵，下一版就會補齊！
+第 5～6 章的建築還沒換上新圖。我還在想怎麼讓後面的故事更有趣，所以這些建築的功能和風格都還沒定案。玩到後期會先看到舊款建築，敬請期待！
 
 ---
 
@@ -78,7 +78,7 @@ Colonists and marines are now drawn at **twice the detail**. You can see helmet 
 
 ## 🔜 Coming next
 
-The chapter 5–6 buildings are still being painted. Until then you'll see a few old-style buildings late in the game. They'll be replaced in the next update!
+The chapter 5–6 buildings haven't been repainted yet. I'm still working out how to make the later story more fun, so what these buildings do and how they look isn't settled yet. You'll see the old-style buildings late in the game for now. Stay tuned!
 
 ---
 
