@@ -24,7 +24,7 @@ export class GameScene {
   lightL = new Container();
   hud = new Container();
   fxL = new Container();
-  ground: Sprite | null = null;
+  ground: (Container & { roads?: Sprite | null }) | null = null;
   overlay = new Graphics();
   ambient: any = null;
   props: any[] = [];
@@ -200,8 +200,10 @@ export class GameScene {
     const gStage = Math.min(6, s.stage);
     const selected = useGame.getState().selected;
     // 地面（道路、地基、鋪面）只跟著已蓋好的建築與它們的鋪面等級變：蓋好一棟或升級時才重畫
-    const gKey = `${gStage}|${this.mapSites().map((x) => `${x.id}:${x.tier}`).join(',')}`;
+    const gKey = `${gStage}|${this.groundRes()}|${this.mapSites().map((x) => `${x.id}:${x.tier}`).join(',')}`;
     if (gKey !== this.groundKey) { this.groundKey = gKey; this.buildMap(gStage); }
+    // 地面解析度剛好等於縮放倍數時用最近鄰（最銳利），否則平滑取樣；縮放時只換取樣方式，不用重畫
+    if (this.ground?.roads) this.ground.roads.texture.source.scaleMode = this.groundRes() === this.Z ? 'nearest' : 'linear';
     for (const site of SITES) {
       let bid = this.siteBuilding(site);
       const lvl = bid ? s.b[bid].level : 0;
@@ -236,6 +238,8 @@ export class GameScene {
   }
 
   groundKey = '';
+  /** 地面解析度：跟著畫面縮放，最多 3 倍（再高的話記憶體和重畫時間划不來） */
+  groundRes() { return clampN(this.Z, 2, 3); }
   /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬踏板、2 石磚）：
    *  第 3 章起中央附近或 Lv3 以上鋪金屬，第 6 章起中央附近或 Lv5 以上鋪石磚；殖民地由中心往外慢慢變「文明」 */
   mapSites() {
@@ -258,7 +262,9 @@ export class GameScene {
     this.groundStage = stage; this.groundHub = hubNow;
     for (const p of this.props) { p.lights.destroy({ children: true }); p.destroy({ children: true }); }
     this.props = [];
-    this.ground?.destroy();
+    // 道路層的貼圖每次重畫都是新的，要一起釋放；手繪底圖共用，不釋放
+    this.ground?.roads?.destroy(true);
+    this.ground?.destroy({ children: true });
     this.ambient?.destroy({ children: true });
     const s = game.s;
     const sites = this.mapSites();
@@ -269,7 +275,7 @@ export class GameScene {
     void s;
     // 手繪底圖：裝飾物一律用第 1 章的配色（不再每章換一種風貌）
     const propStage = hasTerrain() ? 1 : stage;
-    const ground: Sprite = createGround(stage, plan);
+    const ground = createGround(stage, plan, this.groundRes());
     ground.eventMode = 'none';
     this.ground = ground;
     this.world.addChildAt(ground, 0);

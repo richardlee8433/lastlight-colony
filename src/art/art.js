@@ -1575,7 +1575,7 @@ export function setCharZoom(z) {
   }
 }
 /** 手繪地形底圖（整顆星球同一種風貌，不隨章節換色；變化只在殖民地的道路與地基上） */
-const TERRAIN = { img: null };
+const TERRAIN = { img: null, tex: null };
 /** 小人 Container 的共用部分：依移動方向自動轉向（上／下／側面），側面往左時翻轉 */
 function spriteCharacter(sh, frames) {
   const c = new Container();
@@ -1930,39 +1930,66 @@ export function createProp(kind, stage, seed = 1) {
   c.info = { kind, stage };
   return c;
 }
-export function createGround(stage, plan) {
-  if (TERRAIN.img) return new Sprite(pixelTexture(paintTerrain(stage, plan)));
-  return new Sprite(pixelTexture(renderGround(stage, plan)));
+/** 地面 = 手繪底圖（固定，只載入一次）＋ 道路與地基層（蓋好建築時重畫）。
+ *  res：道路層的解析度倍數（相對於地圖像素），畫得比地圖細、顯示時縮回去，邊緣和鋪面紋路比較細緻。
+ *  回傳的 Container 上有 roads（道路層 Sprite），縮放時可以切換它的取樣方式。 */
+export function createGround(stage, plan, res = 2) {
+  if (!TERRAIN.img) { const s = new Sprite(pixelTexture(renderGround(stage, plan))); s.roads = null; return s; }
+  TERRAIN.tex ??= Texture.from(TERRAIN.img);
+  TERRAIN.tex.source.scaleMode = 'linear';
+  const c = new Container();
+  const base = new Sprite(TERRAIN.tex); base.width = plan.MW; base.height = plan.MH;
+  c.addChild(base);
+  const r = paintRoads(stage, plan, res);
+  c.roads = null;
+  if (r) {
+    const t = Texture.from(r.canvas); t.source.scaleMode = 'linear';
+    const s = new Sprite(t); s.scale.set(1 / res); s.position.set(r.x, r.y);
+    c.addChild(s); c.roads = s;
+  }
+  return c;
 }
-/** 手繪底圖 ＋ 殖民地的道路與建築地基。每條路、每塊地基依各自的鋪面等級（plan.tier）：
- *  0 踩出來的沙路、1 金屬踏板、2 石磚。 */
-function paintTerrain(stage, plan) {
+/** 道路與建築地基層（透明底）。每條路、每塊地基依各自的鋪面等級（plan.tier）：0 踩出來的沙路、1 金屬踏板、2 石磚。
+ *  只畫有道路的範圍；距離場用雙線性取樣，邊緣平滑；紋路尺寸以地圖像素為單位。 */
+function paintRoads(stage, plan, R) {
   const W = plan.MW, H = plan.MH, field = plan.field;
-  const cv = makeCanvas(W, H), ctx = cv.getContext('2d');
-  ctx.drawImage(TERRAIN.img, 0, 0, W, H);
-  const img = ctx.getImageData(0, 0, W, H), d = img.data;
+  // 道路範圍（地圖像素）
+  let bx0 = W, by0 = H, bx1 = -1, by1 = -1;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (field[y * W + x] < 4) { if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y; }
+  if (bx1 < 0) return null;
+  const CW = (bx1 - bx0 + 1) * R, CH = (by1 - by0 + 1) * R;
+  const cv = makeCanvas(CW, CH), ctx = cv.getContext('2d');
+  const img = ctx.createImageData(CW, CH), d = img.data;
   const SAND = [0x7a3a26, 0x94482c, 0xa85a36, 0xbb6e44], PLATE = [0x4a4e58, 0x6a707c, 0x868c98, 0xa4aab4], TILE = [0x6e5a4a, 0xa89078, 0xc4ac90, 0xd8c4a8];
   const nA = noise2(plan.seed + 1);
-  const put = (i, c, a = 1) => { d[i] = d[i] * (1 - a) + ((c >> 16) & 255) * a; d[i + 1] = d[i + 1] * (1 - a) + ((c >> 8) & 255) * a; d[i + 2] = d[i + 2] * (1 - a) + (c & 255) * a; };
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const v = field[y * W + x];
+  const put = (i, c, a) => { d[i] = (c >> 16) & 255; d[i + 1] = (c >> 8) & 255; d[i + 2] = c & 255; d[i + 3] = Math.round(a * 255); };
+  const F = (x, y) => field[clamp(y, 0, H - 1) * W + clamp(x, 0, W - 1)];
+  const seam = 1 / R;   // 接縫寬度：一個像素
+  // 只處理道路和地基附近的格子（距離場每格最多變化約 1.5，離得遠的格子不可能被蓋到），每格再細分成 R×R 個像素
+  for (let gy = by0; gy <= by1; gy++) for (let gx = bx0; gx <= bx1; gx++) if (field[gy * W + gx] < 4) for (let sy = 0; sy < R; sy++) for (let sx = 0; sx < R; sx++) {
+    const X = gx * R + sx, Y = gy * R + sy;
+    const mx = (X + 0.5) / R - 0.5, my = (Y + 0.5) / R - 0.5;
+    const x0 = Math.floor(mx), y0 = Math.floor(my), fx = mx - x0, fy = my - y0;
+    const v = (F(x0, y0) * (1 - fx) + F(x0 + 1, y0) * fx) * (1 - fy) + (F(x0, y0 + 1) * (1 - fx) + F(x0 + 1, y0 + 1) * fx) * fy;
     if (v >= 1.5) continue;
-    const i = (y * W + x) * 4, bz = bayer(x, y), edge = v > -1.3, tr = plan.tier ? plan.tier[y * W + x] : stage <= 2 ? 0 : stage <= 5 ? 1 : 2;
+    const cov = clamp((1.5 - v) * R, 0, 1);   // 邊緣反鋸齒
+    const i = ((Y - by0 * R) * CW + (X - bx0 * R)) * 4, edge = v > -1.3, tr = plan.tier ? plan.tier[clamp(Math.round(my), 0, H - 1) * W + clamp(Math.round(mx), 0, W - 1)] : stage <= 2 ? 0 : stage <= 5 ? 1 : 2;
     if (tr === 0) {
       // 踩平的沙路：原本的沙地稍微壓暗、打亂顆粒
-      const n = nA(x / 5, y / 5) + (bz - 0.5) * 0.4;
-      put(i, SAND[edge ? 0 : n < 0.4 ? 1 : n < 0.7 ? 2 : 3], edge ? 0.35 : 0.55);
+      const n = nA(mx / 5, my / 5) + (bayer(X, Y) - 0.5) * 0.25;
+      put(i, SAND[edge ? 0 : n < 0.4 ? 1 : n < 0.7 ? 2 : 3], (edge ? 0.35 : 0.55) * cov);
     } else if (tr === 1) {
-      // 金屬踏板：6×4 一塊，接縫較暗
-      const seam = x % 6 === 0 || y % 4 === 0;
-      put(i, edge ? PLATE[0] : seam ? PLATE[1] : PLATE[(((x / 6) | 0) + ((y / 4) | 0)) % 3 ? 2 : 3], edge ? 0.6 : 1);
+      // 金屬踏板：6×4 一塊，接縫較暗，接縫下方一條亮邊
+      const px = mx - Math.floor(mx / 6) * 6, py = my - Math.floor(my / 4) * 4;
+      const c = edge ? PLATE[0] : px < seam || py < seam ? PLATE[1] : py < seam * 2 ? PLATE[3] : PLATE[((Math.floor(mx / 6) + Math.floor(my / 4)) % 3) ? 2 : 3];
+      put(i, c, (edge ? 0.6 : 1) * cov);
     } else {
-      const row = Math.floor(y / 5), tx = x + (row % 2) * 4;
-      put(i, edge ? TILE[0] : y % 5 === 0 || tx % 8 === 0 ? TILE[1] : TILE[nA(Math.floor(tx / 8), row) > 0.6 ? 3 : 2], edge ? 0.6 : 1);
+      const row = Math.floor(my / 5), tx = mx + (row % 2) * 4, px = tx - Math.floor(tx / 8) * 8, py = my - row * 5;
+      put(i, edge ? TILE[0] : py < seam || px < seam ? TILE[1] : TILE[nA(Math.floor(tx / 8), row) > 0.6 ? 3 : 2], (edge ? 0.6 : 1) * cov);
     }
   }
   ctx.putImageData(img, 0, 0);
-  return cv;
+  return { canvas: cv, x: bx0, y: by0 };
 }
 
 const workerFrames = new Map();

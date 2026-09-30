@@ -104,16 +104,15 @@ const MIN_BLOB = 6 * RES * RES;   // 小於這個像素數的零碎色塊（被�
     fs.writeFileSync(path.join(root, 'src/assets/sprites', sh.out), Buffer.from(url.split(',')[1], 'base64'));
     console.log('wrote', sh.out);
   }
-  // 地形底圖：縮放並裁切成地圖大小（1000×720，與 src/scene/layout.ts 的 MW×MH 一致）
+  // 地形底圖：裁切成地圖的長寬比（1000×720，與 src/scene/layout.ts 的 MW×MH 一致），保留原圖解析度（遊戲裡依 GROUND_RES 放大）
   {
     const src = 'data:image/webp;base64,' + fs.readFileSync(path.join(root, 'art-src/terrain.webp')).toString('base64');
     const url = await p.evaluate(async ({ src, W, H }) => {
       const img = new Image(); img.src = src; await img.decode();
-      const k = Math.max(W / img.width, H / img.height), w = img.width * k, h = img.height * k;
-      const c = document.createElement('canvas'); c.width = W; c.height = H;
-      const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
-      g.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
-      return c.toDataURL('image/webp', 0.9);
+      const k = Math.min(img.width / W, img.height / H), cw = Math.round(W * k), ch = Math.round(H * k);
+      const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+      c.getContext('2d').drawImage(img, (img.width - cw) / 2, (img.height - ch) / 2, cw, ch, 0, 0, cw, ch);
+      return c.toDataURL('image/webp', 0.92);
     }, { src, W: 1000, H: 720 });
     fs.writeFileSync(path.join(root, 'src/assets/terrain.webp'), Buffer.from(url.split(',')[1], 'base64'));
     console.log('wrote terrain.webp');
