@@ -23,6 +23,7 @@ const LIST = [
   { id: 'rock_cutter', w: 66, foot: 0.12 },
   { id: 'assembly', w: 66, foot: 0.12 },
   { id: 'central_hub', w: 92, foot: 0.1 },
+  { id: 'metal_mine', w: 66, foot: 0.08 },
 ];
 
 (async () => {
