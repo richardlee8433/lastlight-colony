@@ -24,6 +24,9 @@ const LIST = [
   { id: 'assembly', w: 66, foot: 0.12 },
   { id: 'central_hub', w: 92, foot: 0.1 },
   { id: 'metal_mine', w: 66, foot: 0.08 },
+  { id: 'expedition', w: 68, foot: 0.1 },
+  { id: 'rail_line', w: 80, foot: 0.12 },
+  { id: 'forge', w: 64, foot: 0.1 },
 ];
 
 (async () => {
