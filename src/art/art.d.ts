@@ -32,5 +32,6 @@ export const createAlien: any;
 export const renderMarine: any;
 export const createMarine: any;
 export function loadSprites(): Promise<void>;
+export function paintedCount(): number;
 export const CHAR_SCALE: number;
 export function hasTerrain(): boolean;

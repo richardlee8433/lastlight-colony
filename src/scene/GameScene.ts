@@ -323,8 +323,8 @@ export class GameScene {
       sign.lights.destroy({ children: true });
       v.addChild(sign);
     }
-    const w = b.art.canvas.width;
-    v.hitArea = new Rectangle(-b.art.ax, -b.art.ay, w, b.art.canvas.height + 8);
+    const w = b.art.w;
+    v.hitArea = new Rectangle(-b.art.ax, -b.art.ay, w, b.art.h + 8);
     v.eventMode = 'static'; v.cursor = 'pointer';
     v.on('pointerdown', (e) => {
       e.stopPropagation();
@@ -877,7 +877,7 @@ export class GameScene {
       if (b) {
         b.update(this.T, dt);
         v.squash *= Math.pow(0.0008, dt);
-        b.sprite.scale.set(1 + 0.08 * v.squash, 1 - 0.1 * v.squash);
+        b.sprite.scale.set(b.sprite.base * (1 + 0.08 * v.squash), b.sprite.base * (1 - 0.1 * v.squash));
         b.flashSprite.scale.copyFrom(b.sprite.scale);
         const on = !!v.bid && built(s, v.bid) && DEF[v.bid].clickable && buffActive(s, v.bid);
         v.ring.visible = on;

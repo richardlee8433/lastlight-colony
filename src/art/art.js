@@ -22,6 +22,10 @@ import { Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import colonistSheetURL from '../assets/sprites/colonist.png';
 import marineSheetURL from '../assets/sprites/marine.png';
 import terrainURL from '../assets/terrain.webp';
+import paintedMeta from '../assets/buildings/meta.json';
+
+// 手繪建築圖（scripts/process-buildings.cjs 產生）：res 倍解析度，遊戲裡縮回地圖大小，細節比小人和地面細
+const PAINTED_URLS = import.meta.glob('../assets/buildings/*.webp', { eager: true, query: '?url', import: 'default' });
 
 // ───────────────────────────── 工具 ─────────────────────────────
 
@@ -1201,15 +1205,43 @@ const buildCache = new Map();
 /** 建築像素圖。回傳 { canvas, ax, ay, glows, beacons, smokes }（ax/ay＝原點在 canvas 中的位置）。 */
 export function renderBuilding(id, level = 1) {
   const tier = tierOf(level), key = id + ':' + tier;
+  if (PAINTED.has(id)) return paintedArt(id);
   if (buildCache.has(key)) return buildCache.get(key);
   const def = BUILDING_MAP[id];
   if (!def) throw new Error(`未知建築：${id}`);
   const k = makeKit(def.stage, RES[def.res].color, tier);
   def.draw(k, tier);
   const art = k.finish();
+  art.w = art.canvas.width; art.h = art.canvas.height; art.res = 1;
   buildCache.set(key, art);
   return art;
 }
+
+// ── 手繪建築 ──
+// 目前只有拼裝期（第 1～2 章）的圖，各等級共用；之後加上藍圖期、殖民地期時依等級換圖
+const PAINTED = new Map();
+// 光暈位置用圖上的比例（0～1）：[x, y, 半徑, 顏色, 強度]
+const PAINTED_FX = {
+  escape_pod: [[0.41, 0.2, 16, 0xffb040, 0.55]],
+  o2_scrubber: [[0.6, 0.4, 26, 0x5ab0ff, 0.3]],
+  electrolyzer: [[0.66, 0.55, 30, 0x5ab0ff, 0.35]],
+  algae_tank: [[0.5, 0.55, 42, 0x6fe38a, 0.4]],
+  bio_harvester: [[0.42, 0.55, 40, 0x6fe38a, 0.4], [0.8, 0.5, 24, 0xb8ff6a, 0.35]],
+};
+async function loadPainted() {
+  const { res, buildings } = paintedMeta;
+  await Promise.all(Object.entries(buildings).map(async ([id, m]) => {
+    const url = PAINTED_URLS[`../assets/buildings/${id}.webp`];
+    if (!url) return;
+    const img = new Image(); img.src = url; await img.decode();
+    const cv = makeCanvas(img.width, img.height); cv.getContext('2d').drawImage(img, 0, 0);
+    const glows = (PAINTED_FX[id] ?? []).map(([fx, fy, r, c, a]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, r, c, a }));
+    PAINTED.set(id, { canvas: cv, ax: m.ax, ay: m.ay, w: m.w, h: m.h, res, glows, beacons: [], smokes: [] });
+  }));
+}
+const paintedArt = (id) => PAINTED.get(id);
+/** 手繪建築載入後會換掉程式畫的圖：介面縮圖的快取要跟著換 */
+export const paintedCount = () => PAINTED.size;
 
 // ───────────────────────────── 道具（樹、岩石、燈…） ─────────────────────────────
 
@@ -1503,6 +1535,7 @@ export async function loadSprites() {
     FRAMES.set(key, frames);
   }));
   const t = new Image(); t.src = terrainURL; await t.decode(); TERRAIN.img = t;
+  await loadPainted();
 }
 /** 手繪地形底圖（整顆星球同一種風貌，不隨章節換色；變化只在殖民地的道路與地基上） */
 const TERRAIN = { img: null };
@@ -1733,13 +1766,15 @@ export function renderThumb(id, level, scale = 3) {
   }
   const ground = paintGround(stage, TW, TH, field, 17 + stage, false);
   const art = renderBuilding(id, level);
-  const fit = Math.min(1, (TW - 2) / art.canvas.width, (GY - 1) / art.ay);
+  const fit = Math.min(1, (TW - 2) / art.w, (GY - 1) / art.ay);
   const s = fit >= 1 ? scale : Math.max(1, Math.floor(scale * fit * 2) / 2);
   const out = makeCanvas(TW * scale, TH * scale), g = out.getContext('2d');
   g.imageSmoothingEnabled = false;
   g.drawImage(ground, 0, 0, TW * scale, TH * scale);
   const ox = GX * scale - art.ax * s, oy = GY * scale - art.ay * s;
-  g.drawImage(art.canvas, ox, oy, art.canvas.width * s, art.canvas.height * s);
+  if (art.res > 1) { g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; }
+  g.drawImage(art.canvas, ox, oy, art.w * s, art.h * s);
+  g.imageSmoothingEnabled = false;
   g.globalCompositeOperation = 'lighter';
   for (const gl of [...art.glows, ...art.beacons.map((b) => ({ ...b, r: 8, a: 0.6 }))]) {
     const cx = ox + (art.ax + gl.x) * s, cy = oy + (art.ay + gl.y) * s, r = gl.r * s * 0.5;
@@ -1759,6 +1794,14 @@ export function pixelTexture(canvas) {
   const t = Texture.from(canvas);
   t.source.scaleMode = 'nearest';
   return t;
+}
+/** 高解析度的手繪圖：縮小顯示，用平滑取樣 */
+function smoothSprite(art) {
+  const t = Texture.from(art.canvas);
+  t.source.scaleMode = 'linear';
+  const s = new Sprite(t);
+  s.anchor.set(art.ax / art.w, art.ay / art.h);
+  return s;
 }
 export function createPixelSprite(canvas, ax = 0, ay = 0) {
   const s = new Sprite(pixelTexture(canvas));
@@ -1793,9 +1836,11 @@ function glowSprite(x, y, r, c, a) {
 
 function fromArt(art) {
   const c = new Container();
-  const spr = createPixelSprite(art.canvas, art.ax, art.ay);
+  const res = art.res ?? 1;
+  const spr = res > 1 ? smoothSprite(art) : createPixelSprite(art.canvas, art.ax, art.ay);
+  spr.base = 1 / res; spr.scale.set(spr.base);
   const flash = new Sprite(spr.texture);
-  flash.anchor.copyFrom(spr.anchor); flash.blendMode = 'add'; flash.alpha = 0;
+  flash.anchor.copyFrom(spr.anchor); flash.scale.copyFrom(spr.scale); flash.blendMode = 'add'; flash.alpha = 0;
   const smokeL = new Container();
   c.addChild(spr, flash, smokeL);
   const lights = new Container();
