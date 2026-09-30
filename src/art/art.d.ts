@@ -34,4 +34,5 @@ export const createMarine: any;
 export function loadSprites(): Promise<void>;
 export function paintedCount(): number;
 export const CHAR_SCALE: number;
+export function setCharZoom(z: number): void;
 export function hasTerrain(): boolean;

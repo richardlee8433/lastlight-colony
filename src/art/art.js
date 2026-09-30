@@ -1519,9 +1519,10 @@ export function renderGroundPatch(stage, W, H, seed = 3) {
 //   殖民者 16×16：idle 下/上/側（0–2）、walk（3–5）、carry 搬貨箱（6–8）、work 工作（9–11）
 //   陸戰隊 22×22：idle（0–2）、walk（3–5）、shoot 射擊（6–8）、down 倒地（9）
 // 側面圖面向右，往左走時水平翻轉。腳底在格子底部往上 2px。載入前用下面的程序化小人代替。
+// res：sprite sheet 的解析度倍數（scripts/process-sprites.cjs 的 RES）。圖是 2 倍細節，畫的時候縮回一半，在地圖上的大小不變
 const SHEETS = {
-  colonist: { url: colonistSheetURL, cell: 16, rows: 12 },
-  marine: { url: marineSheetURL, cell: 22, rows: 10 },
+  colonist: { url: colonistSheetURL, cell: 32, rows: 12, res: 2 },
+  marine: { url: marineSheetURL, cell: 44, rows: 10, res: 2 },
 };
 /** 切好的影格（放在 Map：寫在物件字面值裡的 null 會被打包工具當成常數摺疊掉） */
 const FRAMES = new Map();
@@ -1540,9 +1541,21 @@ export async function loadSprites() {
       frames.push(row);
     }
     FRAMES.set(key, frames);
+    SHEET_SRC.set(key, base.source);
   }));
+  setCharZoom(CHAR_ZOOM);
   const t = new Image(); t.src = terrainURL; await t.decode(); TERRAIN.img = t;
   await loadPainted();
+}
+const SHEET_SRC = new Map();
+let CHAR_ZOOM = 3;
+/** 畫面縮放改變時呼叫：小人縮放後剛好是整數倍時用最近鄰取樣（像素銳利），不是整數倍時改平滑取樣，避免像素寬窄不一、走路時閃爍 */
+export function setCharZoom(z) {
+  CHAR_ZOOM = z;
+  for (const [key, src] of SHEET_SRC) {
+    const k = (z * CHAR_SCALE) / SHEETS[key].res;
+    src.scaleMode = Math.abs(k - Math.round(k)) < 1e-6 ? 'nearest' : 'linear';
+  }
 }
 /** 手繪地形底圖（整顆星球同一種風貌，不隨章節換色；變化只在殖民地的道路與地基上） */
 const TERRAIN = { img: null };
@@ -1550,8 +1563,9 @@ const TERRAIN = { img: null };
 function spriteCharacter(sh, frames) {
   const c = new Container();
   const s = new Sprite(frames[0][0]);
-  s.anchor.set(0.5, (sh.cell - 2) / sh.cell);
-  s.scale.set(CHAR_SCALE);
+  const k = CHAR_SCALE / sh.res;
+  s.anchor.set(0.5, (sh.cell - 2 * sh.res) / sh.cell);
+  s.scale.set(k);
   c.addChild(s);
   const st = { facing: 'down', flip: false, moving: false, lx: null, ly: null, vx: 0, vy: 0 };
   c.sprite = s; c.st = st;
@@ -1578,7 +1592,7 @@ function spriteCharacter(sh, frames) {
       }
     }
     st.lx = c.x; st.ly = c.y;
-    s.scale.x = CHAR_SCALE * (st.facing === 'side' && st.flip ? -1 : 1);
+    s.scale.x = k * (st.facing === 'side' && st.flip ? -1 : 1);
     return FACING[st.facing];
   };
   return c;

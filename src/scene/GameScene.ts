@@ -2,7 +2,7 @@
 import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites, hasTerrain,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites, hasTerrain, setCharZoom,
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
@@ -76,6 +76,7 @@ export class GameScene {
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
     this.Z = this.zoomFor(this.app.screen.width);
+    setCharZoom(this.Z);
     this.fx = createFx(this.fxL, this.Z);
     this.bindInput();
     this.sync();
@@ -109,6 +110,7 @@ export class GameScene {
   }
   /** 縮放改變時重建特效器，並清掉舊特效（不然播到一半的「+1 岩材」會永遠留在畫面上） */
   resetFx(z: number) {
+    setCharZoom(z);
     this.fx?.clear();
     this.fx = createFx(this.fxL, z);
   }

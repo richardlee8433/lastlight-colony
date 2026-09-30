@@ -6,13 +6,15 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 
+// 原圖約每 5px 是一個美術像素（角色約 27 個美術像素高）。RES＝輸出解析度：每 10/RES px 取一點。
+// RES 2 保留全部細節（角色約 27px 高），遊戲裡縮成一半顯示，在地圖上還是約 14 高，跟手繪建築的細緻度比較一致
+const RES = 2;
 const SHEETS = [
-  { src: 'colonist.webp', out: 'colonist.png', rows: 12, cell: 16 },
-  { src: 'marine.webp', out: 'marine.png', rows: 10, cell: 22 },
+  { src: 'colonist.webp', out: 'colonist.png', rows: 12, cell: 16 * RES },
+  { src: 'marine.webp', out: 'marine.png', rows: 10, cell: 22 * RES },
 ];
-// 原圖約每 5px 是一個美術像素（角色約 27px 高）；縮成每 10px 取一點（剛好 2×2 個美術像素），角色約 14px 高，跟建築的比例比較合適
-const SCALE = 10;
-const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的雷射光、碎點）去掉
+const SCALE = 10 / RES;
+const MIN_BLOB = 6 * RES * RES;   // 小於這個像素數的零碎色塊（被切斷的雷射光、碎點）去掉
 
 (async () => {
   const root = path.join(__dirname, '..');
@@ -20,7 +22,7 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
   const p = await b.newPage();
   for (const sh of SHEETS) {
     const src = 'data:image/webp;base64,' + fs.readFileSync(path.join(root, 'art-src/sprites', sh.src)).toString('base64');
-    const url = await p.evaluate(async ({ src, rows, cell, SCALE, MIN_BLOB }) => {
+    const url = await p.evaluate(async ({ src, rows, cell, SCALE, MIN_BLOB, RES }) => {
       const img = new Image(); img.src = src; await img.decode();
       const W = img.width, H = img.height;
       const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -64,7 +66,9 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
         const px = new Array(cw * ch).fill(null);
         for (let j = 0; j < ch; j++) for (let i = 0; i < cw; i++) {
           const R = [], G = [], B = [], A = [];
-          for (let dy = 2; dy <= 7; dy++) for (let dx = 2; dx <= 7; dx++) {
+          // 取每格中央的區塊（避開格線邊緣的模糊）
+          const m0 = Math.round(SCALE * 0.2), m1 = SCALE - 1 - m0;
+          for (let dy = m0; dy <= m1; dy++) for (let dx = m0; dx <= m1; dx++) {
             const x = bx0 + i * SCALE + dx, y = by0 + j * SCALE + dy; if (x > bx1 || y > by1) continue;
             const q = (y * W + x) * 4; R.push(d[q]); G.push(d[q + 1]); B.push(d[q + 2]); A.push(d[q + 3]);
           }
@@ -85,7 +89,7 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
           if (blob.length < MIN_BLOB) for (const q of blob) px[q] = null;
         }
         // 頭盔中心放在格子中央、腳底對齊（格子底部往上 2px）
-        const ox = Math.floor(cell / 2) - Math.round((hx - bx0) / SCALE), oy = cell - 2 - ch;
+        const ox = Math.floor(cell / 2) - Math.round((hx - bx0) / SCALE), oy = cell - 2 * RES - ch;
         for (let j = 0; j < ch; j++) for (let i = 0; i < cw; i++) {
           const v = px[j * cw + i]; const X = ox + i, Y = oy + j;
           if (!v || X < 0 || Y < 0 || X >= cell || Y >= cell) continue;
@@ -96,7 +100,7 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
       }
       og.putImageData(od, 0, 0);
       return out.toDataURL('image/png');
-    }, { src, rows: sh.rows, cell: sh.cell, SCALE, MIN_BLOB });
+    }, { src, rows: sh.rows, cell: sh.cell, SCALE, MIN_BLOB, RES });
     fs.writeFileSync(path.join(root, 'src/assets/sprites', sh.out), Buffer.from(url.split(',')[1], 'base64'));
     console.log('wrote', sh.out);
   }
