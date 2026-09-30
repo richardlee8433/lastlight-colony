@@ -16,6 +16,11 @@ const LIST = [
   { id: 'electrolyzer', w: 70, foot: 0.1 },
   { id: 'algae_tank', w: 60, foot: 0.08 },
   { id: 'bio_harvester', w: 72, foot: 0.08 },
+  { id: 'emergency_camp', w: 90, foot: 0.1 },
+  { id: 'hab_pod', w: 60, foot: 0.1 },
+  { id: 'cargo', w: 66, foot: 0.1 },
+  { id: 'lounge', w: 64, foot: 0.1 },
+  { id: 'rock_cutter', w: 66, foot: 0.12 },
 ];
 
 (async () => {

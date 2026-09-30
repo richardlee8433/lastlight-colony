@@ -1227,6 +1227,11 @@ const PAINTED_FX = {
   electrolyzer: [[0.66, 0.55, 30, 0x5ab0ff, 0.35]],
   algae_tank: [[0.5, 0.55, 42, 0x6fe38a, 0.4]],
   bio_harvester: [[0.42, 0.55, 40, 0x6fe38a, 0.4], [0.8, 0.5, 24, 0xb8ff6a, 0.35]],
+  emergency_camp: [[0.52, 0.8, 22, 0xffb040, 0.4], [0.8, 0.8, 18, 0xff9a3a, 0.4], [0.2, 0.62, 14, 0xffc060, 0.35], [0.83, 0.62, 14, 0xffc060, 0.35]],
+  hab_pod: [[0.33, 0.58, 16, 0xffc060, 0.4], [0.75, 0.58, 16, 0xffc060, 0.4]],
+  cargo: [[0.59, 0.42, 12, 0xffb040, 0.35]],
+  lounge: [[0.28, 0.6, 26, 0xffc060, 0.4], [0.74, 0.6, 26, 0xffc060, 0.4]],
+  rock_cutter: [[0.55, 0.45, 18, 0xffa040, 0.35], [0.8, 0.5, 14, 0xffa040, 0.3]],
 };
 async function loadPainted() {
   const { res, buildings } = paintedMeta;
