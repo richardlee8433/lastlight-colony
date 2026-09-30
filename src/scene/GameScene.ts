@@ -2,7 +2,7 @@
 import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites,
 } from '../art/art.js';
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
@@ -13,7 +13,7 @@ import { bName, lang, resName, t } from '../i18n';
 import { sfx } from '../audio/audio';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
-type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; update: any };
+type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
@@ -66,6 +66,8 @@ export class GameScene {
       autoDensity: true, roundPixels: true, preference: 'webgl',
     });
     host.appendChild(this.app.canvas);
+    // 手繪小人的 sprite sheet；載入失敗就用程序化小人
+    await loadSprites().catch(() => {});
     this.obj.sortableChildren = true;
     this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
     this.app.stage.addChild(this.world, this.hud, this.fxL);
@@ -796,17 +798,23 @@ export class GameScene {
   moveWalker(w: Walker, dt: number) {
     const a = w.ai;
     const speed = built(game.s, 'rail_line') ? 24 : 16;
-    if (a.wait > 0) { a.wait -= dt; w.setMoving(false); }
+    if (a.wait > 0) {
+      a.wait -= dt; w.setMoving(false); w.setWork?.(!!a.working);
+      // 在建築旁工作完，扛著產出走回家
+      if (a.wait <= 0 && a.working) {
+        a.working = false; w.setWork?.(false);
+        const d = DEF[a.bid];
+        const res = d.produce?.res ?? d.recipe?.out;
+        w.setCarry(res ? RES[res].color : null);
+      }
+    }
     else {
       const dx = a.target.x - w.px, dy = a.target.y - w.py, d = Math.hypot(dx, dy);
       if (d < 1 && a.queue?.length) a.target = a.queue.shift();
       else if (d < 1) {
         if (!a.bid) { a.wait = 1 + Math.random() * 3; a.target = { x: a.home.x + (Math.random() - 0.5) * 50, y: a.home.y + (Math.random() - 0.5) * 12 }; }
         else if (a.target === a.site) {
-          a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 1.2 + Math.random();
-          const d = DEF[a.bid];
-          const res = d.produce?.res ?? d.recipe?.out;
-          w.setCarry(res ? RES[res].color : null);
+          a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 2.5 + Math.random() * 2; a.working = true;
         } else { a.queue = [...a.via, a.site]; a.target = a.queue.shift(); a.wait = 0.4; w.setCarry(null); }
       } else {
         const st = Math.min(d, speed * dt);

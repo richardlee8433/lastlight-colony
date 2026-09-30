@@ -18,7 +18,9 @@
 // 座標約定：建築與道具的原點＝正面地面中心，y 往下為正（往上畫就是負值）。
 // 升級外觀：Lv1–2 = 第 1 階、Lv3–4 = 第 2 階、Lv5 以上 = 第 3 階（tierOf）。
 
-import { Container, Graphics, Sprite, Text, Texture } from 'pixi.js';
+import { Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
+import colonistSheetURL from '../assets/sprites/colonist.png';
+import marineSheetURL from '../assets/sprites/marine.png';
 
 // ───────────────────────────── 工具 ─────────────────────────────
 
@@ -1461,6 +1463,103 @@ export function renderGroundPatch(stage, W, H, seed = 3) {
 // ───────────────────────────── 工人 ─────────────────────────────
 
 /** 殖民者影格：[站立, 走路 A, 走路 B]，canvas 13×17，原點在 (6, 15)。 */
+// ───────────────────────────── 手繪小人（sprite sheet） ─────────────────────────────
+// 兩張 sprite sheet（scripts/process-sprites.cjs 產生）：每列一種「動作＋方向」，每列 4 格。
+//   殖民者 16×16：idle 下/上/側（0–2）、walk（3–5）、carry 搬貨箱（6–8）、work 工作（9–11）
+//   陸戰隊 22×22：idle（0–2）、walk（3–5）、shoot 射擊（6–8）、down 倒地（9）
+// 側面圖面向右，往左走時水平翻轉。腳底在格子底部往上 2px。載入前用下面的程序化小人代替。
+const SHEETS = {
+  colonist: { url: colonistSheetURL, cell: 16, rows: 12 },
+  marine: { url: marineSheetURL, cell: 22, rows: 10 },
+};
+/** 切好的影格（放在 Map：寫在物件字面值裡的 null 會被打包工具當成常數摺疊掉） */
+const FRAMES = new Map();
+/** 小人在地圖上的縮放（建築是 1:1 像素） */
+export const CHAR_SCALE = 1;
+const FACING = { down: 0, up: 1, side: 2 };
+/** 載入小人的 sprite sheet 並切成影格（GameScene 開始前呼叫一次） */
+export async function loadSprites() {
+  await Promise.all(Object.entries(SHEETS).map(async ([key, sh]) => {
+    const img = new Image(); img.src = sh.url; await img.decode();
+    const base = pixelTexture(img);
+    const frames = [];
+    for (let r = 0; r < sh.rows; r++) {
+      const row = [];
+      for (let k = 0; k < 4; k++) row.push(new Texture({ source: base.source, frame: new Rectangle(k * sh.cell, r * sh.cell, sh.cell, sh.cell) }));
+      frames.push(row);
+    }
+    FRAMES.set(key, frames);
+  }));
+}
+/** 小人 Container 的共用部分：依移動方向自動轉向（上／下／側面），側面往左時翻轉 */
+function spriteCharacter(sh, frames) {
+  const c = new Container();
+  const s = new Sprite(frames[0][0]);
+  s.anchor.set(0.5, (sh.cell - 2) / sh.cell);
+  s.scale.set(CHAR_SCALE);
+  c.addChild(s);
+  const st = { facing: 'down', flip: false, moving: false, lx: null, ly: null };
+  c.sprite = s; c.st = st;
+  c.setMoving = (m) => { st.moving = m; };
+  c.setDir = (d) => { st.flip = d < 0; };
+  /** 面向某個方向（例如工作時面向建築、射擊時面向敵人） */
+  c.face = (f) => { st.facing = f; };
+  /** 依位置變化更新面向；回傳目前的方向列索引 */
+  c.turn = () => {
+    if (st.lx != null) {
+      const dx = c.x - st.lx, dy = c.y - st.ly;
+      if (Math.abs(dx) + Math.abs(dy) > 0.01) {
+        st.facing = Math.abs(dy) > Math.abs(dx) * 1.3 ? (dy > 0 ? 'down' : 'up') : 'side';
+        if (Math.abs(dx) > 0.01) st.flip = dx < 0;
+      }
+    }
+    st.lx = c.x; st.ly = c.y;
+    s.scale.x = CHAR_SCALE * (st.facing === 'side' && st.flip ? -1 : 1);
+    return FACING[st.facing];
+  };
+  return c;
+}
+function spriteWorker() {
+  const sh = SHEETS.colonist, fr = FRAMES.get('colonist'), c = spriteCharacter(sh, fr), st = c.st;
+  let carry = false, work = false;
+  c.setCarry = (col) => { carry = col != null; };
+  /** 在建築旁工作（面向建築） */
+  c.setWork = (w) => { work = w; if (w) st.facing = 'up'; };
+  c.update = (t) => {
+    const f = c.turn();
+    let row, k;
+    if (work && !st.moving) { row = 9 + f; k = Math.floor(t * 6) % 4; }
+    else if (carry) { row = 6 + f; k = st.moving ? Math.floor(t * 8) % 4 : 0; }
+    else if (st.moving) { row = 3 + f; k = Math.floor(t * 8) % 4; }
+    else { row = f; k = Math.floor(t * 2) % 4; }
+    c.sprite.texture = fr[row][k];
+  };
+  return c;
+}
+function spriteMarine(armed) {
+  const sh = SHEETS.marine, fr = FRAMES.get('marine'), c = spriteCharacter(sh, fr), st = c.st;
+  // 槍口閃光：由遊戲畫（圖上的閃光方向不一定對），位置跟著面向
+  const flash = new Sprite(dotTexture()); flash.width = 3; flash.height = 3; flash.tint = 0xbff8ff; flash.visible = false;
+  const glow = glowSprite(0, 0, 10, 0x6fe8ff, 0.8); glow.visible = false;
+  c.addChild(glow, flash);
+  let shootT = 0, flashT = 0;
+  c.fire = () => { if (!armed) return; shootT = 0.3; flashT = 0.08; st.facing = 'side'; };
+  c.setCarry = () => {};
+  c.update = (t, dt = 0) => {
+    const f = c.turn();
+    shootT -= dt; flashT -= dt;
+    let row, k;
+    if (shootT > 0) { row = 6 + f; k = shootT > 0.2 ? 0 : shootT > 0.1 ? 2 : 3; }   // 瞄準 → 後座力 → 回位（略過圖上自帶閃光的那一格）
+    else if (st.moving) { row = 3 + f; k = Math.floor(t * 8) % 4; }
+    else { row = f; k = Math.floor(t * 2) % 4; }
+    c.sprite.texture = fr[row][k];
+    const m = st.facing === 'side' ? { x: (st.flip ? -1 : 1) * 8, y: -8 } : st.facing === 'down' ? { x: 3, y: -5 } : { x: 2, y: -13 };
+    flash.position.set(m.x - 1, m.y - 1); glow.position.set(m.x, m.y);
+    flash.visible = glow.visible = flashT > 0;
+  };
+  return c;
+}
+
 export function renderWorker(stage) {
   const P = STAGES[stage], S = ramp(P.suit), Hm = ramp(0xeef0f4), D = ramp(0x3a3f4e);
   return [0, 1, 2].map((f) => {
@@ -1496,6 +1595,7 @@ export function renderMarine(armed) {
 const marineFrames = new Map();
 /** 陸戰隊員 Container：setMoving、setDir、update(t)、fire()（槍口閃光） */
 export function createMarine(armed) {
+  if (FRAMES.has('marine')) return spriteMarine(armed);
   if (!marineFrames.has(armed)) marineFrames.set(armed, renderMarine(armed).map((f) => pixelTexture(f.canvas)));
   const tex = marineFrames.get(armed);
   const c = new Container();
@@ -1730,6 +1830,7 @@ export function createGround(stage, plan) {
 const workerFrames = new Map();
 /** 工人：setMoving(bool)、setDir(±1)、setCarry(color|null)、update(t)。 */
 export function createWorker(stage) {
+  if (FRAMES.has('colonist')) return spriteWorker();
   if (!workerFrames.has(stage)) workerFrames.set(stage, renderWorker(stage).map((f) => pixelTexture(f.canvas)));
   const tex = workerFrames.get(stage);
   const c = new Container();

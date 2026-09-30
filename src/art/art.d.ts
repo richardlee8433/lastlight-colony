@@ -31,3 +31,5 @@ export const renderAlien: any;
 export const createAlien: any;
 export const renderMarine: any;
 export const createMarine: any;
+export function loadSprites(): Promise<void>;
+export const CHAR_SCALE: number;
