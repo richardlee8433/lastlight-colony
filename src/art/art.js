@@ -1498,7 +1498,7 @@ function spriteCharacter(sh, frames) {
   s.anchor.set(0.5, (sh.cell - 2) / sh.cell);
   s.scale.set(CHAR_SCALE);
   c.addChild(s);
-  const st = { facing: 'down', flip: false, moving: false, lx: null, ly: null };
+  const st = { facing: 'down', flip: false, moving: false, lx: null, ly: null, vx: 0, vy: 0 };
   c.sprite = s; c.st = st;
   c.setMoving = (m) => { st.moving = m; };
   c.setDir = (d) => { st.flip = d < 0; };
@@ -1506,11 +1506,16 @@ function spriteCharacter(sh, frames) {
   c.face = (f) => { st.facing = f; };
   /** 依位置變化更新面向；回傳目前的方向列索引 */
   c.turn = () => {
+    // 位置會四捨五入成整數，斜走時每格的位移忽左忽下；用平滑過的速度判斷方向，並加上遲滯，避免來回切換
     if (st.lx != null) {
       const dx = c.x - st.lx, dy = c.y - st.ly;
-      if (Math.abs(dx) + Math.abs(dy) > 0.01) {
-        st.facing = Math.abs(dy) > Math.abs(dx) * 1.3 ? (dy > 0 ? 'down' : 'up') : 'side';
-        if (Math.abs(dx) > 0.01) st.flip = dx < 0;
+      st.vx = st.vx * 0.85 + dx * 0.15; st.vy = st.vy * 0.85 + dy * 0.15;
+      const ax = Math.abs(st.vx), ay = Math.abs(st.vy);
+      if (ax + ay > 0.02) {
+        if (st.facing === 'side') { if (ay > ax * 1.8) st.facing = st.vy > 0 ? 'down' : 'up'; }
+        else if (ax > ay * 1.8) st.facing = 'side';
+        else st.facing = st.vy > 0 ? 'down' : 'up';
+        if (ax > 0.05) st.flip = st.vx < 0;
       }
     }
     st.lx = c.x; st.ly = c.y;

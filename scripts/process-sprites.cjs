@@ -39,10 +39,26 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
       const out = document.createElement('canvas'); out.width = cell * 4; out.height = cell * rows;
       const og = out.getContext('2d'), od = og.createImageData(out.width, out.height);
       const med = (a) => a.sort((m, n) => m - n)[a.length >> 1];
-      for (let r = 0; r < rows; r++) for (let k = 0; k < 4; k++) {
-        const [y0, y1] = bands[r], [x0, x1] = cols[k];
+      // 同一列的 4 格用同一個對齊基準（以頭盔的水平中心、整列最低的腳底），避免每格各自置中造成左右晃動
+      const headX = (y0, y1, x0, x1) => {
+        // 頭盔：最上面 30% 高度內實心像素的水平中心
+        let top = -1; for (let y = y0; y <= y1 && top < 0; y++) for (let x = x0; x < x1; x++) if (solid(x, y)) { top = y; break; }
+        const lim = top + Math.round((y1 - y0) * 0.3); let sx = 0, n = 0;
+        for (let y = top; y <= lim; y++) for (let x = x0; x < x1; x++) if (solid(x, y)) { sx += x; n++; }
+        return n ? sx / n : (x0 + x1) / 2;
+      };
+      for (let r = 0; r < rows; r++) {
+        const [y0, y1] = bands[r];
+        let rowBottom = -1;
+        for (let y = y0; y <= y1; y++) for (let x = 0; x < W; x++) if (solid(x, y)) rowBottom = Math.max(rowBottom, y);
+      for (let k = 0; k < 4; k++) {
+        const [x0, x1] = cols[k];
+        const hx = headX(y0, y1, x0, x1);
         let bx0 = 1e9, by0 = 1e9, bx1 = -1, by1 = -1;
         for (let y = Math.max(0, y0 - 8); y <= Math.min(H - 1, y1 + 8); y++) for (let x = x0; x < x1; x++) if (solid(x, y)) { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); by0 = Math.min(by0, y); by1 = Math.max(by1, y); }
+        // 取樣格線對齊頭盔中心；底部對齊整列最低點
+        bx0 = Math.round(hx - Math.ceil((hx - bx0) / SCALE) * SCALE);
+        by1 = rowBottom; by0 = by1 - Math.ceil((by1 - by0 + 1) / SCALE) * SCALE + 1;
         const cw = Math.ceil((bx1 - bx0 + 1) / SCALE), ch = Math.ceil((by1 - by0 + 1) / SCALE);
         // 先縮到原始像素
         const px = new Array(cw * ch).fill(null);
@@ -68,14 +84,15 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
           }
           if (blob.length < MIN_BLOB) for (const q of blob) px[q] = null;
         }
-        // 置中、腳底對齊（格子底部往上 2px）
-        const ox = Math.floor((cell - cw) / 2), oy = cell - 2 - ch;
+        // 頭盔中心放在格子中央、腳底對齊（格子底部往上 2px）
+        const ox = Math.floor(cell / 2) - Math.round((hx - bx0) / SCALE), oy = cell - 2 - ch;
         for (let j = 0; j < ch; j++) for (let i = 0; i < cw; i++) {
           const v = px[j * cw + i]; const X = ox + i, Y = oy + j;
           if (!v || X < 0 || Y < 0 || X >= cell || Y >= cell) continue;
           const o = ((r * cell + Y) * out.width + k * cell + X) * 4;
           od.data[o] = v[0]; od.data[o + 1] = v[1]; od.data[o + 2] = v[2]; od.data[o + 3] = 255;
         }
+      }
       }
       og.putImageData(od, 0, 0);
       return out.toDataURL('image/png');
