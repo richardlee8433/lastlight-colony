@@ -2,23 +2,19 @@
 
 各位指揮官好！
 
-v0.63 上線了。這次有兩個主題：**殖民地裡的建築全部重新手繪**，還有**我們收到的第一則玩家建議**。
+v0.63 上線了。這次有兩個主題：**殖民地裡的建築全部重新手繪**，還有**第一則玩家回饋帶來的暫停鍵**。
 
 ---
 
-## ⏸️ 你說，我們做：暫停鍵
+## ⏸️ 暫停鍵來了
 
-v0.62 發布後沒多久，我們收到了第一則留言：
-
-> 「如果有暫停鍵，而且跳出訊息視窗時也會自動暫停（不只劇情對話），就太好了。」
-
-說得完全對！所以這次：
+我們收到了第一則玩家回饋：希望有暫停鍵，而且跳出訊息視窗時也能自動暫停。好建議，這次就做進去了：
 
 - **右上角多了一顆暫停鍵**（「日誌」旁邊）。鍵盤按 **P** 或 **空白鍵** 也可以。
 - **任何視窗開著時，遊戲都會自動暫停**：事件、戰鬥報告、章節開場、科技樹、貿易、設定、日誌，不再只有劇情對話。安心讀完再做決定，殖民地不會趁你看報告的時候偷偷缺氧。
 - 暫停時，殖民者和建築動畫也會一起停住，整個世界靜止。但你還是可以移動鏡頭、查看建築、規劃下一步。
 
-謝謝這位指揮官的建議 🙏 第一則回饋就被做進遊戲裡，我們自己也很興奮。有任何想法，都歡迎繼續留言！
+謝謝這則回饋！有任何想法，都歡迎繼續留言。
 
 ## 🏗️ 第 1～4 章建築，全部重新手繪
 
@@ -42,7 +38,7 @@ v0.62 發布後沒多久，我們收到了第一則留言：
 
 ---
 
-感謝每一位降落在這顆星球上的指揮官，也特別感謝留下第一則建議的你。
+感謝每一位降落在這顆星球上的指揮官。
 末光還亮著，我們下次更新見！✨
 
 ---
@@ -52,21 +48,17 @@ v0.62 發布後沒多久，我們收到了第一則留言：
 
 Hello, Commanders!
 
-v0.63 is here. This update is about two things: **every building in the colony has been repainted**, and **the first suggestion we ever received from a player**.
+v0.63 is here. This update is about two things: **every building in the colony has been repainted**, and **a pause button, thanks to our first player feedback**.
 
-## ⏸️ You asked, we built it: a pause button
+## ⏸️ Pause button is here
 
-Not long after v0.62 went out, we got our very first comment:
-
-> "A pause button and an auto-pause during message boxes (not only the dialogues) would be great."
-
-Completely right! So now:
+We got our first player feedback: a pause button, plus auto-pause when message windows pop up. Great idea, so it's in:
 
 - **There's a pause button** in the top-right corner, next to the Log button. You can also press **P** or **Space**.
 - **The game auto-pauses whenever any window is open**: events, battle reports, chapter intros, the tech tree, trade, settings and the log, not just story dialogue. Read at your own pace. Your colony won't run out of air while you're reading a report.
 - While paused, colonists and building animations freeze too. You can still move the camera, inspect buildings and plan your next move.
 
-Thank you for the suggestion 🙏 Seeing our first piece of feedback make it into the game was genuinely exciting for us. Keep the ideas coming!
+Thanks for the feedback! If you have other ideas, keep them coming.
 
 ## 🏗️ Chapters 1–4: every building repainted
 
@@ -90,5 +82,5 @@ The chapter 5–6 buildings are still being painted. Until then you'll see a few
 
 ---
 
-Thanks to every Commander who has landed on this planet, and a special thanks to the one who left our first suggestion.
+Thanks to every Commander who has landed on this planet.
 The last light is still on. See you next update! ✨
