@@ -196,11 +196,16 @@ export class GameScene {
   sync() {
     const s = game.s;
     const gStage = Math.min(6, s.stage);
-    if (gStage !== this.groundStage) this.buildMap(gStage);
     const selected = useGame.getState().selected;
+    // 地面（道路、地基、鋪面）只跟著已蓋好的建築與它們的鋪面等級變：蓋好一棟或升級時才重畫
+    const gKey = `${gStage}|${this.mapSites().map((x) => `${x.id}:${x.tier}`).join(',')}`;
+    if (gKey !== this.groundKey) { this.groundKey = gKey; this.buildMap(gStage); }
     for (const site of SITES) {
-      const bid = this.siteBuilding(site);
+      let bid = this.siteBuilding(site);
       const lvl = bid ? s.b[bid].level : 0;
+      // 還沒蓋的建築不出現在地圖上；在建造列選取時才顯示半透明預覽（會蓋在這裡）
+      const picked = !!bid && (selected === bid || (site.id === 'command' && !!selected && COMMAND_CHAIN.includes(selected)));
+      if (bid && lvl === 0 && !picked) bid = null;
       const key = !bid ? 'none' : lvl > 0 ? `${artId(s, bid)}:${tierOf(lvl)}:${this.Z}` : `site:${bid}:${this.Z}`;
       let v = this.views.get(site.id);
       if (!v || v.key !== key) { if (v) this.dropView(v); v = this.makeView(site, bid, key) ?? undefined; if (v) this.views.set(site.id, v); else this.views.delete(site.id); }
@@ -228,15 +233,38 @@ export class GameScene {
     this.syncPatrols();
   }
 
+  groundKey = '';
+  /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬踏板、2 石磚）：
+   *  第 3 章起中央附近或 Lv3 以上鋪金屬，第 6 章起中央附近或 Lv5 以上鋪石磚；殖民地由中心往外慢慢變「文明」 */
+  mapSites() {
+    const s = game.s, stage = Math.min(6, s.stage);
+    const out: (Site & { r: number; tier: number })[] = [];
+    for (const site of SITES) {
+      const bid = this.siteBuilding(site);
+      if (!bid || !built(s, bid)) continue;
+      const lvl = s.b[bid].level, inner = Math.hypot(site.x - CENTER.x, (site.y - CENTER.y) * 1.3) < 200;
+      const tier = site.hub ? (stage >= 6 ? 2 : stage >= 3 ? 1 : 0)
+        : stage >= 6 && (inner || lvl >= 5) ? 2 : stage >= 3 && (inner || lvl >= 3) ? 1 : 0;
+      out.push({ ...site, r: site.r ?? 24, tier });
+    }
+    return out;
+  }
   buildMap(stage: number) {
-    this.groundStage = stage;
+    // 換章節或第一次蓋好中央營地時（工人的家與路線改變）才重建工人；其他時候只重畫地面
+    const hubNow = this.mapSites().some((x) => x.hub);
+    const resetWalkers = stage !== this.groundStage || hubNow !== this.groundHub;
+    this.groundStage = stage; this.groundHub = hubNow;
     for (const p of this.props) { p.lights.destroy({ children: true }); p.destroy({ children: true }); }
     this.props = [];
     this.ground?.destroy();
     this.ambient?.destroy({ children: true });
     const s = game.s;
-    const sites = SITES.filter((x) => x.id === 'command' || DEF[x.id].stage <= s.stage).map((x) => ({ ...x, r: x.r ?? 24 }));
-    const plan = planMap(stage, MW, MH, 90 + stage, { center: CENTER, sites, routes: ROUTES });
+    const sites = this.mapSites();
+    // 還沒有中央營地時，路從逃生艙拉出去；有了之後從中央廣場連到各建築
+    const hub = sites.some((x) => x.hub);
+    const routes = hub ? ROUTES : Object.fromEntries(sites.filter((x) => !x.hub && x.id !== 'escape_pod').map((x) => [x.id, routeFromPod(x.id)]));
+    const plan = planMap(stage, MW, MH, 90 + stage, { center: CENTER, sites, routes, plaza: hub, hubTier: sites.find((x) => x.hub)?.tier ?? 0, tiers: Object.fromEntries(sites.map((x) => [x.id, x.tier])) });
+    void s;
     // 手繪底圖：裝飾物一律用第 1 章的配色（不再每章換一種風貌）
     const propStage = hasTerrain() ? 1 : stage;
     const ground: Sprite = createGround(stage, plan);
@@ -254,9 +282,9 @@ export class GameScene {
     this.overlay.blendMode = 'multiply';
     this.ambient = createAmbient(stage, MW, MH);
     this.lightL.addChild(this.ambient);
-    for (const w of this.walkers) w.destroy({ children: true });
-    this.walkers = [];
+    if (resetWalkers) { for (const w of this.walkers) w.destroy({ children: true }); this.walkers = []; }
   }
+  groundHub = false;
 
   makePlate(text: string, kind: string) {
     const Z = this.Z, fs = Z >= 3 ? 15 : Z >= 2 ? 12 : 10;

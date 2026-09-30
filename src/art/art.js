@@ -1326,29 +1326,35 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
     });
   }
   // 道路：layout 有給折線就照著畫（繞開建築），否則從中心直線連到各建築
+  // 每段路帶一個鋪面等級（layout.tiers：0 沙路、1 金屬踏板、2 石磚），共用的路段取最高的等級
+  const tierOfSite = (s) => layout?.tiers?.[s.id] ?? 0;
   const segs = layout?.routes
-    ? sites.filter((s) => !s.hub && layout.routes[s.id]).flatMap((s) => layout.routes[s.id].slice(1).map((p, i) => { const a = layout.routes[s.id][i]; return [a.x, a.y, p.x, p.y]; }))
-    : sites.filter((s) => !s.hub).map((s) => [center.x, center.y + 22, s.x, s.y + 4]);
-  { const seen = new Set(); for (let i = segs.length - 1; i >= 0; i--) { const k = segs[i].join(','); if (seen.has(k)) segs.splice(i, 1); else seen.add(k); } }
+    ? sites.filter((s) => !s.hub && layout.routes[s.id]).flatMap((s) => layout.routes[s.id].slice(1).map((p, i) => { const a = layout.routes[s.id][i]; return [a.x, a.y, p.x, p.y, tierOfSite(s)]; }))
+    : sites.filter((s) => !s.hub).map((s) => [center.x, center.y + 22, s.x, s.y + 4, 0]);
+  { const best = new Map(); for (const g of segs) { const k = g.slice(0, 4).join(','); if (!best.has(k) || best.get(k)[4] < g[4]) best.set(k, g); } segs.splice(0, segs.length, ...best.values()); }
+  const plaza = layout?.plaza ?? true;
   const wob = noise2(seed + 3);
-  const field = new Float32Array(MW * MH);
+  const field = new Float32Array(MW * MH), tier = new Uint8Array(MW * MH);
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
     const w = (wob(x / 9, y / 9) - 0.5) * 3;
-    let v = 1e9;
-    for (const [x0, y0, x1, y1] of segs) {
-      const dx = x1 - x0, dy = y1 - y0, l2 = dx * dx + dy * dy;
+    let v = 1e9, tv = 0;
+    const take = (d, t) => { if (d < v) { v = d; tv = t; } };
+    for (const [x0, y0, x1, y1, t0] of segs) {
+      const dx = x1 - x0, dy = y1 - y0, l2 = dx * dx + dy * dy || 1;
       const t = clamp(((x - x0) * dx + (y - y0) * dy) / l2, 0, 1);
       const ex = x - (x0 + dx * t), ey = y - (y0 + dy * t);
-      v = Math.min(v, Math.sqrt(ex * ex + ey * ey) - 3.4 - w);
+      take(Math.sqrt(ex * ex + ey * ey) - 3.4 - w, t0);
     }
-    const px = (x - center.x) / 50, py = (y - center.y - 6) / 32;
-    v = Math.min(v, (Math.sqrt(px * px + py * py) - 1) * 32 + w * 1.5);
+    if (plaza) {
+      const px = (x - center.x) / 50, py = (y - center.y - 6) / 32;
+      take((Math.sqrt(px * px + py * py) - 1) * 32 + w * 1.5, layout?.hubTier ?? 0);
+    }
     for (const s of sites) {
       if (s.hub) continue;
       const qx = (x - s.x) / s.r, qy = (y - s.y + 8) / (s.r * 0.62);
-      v = Math.min(v, (Math.sqrt(qx * qx + qy * qy) - 1) * s.r * 0.62 + w);
+      take((Math.sqrt(qx * qx + qy * qy) - 1) * s.r * 0.62 + w, tierOfSite(s));
     }
-    field[y * MW + x] = v;
+    field[y * MW + x] = v; tier[y * MW + x] = tv;
   }
   const clear = (x, y, m) => {
     if (x < 4 || y < 10 || x >= MW - 4 || y >= MH - 2) return false;
@@ -1367,9 +1373,13 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
   for (let i = 0, got = 0; i < 600 && got < counts[1]; i++) if (place('rock', R() * MW, R() * MH)) got++;
   for (let i = 0, got = 0; i < 600 && got < counts[2]; i++) if (place('bush', R() * MW, R() * MH)) got++;
   const extras = TERRAIN.img ? (stage === 1 ? ['debris', 'crate', 'debris', 'barrel'] : ['crate', 'barrel', 'pipe', 'crate']) : { 1: ['debris', 'debris', 'crate', 'barrel'], 2: ['snow', 'snow', 'crate', 'barrel'], 3: ['pipe', 'crate', 'barrel', 'crate'], 4: ['crate', 'barrel', 'crate'], 5: ['crate', 'barrel'], 6: ['statue'] }[stage];
-  for (const s of sites) for (let j = 0; j < 3; j++) {
-    const kind = extras[(j + s.x) % extras.length];
-    for (let tries = 0; tries < 12; tries++) if (place(kind, s.x + (R() - 0.5) * (s.r * 2.6), s.y + (R() - 0.3) * 18, 3)) break;
+  // 每棟建築旁的雜物用自己的亂數（蓋新建築、地圖重畫時，舊建築旁的東西不會換位置）
+  for (const s of sites) {
+    const Rs = rng(seed * 7 + s.x * 131 + s.y * 17);
+    for (let j = 0; j < 3; j++) {
+      const kind = extras[(j + s.x) % extras.length];
+      for (let tries = 0; tries < 12; tries++) if (place(kind, s.x + (Rs() - 0.5) * (s.r * 2.6), s.y + (Rs() - 0.3) * 18, 3)) break;
+    }
   }
   for (const [x0, y0, x1, y1] of segs) {
     if (Math.hypot(x1 - x0, y1 - y0) < 50) continue;
@@ -1378,7 +1388,7 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
   }
   if (stage === 1) for (let i = 0, got = 0; i < 300 && got < 8; i++) if (place('debris', R() * MW, R() * MH)) got++;
   if (stage === 2 && !TERRAIN.img) for (let i = 0, got = 0; i < 300 && got < 10; i++) if (place('snow', R() * MW, R() * MH)) got++;
-  return { stage, MW, MH, center, sites, segs, field, props, seed };
+  return { stage, MW, MH, center, sites, segs, field, tier, props, seed };
 }
 
 function paintGround(stage, W, H, field, seed, decals = true) {
@@ -1841,8 +1851,8 @@ export function createGround(stage, plan) {
   if (TERRAIN.img) return new Sprite(pixelTexture(paintTerrain(stage, plan)));
   return new Sprite(pixelTexture(renderGround(stage, plan)));
 }
-/** 手繪底圖 ＋ 殖民地的道路與建築地基。道路隨進度改變：
- *  第 1–2 章踩出來的沙路、第 3–5 章金屬踏板、第 6 章石磚廣場。 */
+/** 手繪底圖 ＋ 殖民地的道路與建築地基。每條路、每塊地基依各自的鋪面等級（plan.tier）：
+ *  0 踩出來的沙路、1 金屬踏板、2 石磚。 */
 function paintTerrain(stage, plan) {
   const W = plan.MW, H = plan.MH, field = plan.field;
   const cv = makeCanvas(W, H), ctx = cv.getContext('2d');
@@ -1854,12 +1864,12 @@ function paintTerrain(stage, plan) {
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const v = field[y * W + x];
     if (v >= 1.5) continue;
-    const i = (y * W + x) * 4, bz = bayer(x, y), edge = v > -1.3;
-    if (stage <= 2) {
+    const i = (y * W + x) * 4, bz = bayer(x, y), edge = v > -1.3, tr = plan.tier ? plan.tier[y * W + x] : stage <= 2 ? 0 : stage <= 5 ? 1 : 2;
+    if (tr === 0) {
       // 踩平的沙路：原本的沙地稍微壓暗、打亂顆粒
       const n = nA(x / 5, y / 5) + (bz - 0.5) * 0.4;
       put(i, SAND[edge ? 0 : n < 0.4 ? 1 : n < 0.7 ? 2 : 3], edge ? 0.35 : 0.55);
-    } else if (stage <= 5) {
+    } else if (tr === 1) {
       // 金屬踏板：6×4 一塊，接縫較暗
       const seam = x % 6 === 0 || y % 4 === 0;
       put(i, edge ? PLATE[0] : seam ? PLATE[1] : PLATE[(((x / 6) | 0) + ((y / 4) | 0)) % 3 ? 2 : 3], edge ? 0.6 : 1);
