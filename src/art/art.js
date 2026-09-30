@@ -1428,7 +1428,9 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
   }
   for (let i = 0, got = 0; i < 600 && got < counts[1]; i++) if (place('rock', R() * MW, R() * MH)) got++;
   for (let i = 0, got = 0; i < 600 && got < counts[2]; i++) if (place('bush', R() * MW, R() * MH)) got++;
-  const extras = TERRAIN.img ? (stage === 1 ? ['debris', 'crate', 'debris', 'barrel'] : ['crate', 'barrel', 'pipe', 'crate']) : { 1: ['debris', 'debris', 'crate', 'barrel'], 2: ['snow', 'snow', 'crate', 'barrel'], 3: ['pipe', 'crate', 'barrel', 'crate'], 4: ['crate', 'barrel', 'crate'], 5: ['crate', 'barrel'], 6: ['statue'] }[stage];
+  // 有手繪底圖時不擺任何小物件（路燈、木箱、油桶、碎石都是舊的像素圖，跟手繪建築不搭）
+  if (TERRAIN.img) return { stage, MW, MH, center, sites, segs, field, tier, props, seed };
+  const extras = { 1: ['debris', 'debris', 'crate', 'barrel'], 2: ['snow', 'snow', 'crate', 'barrel'], 3: ['pipe', 'crate', 'barrel', 'crate'], 4: ['crate', 'barrel', 'crate'], 5: ['crate', 'barrel'], 6: ['statue'] }[stage];
   // 每棟建築旁的雜物用自己的亂數（蓋新建築、地圖重畫時，舊建築旁的東西不會換位置）
   for (const s of sites) {
     const Rs = rng(seed * 7 + s.x * 131 + s.y * 17);
@@ -1443,7 +1445,7 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
     place('lamp', x0 + (x1 - x0) * t + (nx / l) * 9, y0 + (y1 - y0) * t + (ny / l) * 9, 2);
   }
   if (stage === 1) for (let i = 0, got = 0; i < 300 && got < 8; i++) if (place('debris', R() * MW, R() * MH)) got++;
-  if (stage === 2 && !TERRAIN.img) for (let i = 0, got = 0; i < 300 && got < 10; i++) if (place('snow', R() * MW, R() * MH)) got++;
+  if (stage === 2) for (let i = 0, got = 0; i < 300 && got < 10; i++) if (place('snow', R() * MW, R() * MH)) got++;
   return { stage, MW, MH, center, sites, segs, field, tier, props, seed };
 }
 
