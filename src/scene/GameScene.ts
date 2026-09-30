@@ -2,7 +2,7 @@
 import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites, hasTerrain,
 } from '../art/art.js';
 import { game, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
@@ -237,18 +237,20 @@ export class GameScene {
     const s = game.s;
     const sites = SITES.filter((x) => x.id === 'command' || DEF[x.id].stage <= s.stage).map((x) => ({ ...x, r: x.r ?? 24 }));
     const plan = planMap(stage, MW, MH, 90 + stage, { center: CENTER, sites, routes: ROUTES });
+    // 手繪底圖：裝飾物一律用第 1 章的配色（不再每章換一種風貌）
+    const propStage = hasTerrain() ? 1 : stage;
     const ground: Sprite = createGround(stage, plan);
     ground.eventMode = 'none';
     this.ground = ground;
     this.world.addChildAt(ground, 0);
     for (const p of plan.props) {
-      const c = createProp(p.kind, stage, p.seed);
+      const c = createProp(p.kind, propStage, p.seed);
       c.position.set(p.x, p.y); c.zIndex = p.y; c.lights.position.set(p.x, p.y);
       c.eventMode = 'none';
       this.obj.addChild(c); this.lightL.addChild(c.lights);
       this.props.push(c);
     }
-    this.overlay.clear().rect(0, 0, MW, MH).fill(STAGES[stage].ambient);
+    this.overlay.clear().rect(0, 0, MW, MH).fill(hasTerrain() ? 0xfff2ea : STAGES[stage].ambient);
     this.overlay.blendMode = 'multiply';
     this.ambient = createAmbient(stage, MW, MH);
     this.lightL.addChild(this.ambient);

@@ -21,6 +21,7 @@
 import { Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import colonistSheetURL from '../assets/sprites/colonist.png';
 import marineSheetURL from '../assets/sprites/marine.png';
+import terrainURL from '../assets/terrain.webp';
 
 // ───────────────────────────── 工具 ─────────────────────────────
 
@@ -364,7 +365,7 @@ function makeKit(stage, accColor, tier, W = 240, H = 220, OX = 120, OY = 196) {
   k.mast = (x, y, h, c) => { b.vline(x, y - h, y - 1, M.metal[1]); b.set(x, y - h, M.metal[3]); return k.beacon(x, y - h - 1, c ?? 0xff4a4a); };
   k.post = (x, y, h, c) => {
     b.vline(x, y - h, y - 1, M.dark[2]); b.set(x - 1, y - h, M.dark[1]); b.set(x + 1, y - h, M.dark[1]); b.set(x, y - 1, M.dark[0]);
-    return k.lamp(x, y - h - 1, c ?? P.light, 30, 0.5);
+    return k.lamp(x, y - h - 1, c ?? 0xd8f2ff, 30, 0.5);   // 冷白 LED 泛光燈（沒有氧氣，不會有燃燒的燈）
   };
   k.dish = (cx, y, r, m = M.metal) => {
     b.vline(cx, y - 2, y - 1, m[1]);
@@ -1357,14 +1358,15 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
   };
   const props = [];
   const place = (kind, x, y, m = 5) => { x = Math.round(x); y = Math.round(y); if (clear(x, y, m) && !props.some((p) => Math.abs(p.x - x) < 9 && Math.abs(p.y - y) < 5)) { props.push({ kind, x, y, seed: (R() * 1e6) | 0 }); return true; } return false; };
-  const counts = { 1: [13, 12, 8], 2: [28, 10, 10], 3: [22, 12, 8], 4: [30, 8, 18], 5: [22, 14, 12], 6: [16, 5, 16] }[stage];
+  // 有手繪底圖時，樹、灌木、岩石都在底圖裡，只在建築旁擺人造物
+  const counts = TERRAIN.img ? [0, 0, 0] : { 1: [13, 12, 8], 2: [28, 10, 10], 3: [22, 12, 8], 4: [30, 8, 18], 5: [22, 14, 12], 6: [16, 5, 16] }[stage];
   for (let i = 0, got = 0; i < 900 && got < counts[0]; i++) {
     const x = R() * MW, y = R() * MH, ex = (x - center.x) / (MW * 0.46), ey = (y - center.y) / (MH * 0.46);
     if ((ex * ex + ey * ey > 0.62 || R() < 0.08) && place('tree', x, y, 7)) got++;
   }
   for (let i = 0, got = 0; i < 600 && got < counts[1]; i++) if (place('rock', R() * MW, R() * MH)) got++;
   for (let i = 0, got = 0; i < 600 && got < counts[2]; i++) if (place('bush', R() * MW, R() * MH)) got++;
-  const extras = { 1: ['debris', 'debris', 'crate', 'barrel'], 2: ['snow', 'snow', 'crate', 'barrel'], 3: ['pipe', 'crate', 'barrel', 'crate'], 4: ['crate', 'barrel', 'crate'], 5: ['crate', 'barrel'], 6: ['statue'] }[stage];
+  const extras = TERRAIN.img ? (stage === 1 ? ['debris', 'crate', 'debris', 'barrel'] : ['crate', 'barrel', 'pipe', 'crate']) : { 1: ['debris', 'debris', 'crate', 'barrel'], 2: ['snow', 'snow', 'crate', 'barrel'], 3: ['pipe', 'crate', 'barrel', 'crate'], 4: ['crate', 'barrel', 'crate'], 5: ['crate', 'barrel'], 6: ['statue'] }[stage];
   for (const s of sites) for (let j = 0; j < 3; j++) {
     const kind = extras[(j + s.x) % extras.length];
     for (let tries = 0; tries < 12; tries++) if (place(kind, s.x + (R() - 0.5) * (s.r * 2.6), s.y + (R() - 0.3) * 18, 3)) break;
@@ -1375,7 +1377,7 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
     place('lamp', x0 + (x1 - x0) * t + (nx / l) * 9, y0 + (y1 - y0) * t + (ny / l) * 9, 2);
   }
   if (stage === 1) for (let i = 0, got = 0; i < 300 && got < 8; i++) if (place('debris', R() * MW, R() * MH)) got++;
-  if (stage === 2) for (let i = 0, got = 0; i < 300 && got < 10; i++) if (place('snow', R() * MW, R() * MH)) got++;
+  if (stage === 2 && !TERRAIN.img) for (let i = 0, got = 0; i < 300 && got < 10; i++) if (place('snow', R() * MW, R() * MH)) got++;
   return { stage, MW, MH, center, sites, segs, field, props, seed };
 }
 
@@ -1490,7 +1492,10 @@ export async function loadSprites() {
     }
     FRAMES.set(key, frames);
   }));
+  const t = new Image(); t.src = terrainURL; await t.decode(); TERRAIN.img = t;
 }
+/** 手繪地形底圖（整顆星球同一種風貌，不隨章節換色；變化只在殖民地的道路與地基上） */
+const TERRAIN = { img: null };
 /** 小人 Container 的共用部分：依移動方向自動轉向（上／下／側面），側面往左時翻轉 */
 function spriteCharacter(sh, frames) {
   const c = new Container();
@@ -1831,7 +1836,38 @@ export function createProp(kind, stage, seed = 1) {
   return c;
 }
 export function createGround(stage, plan) {
+  if (TERRAIN.img) return new Sprite(pixelTexture(paintTerrain(stage, plan)));
   return new Sprite(pixelTexture(renderGround(stage, plan)));
+}
+/** 手繪底圖 ＋ 殖民地的道路與建築地基。道路隨進度改變：
+ *  第 1–2 章踩出來的沙路、第 3–5 章金屬踏板、第 6 章石磚廣場。 */
+function paintTerrain(stage, plan) {
+  const W = plan.MW, H = plan.MH, field = plan.field;
+  const cv = makeCanvas(W, H), ctx = cv.getContext('2d');
+  ctx.drawImage(TERRAIN.img, 0, 0, W, H);
+  const img = ctx.getImageData(0, 0, W, H), d = img.data;
+  const SAND = [0x7a3a26, 0x94482c, 0xa85a36, 0xbb6e44], PLATE = [0x4a4e58, 0x6a707c, 0x868c98, 0xa4aab4], TILE = [0x6e5a4a, 0xa89078, 0xc4ac90, 0xd8c4a8];
+  const nA = noise2(plan.seed + 1);
+  const put = (i, c, a = 1) => { d[i] = d[i] * (1 - a) + ((c >> 16) & 255) * a; d[i + 1] = d[i + 1] * (1 - a) + ((c >> 8) & 255) * a; d[i + 2] = d[i + 2] * (1 - a) + (c & 255) * a; };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const v = field[y * W + x];
+    if (v >= 1.5) continue;
+    const i = (y * W + x) * 4, bz = bayer(x, y), edge = v > -1.3;
+    if (stage <= 2) {
+      // 踩平的沙路：原本的沙地稍微壓暗、打亂顆粒
+      const n = nA(x / 5, y / 5) + (bz - 0.5) * 0.4;
+      put(i, SAND[edge ? 0 : n < 0.4 ? 1 : n < 0.7 ? 2 : 3], edge ? 0.35 : 0.55);
+    } else if (stage <= 5) {
+      // 金屬踏板：6×4 一塊，接縫較暗
+      const seam = x % 6 === 0 || y % 4 === 0;
+      put(i, edge ? PLATE[0] : seam ? PLATE[1] : PLATE[(((x / 6) | 0) + ((y / 4) | 0)) % 3 ? 2 : 3], edge ? 0.6 : 1);
+    } else {
+      const row = Math.floor(y / 5), tx = x + (row % 2) * 4;
+      put(i, edge ? TILE[0] : y % 5 === 0 || tx % 8 === 0 ? TILE[1] : TILE[nA(Math.floor(tx / 8), row) > 0.6 ? 3 : 2], edge ? 0.6 : 1);
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return cv;
 }
 
 const workerFrames = new Map();
@@ -1878,7 +1914,7 @@ export function createBuffRing(rx, ry, color = 0xffd24a) {
 
 /** 氣氛粒子（餘燼、雪、灰塵、螢火、光點、金粉），座標為地圖像素。 */
 export function createAmbient(stage, MW, MH) {
-  const kind = STAGES[stage].particles, R = rng(stage * 99);
+  const kind = TERRAIN.img ? 'dust' : STAGES[stage].particles, R = rng(stage * 99);
   const cfg = { ember: [50, 0xff7a3a], snow: [140, 0xffffff], dust: [50, 0xb8c0c8], firefly: [40, 0xffd070], mote: [60, 0xc890ff], gold: [50, 0xffd24a] }[kind];
   const c = new Container(), ps = [];
   for (let i = 0; i < cfg[0]; i++) {
@@ -1946,3 +1982,6 @@ export function createFx(layer, scale = 2) {
     },
   };
 }
+
+/** 是否使用手繪地形底圖（GameScene 用來決定是否套用各章的環境色） */
+export const hasTerrain = () => !!TERRAIN.img;

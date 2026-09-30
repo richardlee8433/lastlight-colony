@@ -1,7 +1,7 @@
 // 把繪圖工具輸出的小人 sprite sheet（放大過、有模糊邊緣與有損壓縮雜訊）整理成乾淨的像素圖：
 // 自動找出每一列、固定切成 4 欄 → 每格縮回原始像素（取區塊中心的中位數顏色）→ 去掉雜點 → 腳底對齊、置中。
 // 用法：node scripts/process-sprites.cjs（需要 playwright 與 Chromium，只在更新美術時執行）
-// 原圖：art-src/sprites/*.webp　輸出：src/assets/sprites/*.png
+// 原圖：art-src/sprites/*.webp、art-src/terrain.webp　輸出：src/assets/sprites/*.png、src/assets/terrain.webp
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -99,6 +99,20 @@ const MIN_BLOB = 6;       // 小於這個像素數的零碎色塊（被切斷的
     }, { src, rows: sh.rows, cell: sh.cell, SCALE, MIN_BLOB });
     fs.writeFileSync(path.join(root, 'src/assets/sprites', sh.out), Buffer.from(url.split(',')[1], 'base64'));
     console.log('wrote', sh.out);
+  }
+  // 地形底圖：縮放並裁切成地圖大小（1000×720，與 src/scene/layout.ts 的 MW×MH 一致）
+  {
+    const src = 'data:image/webp;base64,' + fs.readFileSync(path.join(root, 'art-src/terrain.webp')).toString('base64');
+    const url = await p.evaluate(async ({ src, W, H }) => {
+      const img = new Image(); img.src = src; await img.decode();
+      const k = Math.max(W / img.width, H / img.height), w = img.width * k, h = img.height * k;
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
+      g.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+      return c.toDataURL('image/webp', 0.9);
+    }, { src, W: 1000, H: 720 });
+    fs.writeFileSync(path.join(root, 'src/assets/terrain.webp'), Buffer.from(url.split(',')[1], 'base64'));
+    console.log('wrote terrain.webp');
   }
   await b.close();
 })();
