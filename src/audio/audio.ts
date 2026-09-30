@@ -1,9 +1,9 @@
-import titleSongURL from '../assets/music/alien-sky.mp3';
-import ch1SongURL from '../assets/music/three-note-motif.mp3';
-import ch2SongURL from '../assets/music/ch2.mp3';
+// 錄好的曲目放在 music/ 資料夾（和 index.html 同一層，不包進單一檔案），需要時才下載；
+// 下載好之前（或找不到檔案時）先播程序化配樂，開始播放後才交叉淡入。
+const MUSIC_DIR = 'music/';
 
 /** 錄好的曲目：首頁主題曲、第 1～2 章配樂；其他情況播程序化配樂 */
-const SONGS = { title: titleSongURL, ch1: ch1SongURL, ch2: ch2SongURL } as const;
+const SONGS = { title: 'alien-sky.mp3', ch1: 'ch1.mp3', ch2: 'ch2.mp3' } as const;
 /** 各章對應的錄音曲目（沒有列出的章用程序化配樂） */
 const CHAPTER_SONG: Record<number, SongKey> = { 1: 'ch1', 2: 'ch2' };
 type SongKey = keyof typeof SONGS;
@@ -65,7 +65,9 @@ class Engine {
     // 程序化配樂先經過 gameGain（首頁時靜音）；主題曲經過 songGain，兩者都跟著音樂音量
     this.gameGain = ctx.createGain(); this.gameGain.connect(this.music);
     for (const k of Object.keys(SONGS) as SongKey[]) {
-      const el = new Audio(SONGS[k]); el.loop = true;
+      const el = new Audio(); el.loop = true; el.preload = k === 'title' ? 'auto' : 'none'; el.src = MUSIC_DIR + SONGS[k];
+      // 真的開始出聲才淡掉程序化配樂（網路慢或檔案不存在時就繼續播程序化配樂）
+      el.addEventListener('playing', () => { if (this.track === k) this.fadeGame(0); });
       const gain = ctx.createGain(); gain.gain.value = 0; gain.connect(this.music);
       ctx.createMediaElementSource(el).connect(gain);
       this.songs[k] = { el, gain };
@@ -99,8 +101,15 @@ class Engine {
       if (on) { if (s.el.paused) { s.el.currentTime = 0; s.el.play().catch(() => {}); } }
       else if (!s.el.paused) window.setTimeout(() => { if (this.track !== k) s.el.pause(); }, 4000);
     }
+    // 換到錄音曲目時，等它真的開始播放（playing 事件）再淡出程序化配樂
+    const ready = want && this.songs[want]!.el.readyState >= 3 && !this.songs[want]!.el.paused;
+    this.fadeGame(want && ready ? 0 : 1);
+  }
+  private fadeGame(v: number) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
     this.gameGain.gain.cancelScheduledValues(t);
-    this.gameGain.gain.setTargetAtTime(want ? 0 : 1, t, want ? 0.3 : 1.2);
+    this.gameGain.gain.setTargetAtTime(v, t, v ? 1.2 : 0.3);
   }
   applyVolume() {
     if (!this.ctx) return;
@@ -114,7 +123,7 @@ class Engine {
   private schedule() {
     const ctx = this.ctx!;
     if (ctx.state !== 'running') return;
-    if (this.track) { this.nextBar = Math.max(this.nextBar, ctx.currentTime + 0.1); return; }
+    if (this.track && this.gameGain.gain.value < 0.02) { this.nextBar = Math.max(this.nextBar, ctx.currentTime + 0.1); return; }
     const barLen = this.mood.raid ? 2.4 : 3.2;   // 襲擊時節奏加快
     while (this.nextBar < ctx.currentTime + 0.6) {
       this.playBar(this.nextBar, barLen);
