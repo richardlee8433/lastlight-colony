@@ -410,7 +410,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'pause.pause': ['Pause', '暫停'],
   'pause.resume': ['Resume', '繼續'],
   'pause.banner': ['Paused', '已暫停'],
-  'pause.hint': ['Tap here, or press P / Space, to resume', '點這裡，或按 P／空白鍵繼續'],
+  'pause.hint': ['Tap anywhere, or press P / Space, to resume', '點畫面任何地方，或按 P／空白鍵繼續'],
   'log.title': ['Colony Log', '殖民地日誌'],
   'log.by': ['Kept by Juno, youngest survivor', '執筆：朱諾，最年輕的倖存者'],
   'log.day': ['Day {n}', '第 {n} 天'],

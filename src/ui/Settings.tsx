@@ -41,9 +41,13 @@ export function Settings() {
         <button type="button" className="btn sq gear" onClick={() => act.openSettings(true)} aria-label={t('set.title')} title={t('set.title')}>≡</button>
       </div>
       {paused && (
-        <button type="button" className="paused-banner px" onClick={() => act.setPaused(false)}>
-          <b>{t('pause.banner')}</b><small>{t('pause.hint')}</small>
-        </button>
+        <>
+          {/* 暫停時整個畫面蓋一層薄黑幕，擋住採集、點建築等所有操作；點任何地方就繼續 */}
+          <div className="paused-veil" onClick={() => act.setPaused(false)} aria-hidden="true" />
+          <button type="button" className="paused-banner px" onClick={() => act.setPaused(false)}>
+            <b>{t('pause.banner')}</b><small>{t('pause.hint')}</small>
+          </button>
+        </>
       )}
       {open && (
         <Modal label={t('set.title')} className="settings-page">

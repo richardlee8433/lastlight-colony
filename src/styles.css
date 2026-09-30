@@ -239,6 +239,8 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .settings .tech-btn { height: 30px; padding: 0 10px; font-size: 13px; }
 .settings .pause-btn { font-size: 11px; letter-spacing: -1px; }
 .settings .pause-btn.on { background: var(--trim); color: #1a1420; }
+/* 暫停：薄黑幕蓋住整個遊戲畫面（在首頁與視窗之下），擋住所有操作 */
+.paused-veil { position: absolute; inset: 0; z-index: 8; background: rgba(6, 7, 14, 0.35); cursor: pointer; animation: veil-in 0.2s ease-out; }
 /* 暫停提示：畫面上方正中，點一下繼續 */
 .paused-banner { position: absolute; left: 50%; top: calc(70px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 8;
   display: grid; gap: 2px; justify-items: center; padding: 8px 20px; cursor: pointer; font: inherit;
