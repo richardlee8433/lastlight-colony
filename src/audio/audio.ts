@@ -1,4 +1,9 @@
 import titleSongURL from '../assets/music/alien-sky.mp3';
+import ch1SongURL from '../assets/music/three-note-motif.mp3';
+
+/** 錄好的曲目：首頁主題曲、第 1 章配樂；其他情況播程序化配樂 */
+const SONGS = { title: titleSongURL, ch1: ch1SongURL } as const;
+type SongKey = keyof typeof SONGS;
 // 程序化音樂與音效（Web Audio API，不需要任何音檔，打包後仍是單一 HTML）
 // 音樂：慢速的太空氛圍——長音 pad、低音、帶回音的琶音；章節不同調性，襲擊預警時加入低頻脈動。
 // 音效：採集、暴擊、建造、研究、通知、警報、槍聲、雷射、酸液、按鈕。
@@ -39,9 +44,11 @@ class Engine {
   master!: GainNode; music!: GainNode; sfx!: GainNode; delay!: DelayNode; noiseBuf!: AudioBuffer;
   mood: MusicMood = { stage: 1, raid: false, finished: false };
   private nextBar = 0; private bar = 0; private timer: number | null = null;
-  /** 首頁主題曲（Alien Sky）：首頁開著時播放、循環；進入遊戲後淡出，換回程序化配樂 */
+  /** 首頁開著時播首頁主題曲（Alien Sky）；第 1 章播 Three-Note Motif；其他章播程序化配樂。切換時交叉淡入淡出 */
   title = false;
-  private song: HTMLAudioElement | null = null; private songGain!: GainNode; private gameGain!: GainNode;
+  private songs: Partial<Record<SongKey, { el: HTMLAudioElement; gain: GainNode }>> = {};
+  private track: SongKey | null | undefined = undefined;
+  private gameGain!: GainNode;
   private last: Record<string, number> = {};
 
   /** 瀏覽器要求使用者互動後才能發聲：第一次點擊時建立 AudioContext */
@@ -54,10 +61,12 @@ class Engine {
     this.music = ctx.createGain(); this.music.connect(this.master);
     // 程序化配樂先經過 gameGain（首頁時靜音）；主題曲經過 songGain，兩者都跟著音樂音量
     this.gameGain = ctx.createGain(); this.gameGain.connect(this.music);
-    this.songGain = ctx.createGain(); this.songGain.gain.value = 0; this.songGain.connect(this.music);
-    const song = (this.song = new Audio(titleSongURL));
-    song.loop = true;
-    ctx.createMediaElementSource(song).connect(this.songGain);
+    for (const k of Object.keys(SONGS) as SongKey[]) {
+      const el = new Audio(SONGS[k]); el.loop = true;
+      const gain = ctx.createGain(); gain.gain.value = 0; gain.connect(this.music);
+      ctx.createMediaElementSource(el).connect(gain);
+      this.songs[k] = { el, gain };
+    }
     this.sfx = ctx.createGain(); this.sfx.connect(this.master);
     // 太空感的回音：feedback delay，只接音樂的琶音與部分音效
     this.delay = ctx.createDelay(1.5); this.delay.delayTime.value = 0.42;
@@ -68,20 +77,27 @@ class Engine {
     const d = this.noiseBuf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     this.applyVolume();
-    this.setTitle(this.title);
+    this.updateTrack();
     this.nextBar = ctx.currentTime + 0.1;
     this.timer = window.setInterval(() => this.schedule(), 200);
   }
-  /** 切換首頁主題曲／遊戲配樂（淡入淡出） */
-  setTitle(on: boolean) {
-    this.title = on;
-    if (!this.ctx || !this.song) return;
+  setTitle(on: boolean) { this.title = on; this.updateTrack(); }
+  setMood(m: MusicMood) { this.mood = m; this.updateTrack(); }
+  /** 依首頁／章節決定要播哪首；換曲時交叉淡入淡出（null＝程序化配樂） */
+  private updateTrack() {
+    const want: SongKey | null = this.title ? 'title' : this.mood.stage === 1 && !this.mood.finished ? 'ch1' : null;
+    if (!this.ctx || want === this.track) return;
+    this.track = want;
     const t = this.ctx.currentTime;
-    this.songGain.gain.cancelScheduledValues(t); this.gameGain.gain.cancelScheduledValues(t);
-    this.songGain.gain.setTargetAtTime(on ? 1 : 0, t, on ? 0.6 : 0.8);
-    this.gameGain.gain.setTargetAtTime(on ? 0 : 1, t, on ? 0.3 : 1.2);
-    if (on) { if (this.song.paused) { this.song.currentTime = 0; this.song.play().catch(() => {}); } }
-    else { const s = this.song; window.setTimeout(() => { if (!this.title) s.pause(); }, 4000); }
+    for (const k of Object.keys(this.songs) as SongKey[]) {
+      const s = this.songs[k]!, on = k === want;
+      s.gain.gain.cancelScheduledValues(t);
+      s.gain.gain.setTargetAtTime(on ? 1 : 0, t, on ? 0.6 : 0.8);
+      if (on) { if (s.el.paused) { s.el.currentTime = 0; s.el.play().catch(() => {}); } }
+      else if (!s.el.paused) window.setTimeout(() => { if (this.track !== k) s.el.pause(); }, 4000);
+    }
+    this.gameGain.gain.cancelScheduledValues(t);
+    this.gameGain.gain.setTargetAtTime(want ? 0 : 1, t, want ? 0.3 : 1.2);
   }
   applyVolume() {
     if (!this.ctx) return;
@@ -95,7 +111,7 @@ class Engine {
   private schedule() {
     const ctx = this.ctx!;
     if (ctx.state !== 'running') return;
-    if (this.title) { this.nextBar = Math.max(this.nextBar, ctx.currentTime + 0.1); return; }
+    if (this.track) { this.nextBar = Math.max(this.nextBar, ctx.currentTime + 0.1); return; }
     const barLen = this.mood.raid ? 2.4 : 3.2;   // 襲擊時節奏加快
     while (this.nextBar < ctx.currentTime + 0.6) {
       this.playBar(this.nextBar, barLen);
@@ -209,7 +225,7 @@ export type Sfx = 'collect' | 'crit' | 'empty' | 'ui' | 'assign' | 'build' | 'st
 
 const engine = new Engine();
 export const sfx = (name: Sfx) => engine.play(name);
-export const setMood = (m: MusicMood) => { engine.mood = m; };
+export const setMood = (m: MusicMood) => engine.setMood(m);
 /** 首頁開關時呼叫：首頁播主題曲，遊戲中播程序化配樂 */
 export const setTitleMusic = (on: boolean) => engine.setTitle(on);
 /** 第一次互動時啟動音訊；也讓所有按鈕有輕微的點擊聲 */
