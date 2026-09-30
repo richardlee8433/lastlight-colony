@@ -12,7 +12,7 @@ import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 import { sfx } from '../audio/audio';
 
-type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; squash: number; lights?: Container };
+type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container };
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
@@ -311,7 +311,7 @@ export class GameScene {
     if (!bid) return null;
     const s = game.s;
     const v = new Container() as View;
-    v.key = key; v.site = site; v.bid = bid; v.squash = 0;
+    v.key = key; v.site = site; v.bid = bid;
     v.position.set(site.x, site.y); v.zIndex = site.y;
     const L = s.b[bid].level;
     const b: any = createBuilding(artId(s, bid), Math.max(1, L));
@@ -444,7 +444,6 @@ export class GameScene {
     const [cx, cy] = this.toScreen(v.x, v.y - b.art.ay / 2);
     this.fx.burst(cx, cy, RES[r.res].color, r.crit ? 14 : 4);
     if (r.crit) b.flash();
-    v.squash = 1;
   }
 
   /** 名稱牌與採集卡防重疊：優先度高的（展開中、採集卡）先放，其餘遇到重疊就往上錯開 */
@@ -886,9 +885,6 @@ export class GameScene {
       const b = v.building;
       if (b) {
         b.update(this.T, dt);
-        v.squash *= Math.pow(0.0008, dt);
-        b.sprite.scale.set(b.sprite.base * (1 + 0.08 * v.squash), b.sprite.base * (1 - 0.1 * v.squash));
-        b.flashSprite.scale.copyFrom(b.sprite.scale);
         const on = !!v.bid && built(s, v.bid) && DEF[v.bid].clickable && buffActive(s, v.bid);
         v.ring.visible = on;
         if (on) v.ring.update(this.T);
