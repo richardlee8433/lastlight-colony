@@ -6,6 +6,7 @@ import { LANGS, chapterText, t, useLang, useSettings } from '../i18n';
 import { Modal } from './Modals';
 import { VERSION } from './Settings';
 import bg from '../assets/title.webp';
+import { setTitleMusic } from '../audio/audio';
 
 const W = 1672, H = 941;          // 背景圖原始尺寸（光點位置用圖上的百分比）
 const FOCUS_X = 0.6, FOCUS_Y = 0.59;   // 營地在圖上的位置（手機直式畫面裁切時以它為中心）
@@ -20,6 +21,8 @@ const GLOWS: { x: number; y: number; r: number; c: string; d: number }[] = [
 export function TitleScreen() {
   useGame((st) => st.v);
   const open = useGame((st) => st.title);
+  // 首頁主題曲：首頁開著時播放，進入遊戲後淡出（瀏覽器規定第一次點擊後才會出聲）
+  useEffect(() => { setTitleMusic(open); }, [open]);
   const lang = useLang(), setLang = useSettings((st) => st.setLang);
   const [confirm, setConfirm] = useState(false), [about, setAbout] = useState(false);
   const box = useCover();
