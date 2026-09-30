@@ -241,16 +241,14 @@ export class GameScene {
   /** 地面解析度：跟著畫面縮放，最多 3 倍（再高的話記憶體和重畫時間划不來） */
   groundRes() { return clampN(this.Z, 2, 3); }
   /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬踏板、2 石磚）：
-   *  第 3 章起中央附近或 Lv3 以上鋪金屬，第 6 章起中央附近或 Lv5 以上鋪石磚；殖民地由中心往外慢慢變「文明」 */
+   *  同一章的鋪面一致：第 1～2 章沙路、第 3～5 章金屬踏板、第 6 章石磚 */
   mapSites() {
     const s = game.s, stage = Math.min(6, s.stage);
     const out: (Site & { r: number; tier: number })[] = [];
     for (const site of SITES) {
       const bid = this.siteBuilding(site);
       if (!bid || !built(s, bid)) continue;
-      const lvl = s.b[bid].level, inner = Math.hypot(site.x - CENTER.x, (site.y - CENTER.y) * 1.3) < 200;
-      const tier = site.hub ? (stage >= 6 ? 2 : stage >= 3 ? 1 : 0)
-        : stage >= 6 && (inner || lvl >= 5) ? 2 : stage >= 3 && (inner || lvl >= 3) ? 1 : 0;
+      const tier = stage >= 6 ? 2 : stage >= 3 ? 1 : 0;
       out.push({ ...site, r: site.r ?? 24, tier });
     }
     return out;
