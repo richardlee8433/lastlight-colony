@@ -1507,7 +1507,9 @@ function spriteCharacter(sh, frames) {
   /** 依位置變化更新面向；回傳目前的方向列索引 */
   c.turn = () => {
     // 位置會四捨五入成整數，斜走時每格的位移忽左忽下；用平滑過的速度判斷方向，並加上遲滯，避免來回切換
-    if (st.lx != null) {
+    // 只有在走路時才依移動方向轉身；停下來時保持原本的方向（工作、射擊時由 face／setWork 決定）
+    if (!st.moving) { st.vx = 0; st.vy = 0; }
+    else if (st.lx != null) {
       const dx = c.x - st.lx, dy = c.y - st.ly;
       st.vx = st.vx * 0.85 + dx * 0.15; st.vy = st.vy * 0.85 + dy * 0.15;
       const ax = Math.abs(st.vx), ay = Math.abs(st.vy);
@@ -1529,14 +1531,14 @@ function spriteWorker() {
   let carry = false, work = false;
   c.setCarry = (col) => { carry = col != null; };
   /** 在建築旁工作（面向建築） */
-  c.setWork = (w) => { work = w; if (w) st.facing = 'up'; };
+  c.setWork = (w) => { if (w && !work) st.facing = 'up'; work = w; };
   c.update = (t) => {
     const f = c.turn();
     let row, k;
-    if (work && !st.moving) { row = 9 + f; k = Math.floor(t * 6) % 4; }
+    if (work && !st.moving) { row = 9 + f; k = Math.floor(t * 4) % 4; }
     else if (carry) { row = 6 + f; k = st.moving ? Math.floor(t * 8) % 4 : 0; }
     else if (st.moving) { row = 3 + f; k = Math.floor(t * 8) % 4; }
-    else { row = f; k = Math.floor(t * 2) % 4; }
+    else { row = f; k = 0; }
     c.sprite.texture = fr[row][k];
   };
   return c;
@@ -1556,7 +1558,7 @@ function spriteMarine(armed) {
     let row, k;
     if (shootT > 0) { row = 6 + f; k = shootT > 0.2 ? 0 : shootT > 0.1 ? 2 : 3; }   // 瞄準 → 後座力 → 回位（略過圖上自帶閃光的那一格）
     else if (st.moving) { row = 3 + f; k = Math.floor(t * 8) % 4; }
-    else { row = f; k = Math.floor(t * 2) % 4; }
+    else { row = f; k = 0; }
     c.sprite.texture = fr[row][k];
     const m = st.facing === 'side' ? { x: (st.flip ? -1 : 1) * 8, y: -8 } : st.facing === 'down' ? { x: 3, y: -5 } : { x: 2, y: -13 };
     flash.position.set(m.x - 1, m.y - 1); glow.position.set(m.x, m.y);
