@@ -161,6 +161,9 @@ interface Store {
   closeTitle: () => void;
   settings: boolean;
   openSettings: (o: boolean) => void;
+  /** 玩家按下的暫停（訊息視窗與對話另外自動暫停） */
+  paused: boolean;
+  setPaused: (p: boolean) => void;
 }
 
 export const useGame = create<Store>((set, get) => {
@@ -195,6 +198,8 @@ export const useGame = create<Store>((set, get) => {
     closeTitle: () => set({ title: false }),
     settings: false,
     openSettings: (o) => set({ settings: o }),
+    paused: false,
+    setPaused: (p) => set({ paused: p }),
     openJournal: (o) => set({ journal: o }),
     seenIntro: () => run((s) => { s.story.seenIntro = Math.min(s.stage, CHAPTERS.length); }),
     raidLook: 0,
@@ -226,13 +231,17 @@ export const useGame = create<Store>((set, get) => {
 
 /** 有正在播放的劇情對話 */
 const dialogOpen = () => { const q = game.s.story.queue?.[0]; return !!q && !!SCENES[q.id] && !game.s.failed; };
+/** 目前開著的訊息視窗數（Modal 開啟時加一、關閉時減一） */
+export const modalHold = { n: 0 };
+/** 遊戲時間停止：玩家暫停、首頁、劇情對話、任何訊息視窗（事件、報告、章節開場、科技樹、設定、日誌…） */
+export const gamePaused = () => { const st = useGame.getState(); return st.paused || st.title || !!st.trade || dialogOpen() || modalHold.n > 0; };
 
 // 200ms 時間累加器（GDD §15 tick.ts）。分頁在背景太久時，超過 60 秒的部分用離線收益結算。
 let last = performance.now(), acc = 0, sinceSave = 0;
 setInterval(() => {
   const now = performance.now();
-  // 首頁或劇情對話開著時遊戲暫停（不累積時間），對話播完自動繼續
-  if (useGame.getState().title || dialogOpen()) { last = now; return; }
+  // 暫停時不累積時間：關掉視窗、對話播完或按下繼續就接著跑
+  if (gamePaused()) { last = now; return; }
   acc += (now - last) / 1000;
   last = now;
   if (acc > 60) {

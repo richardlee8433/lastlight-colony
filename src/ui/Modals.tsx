@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useGame, game } from '../store/gameStore';
+import { useEffect, useState } from 'react';
+import { useGame, game, modalHold } from '../store/gameStore';
 import { RES_KEYS, ResKey } from '../engine/state';
 import { canAfford, idle } from '../engine/formulas';
 import { CHAPTERS } from '../engine/story';
@@ -8,6 +8,8 @@ import { bName, chapterText, costText, eventText, raidName, resName, t, tm } fro
 import { Icon, fmt, fmtTime } from './common';
 
 export function Modal({ children, label, className = '' }: { children: React.ReactNode; label: string; className?: string }) {
+  // 訊息視窗開著時遊戲暫停
+  useEffect(() => { modalHold.n++; return () => { modalHold.n--; }; }, []);
   return <div className="modal-bg"><div className={'modal px ' + className} role="dialog" aria-modal="true" aria-label={label}>{children}</div></div>;
 }
 

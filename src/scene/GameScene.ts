@@ -4,7 +4,7 @@ import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
   createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites, hasTerrain,
 } from '../art/art.js';
-import { game, useGame } from '../store/gameStore';
+import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { artId, buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
@@ -859,12 +859,14 @@ export class GameScene {
     w.update(this.T);
   }
 
-  frame(dt: number) {
+  frame(rdt: number) {
+    // 遊戲暫停時畫面上的人、建築動畫也停住；鏡頭照常可以移動
+    const dt = gamePaused() ? 0 : rdt;
     this.T += dt;
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
-      this.cam.x += (this.camGoal.x - this.cam.x) * Math.min(1, dt * 6);
-      this.cam.y += (this.camGoal.y - this.cam.y) * Math.min(1, dt * 6);
+      this.cam.x += (this.camGoal.x - this.cam.x) * Math.min(1, rdt * 6);
+      this.cam.y += (this.camGoal.y - this.cam.y) * Math.min(1, rdt * 6);
       if (Math.abs(this.camGoal.x - this.cam.x) < 0.5 && Math.abs(this.camGoal.y - this.cam.y) < 0.5) { this.cam.x = this.camGoal.x; this.cam.y = this.camGoal.y; this.camGoal = null; }
     }
     this.world.scale.set(Z);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame, game } from '../store/gameStore';
 import { CHAPTERS } from '../engine/story';
 import { built } from '../engine/formulas';
@@ -17,13 +17,34 @@ export function Settings() {
   const act = useGame.getState(), s = game.s;
   const audio = useAudio();
   const close = () => { act.openSettings(false); setConfirm(false); };
+  const paused = useGame((st) => st.paused);
+  // P 或空白鍵：暫停／繼續（焦點在按鈕或輸入框上時空白鍵照原本的用途）
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = document.activeElement?.tagName;
+      if (e.key === 'p' || e.key === 'P' || (e.key === ' ' && el !== 'BUTTON' && el !== 'INPUT' && el !== 'TEXTAREA')) {
+        if (useGame.getState().title) return;
+        e.preventDefault(); act.setPaused(!useGame.getState().paused);
+      }
+    };
+    addEventListener('keydown', on);
+    return () => removeEventListener('keydown', on);
+  }, [act]);
   return (
     <>
       <div className="settings">
         {built(s, 'databank') && <button type="button" className="btn tech-btn" onClick={() => act.openTech(true)} title={t('tt.title')}>{t('tt.short')}{s.research.active ? ' ●' : ''}</button>}
+        <button type="button" className={'btn sq pause-btn' + (paused ? ' on' : '')} onClick={() => act.setPaused(!paused)}
+          aria-label={t(paused ? 'pause.resume' : 'pause.pause')} aria-pressed={paused} title={t(paused ? 'pause.resume' : 'pause.pause') + ' (P)'}>{paused ? '▶' : '❚❚'}</button>
         <button type="button" className="btn tech-btn" onClick={() => act.openJournal(true)} title={t('log.title')}>{t('log.short')}</button>
         <button type="button" className="btn sq gear" onClick={() => act.openSettings(true)} aria-label={t('set.title')} title={t('set.title')}>≡</button>
       </div>
+      {paused && (
+        <button type="button" className="paused-banner px" onClick={() => act.setPaused(false)}>
+          <b>{t('pause.banner')}</b><small>{t('pause.hint')}</small>
+        </button>
+      )}
       {open && (
         <Modal label={t('set.title')} className="settings-page">
           <header className="trade-head">
