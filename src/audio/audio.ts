@@ -1,8 +1,11 @@
 import titleSongURL from '../assets/music/alien-sky.mp3';
 import ch1SongURL from '../assets/music/three-note-motif.mp3';
+import ch2SongURL from '../assets/music/ch2.mp3';
 
-/** 錄好的曲目：首頁主題曲、第 1 章配樂；其他情況播程序化配樂 */
-const SONGS = { title: titleSongURL, ch1: ch1SongURL } as const;
+/** 錄好的曲目：首頁主題曲、第 1～2 章配樂；其他情況播程序化配樂 */
+const SONGS = { title: titleSongURL, ch1: ch1SongURL, ch2: ch2SongURL } as const;
+/** 各章對應的錄音曲目（沒有列出的章用程序化配樂） */
+const CHAPTER_SONG: Record<number, SongKey> = { 1: 'ch1', 2: 'ch2' };
 type SongKey = keyof typeof SONGS;
 // 程序化音樂與音效（Web Audio API，不需要任何音檔，打包後仍是單一 HTML）
 // 音樂：慢速的太空氛圍——長音 pad、低音、帶回音的琶音；章節不同調性，襲擊預警時加入低頻脈動。
@@ -44,7 +47,7 @@ class Engine {
   master!: GainNode; music!: GainNode; sfx!: GainNode; delay!: DelayNode; noiseBuf!: AudioBuffer;
   mood: MusicMood = { stage: 1, raid: false, finished: false };
   private nextBar = 0; private bar = 0; private timer: number | null = null;
-  /** 首頁開著時播首頁主題曲（Alien Sky）；第 1 章播 Three-Note Motif；其他章播程序化配樂。切換時交叉淡入淡出 */
+  /** 首頁開著時播首頁主題曲（Alien Sky）；第 1、2 章播錄好的配樂（CHAPTER_SONG）；其他章播程序化配樂。切換時交叉淡入淡出 */
   title = false;
   private songs: Partial<Record<SongKey, { el: HTMLAudioElement; gain: GainNode }>> = {};
   private track: SongKey | null | undefined = undefined;
@@ -85,7 +88,7 @@ class Engine {
   setMood(m: MusicMood) { this.mood = m; this.updateTrack(); }
   /** 依首頁／章節決定要播哪首；換曲時交叉淡入淡出（null＝程序化配樂） */
   private updateTrack() {
-    const want: SongKey | null = this.title ? 'title' : this.mood.stage === 1 && !this.mood.finished ? 'ch1' : null;
+    const want: SongKey | null = this.title ? 'title' : this.mood.finished ? null : CHAPTER_SONG[this.mood.stage] ?? null;
     if (!this.ctx || want === this.track) return;
     this.track = want;
     const t = this.ctx.currentTime;
