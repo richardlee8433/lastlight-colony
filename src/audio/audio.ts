@@ -2,7 +2,7 @@
 // 下載好之前（或找不到檔案時）先播程序化配樂，開始播放後才交叉淡入。
 const MUSIC_DIR = 'music/';
 
-/** 錄好的曲目：首頁主題曲、第 1～6 章配樂；通關後播程序化配樂 */
+/** 錄好的曲目：首頁主題曲、第 1～6 章配樂（通關後繼續播第 6 章） */
 const SONGS = { title: 'alien-sky.mp3', ch1: 'ch1.mp3', ch2: 'ch2.mp3', ch3: 'ch3.mp3', ch4: 'ch4.mp3', ch5: 'ch5.mp3', ch6: 'ch6.mp3' } as const;
 /** 各章對應的錄音曲目（沒有列出的章用程序化配樂） */
 const CHAPTER_SONG: Record<number, SongKey> = { 1: 'ch1', 2: 'ch2', 3: 'ch3', 4: 'ch4', 5: 'ch5', 6: 'ch6' };
@@ -47,7 +47,7 @@ class Engine {
   master!: GainNode; music!: GainNode; sfx!: GainNode; delay!: DelayNode; noiseBuf!: AudioBuffer;
   mood: MusicMood = { stage: 1, raid: false, finished: false };
   private nextBar = 0; private bar = 0; private timer: number | null = null;
-  /** 首頁開著時播首頁主題曲（Alien Sky）；第 1～6 章播錄好的配樂（CHAPTER_SONG）；通關後與音樂還沒開始播時用程序化配樂。切換時交叉淡入淡出 */
+  /** 首頁開著時播首頁主題曲（Alien Sky）；第 1～6 章播錄好的配樂（CHAPTER_SONG，通關後繼續播第 6 章）；音樂還沒開始播時用程序化配樂。切換時交叉淡入淡出 */
   title = false;
   private songs: Partial<Record<SongKey, { el: HTMLAudioElement; gain: GainNode }>> = {};
   private track: SongKey | null | undefined = undefined;
@@ -90,7 +90,7 @@ class Engine {
   setMood(m: MusicMood) { this.mood = m; this.updateTrack(); }
   /** 依首頁／章節決定要播哪首；換曲時交叉淡入淡出（null＝程序化配樂） */
   private updateTrack() {
-    const want: SongKey | null = this.title ? 'title' : this.mood.finished ? null : CHAPTER_SONG[this.mood.stage] ?? null;
+    const want: SongKey | null = this.title ? 'title' : this.mood.finished ? 'ch6' : CHAPTER_SONG[this.mood.stage] ?? null;
     if (!this.ctx || want === this.track) return;
     this.track = want;
     const t = this.ctx.currentTime;
