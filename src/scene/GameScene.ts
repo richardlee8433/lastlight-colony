@@ -240,16 +240,16 @@ export class GameScene {
   groundKey = '';
   /** 地面解析度：跟著畫面縮放，最多 3 倍（再高的話記憶體和重畫時間划不來） */
   groundRes() { return clampN(this.Z, 2, 3); }
-  /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬踏板、2 石磚）：
-   *  同一章的鋪面一致：第 1～2 章沙路、第 3～5 章金屬踏板、第 6 章石磚 */
+  /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬地磚、2 石磚）：
+   *  整個殖民地一致，由軌道車線決定：還沒蓋是沙路、蓋好鋪石磚、升級雙線運轉後換成金屬地磚 */
   mapSites() {
-    const s = game.s, stage = Math.min(6, s.stage);
+    const s = game.s;
     const out: (Site & { r: number; tier: number })[] = [];
+    const paving = s.b.rail_line?.nodes.includes('double') ? 1 : built(s, 'rail_line') ? 2 : 0;
     for (const site of SITES) {
       const bid = this.siteBuilding(site);
       if (!bid || !built(s, bid)) continue;
-      const tier = stage >= 6 ? 2 : stage >= 3 ? 1 : 0;
-      out.push({ ...site, r: site.r ?? 24, tier });
+      out.push({ ...site, r: site.r ?? 24, tier: paving });
     }
     return out;
   }

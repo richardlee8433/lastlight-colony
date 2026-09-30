@@ -102,6 +102,8 @@ export const STRINGS: Record<string, [string, string]> = {
   'n.built': ['{b} built.', '{b}建成了。'],
   'n.levelUp': ['{b} reached Lv{n}.', '{b}升到 Lv{n}。'],
   'n.node': ['{b}: {node} ({nodeDesc})', '{b}：{node}（{nodeDesc}）'],
+  'n.paveStone': ['Roads paved! Every road in the colony is now stone tiles.', '道路鋪好了！殖民地的路全部換成石磚。'],
+  'n.paveMetal': ['Roads upgraded to metal tiles!', '道路升級成金屬地磚了！'],
   'n.research': ['Research complete: {rs} ({rsDesc})', '研究完成：{rs}（{rsDesc}）'],
   'n.airMigrated': ['v0.6: this planet’s air is now unbreathable. Your colony was given an Oxygen Scrubber and an Electrolyzer, staffed to keep everyone breathing.', 'v0.6 更新：這顆星球的空氣不能呼吸了。已經幫你的殖民地蓋好氧氣再生器和電解站並派好人手，大家可以正常呼吸。'],
   'n.hypoxia': ['Out of oxygen! Everyone is gasping — output halved and morale falling.', '氧氣用完了！大家都在喘氣，產量減半、士氣下降。'],

@@ -33,6 +33,8 @@ export function levelUp(s: GameState, id: string): boolean {
     if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, 'n.beaconDone', undefined, 'good'); }
     else notify(s, 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
   } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
+  // 軌道車線：蓋好後整個殖民地的道路鋪上石磚（地圖由 GameScene 依此重畫）
+  if (id === 'rail_line' && s.b[id].level === 1) notify(s, 'n.paveStone', undefined, 'good');
   return true;
 }
 
@@ -52,6 +54,7 @@ export function buyNode(s: GameState, id: string, nodeId: string): boolean {
   pay(s, n.cost);
   s.b[id].nodes.push(nodeId);
   notify(s, 'n.node', { b: id, node: nodeId }, 'good');
+  if (id === 'rail_line' && nodeId === 'double') notify(s, 'n.paveMetal', undefined, 'good');
   return true;
 }
 

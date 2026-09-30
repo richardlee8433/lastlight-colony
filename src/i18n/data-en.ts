@@ -30,8 +30,8 @@ const buildings: Record<string, B> = {
   central_hub: { name: 'Central Hub', desc: 'Command Lv2. A real settlement center: housing for 4, +100 storage, and advances to Stage 3. Requires population 12.' },
   databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony’s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more.', nodes: {
     speed_50: ['Index System', 'Research speed +50%'] } },
-  rail_line: { name: 'Rail Line', desc: 'All gathering buildings +10% output, and workers move faster.', nodes: {
-    double: ['Double Track', 'Gathering output +5% more'] } },
+  rail_line: { name: 'Rail Line', desc: 'All gathering buildings +10% output, workers move faster, and every road in the colony is paved with stone tiles.', nodes: {
+    double: ['Double Track', 'Gathering output +5% more, and roads upgrade to metal tiles'] } },
   metal_mine: { name: 'Metal Mine', desc: 'Digs down to the metal veins. Output is low, but every step ahead needs it.', nodes: {
     prod_20: ['Shoring', 'Output +30%'], click_1: ['Vein Probe', 'Click yield +1'], crystal_sense: ['Crystal Sense', 'Clicks have a 10% chance to drop 1 xenocrystal shard'] } },
   expedition: { name: 'Expedition Station', desc: 'Vehicles and gear for sending teams into the wasteland to search for blueprints left by an unknown civilization. Each trip takes 2 colonists for about 3 minutes; the first always brings back a blueprint. Upgrades bring back more loot and make blueprint fragments easier to find.' },
