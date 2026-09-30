@@ -21,7 +21,8 @@
 ## 共同規格
 
 - **格式：**一張圖一棟建築，置中，**透明背景**，沒有透明背景就用純色平背景。建議 1024×1024。
-- **視角：**高角度的俯視 3/4 視角，跟殖民者小人和地圖素材相同，約 60° 往下看，看得到屋頂和正面。**不要**等角（isometric）。
+- **視角：**正面俯視，跟殖民者小人和逃生艙相同：正面牆壁正對鏡頭，只看得到屋頂和正面，**看不到側面**。**不要**等角（isometric），也不要把建築轉成斜角。
+- **細節密度：**遊戲裡一棟建築大約 60 像素寬，細節要大塊、好辨識；太細的零件縮小後會糊掉。
 - **光源：**左上方。陰影落在右下，只畫建築本身，不要畫地面。
 - **畫風：**像素風，深色外框，有限色盤，跟小人同一套風格。
 - **世界觀：**沒有氧氣的外星沙漠，所以**不能有火焰、煙、火把**。要表現運作中，就用白色蒸氣、電火花、LED 燈、螢幕光。
@@ -30,8 +31,10 @@
 ## 共通提示詞（每張都加在最前面）
 
 ```
-pixel art game building sprite, single building centered, high top-down three-quarter view (about 60 degrees),
-roof and front face visible, not isometric, light from top-left, crisp dark outline, limited color palette,
+low resolution pixel art game building sprite, about 64 pixels wide, chunky pixels, bold simple shapes readable at small size,
+single building centered, front-facing top-down view like Stardew Valley buildings, camera looking down from the south,
+front wall faces the viewer squarely, only the roof and front face visible, no side walls, not isometric, not rotated,
+light from top-left, crisp dark outline, limited color palette,
 transparent background, no ground, no text, no people, no fire, no smoke,
 sci-fi colony on a red desert planet with no breathable air, cozy colony sim style like Hearth and Hamlet
 ```
