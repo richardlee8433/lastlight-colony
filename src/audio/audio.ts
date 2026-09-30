@@ -65,7 +65,7 @@ class Engine {
     // 程序化配樂先經過 gameGain（首頁時靜音）；主題曲經過 songGain，兩者都跟著音樂音量
     this.gameGain = ctx.createGain(); this.gameGain.connect(this.music);
     for (const k of Object.keys(SONGS) as SongKey[]) {
-      const el = new Audio(); el.loop = true; el.preload = k === 'title' ? 'auto' : 'none'; el.src = MUSIC_DIR + SONGS[k];
+      const el = preloaded[k] ?? songElement(k);
       // 真的開始出聲才淡掉程序化配樂（網路慢或檔案不存在時就繼續播程序化配樂）
       el.addEventListener('playing', () => { if (this.track === k) this.fadeGame(0); });
       const gain = ctx.createGain(); gain.gain.value = 0; gain.connect(this.music);
@@ -235,6 +235,13 @@ class Engine {
 }
 export type Sfx = 'collect' | 'crit' | 'empty' | 'ui' | 'assign' | 'build' | 'stage' | 'research' | 'good' | 'warn' | 'alarm' | 'shot' | 'laser' | 'spit' | 'win' | 'lose' | 'boost' | 'finale';
 
+/** 建立曲目的 audio 元素：首頁主題曲在頁面載入時就預先下載，其他章等需要時才下載 */
+function songElement(k: SongKey) {
+  const el = new Audio(); el.loop = true; el.preload = k === 'title' ? 'auto' : 'none'; el.src = MUSIC_DIR + SONGS[k];
+  return el;
+}
+const preloaded: Partial<Record<SongKey, HTMLAudioElement>> = {};
+
 const engine = new Engine();
 export const sfx = (name: Sfx) => engine.play(name);
 export const setMood = (m: MusicMood) => engine.setMood(m);
@@ -242,6 +249,9 @@ export const setMood = (m: MusicMood) => engine.setMood(m);
 export const setTitleMusic = (on: boolean) => engine.setTitle(on);
 /** 第一次互動時啟動音訊；也讓所有按鈕有輕微的點擊聲 */
 export function installAudio() {
+  // 首頁主題曲一打開頁面就開始下載；瀏覽器規定第一次點擊或按鍵後才能出聲，屆時立刻播放
+  preloaded.title = songElement('title');
+  preloaded.title.load();
   const unlock = () => engine.unlock();
   addEventListener('pointerdown', unlock, { capture: true });
   addEventListener('keydown', unlock, { capture: true });
