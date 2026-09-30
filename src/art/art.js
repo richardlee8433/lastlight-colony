@@ -1240,6 +1240,16 @@ const PAINTED_FX = {
   forge: [[0.47, 0.6, 28, 0xff9030, 0.55], [0.47, 0.82, 16, 0xffb040, 0.45]],
   outpost: [[0.5, 0.36, 22, 0xffb040, 0.4], [0.5, 0.7, 16, 0xffb040, 0.45], [0.08, 0.38, 12, 0xffc060, 0.4], [0.93, 0.38, 12, 0xffc060, 0.4]],
   databank: [[0.5, 0.45, 26, 0x5ae0f0, 0.45], [0.5, 0.7, 14, 0xffb040, 0.4]],
+  colony_core: [[0.5, 0.3, 30, 0xb070ff, 0.55], [0.5, 0.55, 26, 0x5ae0f0, 0.35], [0.5, 0.82, 14, 0x5ae0f0, 0.4]],
+  crystal_synth: [[0.5, 0.3, 30, 0xb070ff, 0.55], [0.5, 0.72, 14, 0xb070ff, 0.4]],
+  security: [[0.5, 0.62, 22, 0x5ae0f0, 0.4]],
+  med_bay: [[0.62, 0.55, 24, 0x5ae0f0, 0.4], [0.93, 0.5, 10, 0xb070ff, 0.35]],
+  water_cycle: [[0.3, 0.45, 18, 0x5ab0ff, 0.4], [0.68, 0.45, 18, 0x5ab0ff, 0.4]],
+  memorial: [[0.5, 0.65, 22, 0xffb040, 0.5]],
+};
+// 會冒白色蒸氣的出氣口（圖上的比例位置）：原圖的蒸氣去背時會被削掉，改由遊戲畫
+const PAINTED_STEAM = {
+  water_cycle: [[0.6, 0.12]],
 };
 async function loadPainted() {
   const { res, buildings } = paintedMeta;
@@ -1249,7 +1259,8 @@ async function loadPainted() {
     const img = new Image(); img.src = url; await img.decode();
     const cv = makeCanvas(img.width, img.height); cv.getContext('2d').drawImage(img, 0, 0);
     const glows = (PAINTED_FX[id] ?? []).map(([fx, fy, r, c, a]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, r, c, a }));
-    PAINTED.set(id, { canvas: cv, ax: m.ax, ay: m.ay, w: m.w, h: m.h, res, glows, beacons: [], smokes: [] });
+    const smokes = (PAINTED_STEAM[id] ?? []).map(([fx, fy]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, c: 0xeef2f6 }));
+    PAINTED.set(id, { canvas: cv, ax: m.ax, ay: m.ay, w: m.w, h: m.h, res, glows, beacons: [], smokes });
   }));
 }
 const paintedArt = (id) => PAINTED.get(id);
