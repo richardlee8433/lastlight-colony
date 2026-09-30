@@ -9,7 +9,8 @@ export function QuickBar() {
   useGame((st) => st.v);
   const sel = useGame((st) => st.selected), focusOn = useGame((st) => st.focusOn);
   const s = game.s;
-  const cmd = [...COMMAND_CHAIN].reverse().find((id) => built(s, id));
+  // 指揮建築：已蓋的最高級；還沒蓋就顯示第一級（緊急營地），不然地圖上看不到也點不到
+  const cmd = [...COMMAND_CHAIN].reverse().find((id) => built(s, id)) ?? COMMAND_CHAIN[0];
   const list = DEFS.filter((d) => d.kind !== 'command' && d.stage <= s.stage);
   return (
     <nav className="quickbar px" aria-label={t('qb.aria')}>
