@@ -1506,7 +1506,8 @@ function spriteCharacter(sh, frames) {
   const st = { facing: 'down', flip: false, moving: false, lx: null, ly: null, vx: 0, vy: 0 };
   c.sprite = s; c.st = st;
   c.setMoving = (m) => { st.moving = m; };
-  c.setDir = (d) => { st.flip = d < 0; };
+  // 走路時左右由 turn() 依平滑後的移動方向決定；setDir 只在停下來時生效（例如射擊時面向敵人），避免每格被覆蓋而左右抖動
+  c.setDir = (d) => { if (!st.moving) st.flip = d < 0; };
   /** 面向某個方向（例如工作時面向建築、射擊時面向敵人） */
   c.face = (f) => { st.facing = f; };
   /** 依位置變化更新面向；回傳目前的方向列索引 */
@@ -1522,7 +1523,8 @@ function spriteCharacter(sh, frames) {
         if (st.facing === 'side') { if (ay > ax * 1.8) st.facing = st.vy > 0 ? 'down' : 'up'; }
         else if (ax > ay * 1.8) st.facing = 'side';
         else st.facing = st.vy > 0 ? 'down' : 'up';
-        if (ax > 0.05) st.flip = st.vx < 0;
+        // 左右翻轉要有明顯的反向移動才發生（路線轉折點的小偏移不會讓人左右抖）
+        if (st.flip ? st.vx > 0.08 : st.vx < -0.08) st.flip = !st.flip;
       }
     }
     st.lx = c.x; st.ly = c.y;
