@@ -516,7 +516,7 @@ export class GameScene {
       const target = this.aliens.length ? this.raidCenter()! : d.to;
       d.setDir(moving ? q.dir : Math.sign(target.x - x) || 1);
       d.setMoving(moving);
-      d.position.set(Math.round(x), Math.round(y)); d.zIndex = y;
+      d.position.set(this.snap(x), this.snap(y)); d.zIndex = y;
       d.update(this.T, dt);
     }
     // 雙方都就位後交火：陸戰隊點放子彈、砲塔打雷射、異星生物吐酸液（仿 RimWorld 的曳光彈，會有落空）
@@ -679,7 +679,7 @@ export class GameScene {
   movePatrols(dt: number) {
     for (const m of this.patrols) {
       const p = patrolAt(m.offset + this.T * 11);
-      m.position.set(Math.round(p.x), Math.round(p.y)); m.zIndex = p.y;
+      m.position.set(this.snap(p.x), this.snap(p.y)); m.zIndex = p.y;
       m.setDir(p.dir); m.setMoving(true);
       m.update(this.T, dt);
     }
@@ -741,7 +741,7 @@ export class GameScene {
       const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
       const x = a.from.x + (a.to.x - a.from.x) * e, y = a.from.y + (a.to.y - a.from.y) * e;
       a.setDir(Math.sign(a.to.x - a.from.x) || 1);
-      a.position.set(Math.round(x), Math.round(y)); a.zIndex = y;
+      a.position.set(this.snap(x), this.snap(y)); a.zIndex = y;
       a.update(this.T, p < 1);
     }
   }
@@ -795,6 +795,8 @@ export class GameScene {
     this.obj.addChild(w);
     this.walkers.push(w);
   }
+  /** 會走動的小人對齊「螢幕像素」而不是美術像素：放大 3 倍時每次只移動 1 個螢幕像素，斜走才不會一頓一頓 */
+  snap(v: number) { return Math.round(v * this.Z) / this.Z; }
   moveWalker(w: Walker, dt: number) {
     const a = w.ai;
     const speed = built(game.s, 'rail_line') ? 24 : 16;
@@ -822,7 +824,7 @@ export class GameScene {
         w.setMoving(true); w.setDir(Math.sign(dx) || 1);
       }
     }
-    w.position.set(Math.round(w.px), Math.round(w.py));
+    w.position.set(this.snap(w.px), this.snap(w.py));
     w.zIndex = w.py;
     w.update(this.T);
   }
