@@ -1238,6 +1238,8 @@ const PAINTED_FX = {
   expedition: [[0.5, 0.6, 26, 0xffb040, 0.45], [0.3, 0.62, 12, 0x5ae0f0, 0.4]],
   rail_line: [[0.68, 0.12, 12, 0xffb040, 0.45], [0.45, 0.58, 18, 0xffb040, 0.3]],
   forge: [[0.47, 0.6, 28, 0xff9030, 0.55], [0.47, 0.82, 16, 0xffb040, 0.45]],
+  outpost: [[0.5, 0.36, 22, 0xffb040, 0.4], [0.5, 0.7, 16, 0xffb040, 0.45], [0.08, 0.38, 12, 0xffc060, 0.4], [0.93, 0.38, 12, 0xffc060, 0.4]],
+  databank: [[0.5, 0.45, 26, 0x5ae0f0, 0.45], [0.5, 0.7, 14, 0xffb040, 0.4]],
 };
 async function loadPainted() {
   const { res, buildings } = paintedMeta;
