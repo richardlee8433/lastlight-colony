@@ -6,7 +6,7 @@ import { add, built, formOf, moraleMult } from './formulas';
 
 export const O2_PER_POP = 0.18;         // 每位殖民者每秒耗氧：氧氣是主線，消耗比營養（0.14）高
 export const AIR_WINDOW = 120;          // 空氣安全度：存量能撐幾秒算 100%
-export const LIFE_SUPPORT = { rate: 0.6, duration: 600 };   // 逃生艙維生系統：開局每秒 0.6，10 分鐘內線性衰減到 0；三個人大約撐 12 分鐘
+export const LIFE_SUPPORT = { rate: 0.25, duration: 300 };   // 逃生艙維生系統：開局每秒 0.25（補不到一半的耗氧，氧氣從第一秒就在下降），5 分鐘內線性衰減到 0；沒蓋再生器大約 4 分多鐘就缺氧
 export const HYPOXIA_PROD = 0.5;        // 缺氧時產量倍率
 export const HYPOXIA_MORALE = 1.5;      // 缺氧時士氣每秒下降
 export const HYPOXIA_GRACE = 90;        // 缺氧多久後開始有人倒下

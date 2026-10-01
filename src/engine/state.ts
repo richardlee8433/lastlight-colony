@@ -142,7 +142,7 @@ export function newGame(now = Date.now()): GameState {
   for (const d of DEFS) b[d.id] = { level: d.startLevel ?? 0, workers: 0, nodes: [], disabledUntil: 0, lastClick: -99 };
   return {
     v: 1, t: 0, stage: 1, finished: false,
-    res: { nutrient: 60, oxygen: 120, scrap: 0, rock: 0, parts: 0, metal: 0, tools: 0, weapon: 0, crystal: 0, credit: 0 },
+    res: { nutrient: 140, oxygen: 150, scrap: 0, rock: 0, parts: 0, metal: 0, tools: 0, weapon: 0, crystal: 0, credit: 0 },
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
