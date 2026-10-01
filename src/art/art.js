@@ -1261,12 +1261,43 @@ async function loadPainted() {
     if (!url) return;
     const img = new Image(); img.src = url; await img.decode();
     const cv = makeCanvas(img.width, img.height); cv.getContext('2d').drawImage(img, 0, 0);
+    const emissive = emissiveCanvas(cv), halo = haloCanvas(emissive, HALO_PAD * res, 3 * res);
     const glows = (PAINTED_FX[id] ?? []).map(([fx, fy, r, c, a]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, r, c, a }));
     const smokes = (PAINTED_STEAM[id] ?? []).map(([fx, fy]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, c: 0xeef2f6 }));
-    PAINTED.set(id, { canvas: cv, ax: m.ax, ay: m.ay, w: m.w, h: m.h, res, glows, beacons: [], smokes });
+    PAINTED.set(id, { canvas: cv, ax: m.ax, ay: m.ay, w: m.w, h: m.h, res, glows, beacons: [], smokes, emissive, halo });
   }));
 }
 const paintedArt = (id) => PAINTED.get(id);
+
+// ───────────────────────────── 日夜：夜晚建築亮燈 ─────────────────────────────
+// 不用另外畫夜間圖：從手繪建築圖挑出「本來就是燈」的像素（暖黃窗光、青色與藍色燈條、紫色晶體），
+// 夜晚用加亮混合疊上去，再加一層模糊的光暈。NIGHT（0 白天～1 深夜）由 GameScene 依時間設定。
+let NIGHT = 0;
+export const setNight = (n) => { NIGHT = n; };
+const HALO_PAD = 8;   // 光暈外擴的空間（地圖像素）
+function emissiveCanvas(cv) {
+  const w = cv.width, h = cv.height, src = cv.getContext('2d').getImageData(0, 0, w, h).data;
+  const out = makeCanvas(w, h), g = out.getContext('2d'), im = g.createImageData(w, h), d = im.data;
+  for (let i = 0; i < src.length; i += 4) {
+    if (src[i + 3] < 128) continue;
+    const r = src[i], gg = src[i + 1], b = src[i + 2];
+    // 暖黃窗光：比帆布、屋頂亮而且偏黃（帆布是 224,160,96 一類，綠色通道到不了 185）
+    const warm = r >= 235 && gg >= 185 && b <= 150 && r - b >= 70;
+    const cyan = gg >= 170 && b >= 170 && r <= 170 && b - r >= 50;                    // 青色燈條
+    const blue = b >= 200 && b - r >= 90 && gg >= 90;                                 // 藍色燈柱
+    const violet = r >= 140 && b >= 180 && gg <= 150 && b - gg >= 60;                 // 紫色晶體
+    if (!(warm || cyan || blue || violet)) continue;
+    d[i] = r; d[i + 1] = gg; d[i + 2] = b; d[i + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+  return out;
+}
+function haloCanvas(em, pad, blur) {
+  const out = makeCanvas(em.width + pad * 2, em.height + pad * 2), g = out.getContext('2d');
+  g.filter = `blur(${blur}px)`;
+  g.drawImage(em, pad, pad); g.drawImage(em, pad, pad); g.drawImage(em, pad, pad);
+  return out;
+}
 /** 手繪建築載入後會換掉程式畫的圖：介面縮圖的快取要跟著換 */
 export const paintedCount = () => PAINTED.size;
 
@@ -1930,11 +1961,20 @@ function fromArt(art) {
     lights.addChild(g, d);
     return { d, g, ph: Math.random() * 6, sp: 2 + Math.random() };
   });
+  // 夜晚亮燈（只有手繪建築有）：燈本身＋光暈，亮度跟著 NIGHT
+  let nightL = null, haloL = null;
+  if (art.emissive) {
+    const mk = (cv, ax, ay) => { const t = Texture.from(cv); t.source.scaleMode = 'linear'; const s = new Sprite(t); s.anchor.set(ax / cv.width, ay / cv.height); s.scale.set(spr.base); s.blendMode = 'add'; s.alpha = 0; return s; };
+    haloL = mk(art.halo, art.ax * res + HALO_PAD * res, art.ay * res + HALO_PAD * res);
+    nightL = mk(art.emissive, art.ax * res, art.ay * res);
+    lights.addChild(haloL, nightL);
+  }
   const puffs = [];
   let acc = 0;
   Object.assign(c, { sprite: spr, lights, art, flashSprite: flash });
   c.flash = () => { flash.alpha = 1; };
   c.update = (t, dt = 1 / 60) => {
+    if (nightL) { nightL.alpha = NIGHT; haloL.alpha = NIGHT; }
     for (const s of glows) s.alpha = s.flicker ? s.base * (0.82 + 0.18 * Math.sin(t * 9 + s.ph) * Math.sin(t * 5.3 + s.ph * 2)) : s.base;
     for (const b of beacons) { const on = Math.sin(t * b.sp + b.ph) > 0.2; b.d.alpha = on ? 1 : 0.15; b.g.alpha = on ? 0.7 : 0.05; }
     if (flash.alpha > 0) flash.alpha = Math.max(0, flash.alpha - dt * 4);

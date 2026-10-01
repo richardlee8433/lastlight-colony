@@ -2,7 +2,7 @@
 import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, loadSprites, hasTerrain, setCharZoom,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, loadSprites, hasTerrain, setCharZoom,
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
@@ -288,7 +288,9 @@ export class GameScene {
       this.obj.addChild(c); this.lightL.addChild(c.lights);
       this.props.push(c);
     }
-    this.overlay.clear().rect(0, 0, MW, MH).fill(hasTerrain() ? 0xfff2ea : STAGES[stage].ambient);
+    // 環境光：白色底，顏色由 dayLight() 用 tint 每幀調整（白天暖白、黃昏橘、夜晚藍、清晨淡紫）
+    this.overlay.clear().rect(0, 0, MW, MH).fill(0xffffff);
+    this.dayTint = hasTerrain() ? 0xfff2ea : STAGES[stage].ambient;
     this.overlay.blendMode = 'multiply';
     this.ambient = createAmbient(stage, MW, MH);
     this.lightL.addChild(this.ambient);
@@ -890,10 +892,26 @@ export class GameScene {
     w.update(this.T);
   }
 
+  /** 日夜（純畫面，不影響數值）：畫面上的一天 5 分鐘，跟著遊戲時間走（暫停時也停） */
+  dayTint = 0xfff2ea;
+  dayLight() {
+    const DAY = 300, p = (((game.s.t % DAY) + DAY) % DAY) / DAY;
+    // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天佔一半，夜晚約三成
+    const K: [number, number, number][] = [
+      [0, this.dayTint, 0], [0.48, this.dayTint, 0], [0.56, 0xffb48a, 0.4], [0.64, 0x5a68a4, 1],
+      [0.86, 0x5a68a4, 1], [0.94, 0xc8b4dc, 0.35], [1, this.dayTint, 0],
+    ];
+    let i = 1; while (i < K.length - 1 && K[i][0] < p) i++;
+    const [p0, c0, n0] = K[i - 1], [p1, c1, n1] = K[i], f = (p - p0) / (p1 - p0 || 1);
+    const mix = (a: number, b: number, sh: number) => Math.round(((a >> sh) & 255) + (((b >> sh) & 255) - ((a >> sh) & 255)) * f);
+    this.overlay.tint = (mix(c0, c1, 16) << 16) | (mix(c0, c1, 8) << 8) | mix(c0, c1, 0);
+    setNight(n0 + (n1 - n0) * f);
+  }
   frame(rdt: number) {
     // 遊戲暫停時畫面上的人、建築動畫也停住；鏡頭照常可以移動
     const dt = gamePaused() ? 0 : rdt;
     this.T += dt;
+    this.dayLight();
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
       this.cam.x += (this.camGoal.x - this.cam.x) * Math.min(1, rdt * 6);
