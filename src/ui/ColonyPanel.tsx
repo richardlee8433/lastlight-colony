@@ -36,11 +36,14 @@ export function ColonyPanel() {
       {!s.starving && food < -0.01 && (
         <div className="arrival"><span className="warn">{t('cp.foodOut', { n: food.toFixed(1), t: fmtTime(s.res.nutrient / -food) })}</span></div>
       )}
-      <div className="arrival">
-        {s.starving ? <span className="warn">{s.starveTime < 60 ? t('cp.starve1', { n: Math.floor(s.starveTime), m: Math.ceil(60 - s.starveTime) }) : t('cp.starve2')}</span>
-          : full ? <span className="muted">{t('cp.full')}</span>
-          : <span className="muted">{t('cp.next', { t: fmtTime(eta!) })}</span>}
-      </div>
+      {/* 人口已滿的提示要蓋生活艙；生活艙還沒解鎖（第 1 章）時不顯示 */}
+      {(s.starving || !full || s.stage >= 2) && (
+        <div className="arrival">
+          {s.starving ? <span className="warn">{s.starveTime < 60 ? t('cp.starve1', { n: Math.floor(s.starveTime), m: Math.ceil(60 - s.starveTime) }) : t('cp.starve2')}</span>
+            : full ? <span className="muted">{t('cp.full')}</span>
+            : <span className="muted">{t('cp.next', { t: fmtTime(eta!) })}</span>}
+        </div>
+      )}
     </div>
   );
 }
