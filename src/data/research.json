@@ -292,7 +292,7 @@
   },
   {
     "id": "xeno_blade",
-    "name": "異晶刃",
+    "name": "異晶槍",
     "desc": "武器攻擊力 +3",
     "cost": {
       "crystal": 90,

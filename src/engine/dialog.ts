@@ -21,37 +21,66 @@ const POP_STEP = 5;
 const seen = (s: GameState, id: string) => !!s.story.seen?.includes(id);
 /** 氧氣再生器已改建成電解站 */
 const isElec = (s: GameState) => built(s, 'o2_scrubber') && (s.b.o2_scrubber.form ?? 0) >= 1;
-/** 場景觸發條件（依序檢查；前一章的場景要在下一章開場前播完） */
-const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: boolean }[] = [
+/** 進入第 n 章後過了幾天（以日誌的章節開始紀錄為準；還沒開始回傳 -1） */
+const daysInChapter = (s: GameState, n: number) => {
+  const e = s.journal?.entries.find((x) => x.k === 'log.chapter' && x.p?.n === n);
+  return e ? dayOf(s.t) - e.d : -1;
+};
+/** 場景觸發條件（依序檢查；前一章的場景要在下一章開場前播完）。
+ *  journal：只寫進日誌、不跳對話框的小場景（避免對話太密、一直暫停遊戲） */
+const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: boolean; journal?: boolean }[] = [
+  // 第 1 章
   { id: 'c1-open', when: (s) => s.stage === 1 && s.story.seenIntro >= 1 },
   { id: 'c1-ls3', when: (s) => AIR_ENABLED && s.stage === 1 && lifeSupportLeft(s) <= 180 && lifeSupportLeft(s) > 0 && !built(s, 'o2_scrubber') },
   { id: 'c1-scrubber', when: (s) => built(s, 'o2_scrubber') },
   { id: 'c1-will', when: (s) => seen(s, 'c1-ls3') && built(s, 'o2_scrubber') },
+  // 晶板是第 3 章的伏筆，不能漏：殘骸堆升到 Lv2、第 1 章過了 2 天，或最晚在緊急營地蓋好時（章末對話之前）
+  { id: 'c1-coaster', when: (s) => !seen(s, 'c2-open') && (built(s, 'emergency_camp') || (s.stage === 1 && (s.b.scrap_heap.level >= 2 || daysInChapter(s, 1) >= 2))) },
   { id: 'c1-algae', when: (s) => built(s, 'algae_tank') },
+  { id: 'c1-f8', journal: true, when: (s) => s.stage === 1 && (s.b.o2_scrubber.level >= 2 || s.b.algae_tank.level >= 2) },
   { id: 'c1-assign', when: (s) => s.story.assigned },
+  { id: 'c1-signal', when: (s) => s.stage === 1 && (s.b.algae_tank.level >= 3 || daysInChapter(s, 1) >= 4) },
   { id: 'hypoxia', when: (s) => !!s.air?.hypoxic },
   { id: 'c1-end', when: (s) => s.stage >= 2, chapterEnd: true },
+  // 第 2 章
   { id: 'c2-open', when: (s) => s.stage === 2 && s.story.seenIntro >= 2 },
   { id: 'c2-ines', when: (s) => !!s.story.ines },
-  { id: 'c2-elec', when: (s) => isElec(s) && !seen(s, 'c2-ines') && !seen(s, 'c2-elec-i') },
-  { id: 'c2-elec-i', when: (s) => isElec(s) && seen(s, 'c2-ines') && !seen(s, 'c2-elec') },
-  { id: 'c2-pop10', when: (s) => s.stage >= 2 && s.pop >= 10 },
+  { id: 'c2-elec-i', when: (s) => isElec(s) && seen(s, 'c2-ines') },
+  { id: 'c2-upgrade', journal: true, when: (s) => (s.b.algae_tank.form ?? 0) >= 1 && seen(s, 'c2-ines') },
+  { id: 'c2-pop10', when: (s) => s.stage >= 2 && s.pop >= 10 && seen(s, 'c2-ines') },
+  { id: 'c2-rescue', journal: true, when: (s) => (s.story.rescued ?? 0) > 0 },
   { id: 'c2-assembly', when: (s) => built(s, 'assembly') && seen(s, 'c2-ines') },
-  { id: 'c2-coaster', when: (s) => seen(s, 'c2-ines') && s.pop >= 11 },
+  { id: 'c2-lounge', when: (s) => s.stage >= 2 && built(s, 'lounge') },
+  { id: 'c2-ship', when: (s) => s.stage >= 2 && s.pop >= 12 && seen(s, 'c2-ines') },
   { id: 'c2-end', when: (s) => s.stage >= 3, chapterEnd: true },
+  // 第 3 章
   { id: 'c3-open', when: (s) => s.stage === 3 && s.story.seenIntro >= 3 },
   { id: 'c3-mine', when: (s) => built(s, 'metal_mine') },
   { id: 'c3-forge', when: (s) => built(s, 'forge') },
+  { id: 'c3-rail', when: (s) => s.stage >= 3 && s.stage <= 4 && built(s, 'rail_line') },
   { id: 'c3-exp1', when: (s) => (s.exp?.count ?? 0) >= 1 && !s.events.report },
   { id: 'c3-filter', when: (s) => s.research.done.includes('bp_filter') },
+  { id: 'c3-wheezy', journal: true, when: (s) => seen(s, 'c3-filter') },
   { id: 'c3-resonance', when: (s) => !!s.exp?.blueprints.includes('resonance') && !s.events.report },
+  { id: 'c3-rollcall', when: (s) => s.stage >= 3 && s.stage <= 4 && s.pop >= 25 },
+  // 造船：金屬礦井升到 Lv3，或第 3 章進行超過 10 分鐘（保底）
+  { id: 'c3-ship', when: (s) => s.stage >= 3 && s.stage <= 4 && seen(s, 'c3-open') && (s.b.metal_mine.level >= 3 || daysInChapter(s, 3) >= 10) },
   { id: 'c3-outpost', when: (s) => built(s, 'outpost') },
   { id: 'c3-end', when: (s) => s.stage >= 4, chapterEnd: true },
+  // 第 4 章
   { id: 'c4-open', when: (s) => s.stage === 4 && s.story.seenIntro >= 4 },
-  { id: 'c4-sefa', when: (s) => s.stage >= 4 && seen(s, 'c4-open') && s.pop >= 28 },
-  { id: 'c4-synth', when: (s) => built(s, 'crystal_synth') && seen(s, 'c4-sefa') },
-  { id: 'c4-raid1', when: (s) => s.raid.count >= 1 && seen(s, 'c4-sefa') && !s.raid.report },
+  { id: 'c4-synth', when: (s) => built(s, 'crystal_synth') },
+  { id: 'c4-warn', when: (s) => s.stage >= 4 && !!s.raid.incoming && s.raid.count === 0 },
+  { id: 'c4-raid1', when: (s) => s.raid.count >= 1 && !s.raid.report },
+  { id: 'c4-memorial', when: (s) => built(s, 'memorial') && seen(s, 'c4-raid1') },
+  { id: 'c4-armor', when: (s) => s.stage >= 4 && s.research.done.includes('weapon_1') },
+  { id: 'c4-teach', when: (s) => s.stage === 4 && s.story.asm4 !== undefined && s.b.assembly.level > s.story.asm4 },
+  { id: 'c4-sefa', when: (s) => seen(s, 'c4-raid1') && s.pop >= 28 },
+  { id: 'c4-guard', when: (s) => seen(s, 'c4-sefa') && s.raid.count >= 2 && !s.raid.report },
+  { id: 'c4-names', journal: true, when: (s) => seen(s, 'c4-guard') && s.pop >= 32 },
   { id: 'c4-med', when: (s) => built(s, 'med_bay') },
+  { id: 'c4-hydro', journal: true, when: (s) => (s.b.algae_tank.form ?? 0) >= 2 },
+  { id: 'c4-gene', when: (s) => seen(s, 'c4-guard') && s.pop >= 36 },
   { id: 'c4-end', when: (s) => s.stage >= 5 && seen(s, 'c4-sefa'), chapterEnd: true },
   { id: 'c5-open', when: (s) => s.stage === 5 && s.story.seenIntro >= 5 },
   { id: 'c5-voss', when: (s) => built(s, 'admin') && seen(s, 'c5-open') },
@@ -66,7 +95,7 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c6-end', when: (s) => s.finished, chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 3;
+export const DIALOG_VERSION = 4;
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);
 const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id));
 
@@ -87,11 +116,11 @@ function write(s: GameState, k: string, p?: Msg['p']) {
 }
 
 /** 排入一個場景（只會播一次） */
-export function playScene(s: GameState, id: string) {
+export function playScene(s: GameState, id: string, journalOnly = false) {
   const st = s.story;
   if (st.seen?.includes(id)) return;
   (st.seen ??= []).push(id);
-  (st.queue ??= []).push({ id, d: dayOf(s.t) });
+  if (!journalOnly) (st.queue ??= []).push({ id, d: dayOf(s.t) });
   write(s, 'scene', { id });
 }
 
@@ -100,7 +129,9 @@ export function dialogs(s: GameState) {
   const j = (s.journal ??= newJournal(s));
   // 日誌：章節開始（玩家看完開場畫面後）
   if (s.story.seenIntro >= s.stage && !j.entries.some((e) => e.k === 'log.chapter' && e.p?.n === s.stage)) write(s, 'log.chapter', { n: s.stage });
-  for (const x of TRIGGERS) if (!seen(s, x.id) && x.when(s)) playScene(s, x.id);
+  // 第 4 章開始時記下組裝工坊的等級：之後再升級才觸發提歐教年輕人的場景
+  if (s.stage >= 4 && s.story.asm4 === undefined) s.story.asm4 = s.b.assembly.level;
+  for (const x of TRIGGERS) if (!seen(s, x.id) && x.when(s)) playScene(s, x.id, x.journal);
   for (const d of DEFS) if (!j.b.includes(d.id) && built(s, d.id)) { j.b.push(d.id); write(s, 'log.built', { b: d.id, v: j.b.length % 3 }); }
   if (s.pop >= j.pop + POP_STEP) { j.pop = Math.floor(s.pop / POP_STEP) * POP_STEP; write(s, 'log.pop', { n: j.pop }); }
   if (s.raid.count > j.raids) {

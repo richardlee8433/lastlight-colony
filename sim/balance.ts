@@ -97,6 +97,8 @@ function decide(s: GameState) {
   }
   if (s.stage >= 4) {
     if (!built(s, 'security') && tryBuy(s, 'security')) return;
+    // 照第 4 章的任務順序：營區之後接著蓋合成室（第一次襲擊由合成室觸發）
+    if (built(s, 'security') && !built(s, 'crystal_synth') && tryBuy(s, 'crystal_synth')) return;
     if (built(s, 'security') && s.b.security.level < 2 && s.b.security.workers >= workerCap(s, 'security') && tryBuy(s, 'security')) return;
     if (built(s, 'security') && s.b.forge.level < 3 && tryBuy(s, 'forge')) return;
   }

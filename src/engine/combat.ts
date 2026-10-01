@@ -3,8 +3,11 @@
 // 保全不會死亡，倒下的只會「受傷」一段時間無法參戰。
 import { BattleReport, DEFS, GameState, Msg, RES_UNLOCK, ResKey, msg, notify } from './state';
 import { add, built, idle, nodeEffect, researchEffect, workerCap } from './formulas';
+import { leave } from './population';
 
-export const FIRST_RAID = 480;      // 進入階段 4 後幾秒發生第一次襲擊
+export const FIRST_RAID = 480;      // （舊存檔用）進入階段 4 後幾秒發生第一次襲擊
+/** 第一次襲擊是劇情事件：異晶合成室啟動後多久來（含預警） */
+export const SYNTH_RAID = 120;
 export const RAID_GAP: [number, number] = [360, 540];
 export const WARNING = 60;
 export const INJURY = 180;
@@ -46,7 +49,7 @@ export function civHurtChance(won: boolean, fought: number, down: number) {
   const frac = down / fought;
   return won ? 0.3 * frac : Math.min(0.12, 0.3 * frac + 0.02);
 }
-function woundCivilians(s: GameState, p: number, heal: number, rng: () => number) {
+function woundCivilians(s: GameState, p: number, heal: number, rng: () => number, max = 5) {
   const r = s.raid;
   r.hurt ??= [];
   // 候選人：各建築的工人（陸戰隊除外）與閒置的人
@@ -55,7 +58,7 @@ function woundCivilians(s: GameState, p: number, heal: number, rng: () => number
   for (let i = 0; i < idle(s); i++) pool.push(null);
   let n = 0;
   for (const b of pool) {
-    if (n >= 5) break;
+    if (n >= max) break;
     if (rng() >= p) continue;
     if (b) s.b[b].workers--;
     r.hurt.push({ until: s.t + heal, b });
@@ -71,15 +74,16 @@ export function guardAtk(s: GameState, armed: boolean) {
   return base + nodeEffect(s, 'security', 'guardAtk');
 }
 export const enemyStats = (n: number) => ({ enemies: 3 + 2 * n, atk: 2 * Math.pow(1.1, n), hp: 8 * Math.pow(1.1, n) });
-/** 階段 5 起的襲擊：掠奪者數量較少、單體較強；拒絕企業 3 次以上改派突擊隊（強度 ×1.5） */
+/** 階段 5 起的襲擊：仍是微光獸，數量較少、單體較強；拒絕企業 3 次以上改派赫利昂突擊隊（強度 ×1.5）。
+ *  （「掠奪者」只留給舊存檔裡已經在路上的襲擊） */
 export function raidFor(s: GameState) {
   const e = enemyStats(s.raid.won);
   if (s.stage < 5) return { ...e, kind: 'alien' as const };
   const commando = s.gov.corp.refusals >= 3 && s.raid.count % 2 === 1;
   const m = commando ? 1.5 : 1;
-  // 掠奪者強度從階段 5 重新起算（假設階段 4 大約擊退 3 次）：3 名起跳，每次擊退 +1 名、數值 ×1.1
+  // 強度從階段 5 重新起算（假設階段 4 大約擊退 3 次）：3 隻起跳，每次擊退 +1、數值 ×1.1
   const n = Math.max(0, s.raid.won - 3);
-  return { enemies: 3 + n, atk: 5 * Math.pow(1.1, n) * m, hp: 18 * Math.pow(1.1, n) * m, kind: commando ? ('commando' as const) : ('raider' as const) };
+  return { enemies: 3 + n, atk: 5 * Math.pow(1.1, n) * m, hp: 18 * Math.pow(1.1, n) * m, kind: commando ? ('commando' as const) : ('alien' as const) };
 }
 export const turrets = (s: GameState) => (built(s, 'turret') ? s.b.turret.level : 0);
 export const turretAtk = (s: GameState) => 8 + researchEffect(s, 'turretAtk');
@@ -111,7 +115,11 @@ export function combat(s: GameState, offline = false, rng = Math.random, dt = 0.
   r.injured = r.injured.filter((u) => u > s.t);
 
   if (s.stage < 4 || s.finished) return;
-  if (r.nextAt < 0) r.nextAt = s.t + FIRST_RAID;
+  // 第一次襲擊：合成室啟動時的異晶共振把微光獸引來（劇情固定事件，見 fight）
+  if (r.nextAt < 0) {
+    if (r.count === 0 && !built(s, 'crystal_synth')) return;
+    r.nextAt = s.t + (r.count === 0 ? SYNTH_RAID : FIRST_RAID);
+  }
   if (offline) { if (r.nextAt < s.t + WARNING + 30) r.nextAt = s.t + WARNING + 30; r.incoming = null; return; }
   if (!r.incoming && s.t >= r.nextAt - WARNING) {
     // 強度只隨「擊退次數」成長：輸了不會越打越難，避免死亡螺旋（GDD 原本按總襲擊次數）
@@ -124,6 +132,8 @@ export function combat(s: GameState, offline = false, rng = Math.random, dt = 0.
 
 function fight(s: GameState, rng: () => number) {
   const r = s.raid, inc = r.incoming!;
+  // 第一次襲擊是劇情固定事件：一定擊退（殖民地不會因此失敗），但固定有兩名殖民者死亡、三人受傷，跟防禦強弱無關
+  const scripted = r.count === 0;
   r.incoming = null;
   const ready = Math.max(0, guards(s) - injuredCount(s));
   const armedReady = Math.min(r.armed, ready);
@@ -144,7 +154,8 @@ function fight(s: GameState, rng: () => number) {
     hit(theirs, a); hit(ours, b);
     rounds.push({ ours: sum(ours), theirs: sum(theirs), oursMax, theirsMax });
   }
-  const won = ours.length > 0 && sum(theirs) <= 0;
+  const won = scripted || (ours.length > 0 && sum(theirs) <= 0);
+  if (scripted && sum(theirs) > 0) rounds.push({ ours: sum(ours), theirs: 0, oursMax, theirsMax });
   const down = ours.filter((u) => u.hp <= 0 && !u.turret).length;
   const heal = INJURY * Math.max(0.2, 1 + nodeEffect(s, 'security', 'injuryMul'));
   for (let i = 0; i < down; i++) r.injured.push(s.t + heal);
@@ -171,7 +182,12 @@ function fight(s: GameState, rng: () => number) {
   // 沒有醫療艙時實際休養時間是兩倍
   const slow = built(s, 'med_bay') ? 1 : 2;
   if (down) lines.push(msg('l.injured', { n: down, m: Math.round((heal * slow) / 60 * 10) / 10 }));
-  const civ = woundCivilians(s, civHurtChance(won, ready, down), INJURY * 0.8, rng);
+  if (scripted) {
+    const dead = s.pop > 4 ? 2 : 0;
+    for (let i = 0; i < dead; i++) leave(s);
+    if (dead) lines.push(msg('l.died', { n: dead }));
+  }
+  const civ = woundCivilians(s, scripted ? 1 : civHurtChance(won, ready, down), INJURY * 0.8, rng, scripted ? Math.max(0, 3 - down) : 5);
   if (civ) lines.push(msg('l.civHurt', { n: civ, m: Math.round((INJURY * 0.8 * slow) / 60 * 10) / 10 }));
   // 第一次有人受傷而且還沒有醫療艙：提示去蓋
   if ((down || civ) && !built(s, 'med_bay') && !s.story.tips?.includes('med')) {

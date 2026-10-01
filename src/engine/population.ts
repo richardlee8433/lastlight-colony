@@ -6,7 +6,7 @@ export const STARVE_GRACE = 60;   // 斷糧多久後開始有人離開（秒）
 export const LEAVE_EVERY = 30;    // 之後每隔多久離開一人（秒）
 
 /** 一位殖民者離開：先走閒置的，再從工人最多的建築走 */
-function leave(s: GameState) {
+export function leave(s: GameState) {
   if (idle(s) <= 0) {
     let best: string | null = null;
     for (const d of DEFS) if (s.b[d.id].workers > 0 && (!best || s.b[d.id].workers > s.b[best].workers)) best = d.id;

@@ -82,7 +82,7 @@ const research: Record<string, [string, string]> = {
   xeno_growth: ['Crystal Catalysis', 'Xenocrystal output +40%'],
   xeno_hab: ['Lattice Materials', 'Each Hab Pod level houses 1 more'],
   xeno_turret: ['Crystal Barrels', 'Turret attack +6'],
-  xeno_blade: ['Crystal Edge', 'Weapon attack +3'],
+  xeno_blade: ['Crystal Rifle', 'Weapon attack +3'],
 };
 
 const charters: Record<string, [string, string, string]> = {
@@ -99,35 +99,35 @@ const chapters = [
     title: 'The Fall', subtitle: 'Three survivors, first night',
     intro: [
       'Good news: we’re alive. Bad news: twelve minutes of oxygen left in the pod. Everything else is just details of the bad news.',
-      'The escape pod speared into a rust-red wasteland. The air outside is all carbon dioxide — without a helmet you won’t last minutes. Life support is still running, but its lights are ticking down one by one.',
-      'We’re Helion’s runaway contract workers. Nobody is coming to save us. Strip the wreck, cobble together something that makes oxygen, then build a camp we can pressurize. — Mara',
+      'Three weeks ago we stole a freighter from the mines on F8. On the run, we caught a faint navigation signal saying there were old colony facilities here. I chose to change course. The ship broke apart in orbit, and we all jumped for the escape pods.',
+      'This pod has six seats. Three of us are in it. The air outside is all carbon dioxide, and the life support lights are ticking down one by one. Strip the wreck and cobble together something that makes oxygen. — Mara',
     ],
     goals: ['Hold the Scrap button above the Scrap Heap to collect 20 scrap', 'Build an Oxygen Scrubber before life support runs out', 'Build an Algae Vat for nutrients (it makes a little oxygen too)', 'Assign colonists to work at a building', 'Complete the pressurized Emergency Camp'],
   },
   {
     title: 'Taking Root', subtitle: 'Enough air to go around',
     intro: [
-      'The pressurized camp made it through the first night. In the morning, Juno spotted another escape pod glinting on the horizon.',
-      'More people are coming — more mouths, and more lungs. The scrubber alone won’t be enough. The ice under our feet is this planet’s first gift.',
-      'Build homes, make enough air to share, and give them a reason to stay.',
+      'The pressurized camp made it through the first night. In the morning, the comm picked up a distress call — on our ship’s frequency.',
+      'People from the other pods are alive. More are coming: more mouths, and more lungs. Wheezy alone won’t be enough.',
+      'Bring them home, build them a place to live, make enough air to share, and give them a reason to stay.',
     ],
     goals: ['Build a Hab Pod to raise the population cap', 'Rebuild the Oxygen Scrubber into an Electrolyzer to split oxygen from the ice', 'Keep air security above 60% for 1 minute', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
   },
   {
     title: 'Blueprints', subtitle: 'We can use them. We don’t understand them.',
     intro: [
-      'The night the Central Hub lit up, the scanner at the Tech Institute beeped at Teo’s coaster until dawn.',
-      'Ines checked: the patterns on that crystal plate are step-by-step manufacturing instructions — just not written by humans. Teo says there must be more out in the wasteland.',
-      'Mine, forge, then build an Expedition Station and send people out to search. We don’t need to understand how it works. We just need to use it.',
+      'The night the Central Hub lit up, Ines got the Tech Institute’s scanner working. The moment it powered on, it beeped at Teo’s coaster until dawn.',
+      'The patterns on the coaster are step-by-step manufacturing instructions — just not written by humans. And every one of them needs a material we don’t have: xenocrystal.',
+      'Mine, forge, lay down rails, then build an Expedition Station and send people out to search. We don’t need to understand how it works. We just need to use it.',
     ],
-    goals: ['Build a Metal Mine', 'Build a Forge', 'Build an Expedition Station', 'Complete the first expedition and bring back a blueprint', 'Research the first blueprint tech: High-Pressure Filter', 'Complete the Outpost'],
+    goals: ['Build a Metal Mine', 'Build a Forge', 'Build a Rail Line to connect the gathering sites', 'Build an Expedition Station', 'Complete the first expedition and bring back a blueprint', 'Research the first blueprint tech: High-Pressure Filter', 'Complete the Outpost'],
   },
   {
-    title: 'Xenocrystal', subtitle: 'This planet does not want them',
+    title: 'Xenocrystal', subtitle: 'What are they guarding?',
     intro: [
-      'The first time the outpost searchlight swept the wasteland, it lit up a pack of things watching us.',
-      'They are small, but there are many, and they learn fast. The xenocrystal the expeditions brought back glows violet at night — that is the light they followed.',
-      'Build marine barracks, forge weapons, learn to use xenocrystal. This planet does not want you, but you have nowhere else to go.',
+      'The xenocrystal the expeditions bring back is never enough. Ines says one of the blueprints teaches us to make our own: dissolve the crystal clusters underground and let them grow again.',
+      'Whatever we build from it will look like nothing we have ever built before.',
+      'Build the Crystal Synthesizer. From today, we don’t just use what the aliens left behind. We make it ourselves.',
     ],
     goals: ['Build the Marine Barracks and station marines', 'Build a Crystal Synthesizer', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
@@ -164,7 +164,7 @@ const events: Record<string, { title: string; text: string; options: string[] }>
   },
   rescue_ines: {
     title: 'A Broken Distress Call',
-    text: 'A woman\'s voice crackles through the comm, over the clang of metal: "This is... Ines... my pod is wedged in an ice crevasse... I have tools, but no air. Please hurry."',
+    text: 'A woman\'s voice crackles through the comm, over the clang of metal: "This is... pod three, Ines... my pod is wedged in an ice crevasse... I have tools, but no air. Please hurry."',
     options: ['Mara and Juno drive out (2 min, no workers needed)', 'Later (the signal will repeat)'],
   },
   envoy: {

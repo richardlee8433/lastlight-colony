@@ -317,6 +317,11 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
   .dlg-box p { font-size: 14px; }
   .dlg-name { left: 110px; }
 }
+/* 沒有立繪的說話者（一般殖民者）和旁白：文字框不留立繪的位置；旁白是斜體、較淡的動作描述 */
+.dlg.plain .dlg-box { padding-left: 22px; }
+.dlg.plain { --who: #b8b2c8; }
+.dlg.plain .dlg-name { left: 12px; }
+.dlg.who-narr .dlg-box p { font-style: italic; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .dlg, .dlg-art, .dlg-arrow { animation: none; } }
 
 /* 殖民地日誌 */

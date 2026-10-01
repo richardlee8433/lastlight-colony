@@ -27,7 +27,7 @@ export function events(s: GameState, rng = Math.random) {
     ev.rescue = null;
     const k = s.stage, roll = rng();
     const gains: Msg[] = [];
-    const people = (n: number) => { s.pop += n; gains.push(msg('g.people', { n })); };
+    const people = (n: number) => { s.pop += n; s.story.rescued = (s.story.rescued ?? 0) + n; gains.push(msg('g.people', { n })); };
     const supplies = (m: number) => {
       const scrap = Math.round(80 * k * m), rock = Math.round(40 * k * m), parts = Math.round(20 * k * m);
       add(s, 'scrap', scrap); add(s, 'rock', rock); add(s, 'parts', parts);

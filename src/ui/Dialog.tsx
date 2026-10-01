@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGame, game } from '../store/gameStore';
 import { SCENES } from '../data/dialogs';
 import { endOfChapter } from '../engine/dialog';
-import { portraitURL } from '../art/portraitArt';
+import { CHARACTERS, CharacterId, portraitURL } from '../art/portraitArt';
 import { t, useLang } from '../i18n';
 import { sfx } from '../audio/audio';
 
@@ -37,15 +37,17 @@ function Scene({ id, day }: { id: string; day: number }) {
     if (typing) return setShown(text.length);
     if (i + 1 < lines.length) { setI(i + 1); setShown(0); } else act.dialogNext();
   };
-  const art = portraitURL(who);
+  // 主要角色有立繪；一般殖民者和旁白（narr）沒有立繪，用旁白樣式
+  const hasArt = (CHARACTERS as readonly string[]).includes(who);
+  const art = hasArt ? portraitURL(who as CharacterId) : null;
   return (
     <>
     <div className="dlg-veil" onClick={next} aria-hidden="true" />
-    <div className={'dlg who-' + who} role="dialog" aria-label={t('dlg.label')}>
-      <img key={who} className={'dlg-art' + (art.pixel ? ' pixel' : '')} src={art.url} alt="" draggable={false} />
+    <div className={'dlg who-' + who + (hasArt ? '' : ' plain')} role="dialog" aria-label={t('dlg.label')}>
+      {art && <img key={who} className={'dlg-art' + (art.pixel ? ' pixel' : '')} src={art.url} alt="" draggable={false} />}
       <div className="dlg-box px" onClick={next} role="button" tabIndex={0} aria-label={t('dlg.next')}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } }}>
-        <span className="dlg-name">{t('who.' + who)}</span>
+        {who !== 'narr' && <span className="dlg-name">{t('who.' + who)}</span>}
         {endOfChapter(id) > 0 && <span className="dlg-ch">{t('dlg.chEnd', { n: endOfChapter(id) })}</span>}
         <p aria-live="polite">{text.slice(0, shown)}<span className="dlg-rest" aria-hidden="true">{text.slice(shown)}</span></p>
         {!typing && <i className="dlg-arrow" aria-hidden="true">▼</i>}

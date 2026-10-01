@@ -51,6 +51,7 @@ export const STRINGS: Record<string, [string, string]> = {
 
   // ── 不能操作的原因 ──
   'why.stage': ['Unlocks at Stage {n}', '階段 {n} 解鎖'],
+  'why.ines': ['Rescue Ines first. She knows how to rebuild it', '先救回伊涅絲，她知道怎麼改建'],
   'why.maxLevel': ['Max level', '已達最高等級'],
   'why.needPrev': ['Build the {b} first', '需要先建成{b}'],
   'why.needCamp': ['Build the Emergency Camp to upgrade', '建成緊急營地後才能升級'],
@@ -135,6 +136,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'l.gain': ['{r} +{n}', '{r} +{n}'],
   'l.commando': ['Credits +500 (commando gear)', '信用點 +500（突擊隊的裝備）'],
   'l.stolen': ['Lost {n} {r}', '被搶走 {r} {n}'],
+  'l.died': ['{n} {n|colonist|colonists} did not make it back', '{n} 位殖民者沒能回來'],
   'l.civHurt': ['{n} {n|colonist|colonists} caught in the fighting, recovering for {m} min', '{n} 位殖民者被戰鬥波及受傷，休養 {m} 分鐘'],
   'n.recovered': ['{n} injured {n|colonist has|colonists have} recovered and returned to work.', '{n} 位受傷的殖民者康復了，回到崗位上。'],
   'cp.hurt': ['Injured', '受傷休養'],
@@ -404,6 +406,10 @@ export const STRINGS: Record<string, [string, string]> = {
   'who.sefa': ['Dr. Sefa', '賽法博士'],
   'who.voss': ['Voss', '沃斯'],
   'who.calder': ['Envoy Calder', '卡爾德使者'],
+  'who.colonist': ['Colonist', '殖民者'],
+  'who.survivor': ['Survivor', '倖存者'],
+  'who.marine': ['Marine', '陸戰隊員'],
+  'who.youth': ['Young colonist', '年輕殖民者'],
   'dlg.skip': ['Skip', '跳過'],
   'dlg.chEnd': ['Chapter {n} · End', '第 {n} 章・終'],
   'dlg.next': ['Next', '下一句'],

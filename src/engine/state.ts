@@ -111,6 +111,8 @@ export interface GameState {
     inesAt?: number; ines?: boolean;
     /** 對話腳本版本（見 dialog.ts 的 DIALOG_VERSION） */
     dlgV?: number;
+    /** 一般求救訊號累計救回的人數；進入第 4 章時組裝工坊的等級（劇情觸發用） */
+    rescued?: number; asm4?: number;
   };
   /** 探勘站：探勘隊、次數、藍圖碎片、已取得的藍圖 */
   exp?: import('./expedition').ExpState;
@@ -144,7 +146,7 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 3 },
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 4 },
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),

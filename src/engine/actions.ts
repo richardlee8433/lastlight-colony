@@ -68,6 +68,8 @@ export function rebuildBlock(s: GameState, id: string): Why {
   if (!f) return msg('why.maxForm');
   if (!built(s, id)) return msg('why.notBuilt');
   if (s.stage < f.stage) return msg('why.stage', { n: f.stage });
+  // 第 2 章的改建技術（電解站、生物採集站）是伊涅絲帶來的：要先把她救回來
+  if (f.stage <= 2 && !s.story.ines) return msg('why.ines');
   if (!canAfford(s, f.cost)) return msg('why.afford');
   return null;
 }
