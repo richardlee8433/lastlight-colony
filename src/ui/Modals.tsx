@@ -7,9 +7,9 @@ import { chapterEndPending, endingQueued } from '../engine/dialog';
 import { bName, chapterText, costText, eventText, raidName, resName, t, tm } from '../i18n';
 import { Icon, fmt, fmtTime } from './common';
 
-export function Modal({ children, label, className = '' }: { children: React.ReactNode; label: string; className?: string }) {
-  // 訊息視窗開著時遊戲暫停
-  useEffect(() => { modalHold.n++; return () => { modalHold.n--; }; }, []);
+export function Modal({ children, label, className = '', pause = true }: { children: React.ReactNode; label: string; className?: string; pause?: boolean }) {
+  // 訊息視窗開著時遊戲暫停；pause=false 的視窗（例如科技樹）開著時時間照常走
+  useEffect(() => { if (!pause) return; modalHold.n++; return () => { modalHold.n--; }; }, [pause]);
   return <div className="modal-bg"><div className={'modal px ' + className} role="dialog" aria-modal="true" aria-label={label}>{children}</div></div>;
 }
 

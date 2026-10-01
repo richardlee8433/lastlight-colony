@@ -41,7 +41,8 @@ function Tree() {
   });
 
   return (
-    <Modal label={t('tt.title')} className="tech">
+    // 科技樹是看進度用的，開著時研究照常進行（不暫停遊戲）
+    <Modal label={t('tt.title')} className="tech" pause={false}>
       <header className="trade-head">
         <h2>{t('tt.title')}</h2>
         <button type="button" className="close" onClick={() => act.openTech(false)} aria-label={t('close')}>×</button>
