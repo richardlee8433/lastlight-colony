@@ -103,7 +103,7 @@ export const hurtCivilians = (s: GameState) => s.raid?.hurt?.length ?? 0;
 export const idle = (s: GameState) => s.pop - assignedTotal(s) - rescueWorkers(s) - hurtCivilians(s) - (s.exp?.team ?? 0);
 
 /** 每位殖民者每秒消耗的營養（GDD 原值 0.1，實測糧食幾乎不會不夠，調高到 0.25） */
-export let FOOD_PER_POP = 0.25;
+export let FOOD_PER_POP = 0.14;
 export const setFoodPerPop = (v: number) => { FOOD_PER_POP = v; };
 export const consumption = (s: GameState) => {
   let mul = researchEffect(s, 'consumeMul') + charterEffect(s, 'consumeMul');
