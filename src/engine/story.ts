@@ -3,7 +3,7 @@ import STORY from '../data/story.json';
 import { AIR_ENABLED, GameState } from './state';
 import { built } from './formulas';
 
-export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research'; res?: string; id?: string; amount?: number; label: string }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research'; res?: string; id?: string; amount?: number; label: string; after?: 'raid1' }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 // 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
@@ -47,6 +47,8 @@ function liveDone(s: GameState, g: Goal): boolean {
   }
 }
 /** 目標達成一次就算完成（資源花掉後不會取消勾選） */
+/** 目標要不要顯示：after: 'raid1' 的目標（第 4 章的營區、醫療艙）等第一次襲擊後才出現；已經完成的照常顯示 */
+export const goalVisible = (s: GameState, g: Goal) => !g.after || s.raid.count >= 1 || goalDone(s, g);
 export const goalDone = (s: GameState, g: Goal) => s.story.done.includes(g.gid) || liveDone(s, g);
 export const currentChapter = (s: GameState) => CHAPTERS[Math.min(s.stage, CHAPTERS.length) - 1];
 export function updateStory(s: GameState) {

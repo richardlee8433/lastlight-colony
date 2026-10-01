@@ -175,12 +175,14 @@
         "type": "build",
         "id": "security",
         "gid": "4-0",
+        "after": "raid1",
         "label": "建造陸戰隊營區並派駐陸戰隊員"
       },
       {
         "type": "build",
         "id": "med_bay",
         "gid": "4-med",
+        "after": "raid1",
         "label": "建造醫療艙，讓傷員有地方治療"
       },
       {

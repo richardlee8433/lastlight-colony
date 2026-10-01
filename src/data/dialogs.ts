@@ -392,7 +392,6 @@ export const SCENES: Record<string, SceneText> = {
       ['ines', '零件、金屬、工具，還有很多耐心。', 'Parts, metal, tools, and a lot of patience.'],
       ['juno', '那我們就不用再等探勘隊了！', "Then we don't have to wait for expeditions anymore!"],
       ['mara', '好。蓋。', 'Good. Build it.'],
-      ['mara', '……陸戰隊營區也排進去。東西越多，越要有人守。', '...Put a marine barracks on the list too. The more we have, the more we need someone guarding it.'],
     ],
   },
   'c4-synth': {

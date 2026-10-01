@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGame, game } from '../store/gameStore';
-import { CHAPTERS, currentChapter, goalDone } from '../engine/story';
+import { CHAPTERS, currentChapter, goalDone, goalVisible } from '../engine/story';
 import { endingChapter } from '../engine/dialog';
 import { chapterText, t } from '../i18n';
 
@@ -12,17 +12,20 @@ export function QuestLog() {
   const closing = ending < Math.min(s.stage, CHAPTERS.length);
   const ch = closing ? CHAPTERS[ending - 1] : currentChapter(s);
   if (!ch) return null;
-  const done = ch.goals.filter((g) => goalDone(s, g)).length, tx = chapterText(ch);
+  // 還沒出現的目標不算在分母裡（例如第 4 章第一次襲擊前的營區、醫療艙）
+  const shown = ch.goals.filter((g) => goalVisible(s, g));
+  const done = shown.filter((g) => goalDone(s, g)).length, tx = chapterText(ch);
   return (
     <div className="quest px">
       <button type="button" className="quest-head" onClick={() => setOpen(!open)} aria-expanded={open}>
         <span className="chip-ch">{t('ch.n', { n: ch.chapter })}</span>
         <b>{tx.title}</b>
-        <span className="quest-count">{s.finished || closing ? t('ql.done') : `${done}/${ch.goals.length}`}</span>
+        <span className="quest-count">{s.finished || closing ? t('ql.done') : `${done}/${shown.length}`}</span>
       </button>
       {open && (
         <ul>
           {ch.goals.map((g, i) => {
+            if (!goalVisible(s, g)) return null;
             const ok = goalDone(s, g);
             return <li key={g.gid} className={ok ? 'ok' : ''}><i aria-hidden="true">{ok ? '✓' : ''}</i>{tx.goals[i]}</li>;
           })}
