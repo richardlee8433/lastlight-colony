@@ -43,7 +43,10 @@ function decideLean(s: GameState): 'alien' | 'alliance' {
 export function lineOk(s: GameState, r?: string) {
   if (!r) return true;
   if (r === 'coop' || r === 'resist') return s.story.route === r;
-  return s.story.route === 'resist' && s.story.lean === r;
+  if (s.story.route !== 'resist') return false;
+  // 提到異晶槍的台詞：要研究完才播
+  if (r === 'rifle') return s.story.lean === 'alien' && s.research.done.includes('xeno_blade');
+  return s.story.lean === r;
 }
 /** 場景觸發條件（依序檢查；前一章的場景要在下一章開場前播完）。
  *  journal：只寫進日誌、不跳對話框的小場景（避免對話太密、一直暫停遊戲） */

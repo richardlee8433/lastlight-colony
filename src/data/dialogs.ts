@@ -5,7 +5,7 @@ import type { CharacterId } from '../art/portraitArt';
 
 export type Speaker = CharacterId | 'narr' | 'colonist' | 'survivor' | 'marine' | 'youth' | 'alliance';
 /** 第 5 章起的路線：coop 合作、resist 抵抗、alien／alliance 抵抗路線裡的策略傾向 */
-export type Route = 'coop' | 'resist' | 'alien' | 'alliance';
+export type Route = 'coop' | 'resist' | 'alien' | 'alliance' | 'rifle';  // rifle：外星科技傾向＋研究完異晶槍
 export type Line = [Speaker, string, string, Route?];
 export interface SceneText { lines: Line[]; log?: [string, string] }
 
@@ -778,7 +778,7 @@ export const SCENES: Record<string, SceneText> = {
       ['teo', '以前打的是微光獸。今天，打的是穿著跟我以前一樣制服的人。', 'Before, it was glimmers. Today, it was people wearing the same uniform I used to wear.'],
       ['voss', '他們大多是契約兵。跟各位一樣，欠公司的錢。', 'Most of them are contract soldiers. In debt to the company, same as all of you.'],
       ['mara', '……傷亡？', '...Casualties?'],
-      ['ines', '我們這邊沒有。異晶槍一開，他們就撤了。但倉庫裡的異晶少了三分之一。', 'None on our side. They pulled back the moment the crystal rifles fired. But a third of our xenocrystal stock is gone.', 'alien'],
+      ['ines', '我們這邊沒有。異晶槍一開，他們就撤了。但倉庫裡的異晶少了三分之一。', 'None on our side. They pulled back the moment the crystal rifles fired. But a third of our xenocrystal stock is gone.', 'rifle'],
       ['juno', '我們這邊沒有。聯盟的船在軌道上干擾了他們的通訊，他們的支援沒到。', "None on our side. Alliance ships jammed their comms from orbit, so their support never arrived.", 'alliance'],
       ['mara', '好。點名。', 'Good. Roll call.'],
     ],
@@ -880,7 +880,7 @@ export const SCENES: Record<string, SceneText> = {
       ['juno', 'AI 還留著最後一篇日誌。他們也是追著藍圖來的。', 'The AI still has the last log entry. They came for the blueprints too.'],
       ['sefa', '然後呢？', 'And then?'],
       ['juno', '……他們選擇和微光獸開戰。最後一個人也沒留下。', '...They chose to go to war with the glimmers. Not one of them was left.'],
-      ['narr', '（伊涅絲看向倉庫裡的異晶槍）', '(Ines glances at the crystal rifles in storage.)', 'alien'],
+      ['narr', '（伊涅絲看向倉庫裡的異晶槍）', '(Ines glances at the crystal rifles in storage.)', 'rifle'],
       ['narr', '（沉默）', '(Silence.)'],
       ['mara', '偏航是我決定的。', 'Changing course was my decision.'],
       ['mara', '我那一艙有六個座位。軌道解體的時候，我沒等另外三個人，就按了發射。', "My pod had six seats. When the ship broke apart in orbit, I didn't wait for the other three. I hit launch."],
@@ -912,7 +912,7 @@ export const SCENES: Record<string, SceneText> = {
       ['ines', '先說事實。穹頂、殖民地核心、水耕農場，全都靠異晶。不用異晶，這座城就不能照現在的樣子撐下去。', "Facts first. The dome, the colony core, the hydroponic farms, they all run on xenocrystal. Without it, this city can't keep going the way it is."],
       ['ines', '回到人類的技術，不是不可能。但要拆掉穹頂、縮減一半的人，花好幾個月重建。', "Going back to human technology isn't impossible. But it means tearing down the dome, cutting our numbers in half, and months of rebuilding."],
       ['ines', '而且合成室現在是赫利昂在管。要繼續用，就得違約。', "And Helion runs the synthesizer now. If we keep using it, we break the contract.", 'coop'],
-      ['ines', '還有，我們的防禦全靠異晶槍。放棄異晶，等於連防禦一起放棄。', 'Also, our defense depends on the crystal rifles. Giving up xenocrystal means giving up our defense with it.', 'alien'],
+      ['ines', '還有，我們的防禦全靠異晶槍。放棄異晶，等於連防禦一起放棄。', 'Also, our defense depends on the crystal rifles. Giving up xenocrystal means giving up our defense with it.', 'rifle'],
       ['juno', '聯盟回訊了。他們說，如果我們要走，他們的船可以接應。如果要留，他們要分一半的異晶。', 'The Alliance replied. If we leave, their ships can meet us. If we stay, they want half the xenocrystal.', 'alliance'],
       ['sefa', '如果繼續用，微光獸會一直來。我們會變成末光號。', 'If we keep using it, the glimmers will keep coming. We will become the Lastlight.'],
       ['teo', '伊涅絲，船呢？', 'Ines, what about a ship?'],
