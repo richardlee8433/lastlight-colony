@@ -18,6 +18,16 @@ v0.66 上線了。這次是一個大改版：**每一棟建築都換上了手繪
 
 還有幾棟建築看起來……不太像人類蓋的。至於為什麼，就留給你自己去想 😉
 
+## 🪖 突擊隊來了！
+
+企業突擊隊終於有了自己的樣子。以前他們只是借用異星生物的身體、換個顏色就上場，現在是一整隊全副武裝的士兵：
+
+- **會舉槍還擊。**突擊隊會轉向你的陸戰隊，點放曳光彈，槍口還會冒火光。
+- **中彈有反應。**被子彈或砲塔雷射打中，會往後一縮。
+- **擊退後會倒下。**他們會跪下、撲倒，在地上躺一會兒才消失。
+
+米白裝甲、紅色標誌，跟你那群穿深藍色、戴圓頭盔的陸戰隊一眼就分得出來。
+
 ## 🔧 其他修正
 
 - 修正結局畫面有時會比最後一段對話先跳出來的問題。
@@ -48,6 +58,16 @@ All 10 buildings in chapters 5–6 have been redrawn, and the colony has grown f
 - **The Defense Turret and Xeno Research Institute** got a much more high-tech look.
 
 A few of the buildings look... not quite human-made. Why? We'll let you think about that 😉
+
+## 🪖 The commandos are here!
+
+Corporate commandos finally look like themselves. They used to borrow the aliens' bodies with a new coat of paint. Now they're a squad of fully armed soldiers:
+
+- **They shoot back.** Commandos turn to face your marines and fire bursts of tracer rounds, muzzle flash and all.
+- **They react to hits.** A bullet or a turret laser knocks them back a step.
+- **They go down when you win.** They drop to a knee, fall flat and lie there for a moment before they're gone.
+
+Off-white armor with red insignia, easy to tell apart from your marines in their dark blue suits and round helmets.
 
 ## 🔧 Other fixes
 
