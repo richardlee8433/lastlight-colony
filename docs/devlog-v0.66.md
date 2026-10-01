@@ -18,16 +18,6 @@ v0.66 上線了。這次是一個大改版：**每一棟建築都換上了手繪
 
 還有幾棟建築看起來……不太像人類蓋的。至於為什麼，就留給你自己去想 😉
 
-## 🌱 水耕農場重畫
-
-第 4 章的水耕農場也重畫了，現在跟同時期的醫療艙、水循環站是同一個畫風，細節滿滿。
-
-## 🚀 逃生艙光榮退役
-
-陪大家從墜落那天撐到現在的逃生艙，終於可以休息了。**紀念堂蓋好的那一刻，逃生艙會正式退役**，最後的外殼就用在紀念堂上。
-
-放心，它留下的東西都還在：人口上限、倉庫空間和求救頻段的效果，全部併入紀念堂，數字一點都不會少。
-
 ## 🔧 其他修正
 
 - 修正結局畫面有時會比最後一段對話先跳出來的問題。
@@ -58,16 +48,6 @@ All 10 buildings in chapters 5–6 have been redrawn, and the colony has grown f
 - **The Defense Turret and Xeno Research Institute** got a much more high-tech look.
 
 A few of the buildings look... not quite human-made. Why? We'll let you think about that 😉
-
-## 🌱 A redrawn Hydroponic Farm
-
-The chapter 4 Hydroponic Farm has been redrawn too. It now matches the Med Bay and Water Recycler from the same era, packed with detail.
-
-## 🚀 The escape pod retires
-
-The escape pod that kept everyone going since the crash finally gets to rest. **The moment the Memorial Hall is finished, the escape pod retires**, and the last of its hull goes into the memorial.
-
-Don't worry, nothing it gave you is lost: its population space, storage and distress band all carry over to the Memorial Hall. Your numbers won't drop at all.
 
 ## 🔧 Other fixes
 
