@@ -44,9 +44,11 @@ civic and lived-in, practical but proud, a few small human touches (benches, cra
 **Corporate look** (buildings marked "corporate"):
 
 ```
-corporate prefab building, boxy standardized modules in cold blue-grey steel, flat roofs, rows of identical small windows,
-yellow and black hazard stripes, a blank square sign panel with no logo or text, cool white floodlights,
-efficient and impersonal, clearly not built by the colonists
+high-tech corporate outpost from a powerful interstellar company, sleek angular armored panels in cold gunmetal and blue-grey,
+sharp chamfered edges and hexagonal plating, glowing cyan light strips in precise straight lines,
+standardized modular design that looks mass-produced in an orbital factory, holographic display panels with no text,
+a blank glowing sign panel with no logo or text, cool white and cyan light,
+far more advanced than a modern warehouse, efficient and impersonal, clearly not built by the colonists
 ```
 
 **Xenotech look** (buildings marked "xeno", with the alien share given for each):
@@ -63,7 +65,7 @@ softly glowing violet crystals, thin pale gold trim, floating segments held in p
 |---|---|---|---|
 | Earlier chapters (for reference only) | worn cream-white metal, then clean pearl white | orange, rust, teal, violet | rivets → seamless curved panels |
 | **City** | pearl white | **warm amber windows, teal, green plants** | curved panels, civic details |
-| **Corporate** | **cold blue-grey steel** | yellow-black stripes, cool white light | boxy prefab modules |
+| **Corporate** | **cold gunmetal and blue-grey armor** | cyan light strips, holograms, a little yellow-black | angular, chamfered, mass-produced modules |
 | **Xeno** | pearl white with a rainbow sheen | **violet crystal glow, pale gold trim** | flowing water-like curves joined to a human frame |
 
 - **No oxygen on this planet:** never draw fire, flames, torches or dark smoke. Use crystal glow, energy lines, LED light, screen glow or white vapor.
@@ -96,9 +98,11 @@ a notice board with blank paper notes beside the door, a bench and a planter in 
 Style: **corporate** · Size: medium
 ```
 [Style Rules] + [Corporate look] +
-trade post, a boxy blue-grey prefab warehouse with a wide roll-up cargo door,
-stacked standardized shipping containers beside it, a small landing pad for cargo drones on the roof,
-a blank sign panel over the door, a weighing scale platform with yellow-black stripes in front
+futuristic corporate trade post, a sleek angular gunmetal hub with a tall chamfered front,
+a wide cargo gate sealed by a glowing cyan energy field instead of a door,
+sealed hexagonal cargo pods hovering above small anti-gravity pads beside it,
+a holographic trade screen with abstract charts and no text floating by the gate,
+a small automated drone dock on the roof with a parked delivery drone, thin yellow-black warning stripes on the ground plates
 ```
 
 ### 4 — Spaceport · `spaceport.png`
