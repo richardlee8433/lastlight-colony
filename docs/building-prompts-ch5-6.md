@@ -141,41 +141,72 @@ inside the dome small trees, green parks and tiny amber-lit houses are visible,
 the older colony core tower rising through the center of the dome, a grand main gate facing the viewer
 ```
 
+### Chapter 6 (redraw with the chapter 5 sheet as reference)
+
+The chapter 5 buildings were drawn as one sheet (`art-src/buildings/sheet-ch5.webp`), and chapter 6 must match it. **Attach the chapter 5 sheet and the first chapter 6 attempt as references.** Then draw the four buildings below in one sheet, 2 × 2, in this order: Governor's Hall, Sky Residence, Bioengineering Lab, Orbital Beacon.
+
+Shared instructions for the whole sheet:
+
+```
+Redraw these four buildings as one 2x2 sheet, matching the attached chapter 5 sheet exactly:
+same front-facing top-down camera, same pixel density, same outline weight, same light from top-left,
+same palette of warm pearl-white stone panels, dark graphite frames, blue banners with a gold emblem, blue glowing light strips,
+small spires topped with blue or white LED light columns (never candle flames, never fire),
+plain white background, each building separated with plenty of empty space, no text, no letters
+```
+
 ### 8 — Governor's Hall · `governor.png`
 Style: **city** · Size: medium
+
+Keep from the first attempt: the symmetrical front, the wide staircase, the blue banners, the planters and the violet crystal fountains by the stairs.
+Change: it reads as a cathedral or royal palace. Make it calmer and more civic: fewer and shorter spires, a lower and wider front, more windows, a small public plaza in front.
 ```
-[Style Rules] + [Colony city look] +
-governor's hall, a dignified civic building with a symmetrical pearl-white front, tall columns made of smooth curved panels,
-a wide staircase up to the main door, two cloth banners with no text, a small round window above the door,
-planters on both sides, calm and proud but not grand or royal
+governor's hall, a dignified civic building with a symmetrical pearl-white front, lower and wider than a palace,
+only one modest central tower and two short side spires, tall columns made of smooth curved panels,
+a wide staircase up to a warm amber-lit main door, two blue banners with the gold emblem,
+a row of amber windows across the front, a small plaza in front with benches, planters and two small violet crystal fountains,
+calm and proud, a place where colonists meet, not a royal palace or a cathedral
 ```
 
 ### 9 — Sky Residence · `sky_residence.png`
 Style: **city** · Size: medium
+
+Keep from the first attempt: the rings of round apartment pods, the many amber windows, the rooftop gardens and the sky bridges.
+Change: make it taller and more clearly a home. Add balconies with hanging plants and laundry lines, and a transparent canopy roof on top.
 ```
-[Style Rules] + [Colony city look] +
-tall residential tower, stacked rounded pearl-white apartment pods, many warm amber windows,
-small balconies with hanging plants and laundry lines, a transparent canopy roof on top,
-a small door with a bicycle-like cart and a planter at the base
+tall residential tower, stacked rounded pearl-white apartment pods rising in three tiers, many warm amber windows,
+small balconies with hanging plants and laundry lines between them, rooftop gardens on every tier,
+thin glass sky bridges glowing blue between the pods, a large transparent glass canopy roof over the top tier,
+a small ground-floor door with a cargo cart, planters and a bench, lived-in and cozy, less like a fortress
 ```
 
 ### 10 — Bioengineering Lab · `bioeng.png`
 Style: **xeno**, alien share about 70% · Size: medium
+
+Keep from the first attempt: the glass tanks and the glowing green life inside them.
+Change: it looks like a city greenhouse. It should look **mostly not made by humans**: a flowing alien structure with water-like curves, a faint rainbow sheen and violet crystals. Only the base keeps a few human parts.
 ```
-[Style Rules] + [Xenotech look] +
-bioengineering lab, mostly a flowing alien structure with water-like curves and a rainbow sheen,
-three tall glass tanks filled with glowing green liquid and floating violet crystal shards,
-violet light pulsing between the tanks, only a small human control desk and a few cables at the base
+bioengineering lab that looks mostly alien, a flowing organic structure with smooth water-like curves and no straight walls,
+pearl-white surface with a faint rainbow sheen, thin pale gold trim, curved segments that float slightly apart held by violet light,
+three tall curved glass tanks filled with glowing green liquid, violet crystal shards floating inside each tank,
+soft violet light pulsing between the tanks,
+only at the base: a small human control desk with monitors, a few graphite metal brackets, cables plugged into the alien shell and a supply crate,
+keep the same palette as the chapter 5 sheet so it still belongs to the same colony
 ```
 
 ### 11 — Orbital Beacon · `orbital_beacon.png`
 Style: **xeno**, alien share about 70% (the most alien building in the game) · Size: large
+
+Keep from the first attempt: the orbiting rings, the violet energy core, the crystals at the base.
+Change: **remove the light beam** (the game draws the beam when the beacon is lit; until then it must look unlit). The spire should look less like a city tower and more like a flowing alien spire with segments floating apart. Add human scaffolding around the base, because the colonists are still building it.
 ```
-[Style Rules] + [Xenotech look] +
-orbital beacon, a very tall slender flowing spire pointing at the sky, made of smooth water-like curved segments,
-some segments floating apart, held in place by violet light, a large violet crystal core near the top,
-pale gold lines spiraling up the spire, a human-built scaffold, cables and a work platform around the base,
-no light beam, the beam is drawn by the game
+orbital beacon, a very tall slender flowing spire made of smooth water-like curved segments,
+several segments floating apart from each other, held in place by soft violet light,
+two thin rings orbiting around the spire, a large violet crystal core near the top, glowing softly,
+pale gold lines spiraling up the spire, pearl-white surface with a faint rainbow sheen,
+the very top of the spire is dark and inactive, no light beam, no beam of light going up into the sky,
+at the base: human-built graphite scaffolding, ladders, cables, a work platform and supply crates around the alien spire,
+two small violet crystals on pedestals in front
 ```
 
 ---
