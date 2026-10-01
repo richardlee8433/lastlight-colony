@@ -39,7 +39,7 @@ export const DEF: Record<string, BuildingDef> = Object.fromEntries(DEFS.map((d) 
 export const COMMAND_CHAIN = DEFS.filter((d) => d.kind === 'command').sort((a, b) => a.commandLevel! - b.commandLevel!).map((d) => d.id);
 
 export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean; form?: number }
-export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'rescue_ines' | 'envoy'; target?: string; cost?: number }
+export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'rescue_ines' | 'envoy' | 'choice6'; target?: string; cost?: number }
 export interface BattleReport {
   won: boolean; raid: number; enemies: number; guards: number; armed: number; turrets?: number; kind?: string;
   rounds: { ours: number; theirs: number; oursMax: number; theirsMax: number }[];
@@ -113,6 +113,12 @@ export interface GameState {
     dlgV?: number;
     /** 一般求救訊號累計救回的人數；進入第 4 章時組裝工坊的等級（劇情觸發用） */
     rescued?: number; asm4?: number;
+    /** 第 5 章：第一次使者來訪的選擇（合作／抵抗）、抵抗路線的策略傾向（第二次拒絕時判定一次）、第二次使者來訪的時間 */
+    route?: 'coop' | 'resist'; lean?: 'alien' | 'alliance'; env2At?: number;
+    /** 赫利昂軍隊代為擊退微光獸的次數（合作路線）、擊退赫利昂突擊隊的次數、是否和神秘訊號交易過 */
+    corpHelp?: number; commandoWon?: number; signalUsed?: boolean;
+    /** 第 6 章的抉擇：leave 放棄異晶、造船離開；stay 保留異晶、留下來 */
+    choice6?: 'leave' | 'stay';
   };
   /** 探勘站：探勘隊、次數、藍圖碎片、已取得的藍圖 */
   exp?: import('./expedition').ExpState;
@@ -146,7 +152,7 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 4 },
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 5 },
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),

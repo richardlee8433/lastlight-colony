@@ -134,6 +134,14 @@ function fight(s: GameState, rng: () => number) {
   const r = s.raid, inc = r.incoming!;
   // 第一次襲擊是劇情固定事件：一定擊退（殖民地不會因此失敗），但固定有兩名殖民者死亡、三人受傷，跟防禦強弱無關
   const scripted = r.count === 0;
+  // 合作路線：微光獸來襲時，赫利昂駐軍有機會代為擊退（不用我們出戰，也不會有人受傷）
+  if (!scripted && s.story.route === 'coop' && s.stage >= 5 && inc.kind !== 'commando' && rng() < 0.4) {
+    r.count++; r.won++; s.story.corpHelp = (s.story.corpHelp ?? 0) + 1;
+    notify(s, 'n.corpHelp', undefined, 'good');
+    r.report = { won: true, raid: r.count, enemies: inc.enemies, guards: 0, armed: 0, turrets: 0, kind: inc.kind ?? 'alien', rounds: [], injured: 0, civHurt: 0, lines: [msg('l.corpHelp')] };
+    r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
+    return;
+  }
   r.incoming = null;
   const ready = Math.max(0, guards(s) - injuredCount(s));
   const armedReady = Math.min(r.armed, ready);
@@ -166,7 +174,7 @@ function fight(s: GameState, rng: () => number) {
     const n = inc.enemies;
     const loot: [ResKey, number][] = [['rock', 40 * n], ['metal', 15 * n], ['crystal', 2 * n]];
     for (const [k, v] of loot) { add(s, k, v); lines.push(msg('l.gain', { r: k, n: v })); }
-    if (inc.kind === 'commando') { add(s, 'credit', 500); lines.push(msg('l.commando')); }
+    if (inc.kind === 'commando') { add(s, 'credit', 500); lines.push(msg('l.commando')); s.story.commandoWon = (s.story.commandoWon ?? 0) + 1; }
     notify(s, 'n.raidWon', { kind: inc.kind ?? 'alien', n: r.won }, 'good');
   } else {
     const pool = (Object.keys(s.res) as ResKey[]).filter((k) => k !== 'oxygen' && RES_UNLOCK[k] <= s.stage && s.res[k] >= 10);

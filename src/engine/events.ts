@@ -73,6 +73,7 @@ export function resolveEvent(s: GameState, choice: number) {
   const a = s.events.active;
   if (!a) return;
   if (a.kind === 'envoy') { if (resolveEnvoy(s, choice)) s.events.active = null; return; }
+  if (a.kind === 'choice6') { s.story.choice6 = choice === 0 ? 'leave' : 'stay'; s.events.active = null; return; }
   if (a.kind === 'meteor') {
     if (choice === 0) {
       if (!canAfford(s, { rock: a.cost! })) return;

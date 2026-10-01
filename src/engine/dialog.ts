@@ -26,6 +26,25 @@ const daysInChapter = (s: GameState, n: number) => {
   const e = s.journal?.entries.find((x) => x.k === 'log.chapter' && x.p?.n === n);
   return e ? dayOf(s.t) - e.d : -1;
 };
+/** 某個場景播出後過了幾天（還沒播回傳 -1） */
+const daysSince = (s: GameState, id: string) => {
+  const e = s.journal?.entries.find((x) => x.k === 'scene' && x.p?.id === id);
+  // 舊存檔：場景被標記成播過、但日誌裡沒有紀錄，視為很久以前
+  return e ? dayOf(s.t) - e.d : seen(s, id) ? 99 : -1;
+};
+/** 抵抗路線的策略傾向：第二次拒絕時判定一次並記下來（之後的台詞都看這個紀錄）。
+ *  外星科技：異星研究院、砲塔、異晶槍與砲管研究；星際聯盟：太空港、聯盟聲望 */
+function decideLean(s: GameState): 'alien' | 'alliance' {
+  const alien = (built(s, 'xeno_lab') ? 1 : 0) + (built(s, 'turret') ? 1 : 0) + (s.research.done.includes('xeno_blade') ? 1 : 0) + (s.research.done.includes('xeno_turret') ? 1 : 0);
+  const alliance = (built(s, 'spaceport') ? 2 : 0) + Math.min(2, Math.floor((s.gov.alliance.rep ?? 0) / 5));
+  return alliance > alien ? 'alliance' : 'alien';
+}
+/** 一句台詞在目前的路線下要不要播（沒有條件的台詞一律播） */
+export function lineOk(s: GameState, r?: string) {
+  if (!r) return true;
+  if (r === 'coop' || r === 'resist') return s.story.route === r;
+  return s.story.route === 'resist' && s.story.lean === r;
+}
 /** 場景觸發條件（依序檢查；前一章的場景要在下一章開場前播完）。
  *  journal：只寫進日誌、不跳對話框的小場景（避免對話太密、一直暫停遊戲） */
 const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: boolean; journal?: boolean }[] = [
@@ -83,27 +102,51 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c4-hydro', journal: true, when: (s) => (s.b.algae_tank.form ?? 0) >= 2 },
   { id: 'c4-gene', when: (s) => seen(s, 'c4-guard') && s.pop >= 36 },
   { id: 'c4-end', when: (s) => s.stage >= 5 && seen(s, 'c4-sefa'), chapterEnd: true },
+  // 第 5 章（路線見 story.route／story.lean）
   { id: 'c5-open', when: (s) => s.stage === 5 && s.story.seenIntro >= 5 },
-  { id: 'c5-voss', when: (s) => built(s, 'admin') && seen(s, 'c5-open') },
-  { id: 'c5-charter', when: (s) => s.gov.charters.length > 0 && seen(s, 'c5-voss') },
-  { id: 'c5-envoy', when: (s) => s.gov.corp.envoys >= 1 && !s.events.active && seen(s, 'c5-voss') },
-  { id: 'c5-secret', when: (s) => seen(s, 'c5-envoy') && seen(s, 'c5-charter') && s.gov.creditsEarned >= 2000 },
+  { id: 'c5-crowd', when: (s) => s.stage >= 5 && seen(s, 'c5-open') && (s.pop >= 45 || daysInChapter(s, 5) >= 1) },
+  { id: 'c5-calder', when: (s) => s.stage >= 5 && built(s, 'admin') },
+  { id: 'c5-juno', journal: true, when: (s) => seen(s, 'c5-calder') },
+  { id: 'c5-charter', when: (s) => s.gov.charters.length > 0 && seen(s, 'c5-calder') },
+  { id: 'c5-voss', when: (s) => daysSince(s, 'c5-calder') >= 1 },
+  { id: 'c5-debate', when: (s) => seen(s, 'c5-voss') && s.gov.corp.envoys === 0 && s.t >= s.gov.corp.nextEnvoy - 5 && s.gov.corp.nextEnvoy > 0 },
+  { id: 'c5-coop', when: (s) => s.story.route === 'coop' },
+  { id: 'c5-voss-leave', when: (s) => seen(s, 'c5-coop') },
+  { id: 'c5-resist', when: (s) => s.story.route === 'resist' },
+  { id: 'c5-warn', when: (s) => s.story.route === 'resist' && s.gov.corp.refusals >= 2 },
+  { id: 'c5-sefa', when: (s) => !!s.story.env2At && s.t >= s.story.env2At },
+  { id: 'c5-corp-help', when: (s) => s.story.route === 'coop' && (s.story.corpHelp ?? 0) > 0 && !s.raid.report },
+  { id: 'c5-alliance1', when: (s) => s.story.lean === 'alliance' && built(s, 'spaceport') },
+  { id: 'c5-rifle', when: (s) => s.story.lean === 'alien' && s.research.done.includes('xeno_blade') },
+  { id: 'c5-commando', when: (s) => s.story.route === 'resist' && (s.story.commandoWon ?? 0) > 0 && !s.raid.report },
+  { id: 'c5-alliance2', when: (s) => seen(s, 'c5-commando') && s.story.lean === 'alliance' && built(s, 'spaceport') },
+  { id: 'c5-signal', journal: true, when: (s) => !!s.story.signalUsed },
+  // 樣本來源依路線：合作路線要等赫利昂士兵打下過微光獸
+  { id: 'c5-pattern', when: (s) => built(s, 'xeno_lab') && (s.story.route === 'resist' || (s.story.route === 'coop' && seen(s, 'c5-corp-help'))) },
   { id: 'c5-end', when: (s) => s.stage >= 6, chapterEnd: true },
+  // 第 6 章
   { id: 'c6-open', when: (s) => s.stage === 6 && s.story.seenIntro >= 6 },
+  { id: 'c6-wheezy', journal: true, when: (s) => seen(s, 'c6-open') },
   { id: 'c6-governor', when: (s) => built(s, 'governor') },
+  { id: 'c6-salary', journal: true, when: (s) => s.stage >= 6 && s.pop >= 90 },
   { id: 'c6-beacon1', when: (s) => s.b.orbital_beacon.level >= 1 },
   { id: 'c6-lastlight', when: (s) => s.b.orbital_beacon.level >= 3 && seen(s, 'c6-beacon1') },
-  { id: 'c6-end', when: (s) => s.finished, chapterEnd: true },
+  { id: 'c6-truth', when: (s) => seen(s, 'c6-lastlight') && (s.boost?.uses ?? 0) > 0 },
+  { id: 'c6-debate', when: (s) => seen(s, 'c6-truth') },
+  { id: 'c6-leave', when: (s) => s.story.choice6 === 'leave' },
+  { id: 'c6-stay', when: (s) => s.story.choice6 === 'stay' },
+  { id: 'c6-blocked', when: (s) => s.finished && s.story.choice6 === 'leave', chapterEnd: true },
+  { id: 'c6-end', when: (s) => s.finished && s.story.choice6 !== 'leave', chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 4;
+export const DIALOG_VERSION = 5;
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);
 const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id));
 
 /** 章末場景還沒播完：下一章的開場畫面先等一下 */
 export const chapterEndPending = (s: GameState) => !!s.story.queue?.some((q) => CHAPTER_END.has(q.id));
 /** 章末場景屬於第幾章（例如 c3-end → 3）；不是章末場景回傳 0 */
-export const endOfChapter = (id: string) => (CHAPTER_END.has(id) ? Number(id.match(/^c(\d+)-end$/)?.[1] ?? 0) : 0);
+export const endOfChapter = (id: string) => (CHAPTER_END.has(id) ? Number(id.match(/^c(\d+)-/)?.[1] ?? 0) : 0);
 /** 正在等著播的章末場景是第幾章（任務欄在它播完前繼續顯示那一章） */
 export const endingChapter = (s: GameState) => Math.min(...(s.story.queue ?? []).map((q) => endOfChapter(q.id)).filter((n) => n > 0), Infinity);
 
@@ -132,7 +175,10 @@ export function dialogs(s: GameState) {
   if (s.story.seenIntro >= s.stage && !j.entries.some((e) => e.k === 'log.chapter' && e.p?.n === s.stage)) write(s, 'log.chapter', { n: s.stage });
   // 第 4 章開始時記下組裝工坊的等級：之後再升級才觸發提歐教年輕人的場景
   if (s.stage >= 4 && s.story.asm4 === undefined) s.story.asm4 = s.b.assembly.level;
+  if (s.story.route === 'resist' && s.gov.corp.refusals >= 2 && !s.story.lean) s.story.lean = decideLean(s);
   for (const x of TRIGGERS) if (!seen(s, x.id) && x.when(s)) playScene(s, x.id, x.journal);
+  // 第 6 章的抉擇：大家討論完（c6-debate 播完）才跳出選擇
+  if (seen(s, 'c6-debate') && !s.story.choice6 && !s.story.queue?.length && !s.events.active) s.events.active = { kind: 'choice6' };
   for (const d of DEFS) if (!j.b.includes(d.id) && built(s, d.id)) { j.b.push(d.id); write(s, 'log.built', { b: d.id, v: j.b.length % 3 }); }
   if (s.pop >= j.pop + POP_STEP) { j.pop = Math.floor(s.pop / POP_STEP) * POP_STEP; write(s, 'log.pop', { n: j.pop }); }
   if (s.raid.count > j.raids) {
@@ -155,6 +201,10 @@ export function migrateDialogs(s: GameState) {
     s.journal = newJournal(s);
     if (s.t > 5) write(s, 'log.migrated');
   }
+  // 第 5～6 章路線（v0.66）加入前的存檔：拒絕過使者算抵抗，否則算合作；已經通關的算保留異晶
+  if (s.stage >= 5 && !s.story.route && s.gov.corp.envoys > 0) s.story.route = s.gov.corp.refusals > 0 ? 'resist' : 'coop';
+  if (s.story.route === 'resist' && s.gov.corp.refusals >= 2 && !s.story.lean) s.story.lean = decideLean(s);
+  if (s.finished && !s.story.choice6) s.story.choice6 = 'stay';
   // 第 3～6 章對話（v0.6.1）加入前的存檔：已經過去的里程碑一樣不補播
   if ((s.story.dlgV ?? 1) < DIALOG_VERSION) {
     for (const x of TRIGGERS) if (!s.story.seen.includes(x.id) && x.when(s)) s.story.seen.push(x.id);

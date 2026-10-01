@@ -134,20 +134,20 @@ const chapters = [
   {
     title: 'The Corporation’s Shadow', subtitle: 'The price of freedom',
     intro: [
-      'Three days after the Colony Core lit up, a transport ship that belonged to no one appeared in orbit.',
-      'Helion Corp has found you. They did not open fire — they just sent a document: mining rights, debts, interest, every line spelled out.',
-      'To be free, the colony has to pay its own way. Pass laws, collect taxes, trade — and then decide whether to say no to the corporation.',
+      'Three days after the Colony Core lit up, a warship appeared in orbit. Every one of us knew the logo on its hull.',
+      'Helion Corp has found us. They did not open fire. They only sent a message: an envoy will be down soon.',
+      'To be free, the colony has to pay its own way, and this many people have to want to stand together. Pass laws, trade, and then decide: work with the corporation, or tell them no.',
     ],
     goals: ['Build the Administration Hall', 'Pass your first colony charter', 'Receive the corporate envoy and make a choice', 'Earn 5,000 credits in total', 'Reach population 80', 'Complete the Star Dome'],
   },
   {
-    title: 'Beacon', subtitle: 'A message to the stars',
+    title: 'The Choice', subtitle: 'Whose home is this?',
     intro: [
       'The first night after the dome closed, the colony’s lights could be seen from orbit.',
-      'Helion’s transport is still up there, and more Alliance ships arrive every week. This planet is no longer a hiding place — it is a coordinate everyone knows.',
-      'Build the Orbital Beacon and announce to the whole system: this is a free city.',
+      'Helion’s warship is still up there. So is the signal that led us here. This planet is no longer a hiding place. It is a coordinate everyone knows.',
+      'Build the Orbital Beacon and find the source of the signal. Then we decide whose home this is.',
     ],
-    goals: ['Build the Governor’s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Complete all five phases of the Orbital Beacon'],
+    goals: ['Build the Governor’s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Complete all five phases: the Orbital Beacon, or a ship built from its core'],
   },
 ];
 
@@ -166,6 +166,11 @@ const events: Record<string, { title: string; text: string; options: string[] }>
     title: 'A Broken Distress Call',
     text: 'A woman\'s voice crackles through the comm, over the clang of metal: "This is... pod three, Ines... my pod is wedged in an ice crevasse... I have tools, but no air. Please hurry."',
     options: ['Mara and Juno drive out (2 min, no workers needed)', 'Later (the signal will repeat)'],
+  },
+  choice6: {
+    title: 'Whose Home Is This?',
+    text: 'Everyone is here. The glimmers are guards, and every piece of xenocrystal we use comes out of what they guard. The beacon core is only enough for one thing: lighting the beacon, or powering a ship.',
+    options: ['Give up xenocrystal and build a ship to leave', 'Keep xenocrystal and stay'],
   },
   envoy: {
     title: 'Corporate Envoy',

@@ -86,7 +86,7 @@ export function signalTrade(s: GameState, n = 5) {
   if (s.t >= g.resetAt) { g.used = 0; g.resetAt = s.t + SIGNAL_PERIOD; }
   n = Math.min(n, SIGNAL_LIMIT - g.used, Math.floor(s.res.scrap / SIGNAL_RATE));
   if (n <= 0) return;
-  s.res.scrap -= n * SIGNAL_RATE; g.used += n;
+  s.res.scrap -= n * SIGNAL_RATE; g.used += n; s.story.signalUsed = true;
   add(s, 'crystal', n);
 }
 
@@ -100,6 +100,8 @@ export function envoyTick(s: GameState) {
   const c = s.gov.corp;
   if (c.nextEnvoy < 0) c.nextEnvoy = s.t + 240;
   if (s.events.active || s.t < c.nextEnvoy) return;
+  // 第一次使者來要答覆：等卡爾德登場、沃斯說出真相、大家討論完（c5-debate 播完）
+  if (c.envoys === 0 && (!s.story.seen?.includes('c5-debate') || s.story.queue?.length)) return;
   c.demand = envoyDemand(s);
   s.events.active = { kind: 'envoy' };
 }
@@ -114,7 +116,10 @@ export function resolveEnvoy(s: GameState, choice: number) {
     c.refusals++; c.relation--;
     notify(s, c.refusals >= 3 ? 'n.envoyThreat' : 'n.envoyRefused', undefined, 'warn');
   }
+  // 第一次的選擇決定第 5 章的路線
+  if (c.envoys === 0) s.story.route = choice === 0 ? 'coop' : 'resist';
   c.envoys++; c.demand = null; c.nextEnvoy = s.t + ENVOY_GAP;
+  if (c.envoys === 2) s.story.env2At = s.t;
   return true;
 }
 

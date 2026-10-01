@@ -11,6 +11,8 @@ export function levelBlock(s: GameState, id: string): Why {
   const d = DEF[id], L = s.b[id].level;
   if (d.stage > s.stage) return msg('why.stage', { n: d.stage });
   if (L >= d.maxLevel) return msg('why.maxLevel');
+  // 信標第 3 段之後要先做第 6 章的抉擇（放棄或保留異晶）
+  if (id === 'orbital_beacon' && L >= 3 && !s.story.choice6) return msg('why.choice6');
   if (s.stage === 1 && CH1_CAP[id] && L >= CH1_CAP[id]) return msg('why.ch1Cap', { n: CH1_CAP[id] });
   if (d.kind === 'command') {
     const prev = COMMAND_CHAIN[COMMAND_CHAIN.indexOf(id) - 1];
@@ -34,8 +36,10 @@ export function levelUp(s: GameState, id: string): boolean {
     notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s);
   } else if (id === 'orbital_beacon') {
     // 分段建造：第五段完成就是結局
-    if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, 'n.beaconDone', undefined, 'good'); }
-    else notify(s, 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
+    // 放棄異晶的路線：信標的核心拆下來造船，最後兩段改成造船
+    const ship = s.story.choice6 === 'leave';
+    if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, ship ? 'n.shipDone' : 'n.beaconDone', undefined, 'good'); }
+    else notify(s, ship && s.b[id].level > 3 ? 'n.shipPhase' : 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
   } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
   // 軌道車線：蓋好後整個殖民地的道路鋪上石磚（地圖由 GameScene 依此重畫）
   if (id === 'rail_line' && s.b[id].level === 1) notify(s, 'n.paveStone', undefined, 'good');

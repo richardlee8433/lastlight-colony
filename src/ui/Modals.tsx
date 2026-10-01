@@ -74,8 +74,9 @@ export function Modals() {
     return (
       <Modal label={t('fin.eyebrow')}>
         <p className="eyebrow">{t('fin.eyebrow')}</p>
-        <h2>{t('fin.title')}</h2>
-        <p>{t('fin.text')}</p>
+        <h2>{t(s.story.choice6 === 'leave' ? 'fin.titleLeave' : 'fin.title')}</h2>
+        <p>{t(s.story.choice6 === 'leave' ? 'fin.textLeave' : 'fin.text')}</p>
+        <p className="fin-part">{t('fin.part')}</p>
         <ul className="gains">
           <li>{t('fin.time')} <b>{fmtTime(s.t)}</b></li>
           <li>{t('fin.pop')} <b>{s.pop}</b></li>
@@ -137,7 +138,8 @@ export function Modals() {
   }
 
   const ev = s.events.active;
-  if (ev) {
+  // 劇情對話播完才跳出事件（例如使者要答覆、第 6 章的抉擇），避免視窗蓋住對話
+  if (ev && !s.story.queue?.length) {
     const E = eventText(ev.kind);
     const bname = ev.target ? bName(ev.target) : '';
     const dm = s.gov?.corp.demand;

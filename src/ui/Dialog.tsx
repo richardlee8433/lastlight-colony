@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGame, game } from '../store/gameStore';
 import { SCENES } from '../data/dialogs';
-import { endOfChapter } from '../engine/dialog';
+import { endOfChapter, lineOk } from '../engine/dialog';
 import { CHARACTERS, CharacterId, portraitURL } from '../art/portraitArt';
 import { t, useLang } from '../i18n';
 import { sfx } from '../audio/audio';
@@ -20,7 +20,8 @@ export function Dialog() {
 
 function Scene({ id, day }: { id: string; day: number }) {
   const lang = useLang(), act = useGame.getState();
-  const lines = SCENES[id].lines;
+  // 只播符合目前路線的台詞（第 5～6 章的分支）
+  const lines = SCENES[id].lines.filter((l) => lineOk(game.s, l[3]));
   const [i, setI] = useState(0), [shown, setShown] = useState(0);
   const [who, zh, en] = lines[i];
   const text = (lang === 'zh' ? zh : en).replace('{day}', String(day));

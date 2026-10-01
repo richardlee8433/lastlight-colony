@@ -60,10 +60,13 @@ function producerFor(s: GameState, k: ResKey): string | null {
 
 function decide(s: GameState) {
   s.story.seenIntro = Math.min(s.stage, 6);   // 玩家看完章節開場（劇情對話與伊涅絲事件要靠它觸發）
+  s.story.queue = [];                         // 劇情對話視為已經看完（遊戲裡由對話框播放）
   s.events.report = null;   // 玩家看完事件結果（救援、探勘）
   if (s.events.active) {
     const k = s.events.active.kind;
-    resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'envoy' ? (s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
+    // ROUTE=resist：一律拒絕使者；CHOICE=leave：第 6 章放棄異晶
+    resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'choice6' ? (process.env.CHOICE === 'leave' ? 0 : 1)
+      : k === 'envoy' ? (process.env.ROUTE !== 'resist' && s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
   }
   if (s.stage >= 5 && built(s, 'admin')) {
     setTax(s, 2);
