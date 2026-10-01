@@ -241,7 +241,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'st.housingV': ['{c} {c|person|people}', '{c} 人'],
   'st.storage': ['Storage cap', '倉庫上限'],
   'st.storageV': ['{c} per resource', '每種資源 {c}'],
-  'st.birth': ['Birth rate', '出生率'],
+  'st.birth': ['Survivor discovery', '倖存者發現速度'],
   'st.consume': ['Nutrient use', '營養消耗'],
   'st.habCap': ['Hab Pod capacity', '生活艙容量'],
   'st.habCapV': ['+{n} per level', '每級 +{n} 人'],

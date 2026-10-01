@@ -4,7 +4,7 @@ interface B { name: string; desc: string; nodes?: Record<string, Node> }
 
 const buildings: Record<string, B> = {
   escape_pod: { name: 'Escape Pod', desc: 'Where it all began. Three survivors crammed inside — it is barely livable.', nodes: {
-    beacon: ['Distress Band', 'Birth rate +10%'] } },
+    beacon: ['Distress Band', 'Survivor discovery +10%'] } },
   scrap_heap: { name: 'Scrap Heap', desc: 'Wreckage from the pod, scattered across the ground. Hold the Scrap button above it to collect.', nodes: {
     click_1: ['Magnetic Gloves', 'Click yield +1'], crit_1: ['Sharp Eyes', 'Crit chance +5%'], cap_1: ['Zoned Search', 'Worker cap +1'],
     critx: ['Treasure Instinct', 'Crit multiplier ×2'], buff_10: ['On-site Supervisor', 'Click buff lasts 10 s'] } },
@@ -18,7 +18,7 @@ const buildings: Record<string, B> = {
   'o2_scrubber:elec': { name: 'Electrolyzer', desc: 'Ines’s design: Wheezy gets a drill bit and bores down to the ice layer, melting it and splitting the water into oxygen. Each worker makes more than twice the oxygen of a scrubber. Rebuilding keeps its level and workers.' },
   emergency_camp: { name: 'Emergency Camp', desc: 'Command Lv1. Inflatable pressurized domes and radiant heaters — the survivors can finally take their helmets off indoors. Unlocks building upgrades and upgrade lines, and advances to Stage 2.' },
   hab_pod: { name: 'Hab Pod', desc: 'Houses 2 people per level. The population cap decides whether new colonists can keep arriving.', nodes: {
-    cap_1: ['Bunk Beds', 'Capacity +1'], birth: ['Nursery Corner', 'Birth rate +10%'], cap_2: ['Extra Partitions', 'Capacity +2'] } },
+    cap_1: ['Bunk Beds', 'Capacity +1'], birth: ['Guide Lights', 'Survivor discovery +10%'], cap_2: ['Extra Partitions', 'Capacity +2'] } },
   cargo: { name: 'Supply Depot', desc: 'Each level raises storage for every resource by 100.', nodes: {
     stack: ['Stacking Frames', '+50 more storage per level'] } },
   lounge: { name: 'Lounge Pod', desc: 'Morale +5 per level. Each stationed worker adds 10% food security.', nodes: {
@@ -38,7 +38,7 @@ const buildings: Record<string, B> = {
   forge: { name: 'Forge', desc: 'Forges metal into tools or weapons. From Stage 4 you can move workers onto weapons. Buildings need tools from Lv5 onward.', nodes: {
     tools_25: ['Standard Molds', 'Tool output +25%'], click_1: ['Master Smith', 'Click yield +1'], weapon_atk: ['Weapon Calibration', 'Weapon attack +1'] } },
   outpost: { name: 'Outpost', desc: 'Command Lv3. The watchtower sees farther — including what is coming closer. Advances to Stage 4. Requires population 22.' },
-  memorial: { name: 'Memorial Hall', desc: 'For those who did not make it here. Morale +10 and birth rate +10% per level. Built from the last of the escape pod\'s hull: the pod retires, and its living space (+4 population), storage (+100) and distress band (birth rate +10%) carry over here.', nodes: {
+  memorial: { name: 'Memorial Hall', desc: 'For those who did not make it here. Morale +10 and survivor discovery +10% per level. Built from the last of the escape pod\'s hull: the pod retires, and its living space (+4 population), storage (+100) and distress band (survivor discovery +10%) carry over here.', nodes: {
     morale_5: ['Eternal Lamp', 'Morale +5'] } },
   crystal_synth: { name: 'Crystal Synthesizer', desc: 'Dissolves underground crystal clusters and regrows them into energy-storing xenocrystal. Output is tiny, but all alien tech depends on it.', nodes: {
     prod_30: ['Resonance Tank', 'Output +30%'], cap_1: ['Second Reactor', 'Worker cap +1'] } },
@@ -88,7 +88,7 @@ const research: Record<string, [string, string]> = {
 const charters: Record<string, [string, string, string]> = {
   rationing: ['Rationing', 'Nutrient consumption −20%', 'Morale −10'],
   double_shift: ['Double Shifts', 'All output +15%', 'Morale −10'],
-  open_immigration: ['Open Immigration', 'Birth rate +30%', 'Morale −5'],
+  open_immigration: ['Open Immigration', 'Survivor discovery +30%', 'Morale −5'],
   rest_day: ['Rest Day', 'Morale +15', 'All output −10%'],
   corp_contract: ['Corporate Contract', 'Credit income +40%', 'Corp relation +1, morale −5'],
   alien_first: ['Xeno First', 'Xenocrystal output +25%', 'Metal output −15%'],

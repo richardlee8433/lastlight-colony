@@ -22,7 +22,7 @@
   {
     "id": "open_immigration",
     "name": "開放移民",
-    "desc": "出生率 +30%",
+    "desc": "倖存者發現速度 +30%",
     "cost": "士氣 −5",
     "effect": {
       "birthAdd": 0.3,
