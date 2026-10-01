@@ -6,7 +6,7 @@ import {
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
-import { artId, buffActive, built, disabled, idle, workerCap } from '../engine/formulas';
+import { artId, buffActive, built, disabled, idle, retired, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
@@ -190,7 +190,7 @@ export class GameScene {
   // ── 建築 id：指揮艙格子顯示「目前最高級的指揮艙」，沒有的話顯示下一個要蓋的 ──
   siteBuilding(site: Site): string | null {
     const s = game.s;
-    if (site.id !== 'command') return DEF[site.id].stage <= s.stage ? site.id : null;
+    if (site.id !== 'command') return DEF[site.id].stage <= s.stage && !retired(s, site.id) ? site.id : null;
     const builtCmd = [...COMMAND_CHAIN].reverse().find((id) => built(s, id));
     return builtCmd ?? COMMAND_CHAIN[0];
   }

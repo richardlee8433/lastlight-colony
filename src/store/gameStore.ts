@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { AIR_ENABLED, DEF, DEFS, GameState, makeCheckpoint, newAir, newGame, newGov, newRaid, notify } from '../engine/state';
 import { LIFE_SUPPORT } from '../engine/air';
 import { CHAPTERS, migrateStoryDone } from '../engine/story';
-import { built, idle, storageCap, workerCap } from '../engine/formulas';
+import { built, idle, retirePod, storageCap, workerCap } from '../engine/formulas';
 import { oxygenByproduct, oxygenUse } from '../engine/air';
 import { step, TICK } from '../engine/tick';
 import { migrateDialogs } from '../engine/dialog';
@@ -93,6 +93,8 @@ function migrate(s: GameState) {
   // 第 6 章：結局改成軌道信標完成；舊存檔在星城穹頂就結束的，接續第 6 章
   if (s.finished && s.b.orbital_beacon.level < DEF.orbital_beacon.maxLevel) s.finished = false;
   s.boost ??= { until: 0, uses: 0 };
+  // 已經蓋好紀念堂的舊存檔：逃生艙退役（求救頻段沒買的直接送）
+  retirePod(s);
   // v0.6 氧氣：舊存檔補上氧氣（裝滿）；已經離開第 1 章的，維生系統視為已經衰竭
   const hadAir = !!s.air;
   s.res.oxygen ??= s.stage >= 2 ? storageCap(s) : 120;

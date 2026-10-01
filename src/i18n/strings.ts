@@ -109,6 +109,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'n.built': ['{b} built.', '{b}建成了。'],
   'n.levelUp': ['{b} reached Lv{n}.', '{b}升到 Lv{n}。'],
   'n.node': ['{b}: {node} ({nodeDesc})', '{b}：{node}（{nodeDesc}）'],
+  'n.podRetired': ['The escape pod is retired. The last of its hull went into the Memorial Hall, and its space and storage carry over.', '逃生艙退役了。最後的外殼用在紀念堂上，它的居住空間與倉儲併入紀念堂。'],
   'n.paveStone': ['Roads paved! Every road in the colony is now stone tiles.', '道路鋪好了！殖民地的路全部換成石磚。'],
   'n.paveMetal': ['Roads upgraded to metal tiles!', '道路升級成金屬地磚了！'],
   'n.research': ['Research complete: {rs} ({rsDesc})', '研究完成：{rs}（{rsDesc}）'],

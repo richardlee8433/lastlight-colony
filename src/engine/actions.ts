@@ -1,6 +1,6 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
 import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
-import { formOf, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
+import { formOf, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, retirePod, workerCap } from './formulas';
 
 export type Why = Msg | null;
 
@@ -41,6 +41,8 @@ export function levelUp(s: GameState, id: string): boolean {
     if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, ship ? 'n.shipDone' : 'n.beaconDone', undefined, 'good'); }
     else notify(s, ship && s.b[id].level > 3 ? 'n.shipPhase' : 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
   } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
+  // 紀念堂蓋好：逃生艙退役（最後的外殼用在紀念堂上）
+  if (id === 'memorial' && s.b[id].level === 1) { retirePod(s); notify(s, 'n.podRetired', undefined, 'good'); }
   // 軌道車線：蓋好後整個殖民地的道路鋪上石磚（地圖由 GameScene 依此重畫）
   if (id === 'rail_line' && s.b[id].level === 1) notify(s, 'n.paveStone', undefined, 'good');
   return true;

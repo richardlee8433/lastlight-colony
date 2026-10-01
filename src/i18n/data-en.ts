@@ -38,7 +38,7 @@ const buildings: Record<string, B> = {
   forge: { name: 'Forge', desc: 'Forges metal into tools or weapons. From Stage 4 you can move workers onto weapons. Buildings need tools from Lv5 onward.', nodes: {
     tools_25: ['Standard Molds', 'Tool output +25%'], click_1: ['Master Smith', 'Click yield +1'], weapon_atk: ['Weapon Calibration', 'Weapon attack +1'] } },
   outpost: { name: 'Outpost', desc: 'Command Lv3. The watchtower sees farther — including what is coming closer. Advances to Stage 4. Requires population 22.' },
-  memorial: { name: 'Memorial Hall', desc: 'For those who did not make it here. Morale +10 and birth rate +10% per level.', nodes: {
+  memorial: { name: 'Memorial Hall', desc: 'For those who did not make it here. Morale +10 and birth rate +10% per level. Built from the last of the escape pod\'s hull: the pod retires, and its living space (+4 population), storage (+100) and distress band (birth rate +10%) carry over here.', nodes: {
     morale_5: ['Eternal Lamp', 'Morale +5'] } },
   crystal_synth: { name: 'Crystal Synthesizer', desc: 'Dissolves underground crystal clusters and regrows them into energy-storing xenocrystal. Output is tiny, but all alien tech depends on it.', nodes: {
     prod_30: ['Resonance Tank', 'Output +30%'], cap_1: ['Second Reactor', 'Worker cap +1'] } },

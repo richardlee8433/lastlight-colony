@@ -1,6 +1,6 @@
 import { useGame, game } from '../store/gameStore';
 import { COMMAND_CHAIN, DEFS } from '../engine/state';
-import { artId, built, workerCap } from '../engine/formulas';
+import { artId, built, retired, workerCap } from '../engine/formulas';
 import { buildingURL } from './assets';
 import { bName, t } from '../i18n';
 
@@ -11,7 +11,7 @@ export function QuickBar() {
   const s = game.s;
   // 指揮建築：已蓋的最高級；還沒蓋就顯示第一級（緊急營地），不然地圖上看不到也點不到
   const cmd = [...COMMAND_CHAIN].reverse().find((id) => built(s, id)) ?? COMMAND_CHAIN[0];
-  const list = DEFS.filter((d) => d.kind !== 'command' && d.stage <= s.stage);
+  const list = DEFS.filter((d) => d.kind !== 'command' && d.stage <= s.stage && !retired(s, d.id));
   return (
     <nav className="quickbar px" aria-label={t('qb.aria')}>
       {cmd && qb(cmd)}

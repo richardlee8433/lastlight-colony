@@ -35,6 +35,12 @@ export const RESEARCH_DEFS = RESEARCH as unknown as ResearchDef[];
 const RDEF = Object.fromEntries(RESEARCH_DEFS.map((r) => [r.id, r]));
 
 export const built = (s: GameState, id: string) => s.b[id].level > 0;
+/** 逃生艙在紀念堂蓋好後退役：不再出現在地圖與建造列，效果（人口、倉儲、求救頻段）照算，併入紀念堂 */
+export const retired = (s: GameState, id: string) => id === 'escape_pod' && built(s, 'memorial');
+/** 退役時求救頻段還沒買的，直接送（之後沒有地方可以買了） */
+export function retirePod(s: GameState) {
+  if (retired(s, 'escape_pod') && !s.b.escape_pod.nodes.includes('beacon')) s.b.escape_pod.nodes.push('beacon');
+}
 
 /** 某建築已購買升級節點的效果加總（乘數型 critMul 相乘，其餘相加；foodWindow / buffDuration / recipeOut 取最後一個）。 */
 export function nodeEffect(s: GameState, id: string, key: keyof Effect): number {
