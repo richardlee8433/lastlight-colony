@@ -147,6 +147,8 @@ export const SCENE_IDS = TRIGGERS.map((x) => x.id);
 const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id));
 
 /** 章末場景還沒播完：下一章的開場畫面先等一下 */
+/** 結局對話（c6-end／c6-blocked）已經排進佇列：結局畫面要等它播完才出現 */
+export const endingQueued = (s: GameState) => seen(s, 'c6-end') || seen(s, 'c6-blocked');
 export const chapterEndPending = (s: GameState) => !!s.story.queue?.some((q) => CHAPTER_END.has(q.id));
 /** 章末場景屬於第幾章（例如 c3-end → 3）；不是章末場景回傳 0 */
 export const endOfChapter = (id: string) => (CHAPTER_END.has(id) ? Number(id.match(/^c(\d+)-/)?.[1] ?? 0) : 0);

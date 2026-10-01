@@ -3,7 +3,7 @@ import { useGame, game, modalHold } from '../store/gameStore';
 import { RES_KEYS, ResKey } from '../engine/state';
 import { canAfford, idle } from '../engine/formulas';
 import { CHAPTERS } from '../engine/story';
-import { chapterEndPending } from '../engine/dialog';
+import { chapterEndPending, endingQueued } from '../engine/dialog';
 import { bName, chapterText, costText, eventText, raidName, resName, t, tm } from '../i18n';
 import { Icon, fmt, fmtTime } from './common';
 
@@ -70,7 +70,7 @@ export function Modals() {
     );
   }
 
-  if (s.finished && !finishSeen && !chapterEndPending(s)) {
+  if (s.finished && !finishSeen && endingQueued(s) && !chapterEndPending(s)) {
     return (
       <Modal label={t('fin.eyebrow')}>
         <p className="eyebrow">{t('fin.eyebrow')}</p>
