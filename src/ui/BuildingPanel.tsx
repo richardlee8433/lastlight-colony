@@ -155,8 +155,9 @@ function Stats({ id }: { id: string }) {
     if (s.b[id].paused) rows.push([t('st.status'), t('st.paused')]);
     else if (inp > 0 && s.res[d.recipe.in] < 1) rows.push([t('st.status'), t('st.dry', { r: resName(d.recipe.in) })]);
   }
-  if (d.effects?.housing) rows.push([t('st.housing'), t('st.housingV', { n: d.effects.housing * L + nodeEffect(s, id, 'housingAdd'), c: popCap(s) })]);
-  if (d.effects?.storage) rows.push([t('st.storage'), t('st.storageV', { n: (d.effects.storage + nodeEffect(s, id, 'storagePerLevel')) * L, c: storageCap(s) })]);
+  // 玩家要知道的是殖民地現在總共住得下多少人、倉庫裝得下多少，不是這棟建築單獨貢獻多少
+  if (d.effects?.housing) rows.push([t('st.housing'), t('st.housingV', { c: popCap(s) })]);
+  if (d.effects?.storage) rows.push([t('st.storage'), t('st.storageV', { c: storageCap(s) })]);
   if (d.effects?.morale) rows.push([t('morale'), `+${d.effects.morale * L + nodeEffect(s, id, 'moraleAdd')}`]);
   if (d.effects?.birth) rows.push([t('st.birth'), `+${Math.round(d.effects.birth * L * 100)}%`]);
   if (d.effects?.consumeMul) rows.push([t('st.consume'), `${Math.round(d.effects.consumeMul * 100)}%`]);
