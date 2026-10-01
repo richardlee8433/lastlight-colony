@@ -31,7 +31,7 @@ export interface BuildingDef {
   recipe?: { in: ResKey; out: ResKey; ratio: number };
   workersPerLevel?: number;
   effects?: Partial<{ housing: number; storage: number; morale: number; gatherAdd: number; birth: number; consumeMul: number; habBonus: number }>;
-  requires?: { pop?: number; raids?: number; credits?: number };
+  requires?: { pop?: number; raids?: number; credits?: number; levels?: Record<string, number> };
   upgrades?: UpgradeNode[];
 }
 export const DEFS = BUILDINGS as unknown as BuildingDef[];

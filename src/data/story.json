@@ -31,6 +31,27 @@
         "label": "把殖民者派到建築上工作"
       },
       {
+        "type": "level",
+        "id": "scrap_heap",
+        "amount": 2,
+        "gid": "1-scrap2",
+        "label": "把殘骸堆升到 Lv2，拆出更多零件"
+      },
+      {
+        "type": "level",
+        "id": "o2_scrubber",
+        "amount": 3,
+        "gid": "1-o2lv",
+        "label": "把氧氣再生器升到 Lv3，讓阿喘撐住所有人"
+      },
+      {
+        "type": "level",
+        "id": "algae_tank",
+        "amount": 3,
+        "gid": "1-algaelv",
+        "label": "把藻類槽升到 Lv3"
+      },
+      {
         "type": "build",
         "id": "emergency_camp",
         "label": "建成加壓的緊急營地"

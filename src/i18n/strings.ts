@@ -56,6 +56,8 @@ export const STRINGS: Record<string, [string, string]> = {
   'why.needPrev': ['Build the {b} first', '需要先建成{b}'],
   'why.needCamp': ['Build the Emergency Camp to upgrade', '建成緊急營地後才能升級'],
   'why.pop': ['Needs population {n}', '需要人口 {n}'],
+  'why.needLevel': ['Needs {b} at Lv{n}', '需要{b}升到 Lv{n}'],
+  'why.ch1Cap': ['Salvaged parts only go up to Lv{n}. Build the Emergency Camp first', '拼湊的設備最多到 Lv{n}，先建成緊急營地'],
   'why.raids': ['Repel {n} raids first', '需要擊退 {n} 次襲擊'],
   'why.credits': ['Earn {n} credits first', '需要累計賺進 {n} 信用點'],
   'why.afford': ['Not enough resources', '資源不足'],

@@ -40,6 +40,7 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c1-f8', journal: true, when: (s) => s.stage === 1 && (s.b.o2_scrubber.level >= 2 || s.b.algae_tank.level >= 2) },
   { id: 'c1-assign', when: (s) => s.story.assigned },
   { id: 'c1-signal', when: (s) => s.stage === 1 && (s.b.algae_tank.level >= 3 || daysInChapter(s, 1) >= 4) },
+  { id: 'c1-limit', journal: true, when: (s) => s.stage === 1 && (s.b.o2_scrubber.level >= 3 || s.b.algae_tank.level >= 3) },
   { id: 'hypoxia', when: (s) => !!s.air?.hypoxic },
   { id: 'c1-end', when: (s) => s.stage >= 2, chapterEnd: true },
   // 第 2 章

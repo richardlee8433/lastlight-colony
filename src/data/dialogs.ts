@@ -95,6 +95,16 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ['那個把我們引來這裡的訊號，偶爾還會響。我問瑪拉為什麼要逃，她叫提歐去換濾網。提歐換了兩次。', 'The signal that led us here still sounds now and then. I asked Mara why she ran. She sent Teo to change the filter. Teo changed it twice.'],
   },
+  // 只寫進日誌
+  'c1-limit': {
+    lines: [
+      ['teo', '阿喘到極限了。再鎖一顆螺絲，牠就要散了。', "Wheezy is at its limit. One more bolt and it falls apart."],
+      ['juno', '那換一台新的？', 'Then build a new one?'],
+      ['teo', '用什麼換？殘骸就這麼多，我們會的也就這麼多。', "With what? There's only so much wreckage, and only so much we know how to do."],
+      ['mara', '那就先撐著。等其他艙的人到了再說。', "Then we hold on. We'll see once the other pods find us."],
+    ],
+    log: ['提歐說阿喘到極限了，再鎖一顆螺絲就要散了。殘骸就這麼多，我們會的也就這麼多。瑪拉說先撐著，等其他艙的人到了再說。', "Teo says Wheezy is at its limit. One more bolt and it falls apart. There's only so much wreckage, and only so much we know how to do. Mara says we hold on until the other pods find us."],
+  },
   'hypoxia': {
     lines: [
       ['mara', '所有人注意，氧氣見底了！慢慢呼吸，別講話——', "Everyone listen, we're out of oxygen! Breathe slowly, don't talk—"],

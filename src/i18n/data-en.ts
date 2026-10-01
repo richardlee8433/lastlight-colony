@@ -102,7 +102,7 @@ const chapters = [
       'Three weeks ago we stole a freighter from the mines on F8. On the run, we caught a faint navigation signal saying there were old colony facilities here. I chose to change course. The ship broke apart in orbit, and we all jumped for the escape pods.',
       'This pod has six seats. Three of us are in it. The air outside is all carbon dioxide, and the life support lights are ticking down one by one. Strip the wreck and cobble together something that makes oxygen. — Mara',
     ],
-    goals: ['Hold the Scrap button above the Scrap Heap to collect 20 scrap', 'Build an Oxygen Scrubber before life support runs out', 'Build an Algae Vat for nutrients (it makes a little oxygen too)', 'Assign colonists to work at a building', 'Complete the pressurized Emergency Camp'],
+    goals: ['Hold the Scrap button above the Scrap Heap to collect 20 scrap', 'Build an Oxygen Scrubber before life support runs out', 'Build an Algae Vat for nutrients (it makes a little oxygen too)', 'Assign colonists to work at a building', 'Upgrade the Scrap Heap to Lv2 to strip more parts', 'Upgrade the Oxygen Scrubber to Lv3 so Wheezy can keep everyone breathing', 'Upgrade the Algae Vat to Lv3', 'Complete the pressurized Emergency Camp'],
   },
   {
     title: 'Taking Root', subtitle: 'Enough air to go around',

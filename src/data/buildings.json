@@ -364,8 +364,14 @@
     "maxLevel": 1,
     "desc": "指揮艙 Lv1。充氣加壓艙和輻射加熱器，讓倖存者終於能在室內摘下頭盔。解鎖建築升級與各建築的升級線，並進入階段 2。",
     "baseCost": {
-      "scrap": 120,
-      "nutrient": 40
+      "scrap": 200,
+      "nutrient": 100
+    },
+    "requires": {
+      "levels": {
+        "o2_scrubber": 3,
+        "algae_tank": 3
+      }
     },
     "effects": {
       "housing": 2

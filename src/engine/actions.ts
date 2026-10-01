@@ -5,16 +5,20 @@ import { formOf, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, c
 export type Why = Msg | null;
 
 /** 不能建造／升級的原因；null 表示可以 */
+/** 第 1 章（蓋好緊急營地之前）可以升級的建築與等級上限：拼裝的設備只能撐到這裡 */
+export const CH1_CAP: Record<string, number> = { scrap_heap: 3, o2_scrubber: 3, algae_tank: 3 };
 export function levelBlock(s: GameState, id: string): Why {
   const d = DEF[id], L = s.b[id].level;
   if (d.stage > s.stage) return msg('why.stage', { n: d.stage });
   if (L >= d.maxLevel) return msg('why.maxLevel');
+  if (s.stage === 1 && CH1_CAP[id] && L >= CH1_CAP[id]) return msg('why.ch1Cap', { n: CH1_CAP[id] });
   if (d.kind === 'command') {
     const prev = COMMAND_CHAIN[COMMAND_CHAIN.indexOf(id) - 1];
     if (prev && !built(s, prev)) return msg('why.needPrev', { b: prev });
   }
-  if (L > 0 && !built(s, 'emergency_camp')) return msg('why.needCamp');
+  if (L > 0 && !built(s, 'emergency_camp') && !CH1_CAP[id]) return msg('why.needCamp');
   if (d.requires?.pop && s.pop < d.requires.pop) return msg('why.pop', { n: d.requires.pop });
+  for (const [b, n] of Object.entries(d.requires?.levels ?? {})) if (s.b[b].level < n) return msg('why.needLevel', { b, n });
   if (d.requires?.raids && s.raid.won < d.requires.raids) return msg('why.raids', { n: d.requires.raids });
   if (d.requires?.credits && s.gov.creditsEarned < d.requires.credits) return msg('why.credits', { n: d.requires.credits });
   if (!canAfford(s, levelCost(s, id))) return msg('why.afford');

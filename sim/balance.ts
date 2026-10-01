@@ -29,6 +29,11 @@ const PRODUCER: Record<ResKey, string[]> = {
 const TARGETS = ['emergency_camp', 'central_hub', 'outpost', 'colony_core', 'star_dome'];
 
 function target(s: GameState) {
+  // 第 1 章：營地要先把再生器、藻類槽升到 Lv3（任務也要殘骸堆 Lv2）
+  if (s.stage === 1 && built(s, 'o2_scrubber') && built(s, 'algae_tank')) {
+    const g = ([['scrap_heap', 2], ['o2_scrubber', 3], ['algae_tank', 3]] as const).find(([id, n]) => s.b[id].level < n);
+    if (g) return g[0];
+  }
   if (s.stage === 3) { const g = ['metal_mine', 'forge', 'expedition'].find((id) => !built(s, id)); if (g) return g; }   // 第 3 章照章節目標走
   const t = TARGETS.find((id) => !built(s, id));
   if (t) return t;
