@@ -44,6 +44,12 @@ const LIST = [
   { id: 'turret', w: 68, foot: 0.08 },
   { id: 'xeno_lab', w: 76, foot: 0.08 },
   { id: 'star_dome', w: 102, foot: 0.08 },
+  // 第 6 章：sheet-ch6.webp（白底、有懸浮零件、信標尖端疊在天幕住宅上）
+  // GRID=2x2 CLAIM=1170,495,4,482 python3 scripts/cut-dark-sheet.py art-src/buildings/sheet-ch6.webp art-src/buildings governor,sky_residence,bioeng,orbital_beacon
+  { id: 'governor', w: 88, foot: 0.08 },
+  { id: 'sky_residence', w: 84, foot: 0.06 },
+  { id: 'bioeng', w: 84, foot: 0.08 },
+  { id: 'orbital_beacon', w: 96, foot: 0.06 },
 ];
 // 一張圖裡有好幾棟建築的合輯：整張去背後依連通區塊分開，由上到下、由左到右對應 ids
 // holes：建築中間被圍住的棋盤格（例如管線之間）也去掉
