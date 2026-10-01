@@ -31,7 +31,7 @@ export class GameScene {
   views = new Map<string, View>();
   walkers: Walker[] = [];
   aliens: any[] = [];
-  /** 擊退後倒在地上的突擊隊：播完倒地動畫、躺一下再淡出 */
+  /** 擊退後倒在地上的突擊隊、微光獸：播完倒地動畫、躺一下再淡出 */
   fallen: any[] = [];
   /** 出去迎戰的陸戰隊員（預警期間從營區走到防線，戰後走回去） */
   defenders: any[] = [];
@@ -472,7 +472,7 @@ export class GameScene {
     const key = inc ? `${inc.at}` : '';
     if (key === this.raidKey) return;
     this.raidKey = key;
-    // 擊退突擊隊：每個人播倒地動畫，躺一下再淡出；其他情況（異星生物、打輸）照舊噴出碎片後消失
+    // 擊退時：有倒地動畫的（突擊隊、微光獸）播倒地、躺一下再淡出；打輸或沒有圖時照舊噴出碎片後消失
     const won = !!game.s.raid?.report?.won;
     for (const a of this.aliens) {
       if (a.die && won && !inc) { a.die(); a.fallT = 0; this.fallen.push(a); continue; }
@@ -559,10 +559,10 @@ export class GameScene {
       d.position.set(this.snap(x), this.snap(y)); d.zIndex = y;
       d.update(this.T, dt);
     }
-    // 雙方都就位後交火：陸戰隊點放子彈、砲塔打雷射、異星生物吐酸液（仿 RimWorld 的曳光彈，會有落空）
+    // 雙方都就位後交火：陸戰隊點放子彈、砲塔打雷射、微光獸吐晶球（仿 RimWorld 的曳光彈，會有落空）
     if (inc && p0 > 0.72 && this.defenders.length && this.aliens.length) this.skirmish(dt);
   }
-  /** 交火：每位陸戰隊員各自冷卻，持槍的一次點放 3 發；砲塔每隔一段時間打一道雷射；異星生物偶爾吐酸液 */
+  /** 交火：每位陸戰隊員各自冷卻，持槍的一次點放 3 發；砲塔每隔一段時間打一道雷射；微光獸偶爾吐晶球 */
   skirmish(dt: number) {
     const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
     for (const d of this.defenders) {
@@ -596,12 +596,16 @@ export class GameScene {
       a.cd = 1.6 + Math.random() * 1.6;
       const d = pick(this.defenders.filter((x) => x.back == null));
       if (!d) continue;
-      // 突擊隊：舉槍點放，打曳光彈；異星生物吐酸液
+      // 突擊隊：舉槍點放，打曳光彈；微光獸吐晶球
       if (a.commando) {
         const dir = d.x >= a.x ? 1 : -1;
         a.setDir(dir); a.fire();
         this.shoot(a.x + dir * 9, a.y - 9, d.x, d.y - 6, d, 'bullet', 0.35); sfx('shot');
-      } else { this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3); sfx('spit'); }
+      } else {
+        // 微光獸吐紫色晶球
+        a.setDir(d.x >= a.x ? 1 : -1); a.fire?.();
+        this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3); sfx('spit');
+      }
     }
   }
   /** 發射一發彈道；miss 是落空機率，落空時子彈從目標旁邊飛過去 */
@@ -630,7 +634,7 @@ export class GameScene {
         this.shots.splice(this.shots.indexOf(sh), 1);
         if (sh.hit && !sh.hit.destroyed) {
           if (sh.kind === 'bullet') this.hitAlien(sh.hit, 0xffe08a);
-          else { sh.hit.hitT = 0.12; const [x, y] = this.toScreen(sh.tx, sh.ty); this.fx.burst(x, y, 0x9fff6a, 3); }
+          else { sh.hit.hitT = 0.12; const [x, y] = this.toScreen(sh.tx, sh.ty); this.fx.burst(x, y, 0xc98aff, 3); }
         }
         continue;
       }
@@ -641,9 +645,10 @@ export class GameScene {
         g.moveTo(x - sh.vx * k, y - sh.vy * k).lineTo(x, y).stroke({ color: 0xffb347, width: 2, alpha: 0.35 });
         g.moveTo(x - sh.vx * k * 0.6, y - sh.vy * k * 0.6).lineTo(x, y).stroke({ color: 0xfff6c0, width: 1 });
       } else {
-        // 酸液：綠色小團，走拋物線
+        // 晶球：紫色小光團，走拋物線
         const p = sh.t / sh.life, lift = Math.sin(p * Math.PI) * 10;
-        g.rect(Math.round(x) - 1, Math.round(y - lift) - 1, 2, 2).fill({ color: 0x9fff6a });
+        g.rect(Math.round(x) - 2, Math.round(y - lift) - 2, 4, 4).fill({ color: 0xa04dff, alpha: 0.35 });
+        g.rect(Math.round(x) - 1, Math.round(y - lift) - 1, 2, 2).fill({ color: 0xe6c8ff });
       }
     }
     for (const b of [...this.beams]) {
@@ -780,7 +785,7 @@ export class GameScene {
   }
   /** 位置完全由倒數決定：預警開始在地圖外，倒數結束剛好抵達集結點 */
   moveAliens(dt: number) {
-    // 倒地的突擊隊：0.6 秒倒下、躺 2.5 秒、1 秒淡出
+    // 倒地的突擊隊、微光獸：0.6 秒倒下、躺 2.5 秒、1 秒淡出
     for (const a of [...this.fallen]) {
       a.fallT += dt;
       a.update(this.T, false);

@@ -22,6 +22,7 @@ import { Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import colonistSheetURL from '../assets/sprites/colonist.png';
 import marineSheetURL from '../assets/sprites/marine.png';
 import commandoSheetURL from '../assets/sprites/commando.png';
+import glimmerSheetURL from '../assets/sprites/glimmer.png';
 import terrainURL from '../assets/terrain.webp';
 import paintedMeta from '../assets/buildings/meta.json';
 
@@ -1543,8 +1544,10 @@ export function renderGroundPatch(stage, W, H, seed = 3) {
 const SHEETS = {
   colonist: { url: colonistSheetURL, cell: 32, rows: 12, res: 2 },
   marine: { url: marineSheetURL, cell: 44, rows: 10, res: 2 },
-  // 赫利昂突擊隊（scripts/process-commando.py 產生，格式同陸戰隊）
+  // 赫利昂突擊隊（scripts/process-unit-sheet.py 產生，格式同陸戰隊）
   commando: { url: commandoSheetURL, cell: 44, rows: 11, res: 2 },
+  // 微光獸（同上；沒有背面，「上」用正面代替）
+  glimmer: { url: glimmerSheetURL, cell: 44, rows: 11, res: 2 },
 };
 /** 切好的影格（放在 Map：寫在物件字面值裡的 null 會被打包工具當成常數摺疊掉） */
 const FRAMES = new Map();
@@ -1714,37 +1717,47 @@ export function createMarine(armed) {
   return c;
 }
 
-/** 赫利昂突擊隊（企業突擊隊襲擊用）：介面同 createAlien（setDir、update(t, moving)），另有 fire() 開槍、hurt() 中彈、die() 倒地。
- *  圖還沒載入時用染成鋼藍色的異星生物代替 */
-export function createCommando() {
-  if (!FRAMES.has('commando')) { const a = createAlien(); a.tint = 0x9fb8e0; a.fire = () => {}; return a; }
-  const sh = SHEETS.commando, fr = FRAMES.get('commando'), c = spriteCharacter(sh, fr), st = c.st;
-  const flash = new Sprite(dotTexture()); flash.width = 3; flash.height = 3; flash.tint = 0xffe0b0; flash.visible = false;
-  const glow = glowSprite(0, 0, 10, 0xffb070, 0.8); glow.visible = false;
+/** 襲擊單位的手繪小人（scripts/process-unit-sheet.py 產生，格式同陸戰隊；第 6–8 列攻擊、9 倒地、10 中彈）。
+ *  介面同 createAlien（setDir、update(t, moving)），另有 fire() 攻擊、hurt() 中彈、die() 倒地（停在最後一格）。
+ *  o.attack：攻擊動作秒數；o.frameAt(p)：攻擊進度 0–1 對到第幾格；o.flash：槍口閃光顏色（沒有就不畫）；o.muzzle：側面時的閃光位置 */
+function spriteRaider(key, o) {
+  const sh = SHEETS[key], fr = FRAMES.get(key), c = spriteCharacter(sh, fr), st = c.st;
+  const flash = new Sprite(dotTexture()); flash.width = 3; flash.height = 3; flash.tint = o.flash ?? 0xffffff; flash.visible = false;
+  const glow = glowSprite(0, 0, 10, o.glow ?? 0xffffff, 0.8); glow.visible = false;
   c.addChild(glow, flash);
-  let shootT = 0, flashT = 0, hurtT = 0, deadT = -1, last = 0;
-  c.commando = true;
-  c.fire = () => { if (deadT < 0 && hurtT <= 0) { shootT = 0.3; flashT = 0.08; st.facing = 'side'; } };
+  let atkT = 0, flashT = 0, hurtT = 0, deadT = -1, last = 0;
+  c.fire = () => { if (deadT < 0 && hurtT <= 0) { atkT = o.attack; flashT = o.flash ? 0.08 : 0; st.facing = 'side'; } };
   // 中彈：往後縮一下（側面）
-  c.hurt = () => { if (deadT < 0) { hurtT = 0.36; shootT = 0; st.facing = 'side'; } };
-  // 倒地：跪下 → 撲倒 → 躺平，停在最後一格
-  c.die = () => { if (deadT < 0) { deadT = 0; shootT = hurtT = flashT = 0; } };
+  c.hurt = () => { if (deadT < 0) { hurtT = 0.36; atkT = 0; st.facing = 'side'; } };
+  c.die = () => { if (deadT < 0) { deadT = 0; atkT = hurtT = flashT = 0; } };
   c.update = (t, moving) => {
     const dt = Math.min(0.1, Math.max(0, t - last)); last = t;
     c.setMoving(!!moving);
     const f = c.turn();
-    shootT -= dt; flashT -= dt; hurtT -= dt;
+    atkT -= dt; flashT -= dt; hurtT -= dt;
     let row, k;
     if (deadT >= 0) { deadT += dt; row = 9; k = Math.min(3, Math.floor(deadT / 0.16)); }
     else if (hurtT > 0) { row = 10; k = Math.min(3, Math.floor((0.36 - hurtT) / 0.09)); }
-    else if (shootT > 0) { row = 6 + f; k = shootT > 0.2 ? 0 : shootT > 0.1 ? 2 : 3; }
+    else if (atkT > 0) { row = 6 + f; k = o.frameAt(1 - atkT / o.attack); }
     else if (moving) { row = 3 + f; k = Math.floor(t * 8) % 4; }
     else { row = f; k = 0; }
     c.sprite.texture = fr[row][k];
-    const m = st.facing === 'side' ? { x: (st.flip ? -1 : 1) * 9, y: -9 } : st.facing === 'down' ? { x: 3, y: -6 } : { x: 2, y: -14 };
+    const m = st.facing === 'side' ? { x: (st.flip ? -1 : 1) * o.muzzle.x, y: o.muzzle.y } : st.facing === 'down' ? { x: 3, y: -6 } : { x: 2, y: -14 };
     flash.position.set(m.x - 1, m.y - 1); glow.position.set(m.x, m.y);
     flash.visible = glow.visible = flashT > 0;
   };
+  return c;
+}
+
+/** 赫利昂突擊隊（企業突擊隊襲擊用）：舉槍點放。圖還沒載入時用染成鋼藍色的異星生物代替 */
+export function createCommando() {
+  if (!FRAMES.has('commando')) { const a = createAlien(); a.tint = 0x9fb8e0; return a; }
+  const c = spriteRaider('commando', {
+    attack: 0.3, flash: 0xffe0b0, glow: 0xffb070, muzzle: { x: 9, y: -9 },
+    // 瞄準 → 後座力 → 回位（略過圖上自帶閃光的那一格）
+    frameAt: (p) => (p < 0.33 ? 0 : p < 0.66 ? 2 : 3),
+  });
+  c.commando = true;
   return c;
 }
 
@@ -1770,6 +1783,8 @@ export function renderAlien() {
 const alienFrames = { t: null };
 /** 異星生物 Container：update(t, moving) 切換走路影格 */
 export function createAlien() {
+  // 手繪的微光獸：吐晶球（蓄力 → 張口 → 吐出 → 收回，晶球畫在圖上）
+  if (FRAMES.has('glimmer')) return spriteRaider('glimmer', { attack: 0.45, muzzle: { x: 10, y: -8 }, frameAt: (p) => Math.min(3, Math.floor(p * 4)) });
   if (!alienFrames.t) alienFrames.t = renderAlien().map((f) => pixelTexture(f.canvas));
   const tex = alienFrames.t;
   const c = new Container();
@@ -1778,6 +1793,7 @@ export function createAlien() {
   c.addChild(s, eyes);
   c.setDir = (d) => { s.scale.x = d < 0 ? -1 : 1; };
   c.update = (t, moving) => { s.texture = moving ? tex[Math.floor(t * 6) % 2] : tex[0]; };
+  c.fire = () => {};
   return c;
 }
 
