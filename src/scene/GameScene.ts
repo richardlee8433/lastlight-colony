@@ -96,10 +96,12 @@ export class GameScene {
 
   /** 玩家用滾輪選的縮放；null 表示依視窗寬度自動決定 */
   userZ: number | null = null;
-  zoomFor(w: number) { return this.userZ ?? clampN(Math.round(w / 400), 2, 4); }
+  zoomFor(w: number) { return Math.max(this.minZ(), this.userZ ?? clampN(Math.round(w / 400), 2, 4)); }
+  /** 最小縮放：地圖要蓋滿整個畫面（整數倍；再縮小地圖外會露出黑邊） */
+  minZ() { return clampN(Math.ceil(Math.max(this.app.screen.width / MW, this.app.screen.height / MH) - 1e-6), 1, 5); }
   /** 換縮放倍率（整數倍，像素才不會糊）；anchor 是螢幕座標，縮放時它底下的地圖點保持不動 */
   setZoom(z: number, anchor?: [number, number]) {
-    z = clampN(z, 1, 5);
+    z = clampN(z, this.minZ(), 5);
     if (z === this.Z) return;
     const [ax, ay] = anchor ?? [this.app.screen.width / 2, this.app.screen.height / 2];
     const wx = this.cam.x + ax / this.Z, wy = this.cam.y + ay / this.Z;
@@ -127,7 +129,7 @@ export class GameScene {
   }
   clampXY(x: number, y: number) {
     const vw = this.app.screen.width / this.Z, vh = this.app.screen.height / this.Z;
-    return { x: vw >= MW ? (MW - vw) / 2 : clampN(x, 0, MW - vw), y: vh >= MH ? (MH - vh) / 2 : clampN(y, -24, MH - vh + 40) };
+    return { x: vw >= MW ? (MW - vw) / 2 : clampN(x, 0, MW - vw), y: vh >= MH ? (MH - vh) / 2 : clampN(y, 0, MH - vh) };
   }
   clampCam() {
     const c = this.clampXY(this.cam.x, this.cam.y);
