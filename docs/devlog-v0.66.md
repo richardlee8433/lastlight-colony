@@ -28,6 +28,14 @@ v0.66 上線了。這次是一個大改版：**每一棟建築都換上了手繪
 
 米白裝甲、紅色標誌，跟你那群穿深藍色、戴圓頭盔的陸戰隊一眼就分得出來。
 
+## 💜 微光獸也換新了
+
+荒原上的微光獸也有了全新的手繪造型：背上長滿紫色晶刺，走起路來一節一節的。
+
+- **改吐晶球。**以前吐的是綠色酸液，現在換成跟牠們身上同色的紫色晶球。
+- **中彈會縮。**被打中時會往後一縮。
+- **倒下會碎。**擊退後牠們會癱倒、碎裂，最後只剩一小堆發光的晶塊。
+
 ## 🔧 其他修正
 
 - 修正結局畫面有時會比最後一段對話先跳出來的問題。
@@ -68,6 +76,14 @@ Corporate commandos finally look like themselves. They used to borrow the aliens
 - **They go down when you win.** They drop to a knee, fall flat and lie there for a moment before they're gone.
 
 Off-white armor with red insignia, easy to tell apart from your marines in their dark blue suits and round helmets.
+
+## 💜 The glimmers got a makeover too
+
+The glimmers out on the flats have a brand-new hand-drawn look, with violet crystal spines down their backs and a jointed, crawling walk.
+
+- **Crystal orbs instead of acid.** They used to spit green acid. Now they spit violet orbs that match the crystals on their backs.
+- **They flinch.** A hit makes them recoil.
+- **They shatter.** When you drive them off, they collapse and crumble into a small pile of glowing crystal.
 
 ## 🔧 Other fixes
 
