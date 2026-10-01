@@ -129,7 +129,7 @@ const chapters = [
       'Whatever we build from it will look like nothing we have ever built before.',
       'Build the Crystal Synthesizer. From today, we don’t just use what the aliens left behind. We make it ourselves.',
     ],
-    goals: ['Build the Marine Barracks and station marines', 'Build a Crystal Synthesizer', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
+    goals: ['Build a Crystal Synthesizer', 'Build the Marine Barracks and station marines', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
   {
     title: 'The Corporation’s Shadow', subtitle: 'The price of freedom',

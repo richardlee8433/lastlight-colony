@@ -167,13 +167,15 @@
     "goals": [
       {
         "type": "build",
-        "id": "security",
-        "label": "建造陸戰隊營區並派駐陸戰隊員"
+        "id": "crystal_synth",
+        "gid": "4-1",
+        "label": "建造異晶合成室"
       },
       {
         "type": "build",
-        "id": "crystal_synth",
-        "label": "建造異晶合成室"
+        "id": "security",
+        "gid": "4-0",
+        "label": "建造陸戰隊營區並派駐陸戰隊員"
       },
       {
         "type": "build",
@@ -184,16 +186,19 @@
       {
         "type": "raids",
         "amount": 2,
+        "gid": "4-2",
         "label": "擊退 2 次異星生物襲擊"
       },
       {
         "type": "pop",
         "amount": 40,
+        "gid": "4-3",
         "label": "人口達到 40"
       },
       {
         "type": "build",
         "id": "colony_core",
+        "gid": "4-4",
         "label": "建成殖民地核心"
       }
     ]
