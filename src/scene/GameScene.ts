@@ -31,6 +31,8 @@ export class GameScene {
   views = new Map<string, View>();
   walkers: Walker[] = [];
   aliens: any[] = [];
+  /** 擊退後倒在地上的突擊隊：播完倒地動畫、躺一下再淡出 */
+  fallen: any[] = [];
   /** 出去迎戰的陸戰隊員（預警期間從營區走到防線，戰後走回去） */
   defenders: any[] = [];
   /** 平時沿外圍巡邏的陸戰隊員；受傷的在醫療艙（沒有醫療艙就在營區）門口休養 */
@@ -470,9 +472,12 @@ export class GameScene {
     const key = inc ? `${inc.at}` : '';
     if (key === this.raidKey) return;
     this.raidKey = key;
+    // 擊退突擊隊：每個人播倒地動畫，躺一下再淡出；其他情況（異星生物、打輸）照舊噴出碎片後消失
+    const won = !!game.s.raid?.report?.won;
     for (const a of this.aliens) {
+      if (a.die && won && !inc) { a.die(); a.fallT = 0; this.fallen.push(a); continue; }
       const [x, y] = this.toScreen(a.x, a.y - 5);
-      this.fx.burst(x, y, 0xb04a8a, 6);
+      this.fx.burst(x, y, a.commando ? 0x9aa4b4 : 0xb04a8a, 6);
       a.destroy({ children: true });
     }
     this.aliens = [];
@@ -611,6 +616,7 @@ export class GameScene {
   hitAlien(a: any, color: number) {
     if (!a || a.destroyed) return;
     a.hitT = 0.12;
+    a.hurt?.();
     const [x, y] = this.toScreen(a.x, a.y - 5);
     this.fx.burst(x, y, color, 3);
   }
@@ -773,7 +779,14 @@ export class GameScene {
     m.scale.set(pulse);
   }
   /** 位置完全由倒數決定：預警開始在地圖外，倒數結束剛好抵達集結點 */
-  moveAliens() {
+  moveAliens(dt: number) {
+    // 倒地的突擊隊：0.6 秒倒下、躺 2.5 秒、1 秒淡出
+    for (const a of [...this.fallen]) {
+      a.fallT += dt;
+      a.update(this.T, false);
+      a.alpha = a.fallT < 3.1 ? 1 : Math.max(0, 1 - (a.fallT - 3.1));
+      if (a.fallT > 4.1) { this.fallen.splice(this.fallen.indexOf(a), 1); a.destroy({ children: true }); }
+    }
     const inc = game.s.raid?.incoming;
     if (!inc) return;
     const p0 = 1 - (inc.at - game.s.t) / WARNING;
@@ -907,7 +920,7 @@ export class GameScene {
     }
     this.resolveLabels(labels);
     for (const w of this.walkers) this.moveWalker(w, dt);
-    this.moveAliens();
+    this.moveAliens(dt);
     this.moveDefenders(dt);
     this.movePatrols(dt);
     this.drawShots(dt);
