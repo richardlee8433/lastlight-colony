@@ -21,6 +21,7 @@
 import { Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import colonistSheetURL from '../assets/sprites/colonist.png';
 import marineSheetURL from '../assets/sprites/marine.png';
+import commandoSheetURL from '../assets/sprites/commando.png';
 import terrainURL from '../assets/terrain.webp';
 import paintedMeta from '../assets/buildings/meta.json';
 
@@ -1542,6 +1543,8 @@ export function renderGroundPatch(stage, W, H, seed = 3) {
 const SHEETS = {
   colonist: { url: colonistSheetURL, cell: 32, rows: 12, res: 2 },
   marine: { url: marineSheetURL, cell: 44, rows: 10, res: 2 },
+  // 赫利昂突擊隊（scripts/process-commando.py 產生，格式同陸戰隊）
+  commando: { url: commandoSheetURL, cell: 44, rows: 10, res: 2 },
 };
 /** 切好的影格（放在 Map：寫在物件字面值裡的 null 會被打包工具當成常數摺疊掉） */
 const FRAMES = new Map();
@@ -1707,6 +1710,34 @@ export function createMarine(armed) {
   c.update = (t, dt = 0) => {
     s.texture = moving ? tex[1 + (Math.floor(t * 8) % 2)] : tex[0];
     flashT -= dt; flash.visible = flashT > 0;
+  };
+  return c;
+}
+
+/** 赫利昂突擊隊（企業突擊隊襲擊用）：介面同 createAlien（setDir、update(t, moving)），另有 fire() 開槍動作。
+ *  圖還沒載入時用染成鋼藍色的異星生物代替 */
+export function createCommando() {
+  if (!FRAMES.has('commando')) { const a = createAlien(); a.tint = 0x9fb8e0; a.fire = () => {}; return a; }
+  const sh = SHEETS.commando, fr = FRAMES.get('commando'), c = spriteCharacter(sh, fr), st = c.st;
+  const flash = new Sprite(dotTexture()); flash.width = 3; flash.height = 3; flash.tint = 0xffe0b0; flash.visible = false;
+  const glow = glowSprite(0, 0, 10, 0xffb070, 0.8); glow.visible = false;
+  c.addChild(glow, flash);
+  let shootT = 0, flashT = 0, last = 0;
+  c.commando = true;
+  c.fire = () => { shootT = 0.3; flashT = 0.08; st.facing = 'side'; };
+  c.update = (t, moving) => {
+    const dt = Math.min(0.1, Math.max(0, t - last)); last = t;
+    c.setMoving(!!moving);
+    const f = c.turn();
+    shootT -= dt; flashT -= dt;
+    let row, k;
+    if (shootT > 0) { row = 6 + f; k = shootT > 0.2 ? 0 : shootT > 0.1 ? 2 : 3; }
+    else if (moving) { row = 3 + f; k = Math.floor(t * 8) % 4; }
+    else { row = f; k = 0; }
+    c.sprite.texture = fr[row][k];
+    const m = st.facing === 'side' ? { x: (st.flip ? -1 : 1) * 9, y: -9 } : st.facing === 'down' ? { x: 3, y: -6 } : { x: 2, y: -14 };
+    flash.position.set(m.x - 1, m.y - 1); glow.position.set(m.x, m.y);
+    flash.visible = glow.visible = flashT > 0;
   };
   return c;
 }

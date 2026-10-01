@@ -2,7 +2,7 @@
 import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createMarine, loadSprites, hasTerrain, setCharZoom,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, loadSprites, hasTerrain, setCharZoom,
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
@@ -491,7 +491,7 @@ export class GameScene {
     const side = inc.side % RAID_SPAWN.length, from = RAID_SPAWN[side], to = RAID_RALLY[side];
     const n = Math.min(18, inc.enemies);
     for (let i = 0; i < n; i++) {
-      const a: any = createAlien();
+      const a: any = inc.kind === 'commando' ? createCommando() : createAlien();
       a.eventMode = 'none';
       // 起點在地圖外，終點是邊緣內側的集結點；兩者都錯開一點，讓群體看起來散開
       const jx = (Math.random() - 0.5) * (side < 2 ? 30 : 110), jy = (Math.random() - 0.5) * (side < 2 ? 110 : 26);
@@ -499,7 +499,7 @@ export class GameScene {
       a.to = { x: to.x + jx * 0.8, y: to.y + jy * 0.8 };
       a.lag = Math.random() * 0.15;
       // 掠奪者偏橘褐、企業突擊隊偏鋼藍，和異星生物區分
-      if (inc.kind === 'raider') a.tint = 0xe0b080; else if (inc.kind === 'commando') a.tint = 0x9fb8e0;
+      if (inc.kind === 'raider') a.tint = 0xe0b080;
       a.position.set(a.from.x, a.from.y);
       this.obj.addChild(a);
       this.aliens.push(a);
@@ -590,7 +590,13 @@ export class GameScene {
       if (a.cd > 0) continue;
       a.cd = 1.6 + Math.random() * 1.6;
       const d = pick(this.defenders.filter((x) => x.back == null));
-      if (d) { this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3); sfx('spit'); }
+      if (!d) continue;
+      // 突擊隊：舉槍點放，打曳光彈；異星生物吐酸液
+      if (a.commando) {
+        const dir = d.x >= a.x ? 1 : -1;
+        a.setDir(dir); a.fire();
+        this.shoot(a.x + dir * 9, a.y - 9, d.x, d.y - 6, d, 'bullet', 0.35); sfx('shot');
+      } else { this.shoot(a.x, a.y - 6, d.x, d.y - 6, d, 'spit', 0.3); sfx('spit'); }
     }
   }
   /** 發射一發彈道；miss 是落空機率，落空時子彈從目標旁邊飛過去 */
