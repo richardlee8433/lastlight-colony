@@ -37,8 +37,13 @@ const LIST = [
   { id: 'med_bay', w: 68, foot: 0.1 },
   { id: 'water_cycle', w: 60, foot: 0.1 },
   { id: 'memorial', w: 46, foot: 0.12 },
-  // 第 5～6 章
-  { id: 'admin', w: 80, foot: 0.08 },
+  // 第 5～6 章：深色背景的合輯先用 cut-dark-sheet.py 切成去背圖（sheet-ch5.webp）
+  { id: 'admin', w: 84, foot: 0.08 },
+  { id: 'trade_post', w: 84, foot: 0.08 },
+  { id: 'spaceport', w: 88, foot: 0.06 },
+  { id: 'turret', w: 68, foot: 0.08 },
+  { id: 'xeno_lab', w: 76, foot: 0.08 },
+  { id: 'star_dome', w: 102, foot: 0.08 },
 ];
 // 一張圖裡有好幾棟建築的合輯：整張去背後依連通區塊分開，由上到下、由左到右對應 ids
 // holes：建築中間被圍住的棋盤格（例如管線之間）也去掉
