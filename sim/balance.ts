@@ -1,6 +1,7 @@
 // 無畫面數值模擬器（GDD §15）：貪婪策略玩完 MVP，輸出各階段抵達時間。
 // 用法：npm run sim            （預設按住點擊的時間比例 50%）
 //       npm run sim -- 0.2     （比較少點擊的玩家）
+import { writeFileSync, mkdirSync } from 'fs';
 import { newGame, DEF, DEFS, GameState, ResKey, RES_KEYS } from '../src/engine/state';
 import { step, TICK } from '../src/engine/tick';
 import { click } from '../src/engine/click';
@@ -58,7 +59,19 @@ function producerFor(s: GameState, k: ResKey): string | null {
   return null;
 }
 
+// SNAPDIR=資料夾：在各個檢查點存下跟遊戲存檔同格式的 JSON（tests/e2e.cjs 用它們測各章畫面）
+const SNAPDIR = process.env.SNAPDIR;
+const snapped = new Set<string>();
+function snap(s: GameState, name: string) {
+  if (!SNAPDIR || snapped.has(name)) return;
+  snapped.add(name);
+  mkdirSync(SNAPDIR, { recursive: true });
+  writeFileSync(`${SNAPDIR}/${name}.json`, JSON.stringify({ ...s, notices: [], lastSaved: Date.now() }));
+}
+
 function decide(s: GameState) {
+  // 第 6 章抉擇跳出來的那一刻（還沒選）
+  if (s.events.active?.kind === 'choice6') snap(s, 'ch6-choice');
   s.story.seenIntro = Math.min(s.stage, 6);   // 玩家看完章節開場（劇情對話與伊涅絲事件要靠它觸發）
   s.story.queue = [];                         // 劇情對話視為已經看完（遊戲裡由對話框播放）
   s.events.report = null;   // 玩家看完事件結果（救援、探勘）
@@ -231,8 +244,15 @@ for (let i = 0; i < (8 * 3600) / TICK && !s.finished && !s.failed; i++) {
   if (s.stage >= 2 && s.stage <= 3 && foodSafety(s) < 0.5) midFood += TICK;
   if (s.raid.report) { raids.push(`襲擊 ${s.raid.report.raid}：${fmt(s.t)} ${s.raid.report.kind} ${s.raid.report.won ? '勝' : '敗'}（敵 ${s.raid.report.enemies}，保全 ${s.raid.report.guards}，武裝 ${s.raid.report.armed}，砲塔 ${s.raid.report.turrets ?? 0}）`); s.raid.report = null; }
   if (s.stage !== lastStage) { marks.push(`階段 ${s.stage}：${fmt(s.t)}（人口 ${s.pop}）`); lastStage = s.stage; }
+  // 檢查點：每章進來 2.5 分鐘、第 4 章合成室蓋好但第一次襲擊還沒來、第 4 章第一次襲擊之後
+  if (SNAPDIR) {
+    if (s.t > marksTime(s.stage)) snap(s, `ch${s.stage}`);
+    if (s.stage === 4 && built(s, 'crystal_synth') && s.raid.count === 0 && !s.raid.incoming) snap(s, 'ch4-preraid');
+    if (s.stage === 4 && s.raid.count >= 1 && !s.raid.incoming) snap(s, 'ch4-postraid');
+  }
   if (dumpAt && s.stage === dumpAt && s.t > marksTime(dumpAt)) { s.story.seenIntro = Math.min(3, s.stage); s.lastSaved = Date.now(); console.log(JSON.stringify({ ...s, notices: [] })); process.exit(0); }
 }
+snap(s, 'end');
 console.log(`按住點擊比例 ${Math.round(duty * 100)}%`);
 for (const m of marks) console.log('  ' + m);
 for (const m of raids) console.log('  ' + m);

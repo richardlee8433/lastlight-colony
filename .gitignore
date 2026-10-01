@@ -10,3 +10,6 @@ tools/portraits/dialog-bg.png
 # 劇情資料只存在本機，不進 repo
 docs/story-outline.md
 docs/character-bible.md
+
+# 測試輸出（npm test）
+tests/out/

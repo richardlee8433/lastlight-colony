@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "sim": "tsx sim/balance.ts",
     "package:viverse": "bash scripts/package-viverse.sh",
+    "test": "bash tests/run-all.sh",
     "art:buildings": "NODE_PATH=$(npm root -g) node scripts/process-buildings.cjs"
   },
   "dependencies": {

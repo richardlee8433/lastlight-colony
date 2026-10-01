@@ -1,0 +1,246 @@
+// 瀏覽器測試：用模擬器存下的各章存檔（tests/out/snaps）載入 dist/index.html，從玩家的角度檢查畫面。
+// 用法：node tests/e2e.cjs（需要 playwright 與 Chromium；tests/run-all.sh 會先 build、產生存檔再呼叫）
+// 每項輸出 PASS／FAIL，截圖存在 tests/out/，結果存在 tests/out/e2e.json。
+const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.join(__dirname, '..');
+const OUT = path.join(__dirname, 'out');
+const SNAPS = path.join(OUT, 'snaps');
+const PAGE = 'file://' + path.join(ROOT, 'dist/index.html');
+const SAVE_KEY = 'lastlight-colony-save-v1';
+const results = [];
+const snap = (name) => JSON.parse(fs.readFileSync(path.join(SNAPS, name + '.json'), 'utf8'));
+const later = (s) => { s.lastSaved = Date.now(); s.events.nextAt = s.t + 3000; s.raid.nextAt = s.t + 3000; if (s.gov?.corp) s.gov.corp.nextEnvoy = s.t + 3000; s.story.queue = []; return s; };
+const CJK = /[一-鿿]/;
+
+(async () => {
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
+
+  /** 開一頁：save 為 null 表示沒有存檔；回傳 page 與這頁收到的錯誤 */
+  async function open(save, { lang = 'zh', w = 1600, h = 900, cont = true } = {}) {
+    const p = await b.newPage({ viewport: { width: w, height: h } });
+    const errors = [];
+    p.on('pageerror', (e) => errors.push(e.message));
+    await p.addInitScript(([sv, lang, key]) => {
+      if (sessionStorage.getItem('x')) return;
+      localStorage.clear();
+      if (sv) localStorage.setItem(key, sv);
+      localStorage.setItem('lastlight-colony-settings', JSON.stringify({ lang }));
+      sessionStorage.setItem('x', '1');
+    }, [save ? JSON.stringify(save) : null, lang, SAVE_KEY]);
+    await p.goto(PAGE); await p.waitForTimeout(1500);
+    if (cont) { await p.locator('.tm-btn.main').click(); await p.waitForTimeout(700); }
+    return { p, errors };
+  }
+  /** 關掉跳出來的視窗與對話（modals=false 時只跳過對話） */
+  async function clear(p, modals = true) {
+    for (let i = 0; i < 60; i++) {
+      const did = await p.evaluate((modals) => {
+        const b = document.querySelector('.dlg-skip') || (modals && document.querySelector('.modal .btn'));
+        if (b) { b.click(); return 1; } return 0;
+      }, modals);
+      if (!did) { await p.waitForTimeout(400); if (!(await p.evaluate((m) => !!(document.querySelector('.dlg-skip') || (m && document.querySelector('.modal .btn'))), modals))) break; }
+      await p.waitForTimeout(200);
+    }
+  }
+  const quest = (p) => p.evaluate(() => ({
+    ch: document.querySelector('.quest .chip-ch')?.textContent ?? '',
+    count: document.querySelector('.quest .quest-count')?.textContent ?? '',
+    goals: [...document.querySelectorAll('.quest li')].map((li) => li.textContent),
+  }));
+  // ONLY=E05,E06：只跑這些開頭的測試
+  const only = process.env.ONLY?.split(',');
+  async function test(id, name, fn) {
+    if (only && !only.some((o) => id.startsWith(o))) return;
+    let errs = [];
+    try { errs = (await fn()) ?? []; } catch (e) { errs = ['例外：' + e.message.split('\n')[0]]; }
+    results.push({ id, name, ok: errs.length === 0, info: errs.join('；') });
+    console.log(`${errs.length ? 'FAIL' : 'PASS'} ${id} ${name}${errs.length ? '\n     → ' + errs.join('；') : ''}`);
+  }
+  const shot = (p, name) => p.screenshot({ path: path.join(OUT, name + '.png') });
+
+  await test('E01', '新遊戲：開場畫面 → 第一段對話有名字與文字，沒有殘留參數', async () => {
+    const { p, errors } = await open(null, { cont: false });
+    const errs = [];
+    await p.locator('.tm-btn.main').click(); await p.waitForTimeout(800);
+    for (let i = 0; i < 5 && !(await p.locator('.dlg-box').count()); i++) { await p.evaluate(() => document.querySelector('.modal .btn')?.click()); await p.waitForTimeout(600); }
+    await p.waitForTimeout(2500);
+    const d = await p.evaluate(() => ({ who: document.querySelector('.dlg-name')?.textContent ?? '', text: document.querySelector('.dlg-box p')?.textContent ?? '' }));
+    if (!d.text.trim()) errs.push('沒有出現對話');
+    if (/\{|undefined/.test(d.text)) errs.push('對話有殘留參數：' + d.text);
+    await shot(p, 'E01-new-game');
+    if (errors.length) errs.push('頁面錯誤：' + errors[0]);
+    await p.close(); return errs;
+  });
+
+  for (const [snapName, n] of [['ch2', 2], ['ch3', 3], ['ch4', 4], ['ch5', 5], ['ch6', 6]]) {
+    await test(`E02-${n}`, `第 ${n} 章存檔：任務欄章節正確、計數與清單一致、沒有殘留參數`, async () => {
+      const { p, errors } = await open(later(snap(snapName)));
+      await clear(p);
+      const q = await quest(p), errs = [];
+      if (!q.ch.includes(String(n))) errs.push(`任務欄顯示「${q.ch}」`);
+      const m = q.count.match(/(\d+)\/(\d+)/);
+      if (m && Number(m[2]) !== q.goals.length) errs.push(`計數 ${q.count}，清單 ${q.goals.length} 項`);
+      if (q.goals.some((g) => /\{|undefined/.test(g))) errs.push('目標有殘留參數');
+      await shot(p, `E02-ch${n}`);
+      if (errors.length) errs.push('頁面錯誤：' + errors[0]);
+      await p.close(); return errs;
+    });
+  }
+
+  await test('E03', '第 4 章：第一次襲擊前看不到營區、醫療艙目標；襲擊後出現', async () => {
+    const errs = [];
+    const pre = later(snap('ch4-preraid'));
+    for (const id of ['security', 'med_bay']) pre.b[id].level = 0;
+    pre.story.done = pre.story.done.filter((g) => g !== '4-0' && g !== '4-med');
+    let { p } = await open(pre); await clear(p);
+    let q = await quest(p);
+    if (q.goals.some((g) => g.includes('營區') || g.includes('醫療艙'))) errs.push('襲擊前就出現：' + q.goals.join(' / '));
+    if (!q.goals[0]?.includes('異晶合成室')) errs.push('第一個目標不是合成室');
+    await p.close();
+    ({ p } = await open(later(snap('ch4-postraid')))); await clear(p);
+    q = await quest(p);
+    if (!q.goals.some((g) => g.includes('營區'))) errs.push('襲擊後沒出現營區');
+    if (!q.goals.some((g) => g.includes('醫療艙'))) errs.push('襲擊後沒出現醫療艙');
+    await p.close(); return errs;
+  });
+
+  await test('E04', '逃生艙：紀念堂蓋好前在建造列，蓋好後退役（建造列、地圖都消失）', async () => {
+    const errs = [];
+    let { p } = await open(later(snap('ch3'))); await clear(p);
+    if (!(await p.locator('.qb[title="逃生艙"]').count())) errs.push('第 3 章建造列沒有逃生艙');
+    await p.close();
+    const s = later(snap('ch5')); s.b.memorial.level = Math.max(1, s.b.memorial.level);
+    ({ p } = await open(s)); await clear(p);
+    if (await p.locator('.qb[title="逃生艙"]').count()) errs.push('紀念堂蓋好後建造列還有逃生艙');
+    await p.close(); return errs;
+  });
+
+  await test('E05', '寬螢幕縮到最小、拖到角落：截圖（黑邊由 run-all 的影像檢查判定）', async () => {
+    const { p } = await open(later(snap('ch3')), { w: 2000, h: 1100 }); await clear(p);
+    await p.mouse.move(1000, 550);
+    for (let i = 0; i < 8; i++) { await p.mouse.wheel(0, 300); await p.waitForTimeout(200); }
+    // 拖到左上角再拖到右下角，各截一張
+    await p.mouse.move(1000, 900); await p.mouse.down(); await p.mouse.move(1900, 1050, { steps: 6 }); await p.mouse.up(); await p.waitForTimeout(600);
+    await shot(p, 'E05-zoomout-a');
+    await p.mouse.move(1000, 900); await p.mouse.down(); await p.mouse.move(100, 120, { steps: 6 }); await p.mouse.up(); await p.waitForTimeout(600);
+    await shot(p, 'E05-zoomout-b');
+    await p.close(); return [];
+  });
+
+  await test('E06', '科技樹開著時研究倒數照常前進', async () => {
+    const s = later(snap('ch5'));
+    const { RESEARCH } = { RESEARCH: JSON.parse(fs.readFileSync(path.join(ROOT, 'src/data/research.json'), 'utf8')) };
+    const todo = RESEARCH.find((r) => !s.research.done.includes(r.id) && (r.stage ?? 1) <= s.stage && !r.lab);
+    if (!todo) return ['找不到可以研究的項目'];
+    s.research.active = todo.id; s.research.progress = 1; s.b.databank.workers = Math.max(1, s.b.databank.workers);
+    const { p } = await open(s); await clear(p);
+    await p.locator('.topbar ~ * button, button', { hasText: '科技' }).first().click(); await p.waitForTimeout(400);
+    const read = () => p.evaluate(() => { const m = document.querySelector('.modal.tech')?.innerText.match(/剩 ?(?:(\d+) ?分 ?)?(\d+) ?秒/); return m ? Number(m[1] ?? 0) * 60 + Number(m[2]) : null; });
+    const a = await read(); await p.waitForTimeout(4000); const c = await read();
+    await p.close();
+    if (a == null || c == null) return ['讀不到倒數'];
+    return a - c >= 3 ? [] : [`4 秒內倒數只減少 ${a - c} 秒（${a} → ${c}）`];
+  });
+
+  await test('E07', '暫停：按 P 出現暗幕、資源不動；再按一次恢復', async () => {
+    const { p } = await open(later(snap('ch3'))); await clear(p);
+    const errs = [];
+    const res = () => p.evaluate(() => document.querySelector('.topbar .res b')?.textContent);
+    await p.keyboard.press('p'); await p.waitForTimeout(400);
+    if (!(await p.locator('.paused-veil').count())) errs.push('沒有暗幕');
+    const r1 = await res(); await p.waitForTimeout(2500); const r2 = await res();
+    if (r1 !== r2) errs.push(`暫停時資源還在變（${r1} → ${r2}）`);
+    await p.keyboard.press('p'); await p.waitForTimeout(400);
+    if (await p.locator('.paused-veil').count()) errs.push('再按 P 沒有恢復');
+    await p.close(); return errs;
+  });
+
+  await test('E08', '英文介面：任務欄沒有中文', async () => {
+    const { p } = await open(later(snap('ch4')), { lang: 'en' }); await clear(p);
+    const q = await quest(p);
+    await shot(p, 'E08-english');
+    await p.close();
+    return [q.ch, ...q.goals].filter((x) => CJK.test(x)).map((x) => '有中文：' + x);
+  });
+
+  await test('E09', '存檔與讀檔：玩幾秒、重新整理、繼續，章節與人口一致', async () => {
+    const { p } = await open(later(snap('ch3'))); await clear(p);
+    await p.waitForTimeout(3000);
+    const before = await quest(p);
+    const pop1 = await p.evaluate(() => JSON.parse(localStorage.getItem('lastlight-colony-save-v1') || '{}').stage);
+    await p.reload(); await p.waitForTimeout(1500);
+    await p.locator('.tm-btn.main').click(); await p.waitForTimeout(700); await clear(p);
+    const after = await quest(p);
+    await p.close();
+    const errs = [];
+    if (before.ch !== after.ch) errs.push(`章節 ${before.ch} → ${after.ch}`);
+    if (pop1 !== 3) errs.push('存檔的章節不是 3：' + pop1);
+    return errs;
+  });
+
+  for (const kind of ['alien', 'commando']) {
+    await test(`E10-${kind}`, `${kind === 'alien' ? '微光獸' : '企業突擊隊'}襲擊：交火、擊退戰報`, async () => {
+      const s = later(snap('ch5'));
+      s.raid.nextAt = s.t + 10; s.raid.incoming = { at: s.t + 10, enemies: 5, atk: 4, hp: 15, side: 0, kind };
+      const { p, errors } = await open(s); await clear(p);
+      await p.waitForTimeout(4000); await shot(p, `E10-${kind}-fight`);
+      for (let i = 0; i < 60 && !(await p.locator('.modal h2').count()); i++) await p.waitForTimeout(250);
+      const title = await p.locator('.modal h2').first().textContent().catch(() => '');
+      await p.close();
+      const errs = [];
+      if (!title.includes('擊退')) errs.push('戰報標題：' + title);
+      if (errors.length) errs.push('頁面錯誤：' + errors[0]);
+      return errs;
+    });
+  }
+
+  await test('E11', '第 6 章抉擇：討論播完後跳出「這是誰的家？」兩個選項', async () => {
+    const s = snap('ch6-choice'); s.lastSaved = Date.now(); s.events.active = null;
+    const { p } = await open(s); await clear(p, false);
+    for (let i = 0; i < 20 && !(await p.locator('.modal h2').count()); i++) { await clear(p, false); await p.waitForTimeout(300); }
+    // 章節開場之類的視窗先關掉，直到出現抉擇
+    for (let i = 0; i < 6; i++) {
+      const h = await p.locator('.modal h2').first().textContent().catch(() => '');
+      if (h.includes('這是誰的家')) break;
+      await p.evaluate(() => document.querySelector('.modal .btn')?.click()); await p.waitForTimeout(400); await clear(p, false);
+    }
+    const h = await p.locator('.modal h2').first().textContent().catch(() => '');
+    const opts = await p.locator('.modal .btn').allTextContents();
+    await shot(p, 'E11-choice');
+    await p.close();
+    const errs = [];
+    if (!h.includes('這是誰的家')) errs.push('沒有出現抉擇，看到：' + h);
+    if (opts.length !== 2) errs.push('選項數量：' + opts.length);
+    return errs;
+  });
+
+  for (const choice of ['stay', 'leave']) {
+    await test(`E12-${choice}`, `結局（${choice === 'stay' ? '保留異晶' : '放棄異晶'}）：結局對話播完才出現結局畫面`, async () => {
+      const s = later(snap('end'));
+      s.story.choice6 = choice; s.finished = true; s.b.orbital_beacon.level = 5;
+      s.story.seen = s.story.seen.filter((x) => x !== 'c6-end' && x !== 'c6-blocked');
+      const { p } = await open(s);
+      // 結局畫面不能比對話先出現
+      await p.waitForTimeout(800);
+      const early = await p.locator('.modal h2').first().textContent().catch(() => '');
+      await clear(p, false);
+      await p.waitForTimeout(800);
+      const h = await p.locator('.modal h2').first().textContent().catch(() => '');
+      await shot(p, `E12-${choice}`);
+      await p.close();
+      const want = choice === 'stay' ? '有人來敲門了' : '擋在星空之前', errs = [];
+      if (early.includes(want)) errs.push('結局畫面比對話先出現');
+      if (!h.includes(want)) errs.push('結局畫面：' + h);
+      return errs;
+    });
+  }
+
+  await b.close();
+  fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));
+  const fail = results.filter((r) => !r.ok).length;
+  console.log(`\n瀏覽器測試：${results.length - fail}/${results.length} 通過`);
+  process.exit(fail ? 1 : 0);
+})();
