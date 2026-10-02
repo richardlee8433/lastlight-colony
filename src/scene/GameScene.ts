@@ -1,5 +1,5 @@
 // Pixi 場景：地圖、建築／工地、工人、點擊回饋。狀態來自引擎，每次版本號改變時同步。
-import { Application, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
+import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
   createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, loadSprites, hasTerrain, setCharZoom,
@@ -12,7 +12,19 @@ import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 import { sfx } from '../audio/audio';
 
-type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite };
+type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
+/** 影子的實心範圍（建築圖的不透明像素），用來判斷小人是不是站在影子裡 */
+type ShadowMask = { a: Uint8Array; w: number; h: number };
+const MASKS = new Map<HTMLCanvasElement, ShadowMask>();
+function shadowMask(cv: HTMLCanvasElement): ShadowMask {
+  let m = MASKS.get(cv);
+  if (!m) {
+    const d = cv.getContext('2d')!.getImageData(0, 0, cv.width, cv.height).data, a = new Uint8Array(cv.width * cv.height);
+    for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3] > 128 ? 1 : 0;
+    MASKS.set(cv, (m = { a, w: cv.width, h: cv.height }));
+  }
+  return m;
+}
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
@@ -26,6 +38,10 @@ export class GameScene {
   shadowL = new Container();
   /** 斜射光：清晨、黃昏從一側照過來的淡淡光線 */
   sunRay = new Sprite();
+  /** 小人腳下的影子（每幀重畫） */
+  unitShadowG = new Graphics();
+  /** 目前的太陽：影子長度、斜度（弧度）、影子濃度 */
+  sun = { len: 0.5, lean: 0.6, alpha: 0.3 };
   hud = new Container();
   fxL = new Container();
   ground: (Container & { roads?: Sprite | null }) | null = null;
@@ -88,7 +104,7 @@ export class GameScene {
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
     this.Z = this.zoomFor(this.app.screen.width);
-    (window as any).__scene = this;   // 除錯用（測試腳本讀場景狀態）
+    (window as any).__scene = this;   // 測試用：瀏覽器測試讀場景狀態（不影響遊戲）
     setCharZoom(this.Z);
     this.fx = createFx(this.fxL, this.Z);
     this.bindInput();
@@ -293,6 +309,7 @@ export class GameScene {
     this.ground = ground;
     this.world.addChildAt(ground, 0);
     this.world.addChildAt(this.shadowL, 1);
+    this.shadowL.addChild(this.unitShadowG);
     for (const p of plan.props) {
       const c = createProp(p.kind, propStage, p.seed);
       c.position.set(p.x, p.y); c.zIndex = p.y; c.lights.position.set(p.x, p.y);
@@ -342,7 +359,9 @@ export class GameScene {
         const sh = new Sprite(b.sprite.texture);
         sh.anchor.copyFrom(b.sprite.anchor); sh.tint = 0x000000; sh.position.set(site.x, site.y);
         (sh as any).base = b.sprite.scale.x;
-        this.shadowL.addChild(sh); v.shadow = sh;
+        (sh as any).smask = shadowMask(b.art.canvas);
+        // 小人影子那層要在建築影子之上
+        this.shadowL.addChildAt(sh, Math.max(0, this.shadowL.children.length - 1)); v.shadow = sh;
       }
     } else {
       b.alpha = 0.35;
@@ -933,6 +952,7 @@ export class GameScene {
     // lean：斜切角度（弧度），tan 值就是影子往右偏的比例；清晨約 2.5 倍、黃昏約 0.4 倍
     const len = 0.32 + 0.55 * low, lean = 1.18 - 0.8 * u;
     const shAlpha = 0.42 * (1 - night) * (0.7 + 0.3 * low);
+    this.sun = { len, lean, alpha: shAlpha };
     for (const v of this.views.values()) {
       const sh = v.shadow; if (!sh) continue;
       const k = (sh as any).base;
@@ -941,6 +961,37 @@ export class GameScene {
     // 斜射光：清晨、黃昏比較明顯，中午和夜晚幾乎沒有；顏色跟著環境光
     this.sunRay.alpha = 0.16 * low * (1 - night);
     this.sunRay.tint = this.overlay.tint;
+  }
+  /** 小人：腳下畫小影子（跟建築影子同方向）；走進建築影子裡慢慢變暗 25%，走出來再恢復 */
+  unitShadows(dt: number) {
+    const g = this.unitShadowG, { len, lean, alpha } = this.sun;
+    g.clear();
+    const units: any[] = [...this.walkers, ...this.patrols, ...this.defenders, ...this.aliens, ...this.fallen, ...this.patients];
+    const off = Math.tan(lean) * len * 5, rx = 3.5 + len * 2.5;
+    const shadows = [...this.views.values()].map((v) => v.shadow).filter((s): s is Sprite & { smask: ShadowMask } => !!s?.smask && s.alpha > 0.02);
+    const pt = new Point(), loc = new Point();
+    const debug = (window as any).__shadeDebug;   // 測試用：設成 true 時，站在影子裡的小人標成紅色
+    for (const u of units) {
+      if (u.destroyed || !u.visible) continue;
+      if (alpha > 0.02) g.ellipse(u.x + off * 0.5, u.y + 0.5 + len * 1.2, rx, 1.6 + len * 0.6).fill({ color: 0x000000, alpha: alpha * 0.9 });
+      // 是否在某棟建築的影子裡：把腳的位置換算回影子圖的像素，看那裡是不是實心
+      let inside = false;
+      pt.set(u.x, u.y);
+      for (const sh of shadows) {
+        sh.toLocal(pt, this.shadowL, loc);
+        const t = sh.texture, px = Math.floor(loc.x + sh.anchor.x * t.width), py = Math.floor(loc.y + sh.anchor.y * t.height);
+        if (px < 0 || py < 0 || px >= sh.smask.w || py >= sh.smask.h) continue;
+        if (sh.smask.a[py * sh.smask.w + px]) { inside = true; break; }
+      }
+      const want = inside ? 1 : 0;
+      u.shade = (u.shade ?? 0) + (want - (u.shade ?? 0)) * Math.min(1, dt * 6);
+      u.baseTint ??= u.tint ?? 0xffffff;
+      if (u.tint !== u.lastTint) u.baseTint = u.tint;   // 別處改了顏色（傷員、掠奪者）：以那個為基準
+      const k = 1 - 0.25 * u.shade * (alpha / 0.42);
+      const bt = debug && inside ? 0xff4040 : u.baseTint;
+      const r = Math.round(((bt >> 16) & 255) * k), gg = Math.round(((bt >> 8) & 255) * k), b = Math.round((bt & 255) * k);
+      u.tint = (r << 16) | (gg << 8) | b; u.lastTint = u.tint;
+    }
   }
   frame(rdt: number) {
     // 遊戲暫停時畫面上的人、建築動畫也停住；鏡頭照常可以移動
@@ -984,6 +1035,7 @@ export class GameScene {
     this.moveDefenders(dt);
     this.movePatrols(dt);
     this.drawShots(dt);
+    this.unitShadows(dt);
     this.updateRaidMark();
     if (this.hold) {
       this.hold.next -= dt;
