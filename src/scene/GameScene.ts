@@ -932,7 +932,8 @@ export class GameScene {
     const home = camp ? HOME : POD_DOOR;
     // 沿著道路走（中間的轉折點），不直線穿過其他建築
     const path = site ? (camp ? ROUTES[site.id] : routeFromPod(site.id)) : null;
-    const via = path ? path.slice(1, -1).map((p) => ({ x: p.x + (j() >> 2), y: p.y + (j() >> 3) })) : [];
+    // 轉角點只偏 1～2 像素，走的時候不會踩出路面
+    const via = path ? path.slice(1, -1).map((p) => ({ x: p.x + (j() >> 3), y: p.y + (j() >> 4) })) : [];
     w.ai = bid
       ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + j(), y: site!.y + 6 } }
       : { bid: null, wait: Math.random() * 2, home: { x: home.x + j() * 2, y: home.y + (j() >> 1) } };
@@ -947,7 +948,8 @@ export class GameScene {
   snap(v: number) { return Math.round(v * this.Z) / this.Z; }
   moveWalker(w: Walker, dt: number) {
     const a = w.ai;
-    const speed = built(game.s, 'rail_line') ? 24 : 16;
+    // 走在石磚、金屬路上才會加速
+    const speed = this.ground?.paved?.(w.px, w.py) ? 24 : 16;
     a.jit ??= Math.random() * 0.03;
     const ph = this.schedule(a.jit);
     if (ph !== 'work') {

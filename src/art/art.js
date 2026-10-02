@@ -1434,7 +1434,8 @@ export function planMap(stage, MW = 600, MH = 360, seed = stage * 131 + 7, layou
       const dx = x1 - x0, dy = y1 - y0, l2 = dx * dx + dy * dy || 1;
       const t = clamp(((x - x0) * dx + (y - y0) * dy) / l2, 0, 1);
       const ex = x - (x0 + dx * t), ey = y - (y0 + dy * t);
-      take(Math.sqrt(ex * ex + ey * ey) - 3.4 - w, t0);
+      // 鋪過的路（石磚、金屬）寬度一致、邊緣筆直；沒鋪的維持原本自然的寬窄
+      take(Math.sqrt(ex * ex + ey * ey) - (t0 ? 4.5 : 3.4 + w), t0);
     }
     if (plaza) {
       const px = (x - center.x) / 50, py = (y - center.y - 6) / 32;

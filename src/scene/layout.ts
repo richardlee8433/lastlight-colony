@@ -127,9 +127,66 @@ function findPath(a: Pt, b: Pt, skip: Site[] = []): Pt[] {
   }
   return out;
 }
+/** 都市計畫式的道路：只走水平／垂直，轉彎要額外成本（路會是幾段長直線），結果是直角折線。
+ *  a* 用二元堆積；狀態＝格子×進入方向 */
+function findGridPath(a: Pt, b: Pt, skip: Site[] = []): Pt[] {
+  const g = blockedGrid(skip, [a, b]);
+  const cell = (p: Pt) => Math.floor(p.y / CELL) * GW + Math.floor(p.x / CELL);
+  const s0 = cell(a), s1 = cell(b), N = GW * GH, TURN = 6;
+  const cost = new Float32Array(N * 4).fill(Infinity), from = new Int32Array(N * 4).fill(-1);
+  const DX = [1, -1, 0, 0], DY = [0, 0, 1, -1];
+  const heap: [number, number][] = [];
+  const push = (f: number, st: number) => { heap.push([f, st]); let i = heap.length - 1; while (i) { const p = (i - 1) >> 1; if (heap[p][0] <= heap[i][0]) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; } };
+  const pop = () => { const top = heap[0], last = heap.pop()!; if (heap.length) { heap[0] = last; let i = 0; for (;;) { const l = i * 2 + 1, r = l + 1; let m = i; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } } return top; };
+  const h = (c: number) => Math.abs((c % GW) - (s1 % GW)) + Math.abs(Math.floor(c / GW) - Math.floor(s1 / GW));
+  for (let d = 0; d < 4; d++) { cost[s0 * 4 + d] = 0; push(h(s0), s0 * 4 + d); }
+  let end = -1;
+  while (heap.length) {
+    const [f, st] = pop(), c = st >> 2, d = st & 3;
+    if (f - h(c) > cost[st] + 1e-6) continue;
+    if (c === s1) { end = st; break; }
+    const cx = c % GW, cy = Math.floor(c / GW);
+    for (let nd = 0; nd < 4; nd++) {
+      const nx = cx + DX[nd], ny = cy + DY[nd];
+      if (nx < 1 || ny < 1 || nx >= GW - 1 || ny >= GH - 1) continue;
+      const n = ny * GW + nx;
+      if (g[n] && n !== s1) continue;
+      const ns = n * 4 + nd, nc = cost[st] + 1 + (nd !== d && c !== s0 ? TURN : 0);
+      if (nc < cost[ns]) { cost[ns] = nc; from[ns] = st; push(nc + h(n), ns); }
+    }
+  }
+  if (end < 0) return findPath(a, b, skip);
+  const cells: Pt[] = [];
+  for (let st = end; st >= 0; st = from[st]) { const c = st >> 2; cells.push({ x: (c % GW) * CELL + CELL / 2, y: Math.floor(c / GW) * CELL + CELL / 2 }); }
+  cells.reverse();
+  // 只留轉角
+  const pts: Pt[] = [cells[0]];
+  for (let i = 1; i < cells.length - 1; i++) {
+    const p = cells[i - 1], q = cells[i], r = cells[i + 1];
+    if ((q.x - p.x) * (r.y - q.y) !== (q.y - p.y) * (r.x - q.x)) pts.push(q);
+  }
+  if (cells.length > 1) pts.push(cells[cells.length - 1]);
+  // 起點、終點對齊：第一段、最後一段整段平移到 a、b 的那條線上，路還是直角
+  const align = (i: number, j: number, p: Pt) => {
+    if (pts.length < 2) return;
+    if (pts[i].y === pts[j].y) { pts[i].y = pts[j].y = p.y; } else { pts[i].x = pts[j].x = p.x; }
+  };
+  if (pts.length >= 2) { align(0, 1, a); align(pts.length - 1, pts.length - 2, b); }
+  const out = [a, ...pts, b].filter((p, i, arr) => i === 0 || p.x !== arr[i - 1].x || p.y !== arr[i - 1].y);
+  // 剩下的小斜段（a、b 跟第一個格子中心差幾像素）補成直角
+  const fixed: Pt[] = [out[0]];
+  for (let i = 1; i < out.length; i++) { const p = fixed[fixed.length - 1], q = out[i]; if (p.x !== q.x && p.y !== q.y) fixed.push({ x: p.x, y: q.y }); fixed.push(q); }
+  // 同一直線上的中間點（含 1 像素的小折返）拿掉，只留真正的轉角
+  const r = fixed.map((p) => ({ x: Math.round(p.x), y: Math.round(p.y) }));
+  for (let i = 1; i < r.length - 1; ) {
+    const p = r[i - 1], q = r[i], n = r[i + 1];
+    if ((p.x === q.x && q.x === n.x) || (p.y === q.y && q.y === n.y)) r.splice(i, 1); else i++;
+  }
+  return r;
+}
 const doorOf = (s: Site): Pt => ({ x: s.x, y: s.y + 6 });
 function findRoute(target: Site, start: Pt = START, skip?: Site): Pt[] {
-  return findPath(start, doorOf(target), skip ? [target, skip] : [target]);
+  return findGridPath(start, doorOf(target), skip ? [target, skip] : [target]);
 }
 /** 每棟建築的道路折線（第一點是指揮艙門口，最後一點是建築門口） */
 export const ROUTES: Record<string, Pt[]> = Object.fromEntries(SITES.filter((s) => !s.hub).map((s) => [s.id, findRoute(s)]));
