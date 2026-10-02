@@ -970,28 +970,41 @@ export class GameScene {
     this.sunRay.alpha = 0.16 * low * (1 - night);
     this.sunRay.tint = this.overlay.tint;
   }
-  /** 腳印：小人每走 4 像素在腳下留一個（左右腳交錯），每人只留最近 3 個，越舊越淡；鋪過的路面上不留 */
+  /** 腳印：小人每走 7 像素在腳下留一個（左右腳交錯），每人身後保持 3 個；
+   *  第 4 個出現時最舊的那個不是瞬間消失，而是 0.6 秒淡出；停下來 4 秒後也慢慢淡掉。鋪過的路面上不留 */
   footprints() {
-    const g = this.footG, paved = this.ground?.paved;
+    const g = this.footG, paved = this.ground?.paved, T = this.T;
+    const STRIDE = 7, KEEP = 3, FADE = 0.6, IDLE = 4;
     g.clear();
     const units: any[] = [...this.walkers, ...this.patrols, ...this.defenders, ...this.aliens];
     for (const u of units) {
       if (u.destroyed || !u.visible) continue;
-      const prints: { x: number; y: number }[] = (u.prints ??= []);
+      // prints：{ x, y, t 留下的時間, gone 開始淡出的時間 }
+      const prints: { x: number; y: number; t: number; gone?: number }[] = (u.prints ??= []);
       if (u.fx == null) { u.fx = u.x; u.fy = u.y; u.step = 0; }
       const dx = u.x - u.fx, dy = u.y - u.fy, d = Math.hypot(dx, dy);
       if (d > 30) { u.fx = u.x; u.fy = u.y; prints.length = 0; }   // 瞬移（重新產生、換位置）不留腳印
-      else if (d >= 4) {
-        // 左右腳：垂直於行進方向偏 1 像素
+      else if (d >= STRIDE) {
+        // 左右腳：垂直於行進方向偏 1 像素多一點
         const side = (u.step++ % 2 ? 1 : -1), nx = -dy / d, ny = dx / d;
         const px = u.x + nx * side * 1.3, py = u.y + ny * side * 0.7;
-        if (!paved?.(px, py)) { prints.push({ x: px, y: py }); if (prints.length > 3) prints.shift(); }
+        if (!paved?.(px, py)) {
+          prints.push({ x: px, y: py, t: T });
+          const live = prints.filter((q) => q.gone == null);
+          if (live.length > KEEP) live[0].gone = T;
+        }
         u.fx = u.x; u.fy = u.y;
       }
-      prints.forEach((p, i) => {
-        const a = 0.2 + 0.15 * (i + 1);   // 最舊 0.35、最新 0.65
-        g.ellipse(p.x, p.y, 1.5, 0.9).fill({ color: 0x4a1c10, alpha: a });
-      });
+      for (const q of prints) if (q.gone == null && T - q.t > IDLE) q.gone = T;   // 停下來太久：慢慢淡掉
+      for (let i = prints.length - 1; i >= 0; i--) if (prints[i].gone != null && T - prints[i].gone! > FADE) prints.splice(i, 1);
+      const live = prints.filter((q) => q.gone == null);
+      for (const q of prints) {
+        // 越新越深（最新 0.65、最舊 0.35）；淡出中的從目前的深淺降到 0
+        const rank = q.gone == null ? live.indexOf(q) : -1;
+        const base = rank >= 0 ? 0.35 + 0.3 * (rank / Math.max(1, KEEP - 1)) : 0.35;
+        const a = q.gone == null ? base : base * Math.max(0, 1 - (T - q.gone) / FADE);
+        if (a > 0.01) g.ellipse(q.x, q.y, 1.5, 0.9).fill({ color: 0x4a1c10, alpha: a });
+      }
     }
   }
   /** 小人：腳下畫小影子（跟建築影子同方向）；走進建築影子裡慢慢變暗 40%，走出來再恢復 */

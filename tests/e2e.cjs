@@ -347,8 +347,9 @@ const CJK = /[一-鿿]/;
       const r = await scene(p, () => {
         const s = window.__scene, us = [...s.walkers, ...s.patrols, ...s.defenders];
         let total = 0, max = 0, onPaved = 0;
+        // 淡出中的（gone）不算在 3 個裡
         for (const u of us) for (const q of u.prints ?? []) { total++; if (s.ground.paved(q.x, q.y)) onPaved++; }
-        for (const u of us) max = Math.max(max, u.prints?.length ?? 0);
+        for (const u of us) max = Math.max(max, (u.prints ?? []).filter((q) => q.gone == null).length);
         return { total, max, onPaved };
       });
       await p.close();
