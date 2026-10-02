@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { trackStart } from '../analytics';
 import { useGame, game } from '../store/gameStore';
 import { CHAPTERS } from '../engine/story';
 import { dayOf } from '../engine/dialog';
@@ -34,8 +35,8 @@ export function TitleScreen() {
   const s = game.s, act = useGame.getState();
   const hasSave = s.t > 5 || s.story.seenIntro > 0;
   const ch = CHAPTERS[Math.min(s.stage, CHAPTERS.length) - 1];
-  const start = () => act.closeTitle();
-  const fresh = () => { act.reset(); act.closeTitle(); };
+  const start = () => { trackStart(game.s, !hasSave); act.closeTitle(); };
+  const fresh = () => { act.reset(); trackStart(game.s, true); act.closeTitle(); };
 
   return (
     <div className="title-screen">

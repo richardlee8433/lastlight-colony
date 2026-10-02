@@ -1,5 +1,6 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
+import { observe } from '../analytics';
 import { AIR_ENABLED, DEF, DEFS, GameState, makeCheckpoint, newAir, newGame, newGov, newRaid, notify } from '../engine/state';
 import { LIFE_SUPPORT } from '../engine/air';
 import { CHAPTERS, migrateStoryDone } from '../engine/story';
@@ -254,6 +255,7 @@ setInterval(() => {
   let n = 0;
   while (acc >= TICK && n < 50) { step(game.s, TICK); acc -= TICK; n++; sinceSave += TICK; }
   if (n) {
+    observe(game.s);
     useGame.getState().bump();
     setMood({ stage: Math.min(6, game.s.stage), raid: !!game.s.raid?.incoming, finished: game.s.finished });
   }

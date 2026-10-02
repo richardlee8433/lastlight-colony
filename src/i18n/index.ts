@@ -12,30 +12,34 @@ export type Lang = 'en' | 'zh';
 export const LANGS: { id: Lang; label: string }[] = [{ id: 'en', label: 'English' }, { id: 'zh', label: '繁體中文' }];
 const SETTINGS_KEY = 'lastlight-colony-settings';
 
-function loadSettings(): { lang: Lang; dayNight: boolean } {
-  let lang: Lang = 'en', dayNight = true;
+function loadSettings(): { lang: Lang; dayNight: boolean; analytics: boolean } {
+  let lang: Lang = 'en', dayNight = true, analytics = true;
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) { const v = JSON.parse(raw); if (v.lang === 'zh' || v.lang === 'en') lang = v.lang; if (v.dayNight === false) dayNight = false; }
+    if (raw) { const v = JSON.parse(raw); if (v.lang === 'zh' || v.lang === 'en') lang = v.lang; if (v.dayNight === false) dayNight = false; if (v.analytics === false) analytics = false; }
   } catch { /* 沒有設定：用預設 */ }
-  return { lang, dayNight };
+  return { lang, dayNight, analytics };
 }
 
-/** dayNight：日夜變化（純畫面效果，關掉時永遠是白天） */
-interface Settings { lang: Lang; dayNight: boolean; setLang: (l: Lang) => void; setDayNight: (on: boolean) => void }
-const saveSettings = (v: { lang: Lang; dayNight: boolean }) => {
+/** dayNight：日夜變化（純畫面效果，關掉時永遠是白天）；analytics：傳送匿名遊玩數據 */
+interface Settings { lang: Lang; dayNight: boolean; analytics: boolean; setLang: (l: Lang) => void; setDayNight: (on: boolean) => void; setAnalytics: (on: boolean) => void }
+const saveSettings = (v: { lang: Lang; dayNight: boolean; analytics: boolean }) => {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(v)); } catch { /* 無法儲存時只在本次生效 */ }
 };
 export const useSettings = create<Settings>((set, get) => ({
   ...loadSettings(),
   setLang: (lang) => {
-    saveSettings({ lang, dayNight: get().dayNight });
+    saveSettings({ lang, dayNight: get().dayNight, analytics: get().analytics });
     applyDocLang(lang);
     set({ lang });
   },
   setDayNight: (dayNight) => {
-    saveSettings({ lang: get().lang, dayNight });
+    saveSettings({ lang: get().lang, dayNight, analytics: get().analytics });
     set({ dayNight });
+  },
+  setAnalytics: (analytics) => {
+    saveSettings({ lang: get().lang, dayNight: get().dayNight, analytics });
+    set({ analytics });
   },
 }));
 export const lang = () => useSettings.getState().lang;

@@ -14,6 +14,7 @@ export function Settings() {
   useGame((st) => st.v);
   const lang = useLang(), setLang = useSettings((st) => st.setLang);
   const dayNight = useSettings((st) => st.dayNight), setDayNight = useSettings((st) => st.setDayNight);
+  const analytics = useSettings((st) => st.analytics), setAnalytics = useSettings((st) => st.setAnalytics);
   const open = useGame((st) => st.settings), [confirm, setConfirm] = useState(false);
   const act = useGame.getState(), s = game.s;
   const audio = useAudio();
@@ -82,6 +83,12 @@ export function Settings() {
             <h3>{t('set.display')}</h3>
             <label className="check"><input type="checkbox" checked={dayNight} onChange={(e) => setDayNight(e.target.checked)} /> {t('set.dayNight')}</label>
             <p className="muted small">{t('set.dayNightHint')}</p>
+          </section>
+
+          <section className="block">
+            <h3>{t('set.privacy')}</h3>
+            <label className="check"><input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} /> {t('set.analytics')}</label>
+            <p className="muted small">{t('set.analyticsHint')}</p>
           </section>
 
           <section className="block">
