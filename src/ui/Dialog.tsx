@@ -4,7 +4,8 @@ import { SCENES } from '../data/dialogs';
 import { endOfChapter, lineOk } from '../engine/dialog';
 import { CHARACTERS, CharacterId, portraitURL } from '../art/portraitArt';
 import { t, useLang } from '../i18n';
-import { sfx } from '../audio/audio';
+import { sfx, playVoice } from '../audio/audio';
+import { voiceFile } from '../data/voices';
 
 const CPS = { zh: 28, en: 55 };   // 每秒打出幾個字
 
@@ -28,6 +29,9 @@ function Scene({ id, day }: { id: string; day: number }) {
   const typing = shown < text.length;
 
   useEffect(() => { sfx('ui'); }, []);
+  // 有配音的台詞：換到這句時播，翻頁、跳過或關掉對話時停（用原始台詞編號，路線過濾掉的不影響）
+  const idx = SCENES[id].lines.indexOf(lines[i]);
+  useEffect(() => { playVoice(voiceFile(id, idx)); return () => playVoice(null); }, [id, idx]);
   useEffect(() => {
     if (!typing) return;
     const step = setInterval(() => setShown((n) => Math.min(text.length, n + 1)), 1000 / CPS[lang]);

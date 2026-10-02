@@ -76,6 +76,9 @@ export function Settings() {
             <label className="slider"><span>{t('set.sfx')}</span>
               <input type="range" min={0} max={100} value={Math.round(audio.sfx * 100)} onChange={(e) => audio.set({ sfx: +e.target.value / 100 })} onPointerUp={() => sfx('collect')} aria-label={t('set.sfx')} />
               <b>{Math.round(audio.sfx * 100)}</b></label>
+            <label className="slider"><span>{t('set.voice')}</span>
+              <input type="range" min={0} max={100} value={Math.round(audio.voice * 100)} onChange={(e) => audio.set({ voice: +e.target.value / 100 })} aria-label={t('set.voice')} />
+              <b>{Math.round(audio.voice * 100)}</b></label>
             <label className="check"><input type="checkbox" checked={audio.muted} onChange={(e) => audio.set({ muted: e.target.checked })} /> {t('set.mute')}</label>
           </section>
 

@@ -393,6 +393,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'set.audio': ['Sound', '聲音'],
   'set.music': ['Music', '音樂'],
   'set.sfx': ['Sound effects', '音效'],
+  'set.voice': ['Voice', '語音'],
   'set.mute': ['Mute all', '全部靜音'],
   'set.save': ['Save', '存檔'],
   'set.chapter': ['Progress', '進度'],

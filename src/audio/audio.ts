@@ -1,6 +1,8 @@
 // 錄好的曲目放在 music/ 資料夾（和 index.html 同一層，不包進單一檔案），需要時才下載；
 // 下載好之前（或找不到檔案時）先播程序化配樂，開始播放後才交叉淡入。
 const MUSIC_DIR = 'music/';
+/** 台詞配音：放在 voice/ 資料夾，跟配樂一樣不包進單一檔案，播到那句才下載 */
+const VOICE_DIR = 'voice/';
 
 /** 錄好的曲目：首頁主題曲、第 1～6 章配樂（通關後繼續播第 6 章） */
 const SONGS = { title: 'alien-sky.mp3', ch1: 'ch1.mp3', ch2: 'ch2.mp3', ch3: 'ch3.mp3', ch4: 'ch4.mp3', ch5: 'ch5.mp3', ch6: 'ch6.mp3' } as const;
@@ -13,17 +15,17 @@ type SongKey = keyof typeof SONGS;
 import { create } from 'zustand';
 
 const KEY = 'lastlight-colony-audio';
-interface AudioSettings { music: number; sfx: number; muted: boolean }
+interface AudioSettings { music: number; sfx: number; voice: number; muted: boolean }
 function loadSettings(): AudioSettings {
-  try { const v = JSON.parse(localStorage.getItem(KEY) ?? 'null'); if (v) return { music: v.music ?? 0.5, sfx: v.sfx ?? 0.7, muted: !!v.muted }; } catch { /* 用預設 */ }
-  return { music: 0.5, sfx: 0.7, muted: false };
+  try { const v = JSON.parse(localStorage.getItem(KEY) ?? 'null'); if (v) return { music: v.music ?? 0.5, sfx: v.sfx ?? 0.7, voice: v.voice ?? 0.9, muted: !!v.muted }; } catch { /* 用預設 */ }
+  return { music: 0.5, sfx: 0.7, voice: 0.9, muted: false };
 }
 export const useAudio = create<AudioSettings & { set: (p: Partial<AudioSettings>) => void }>((set, get) => ({
   ...loadSettings(),
   set: (p) => {
     set(p);
-    const { music, sfx, muted } = get();
-    try { localStorage.setItem(KEY, JSON.stringify({ music, sfx, muted })); } catch { /* 只在本次生效 */ }
+    const { music, sfx, voice, muted } = get();
+    try { localStorage.setItem(KEY, JSON.stringify({ music, sfx, voice, muted })); } catch { /* 只在本次生效 */ }
     engine.applyVolume();
   },
 }));
@@ -44,7 +46,7 @@ const hz = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 
 class Engine {
   ctx: AudioContext | null = null;
-  master!: GainNode; music!: GainNode; sfx!: GainNode; delay!: DelayNode; noiseBuf!: AudioBuffer;
+  master!: GainNode; music!: GainNode; sfx!: GainNode; voice!: GainNode; duck!: GainNode; voiceEl: HTMLAudioElement | null = null; delay!: DelayNode; noiseBuf!: AudioBuffer;
   mood: MusicMood = { stage: 1, raid: false, finished: false };
   private nextBar = 0; private bar = 0; private timer: number | null = null;
   /** 首頁開著時播首頁主題曲（Alien Sky）；第 1～6 章播錄好的配樂（CHAPTER_SONG，通關後繼續播第 6 章）；音樂還沒開始播時用程序化配樂。切換時交叉淡入淡出 */
@@ -61,7 +63,9 @@ class Engine {
     if (!AC) return;
     const ctx = (this.ctx = new AC());
     this.master = ctx.createGain(); this.master.connect(ctx.destination);
-    this.music = ctx.createGain(); this.music.connect(this.master);
+    // 配音時音樂壓低：music → duck → master
+    this.duck = ctx.createGain(); this.duck.connect(this.master);
+    this.music = ctx.createGain(); this.music.connect(this.duck);
     // 程序化配樂先經過 gameGain（首頁時靜音）；主題曲經過 songGain，兩者都跟著音樂音量
     this.gameGain = ctx.createGain(); this.gameGain.connect(this.music);
     for (const k of Object.keys(SONGS) as SongKey[]) {
@@ -73,6 +77,7 @@ class Engine {
       this.songs[k] = { el, gain };
     }
     this.sfx = ctx.createGain(); this.sfx.connect(this.master);
+    this.voice = ctx.createGain(); this.voice.connect(this.master);
     // 太空感的回音：feedback delay，只接音樂的琶音與部分音效
     this.delay = ctx.createDelay(1.5); this.delay.delayTime.value = 0.42;
     const fb = ctx.createGain(); fb.gain.value = 0.38;
@@ -117,6 +122,22 @@ class Engine {
     this.master.gain.setTargetAtTime(s.muted ? 0 : 0.8, t, 0.05);
     this.music.gain.setTargetAtTime(s.music * 0.55, t, 0.2);
     this.sfx.gain.setTargetAtTime(s.sfx * 0.7, t, 0.05);
+    this.voice.gain.setTargetAtTime(s.voice, t, 0.05);
+  }
+
+  // ── 配音 ──
+  /** 播一句台詞的配音（同時只有一句）；播放時音樂壓到 35%，播完或停止後慢慢回來 */
+  playVoice(file: string | null) {
+    if (this.voiceEl) { this.voiceEl.pause(); this.voiceEl = null; }
+    if (this.ctx) this.duck.gain.setTargetAtTime(1, this.ctx.currentTime, 0.4);
+    if (!file || !this.ctx) return;
+    const el = new Audio(VOICE_DIR + file);
+    this.ctx.createMediaElementSource(el).connect(this.voice);
+    const done = () => { if (this.voiceEl === el) { this.voiceEl = null; this.duck.gain.setTargetAtTime(1, this.ctx!.currentTime, 0.4); } };
+    el.addEventListener('ended', done); el.addEventListener('error', done);
+    this.voiceEl = el;
+    this.duck.gain.setTargetAtTime(0.35, this.ctx.currentTime, 0.15);
+    el.play().catch(done);
   }
 
   // ── 音樂 ──
@@ -245,6 +266,8 @@ const preloaded: Partial<Record<SongKey, HTMLAudioElement>> = {};
 const engine = new Engine();
 export const sfx = (name: Sfx) => engine.play(name);
 export const setMood = (m: MusicMood) => engine.setMood(m);
+/** 播台詞配音；傳 null 停止目前這句 */
+export const playVoice = (file: string | null) => engine.playVoice(file);
 /** 首頁開關時呼叫：首頁播主題曲，遊戲中播程序化配樂 */
 export const setTitleMusic = (on: boolean) => engine.setTitle(on);
 /** 第一次互動時啟動音訊；也讓所有按鈕有輕微的點擊聲 */
