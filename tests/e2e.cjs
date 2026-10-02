@@ -12,7 +12,8 @@ const PAGE = 'file://' + path.join(ROOT, 'dist/index.html');
 const SAVE_KEY = 'lastlight-colony-save-v1';
 const results = [];
 const snap = (name) => JSON.parse(fs.readFileSync(path.join(SNAPS, name + '.json'), 'utf8'));
-const later = (s) => { s.lastSaved = Date.now(); s.events.nextAt = s.t + 3000; s.raid.nextAt = s.t + 3000; if (s.gov?.corp) s.gov.corp.nextEnvoy = s.t + 3000; s.story.queue = []; return s; };
+// 把事件、襲擊、使者都延後，並清掉存檔當下已經跳出來的事件（例如隕石雨），測試畫面才不會被擋住
+const later = (s) => { s.events.active = null; s.lastSaved = Date.now(); s.events.nextAt = s.t + 3000; s.raid.nextAt = s.t + 3000; if (s.gov?.corp) s.gov.corp.nextEnvoy = s.t + 3000; s.story.queue = []; return s; };
 const CJK = /[一-鿿]/;
 
 (async () => {
@@ -289,7 +290,7 @@ const CJK = /[一-鿿]/;
     const box = p.locator('label.check', { hasText: '日夜變化' }).locator('input');
     if (!(await box.count())) { await p.close(); return ['設定頁沒有「日夜變化」']; }
     if (!(await box.isChecked())) errs.push('預設不是打開');
-    await box.click(); await p.waitForTimeout(300);
+    await box.click({ timeout: 5000 }).catch((e) => { throw new Error(e.message.split('\n').filter((l) => /intercept|visible|stable|enabled/.test(l)).slice(0, 3).join(' | ') || e.message.slice(0, 200)); }); await p.waitForTimeout(300);
     await p.evaluate(() => document.querySelector('.close')?.click()); await p.waitForTimeout(500);
     const after = await lum();
     if (!(before < 140 && after > 200)) errs.push(`關掉後環境光 ${before.toFixed(0)} → ${after.toFixed(0)}`);
