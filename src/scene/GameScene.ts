@@ -1067,16 +1067,25 @@ export class GameScene {
   offDuty(w: Walker, kind: 'evening' | 'night', dt: number, speed: number) {
     const a = w.ai;
     if (a.off !== kind) {
+      const prevDoor = a.off === 'evening' && kind === 'night' && a.meal != null && a.meal <= 0 ? a.door : null;
       a.off = kind; a.offAt = this.offDutySpot(kind); a.meal = undefined; a.chatting = false; a.inside = 0;
       const j = () => (Math.random() - 0.5) * 16;
       // 門口：建築正面底邊中央（休閒艙吃飯、生活艙睡覺都從這裡進出）
       a.door = { x: a.offAt.x + j() * 0.15, y: a.offAt.y - 10 };
       // 傍晚吃完飯在休閒艙前散開成幾小群；鋪了路之後只在建築前的地坪上（不踩沙地）
-      const paved = built(game.s, 'rail_line');
-      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * (paved ? 36 : 70), y: a.offAt.y + Math.random() * (paved ? 6 : 18) } : a.door;
-      if (paved && kind === 'evening' && !this.ground?.paved?.(a.offAt.x, a.offAt.y)) a.offAt = { x: a.door.x + (Math.random() - 0.5) * 12, y: a.door.y + 4 };
+      // 吃完飯在休閒艙門前散開成幾小群：鋪了路、門正前方有路面就站在路面上；
+      // 門前沒有路面（只有旁邊的路）就站在門前空地，不然大家會擠在門口或在旁邊的路上排成一列
+      if (kind === 'evening') {
+        const base = a.offAt, pv = this.ground?.paved;
+        let q = { x: base.x + (Math.random() - 0.5) * 70, y: base.y + Math.random() * 18 };
+        if (built(game.s, 'rail_line') && pv) for (let i = 0; i < 20; i++) { const c = { x: base.x + (Math.random() - 0.5) * 36, y: base.y + Math.random() * 6 }; if (pv(c.x, c.y)) { q = c; break; } }
+        a.offAt = q;
+      } else a.offAt = a.door;
       const dest = kind === 'evening' ? (built(game.s, 'lounge') ? 'lounge' : null) : (built(game.s, 'hab_pod') ? 'hab_pod' : null);
-      a.offPath = this.roadPath({ x: w.px, y: w.py }, dest, a.door);
+      // 從休閒艙門前的空地回家：先走回休閒艙門口再上路，不要斜穿沙地去找最近的路
+      const from = prevDoor ?? { x: w.px, y: w.py };
+      a.offPath = this.roadPath(from, dest, a.door);
+      if (prevDoor) a.offPath.unshift(prevDoor);
       a.offPath.push(a.door);
       a.working = false; w.setWork?.(false); w.setCarry(null);
       w.visible = true; w.alpha = 1;
@@ -1106,8 +1115,9 @@ export class GameScene {
       if (a.offWait <= 0) {
         a.offWait = 2 + Math.random() * 4;
         const q = { x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 };
-        // 鋪了路之後，閒晃的落腳點要在路面上，踩不到就留在原地
-        if (!built(game.s, 'rail_line') || this.ground?.paved?.(q.x, q.y)) a.offPath = [q];
+        // 站在廣場上的只在路面上走動；站在空地上的就在附近走動
+        const onRoad = built(game.s, 'rail_line') && this.ground?.paved?.(a.offAt.x, a.offAt.y);
+        if (!onRoad || this.ground?.paved?.(q.x, q.y)) a.offPath = [q];
       }
       // 對話泡泡：偶爾冒一個，同時最多 4 個
       a.chatCd = (a.chatCd ?? 1 + Math.random() * 4) - dt;
