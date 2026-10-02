@@ -28,6 +28,8 @@ function shadowMask(cv: HTMLCanvasElement): ShadowMask {
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+/** 影子翻轉線在建築高度的多少比例處（從正面底邊往上算） */
+const SHADOW_FOOT = 0.15;
 
 export class GameScene {
   app = new Application();
@@ -357,7 +359,9 @@ export class GameScene {
       // 影子：建築本身的圖染成黑色、壓扁翻到地上，再依太陽方向斜切（只有手繪建築）
       if (b.art?.emissive) {
         const sh = new Sprite(b.sprite.texture);
-        sh.anchor.copyFrom(b.sprite.anchor); sh.tint = 0x000000; sh.position.set(site.x, site.y);
+        // 建築是斜上方視角畫的，地面接觸面從正面底邊往後延伸；影子從接觸面中間翻下去，才會貼著建築
+        const fp = b.art.ay * SHADOW_FOOT;
+        sh.anchor.set(b.sprite.anchor.x, (b.art.ay - fp) / b.art.h); sh.tint = 0x000000; sh.position.set(site.x, site.y - fp);
         (sh as any).base = b.sprite.scale.x;
         (sh as any).smask = shadowMask(b.art.canvas);
         // 小人影子那層要在建築影子之上
