@@ -40,13 +40,15 @@ export class GameScene {
   shadowL = new Container();
   /** 斜射光：清晨、黃昏從一側照過來的淡淡光線 */
   sunRay = new Sprite();
+  /** 腳印（每幀重畫）：每個小人身後最多 3 個，只留在沙地上 */
+  footG = new Graphics();
   /** 小人腳下的影子（每幀重畫） */
   unitShadowG = new Graphics();
   /** 目前的太陽：影子長度、斜度（弧度）、影子濃度 */
   sun = { len: 0.5, lean: 0.6, alpha: 0.3 };
   hud = new Container();
   fxL = new Container();
-  ground: (Container & { roads?: Sprite | null }) | null = null;
+  ground: (Container & { roads?: Sprite | null; paved?: (x: number, y: number) => boolean }) | null = null;
   overlay = new Graphics();
   ambient: any = null;
   props: any[] = [];
@@ -274,7 +276,7 @@ export class GameScene {
   /** 地面解析度：跟著畫面縮放，最多 3 倍（再高的話記憶體和重畫時間划不來） */
   groundRes() { return clampN(this.Z, 2, 3); }
   /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬地磚、2 石磚）：
-   *  整個殖民地一致，由軌道車線決定：還沒蓋是沙路、蓋好鋪石磚、升級雙線運轉後換成金屬地磚 */
+   *  整個殖民地一致，由軌道車線決定：還沒蓋時不畫路（小人走過留腳印）、蓋好鋪石磚、升級雙線運轉後換成金屬地磚 */
   mapSites() {
     const s = game.s;
     const out: (Site & { r: number; tier: number })[] = [];
@@ -312,6 +314,7 @@ export class GameScene {
     this.world.addChildAt(ground, 0);
     this.world.addChildAt(this.shadowL, 1);
     this.shadowL.addChild(this.unitShadowG);
+    this.shadowL.addChildAt(this.footG, 0);
     for (const p of plan.props) {
       const c = createProp(p.kind, propStage, p.seed);
       c.position.set(p.x, p.y); c.zIndex = p.y; c.lights.position.set(p.x, p.y);
@@ -967,6 +970,30 @@ export class GameScene {
     this.sunRay.alpha = 0.16 * low * (1 - night);
     this.sunRay.tint = this.overlay.tint;
   }
+  /** 腳印：小人每走 4 像素在腳下留一個（左右腳交錯），每人只留最近 3 個，越舊越淡；鋪過的路面上不留 */
+  footprints() {
+    const g = this.footG, paved = this.ground?.paved;
+    g.clear();
+    const units: any[] = [...this.walkers, ...this.patrols, ...this.defenders, ...this.aliens];
+    for (const u of units) {
+      if (u.destroyed || !u.visible) continue;
+      const prints: { x: number; y: number }[] = (u.prints ??= []);
+      if (u.fx == null) { u.fx = u.x; u.fy = u.y; u.step = 0; }
+      const dx = u.x - u.fx, dy = u.y - u.fy, d = Math.hypot(dx, dy);
+      if (d > 30) { u.fx = u.x; u.fy = u.y; prints.length = 0; }   // 瞬移（重新產生、換位置）不留腳印
+      else if (d >= 4) {
+        // 左右腳：垂直於行進方向偏 1 像素
+        const side = (u.step++ % 2 ? 1 : -1), nx = -dy / d, ny = dx / d;
+        const px = u.x + nx * side * 1.3, py = u.y + ny * side * 0.7;
+        if (!paved?.(px, py)) { prints.push({ x: px, y: py }); if (prints.length > 3) prints.shift(); }
+        u.fx = u.x; u.fy = u.y;
+      }
+      prints.forEach((p, i) => {
+        const a = 0.2 + 0.15 * (i + 1);   // 最舊 0.35、最新 0.65
+        g.ellipse(p.x, p.y, 1.5, 0.9).fill({ color: 0x4a1c10, alpha: a });
+      });
+    }
+  }
   /** 小人：腳下畫小影子（跟建築影子同方向）；走進建築影子裡慢慢變暗 40%，走出來再恢復 */
   unitShadows(dt: number) {
     const g = this.unitShadowG, { len, lean, alpha } = this.sun;
@@ -1041,6 +1068,7 @@ export class GameScene {
     this.moveDefenders(dt);
     this.movePatrols(dt);
     this.drawShots(dt);
+    this.footprints();
     this.unitShadows(dt);
     this.updateRaidMark();
     if (this.hold) {

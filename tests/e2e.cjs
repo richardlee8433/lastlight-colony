@@ -339,6 +339,26 @@ const CJK = /[一-鿿]/;
     return on.avg - off.avg > 4 ? ['日夜多出的運算太重：' + info] : [];
   });
 
+  await test('E18', '腳印：沙地上會留下、每人最多 3 個；鋪過的路面上沒有腳印', async () => {
+    const errs = [];
+    for (const [name, snapName] of [['第 2 章（全是沙地）', 'ch2'], ['第 6 章（有石磚、金屬路）', 'ch6']]) {
+      const { p } = await open(later(snap(snapName))); await clear(p);
+      await p.waitForTimeout(8000);
+      const r = await scene(p, () => {
+        const s = window.__scene, us = [...s.walkers, ...s.patrols, ...s.defenders];
+        let total = 0, max = 0, onPaved = 0;
+        for (const u of us) for (const q of u.prints ?? []) { total++; if (s.ground.paved(q.x, q.y)) onPaved++; }
+        for (const u of us) max = Math.max(max, u.prints?.length ?? 0);
+        return { total, max, onPaved };
+      });
+      await p.close();
+      if (snapName === 'ch2' && !r.total) errs.push(`${name}沒有腳印`);
+      if (r.max > 3) errs.push(`${name}有人留了 ${r.max} 個腳印`);
+      if (r.onPaved) errs.push(`${name}有 ${r.onPaved} 個腳印在鋪過的路面上`);
+    }
+    return errs;
+  });
+
   await b.close();
   fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));
   const fail = results.filter((r) => !r.ok).length;

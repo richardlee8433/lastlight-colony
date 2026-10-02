@@ -2023,10 +2023,17 @@ export function createGround(stage, plan, res = 2) {
   c.addChild(base);
   const r = paintRoads(stage, plan, res);
   c.roads = null;
+  c.paved = () => false;
   if (r) {
     const t = Texture.from(r.canvas); t.source.scaleMode = 'linear';
     const s = new Sprite(t); s.scale.set(1 / res); s.position.set(r.x, r.y);
     c.addChild(s); c.roads = s;
+    // 地圖座標 (x, y) 是不是鋪過的路面（石磚、金屬地磚）：腳印只留在沙地上
+    const a = r.canvas.getContext('2d').getImageData(0, 0, r.canvas.width, r.canvas.height).data, w = r.canvas.width, h = r.canvas.height;
+    c.paved = (x, y) => {
+      const px = Math.floor((x - r.x) * res), py = Math.floor((y - r.y) * res);
+      return px >= 0 && py >= 0 && px < w && py < h && a[(py * w + px) * 4 + 3] > 128;
+    };
   }
   return c;
 }
@@ -2041,7 +2048,7 @@ function paintRoads(stage, plan, R) {
   const CW = (bx1 - bx0 + 1) * R, CH = (by1 - by0 + 1) * R;
   const cv = makeCanvas(CW, CH), ctx = cv.getContext('2d');
   const img = ctx.createImageData(CW, CH), d = img.data;
-  const SAND = [0x7a3a26, 0x94482c, 0xa85a36, 0xbb6e44], PLATE = [0x4a4e58, 0x6a707c, 0x868c98, 0xa4aab4], TILE = [0x6e5a4a, 0xa89078, 0xc4ac90, 0xd8c4a8];
+  const PLATE = [0x4a4e58, 0x6a707c, 0x868c98, 0xa4aab4], TILE = [0x6e5a4a, 0xa89078, 0xc4ac90, 0xd8c4a8];
   const nA = noise2(plan.seed + 1);
   const put = (i, c, a) => { d[i] = (c >> 16) & 255; d[i + 1] = (c >> 8) & 255; d[i + 2] = c & 255; d[i + 3] = Math.round(a * 255); };
   const F = (x, y) => field[clamp(y, 0, H - 1) * W + clamp(x, 0, W - 1)];
@@ -2055,11 +2062,9 @@ function paintRoads(stage, plan, R) {
     if (v >= 1.5) continue;
     const cov = clamp((1.5 - v) * R, 0, 1);   // 邊緣反鋸齒
     const i = ((Y - by0 * R) * CW + (X - bx0 * R)) * 4, edge = v > -1.3, tr = plan.tier ? plan.tier[clamp(Math.round(my), 0, H - 1) * W + clamp(Math.round(mx), 0, W - 1)] : stage <= 2 ? 0 : stage <= 5 ? 1 : 2;
-    if (tr === 0) {
-      // 踩平的沙路：原本的沙地稍微壓暗、打亂顆粒
-      const n = nA(mx / 5, my / 5) + (bayer(X, Y) - 0.5) * 0.25;
-      put(i, SAND[edge ? 0 : n < 0.4 ? 1 : n < 0.7 ? 2 : 3], (edge ? 0.35 : 0.55) * cov);
-    } else if (tr === 1) {
+    // 沙地不畫路：小人走過留下腳印（GameScene.footprints）就是路
+    if (tr === 0) continue;
+    if (tr === 1) {
       // 金屬踏板：6×4 一塊，接縫較暗，接縫下方一條亮邊
       const px = mx - Math.floor(mx / 6) * 6, py = my - Math.floor(my / 4) * 4;
       const c = edge ? PLATE[0] : px < seam || py < seam ? PLATE[1] : py < seam * 2 ? PLATE[3] : PLATE[((Math.floor(mx / 6) + Math.floor(my / 4)) % 3) ? 2 : 3];
