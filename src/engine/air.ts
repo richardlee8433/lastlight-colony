@@ -65,8 +65,8 @@ export function air(s: GameState, dt: number, offline = false) {
   add(s, 'oxygen', (lifeSupportRate(s) + oxygenByproduct(s)) * dt * eff);
   // 空氣安全度連續達到 60% 的秒數（第 2 章目標）
   a.safeTime = airSafety(s) >= 0.6 ? (a.safeTime ?? 0) + dt : 0;
-  // 消耗
-  const need = oxygenUse(s) * dt;
+  // 消耗（離線時跟產出一樣打五折：淨值是線上的一半，增減方向不會反過來）
+  const need = oxygenUse(s) * dt * eff;
   if (s.res.oxygen >= need) {
     s.res.oxygen -= need;
     if (a.hypoxic && !offline) notify(s, 'n.airBack', undefined, 'good');

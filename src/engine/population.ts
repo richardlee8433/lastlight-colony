@@ -17,7 +17,8 @@ export function leave(s: GameState) {
 }
 
 export function population(s: GameState, dt: number, quiet = false) {
-  const need = consumption(s) * dt;
+  // 離線（quiet）時營養消耗跟產出一樣打五折，淨值是線上的一半，不會因為只有產出打折而見底
+  const need = consumption(s) * dt * (quiet ? 0.5 : 1);
   if (s.res.nutrient >= need) { s.res.nutrient -= need; s.starving = false; }
   else {
     if (!s.starving && !quiet) notify(s, 'n.starving', undefined, 'warn');
