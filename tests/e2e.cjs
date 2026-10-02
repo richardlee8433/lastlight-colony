@@ -300,12 +300,15 @@ const CJK = /[一-鿿]/;
 
   await test('E16', '小人站在建築影子裡會變暗', async () => {
     const { p } = await open(later(at(snap('ch6'), 0.06))); await clear(p);
-    await p.waitForTimeout(5000);
-    const r = await scene(p, () => {
-      const s = window.__scene, us = [...s.walkers, ...s.patrols];
-      const dark = us.filter((u) => (u.shade ?? 0) > 0.5).length;
-      return { n: us.length, dark };
-    });
+    // 小人隨機走動，不一定剛好有人在影子裡：最多看 15 秒，有人變暗就通過
+    let r = { n: 0, dark: 0 };
+    for (let i = 0; i < 15 && !r.dark; i++) {
+      await p.waitForTimeout(1000);
+      r = await scene(p, () => {
+        const s = window.__scene, us = [...s.walkers, ...s.patrols];
+        return { n: us.length, dark: us.filter((u) => (u.shade ?? 0) > 0.5).length };
+      });
+    }
     await p.close();
     if (!r.n) return ['地圖上沒有小人'];
     return r.dark ? [] : [`${r.n} 個小人，沒有一個在影子裡變暗`];

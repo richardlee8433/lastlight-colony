@@ -940,10 +940,10 @@ export class GameScene {
   dayLight() {
     // 設定頁關掉日夜變化：固定在上午（影子適中、沒有夜晚）
     const DAY = 300, p = useSettings.getState().dayNight ? (((game.s.t % DAY) + DAY) % DAY) / DAY : 0.2;
-    // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天佔一半，夜晚約三成
+    // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天：夜晚約 3：1（白天到黃昏 0～0.7、夜晚到清晨 0.7～1）
     const K: [number, number, number][] = [
-      [0, this.dayTint, 0], [0.48, this.dayTint, 0], [0.56, 0xffb48a, 0.4], [0.64, 0x5a68a4, 1],
-      [0.86, 0x5a68a4, 1], [0.94, 0xc8b4dc, 0.35], [1, this.dayTint, 0],
+      [0, this.dayTint, 0], [0.62, this.dayTint, 0], [0.68, 0xffb48a, 0.4], [0.73, 0x5a68a4, 1],
+      [0.93, 0x5a68a4, 1], [0.97, 0xc8b4dc, 0.35], [1, this.dayTint, 0],
     ];
     let i = 1; while (i < K.length - 1 && K[i][0] < p) i++;
     const [p0, c0, n0] = K[i - 1], [p1, c1, n1] = K[i], f = (p - p0) / (p1 - p0 || 1);
@@ -951,9 +951,9 @@ export class GameScene {
     this.overlay.tint = (mix(c0, c1, 16) << 16) | (mix(c0, c1, 8) << 8) | mix(c0, c1, 0);
     const night = n0 + (n1 - n0) * f;
     setNight(night);
-    // 太陽：白天（p 0～0.56）從東升到西落。影子一律落在右下（跟手繪圖左上打光一致），只改角度與長短：
+    // 太陽：白天（p 0～0.68）從東升到西落。影子一律落在右下（跟手繪圖左上打光一致），只改角度與長短：
     // 清晨長、往右斜很多；中午短；黃昏長、幾乎往正下方
-    const u = clampN(p / 0.56, 0, 1), low = 1 - Math.sin(Math.PI * u);
+    const u = clampN(p / 0.68, 0, 1), low = 1 - Math.sin(Math.PI * u);
     // lean：斜切角度（弧度），tan 值就是影子往右偏的比例；清晨約 2.5 倍、黃昏約 0.4 倍
     const len = 0.32 + 0.55 * low, lean = 1.18 - 0.8 * u;
     const shAlpha = 0.42 * (1 - night) * (0.7 + 0.3 * low);
