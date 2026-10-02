@@ -1,5 +1,5 @@
 // Pixi 場景：地圖、建築／工地、工人、點擊回饋。狀態來自引擎，每次版本號改變時同步。
-import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
+import { Application, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
   createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, loadSprites, hasTerrain, setCharZoom,
@@ -12,7 +12,7 @@ import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, lang, resName, t } from '../i18n';
 import { sfx } from '../audio/audio';
 
-type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container };
+type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite };
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
@@ -22,6 +22,10 @@ export class GameScene {
   world = new Container();
   obj = new Container();
   lightL = new Container();
+  /** 建築的影子（在地面之上、建築之下），方向和長短跟著日夜的太陽走 */
+  shadowL = new Container();
+  /** 斜射光：清晨、黃昏從一側照過來的淡淡光線 */
+  sunRay = new Sprite();
   hud = new Container();
   fxL = new Container();
   ground: (Container & { roads?: Sprite | null }) | null = null;
@@ -74,10 +78,17 @@ export class GameScene {
     this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
     this.app.stage.addChild(this.world, this.hud, this.fxL);
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
-    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG]) c.eventMode = 'none';
+    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL]) c.eventMode = 'none';
+    // 斜射光：一張斜向漸層（左上亮、往右下淡出），用加亮混合疊在環境光上
+    { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d')!;
+      const gr = g.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.25)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+      this.sunRay.texture = Texture.from(cv); this.sunRay.width = MW; this.sunRay.height = MH; this.sunRay.blendMode = 'add'; this.sunRay.alpha = 0; this.sunRay.eventMode = 'none'; }
+    this.lightL.addChildAt(this.sunRay, 0);
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
     this.Z = this.zoomFor(this.app.screen.width);
+    (window as any).__scene = this;   // 除錯用（測試腳本讀場景狀態）
     setCharZoom(this.Z);
     this.fx = createFx(this.fxL, this.Z);
     this.bindInput();
@@ -281,6 +292,7 @@ export class GameScene {
     ground.eventMode = 'none';
     this.ground = ground;
     this.world.addChildAt(ground, 0);
+    this.world.addChildAt(this.shadowL, 1);
     for (const p of plan.props) {
       const c = createProp(p.kind, propStage, p.seed);
       c.position.set(p.x, p.y); c.zIndex = p.y; c.lights.position.set(p.x, p.y);
@@ -325,6 +337,13 @@ export class GameScene {
       b.lights.position.set(site.x, site.y);
       this.lightL.addChild(b.lights);
       v.lights = b.lights;
+      // 影子：建築本身的圖染成黑色、壓扁翻到地上，再依太陽方向斜切（只有手繪建築）
+      if (b.art?.emissive) {
+        const sh = new Sprite(b.sprite.texture);
+        sh.anchor.copyFrom(b.sprite.anchor); sh.tint = 0x000000; sh.position.set(site.x, site.y);
+        (sh as any).base = b.sprite.scale.x;
+        this.shadowL.addChild(sh); v.shadow = sh;
+      }
     } else {
       b.alpha = 0.35;
       b.sprite.tint = 0xb8c0d8;
@@ -355,6 +374,7 @@ export class GameScene {
     return v;
   }
   dropView(v: View) {
+    v.shadow?.destroy();
     v.lights?.destroy({ children: true });
     v.ring?.destroy(); v.sel?.destroy();
     v.plate?.destroy({ children: true });
@@ -905,7 +925,22 @@ export class GameScene {
     const [p0, c0, n0] = K[i - 1], [p1, c1, n1] = K[i], f = (p - p0) / (p1 - p0 || 1);
     const mix = (a: number, b: number, sh: number) => Math.round(((a >> sh) & 255) + (((b >> sh) & 255) - ((a >> sh) & 255)) * f);
     this.overlay.tint = (mix(c0, c1, 16) << 16) | (mix(c0, c1, 8) << 8) | mix(c0, c1, 0);
-    setNight(n0 + (n1 - n0) * f);
+    const night = n0 + (n1 - n0) * f;
+    setNight(night);
+    // 太陽：白天（p 0～0.56）從東升到西落。影子一律落在右下（跟手繪圖左上打光一致），只改角度與長短：
+    // 清晨長、往右斜很多；中午短；黃昏長、幾乎往正下方
+    const u = clampN(p / 0.56, 0, 1), low = 1 - Math.sin(Math.PI * u);
+    // lean：斜切角度（弧度），tan 值就是影子往右偏的比例；清晨約 2.5 倍、黃昏約 0.4 倍
+    const len = 0.32 + 0.55 * low, lean = 1.18 - 0.8 * u;
+    const shAlpha = 0.42 * (1 - night) * (0.7 + 0.3 * low);
+    for (const v of this.views.values()) {
+      const sh = v.shadow; if (!sh) continue;
+      const k = (sh as any).base;
+      sh.scale.set(k, -k * len); sh.skew.x = lean; sh.alpha = shAlpha;
+    }
+    // 斜射光：清晨、黃昏比較明顯，中午和夜晚幾乎沒有；顏色跟著環境光
+    this.sunRay.alpha = 0.16 * low * (1 - night);
+    this.sunRay.tint = this.overlay.tint;
   }
   frame(rdt: number) {
     // 遊戲暫停時畫面上的人、建築動畫也停住；鏡頭照常可以移動
