@@ -13,6 +13,31 @@ import { bName, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
+/** 對話泡泡的小圖示（像素圖，每行一列，# 是深色、. 是空白）：…、愛心、！、？、音符、笑 */
+const BUBBLE_ICONS = [
+  ['.....', '.....', '#.#.#', '.....'],
+  ['.#.#.', '#####', '.###.', '..#..'],
+  ['..#..', '..#..', '.....', '..#..'],
+  ['.##..', '...#.', '..#..', '..#..'],
+  ['..##.', '..#.#', '###..', '##...'],
+  ['#...#', '.....', '#...#', '.###.'],
+];
+const BUBBLE_TEX = new Map<number, Texture>();
+/** 白色圓角泡泡＋左下的小尾巴，裡面放一個圖示；最近鄰取樣保持像素感 */
+function bubbleTexture(k: number): Texture {
+  let t = BUBBLE_TEX.get(k);
+  if (t) return t;
+  const cv = document.createElement('canvas'); cv.width = 11; cv.height = 10;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = '#2a1e1a'; g.fillRect(1, 0, 9, 1); g.fillRect(1, 7, 9, 1); g.fillRect(0, 1, 1, 6); g.fillRect(10, 1, 1, 6);
+  g.fillRect(2, 8, 2, 1); g.fillRect(2, 9, 1, 1);
+  g.fillStyle = '#fff8ec'; g.fillRect(1, 1, 9, 6); g.fillRect(3, 7, 1, 1);
+  g.fillStyle = k === 1 ? '#d8405a' : '#3a2a24';
+  BUBBLE_ICONS[k].forEach((row, y) => [...row].forEach((c, x) => { if (c === '#') g.fillRect(3 + x, 2 + y, 1, 1); }));
+  t = Texture.from(cv); t.source.scaleMode = 'nearest';
+  BUBBLE_TEX.set(k, t);
+  return t;
+}
 /** 影子的實心範圍（建築圖的不透明像素），用來判斷小人是不是站在影子裡 */
 type ShadowMask = { a: Uint8Array; w: number; h: number };
 const MASKS = new Map<HTMLCanvasElement, ShadowMask>();
@@ -917,12 +942,15 @@ export class GameScene {
       return;
     }
     if (a.off) {
+      a.chatting = false; a.meal = undefined;
       // 回到白天：從家門口出來，先走回自己的家，接著照常上工
       a.off = null; w.visible = true; w.alpha = 1;
       a.queue = pathBetween({ x: w.px, y: w.py }, a.home).slice(1); a.target = a.queue.shift() ?? a.home; a.wait = Math.random() * 1.5;
     }
     if (a.wait > 0) {
       a.wait -= dt; w.setMoving(false); w.setWork?.(!!a.working);
+      // 進建築：前 0.3 秒淡出、最後 0.3 秒淡入
+      if (a.inside > 0) { const el = a.inside - a.wait; w.alpha = Math.max(0, Math.min(1, Math.max(1 - el / 0.3, 1 - a.wait / 0.3))); if (a.wait <= 0) { a.inside = 0; w.alpha = 1; } }
       // 在建築旁工作完，扛著產出走回家
       if (a.wait <= 0 && a.working) {
         a.working = false; w.setWork?.(false);
@@ -938,6 +966,8 @@ export class GameScene {
         if (!a.bid) { a.wait = 1 + Math.random() * 3; a.target = { x: a.home.x + (Math.random() - 0.5) * 50, y: a.home.y + (Math.random() - 0.5) * 12 }; }
         else if (a.target === a.site) {
           a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 2.5 + Math.random() * 2; a.working = true;
+          // 一半的機會走進建築裡做事（淡出），做完再出來
+          a.inside = Math.random() < 0.5 ? a.wait : 0;
         } else { a.queue = [...a.via, a.site]; a.target = a.queue.shift(); a.wait = 0.4; w.setCarry(null); }
       } else {
         const st = Math.min(d, speed * dt);
@@ -952,6 +982,24 @@ export class GameScene {
 
   /** 日夜（純畫面，不影響數值）：畫面上的一天 5 分鐘，跟著遊戲時間走（暫停時也停） */
   dayTint = 0xfff2ea;
+  /** 對話泡泡（傍晚在休閒艙前聊天時冒出來） */
+  bubbles: { s: Sprite; w: any; t: number }[] = [];
+  addBubble(w: any) {
+    const s = new Sprite(bubbleTexture(Math.floor(Math.random() * BUBBLE_ICONS.length)));
+    s.anchor.set(0.5, 1); s.eventMode = 'none'; s.zIndex = 1e6;
+    this.obj.addChild(s);
+    this.bubbles.push({ s, w, t: 0 });
+  }
+  /** 泡泡跟著說話的人，往上飄一點，2.2 秒後淡出 */
+  moveBubbles(dt: number) {
+    for (const b of [...this.bubbles]) {
+      b.t += dt;
+      const gone = b.t > 2.2 || b.w.destroyed || !b.w.visible || !b.w.ai?.chatting;
+      if (gone) { b.s.alpha -= dt * 4; if (b.s.alpha <= 0) { b.s.destroy(); this.bubbles.splice(this.bubbles.indexOf(b), 1); continue; } }
+      else b.s.alpha = Math.min(1, b.t * 5);
+      if (!b.w.destroyed) b.s.position.set(this.snap(b.w.x + 4), this.snap(b.w.y - 17 - Math.min(2, b.t * 2)));
+    }
+  }
   /** 一天裡的時間比例（0～1）；作息用 */
   dayP = 0.2;
   /** 作息（純畫面）：白天工作、傍晚去休閒艙、晚上回生活艙睡覺、清晨出門。jit 讓每個人出發時間錯開 */
@@ -972,9 +1020,10 @@ export class GameScene {
   offDuty(w: Walker, kind: 'evening' | 'night', dt: number, speed: number) {
     const a = w.ai;
     if (a.off !== kind) {
-      a.off = kind; a.offAt = this.offDutySpot(kind);
+      a.off = kind; a.offAt = this.offDutySpot(kind); a.meal = undefined; a.chatting = false; a.inside = 0;
       const j = () => (Math.random() - 0.5) * 16;
-      a.offAt = { x: a.offAt.x + j() * (kind === 'evening' ? 2.2 : 1), y: a.offAt.y + Math.abs(j()) * (kind === 'evening' ? 0.6 : 0.2) };
+      // 傍晚在休閒艙前散開成幾小群（寬約 70、深約 18 像素），晚上擠在門口
+      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * 70, y: a.offAt.y + Math.random() * 18 } : { x: a.offAt.x + j(), y: a.offAt.y + Math.abs(j()) * 0.2 };
       a.offPath = pathBetween({ x: w.px, y: w.py }, a.offAt).slice(1);
       a.working = false; w.setWork?.(false); w.setCarry(null);
       w.visible = true; w.alpha = 1;
@@ -988,9 +1037,22 @@ export class GameScene {
       // 到家：淡出（進門睡覺）
       w.setMoving(false); w.alpha = Math.max(0, w.alpha - dt * 2); if (w.alpha <= 0) w.visible = false;
     } else {
-      // 傍晚：在休閒艙附近閒晃
-      a.offWait = (a.offWait ?? 0) - dt; w.setMoving(false);
-      if (a.offWait <= 0) { a.offWait = 1.5 + Math.random() * 3; a.offPath = [{ x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 }]; }
+      // 傍晚：先進休閒艙吃飯（淡出 8～14 秒），再出來在門前聊天（閒晃＋對話泡泡）
+      w.setMoving(false);
+      a.meal ??= 8 + Math.random() * 6;
+      if (a.meal > 0) {
+        a.meal -= dt;
+        w.alpha = a.meal > 0.3 ? Math.max(0, w.alpha - dt * 3) : Math.min(1, w.alpha + dt * 3);
+        w.visible = w.alpha > 0.01 || a.meal <= 0.3;
+        if (a.meal <= 0) { w.alpha = 1; w.visible = true; }
+        return;
+      }
+      a.chatting = true;
+      a.offWait = (a.offWait ?? 0) - dt;
+      if (a.offWait <= 0) { a.offWait = 2 + Math.random() * 4; a.offPath = [{ x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 }]; }
+      // 對話泡泡：偶爾冒一個，同時最多 4 個
+      a.chatCd = (a.chatCd ?? 1 + Math.random() * 4) - dt;
+      if (a.chatCd <= 0) { a.chatCd = 3 + Math.random() * 5; if (this.bubbles.length < 4 && Math.random() < 0.6) this.addBubble(w); }
     }
   }
   dayLight() {
@@ -1136,6 +1198,7 @@ export class GameScene {
     this.movePatrols(dt);
     this.drawShots(dt);
     this.footprints();
+    this.moveBubbles(dt);
     this.unitShadows(dt);
     this.updateRaidMark();
     if (this.hold) {

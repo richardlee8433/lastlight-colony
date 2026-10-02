@@ -365,7 +365,7 @@ const CJK = /[一-鿿]/;
     // 無頭瀏覽器每秒只畫幾幀，直接推進場景邏輯 25 秒
     const run = (p) => scene(p, () => {
       const s = window.__scene; for (let i = 0; i < 25 * 30; i++) s.frame(1 / 30);
-      const ws = s.walkers, near = (w, id) => { const v = s.views.get(id); return v && Math.hypot(w.px - v.x, w.py - v.y) < 40; };
+      const ws = s.walkers, near = (w, id) => { const v = s.views.get(id); return v && Math.hypot(w.px - v.x, w.py - v.y) < 60; };
       return { n: ws.length, lounge: ws.filter((w) => near(w, 'lounge')).length, hidden: ws.filter((w) => !w.visible).length, off: ws.filter((w) => w.ai.off).length };
     });
     for (const [name, frac, check] of [
