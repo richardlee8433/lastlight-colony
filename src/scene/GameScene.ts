@@ -935,7 +935,7 @@ export class GameScene {
     // 轉角點只偏 1～2 像素，走的時候不會踩出路面
     const via = path ? path.slice(1, -1).map((p) => ({ x: p.x + (j() >> 3), y: p.y + (j() >> 4) })) : [];
     w.ai = bid
-      ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + j(), y: site!.y + 6 } }
+      ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + (j() >> 1), y: site!.y + 6 } }
       : { bid: null, wait: Math.random() * 2, home: { x: home.x + j() * 2, y: home.y + (j() >> 1) } };
     w.ai.target = w.ai.queue?.length ? w.ai.queue.shift() : w.ai.site ?? w.ai.home;
     w.px = w.ai.home.x; w.py = w.ai.home.y;
@@ -961,7 +961,7 @@ export class GameScene {
       a.chatting = false; a.meal = undefined;
       // 回到白天：從家門口出來，先走回自己的家，接著照常上工
       a.off = null; w.visible = true; w.alpha = 1;
-      a.queue = pathBetween({ x: w.px, y: w.py }, a.home).slice(1); a.target = a.queue.shift() ?? a.home; a.wait = Math.random() * 1.5;
+      a.queue = this.roadPath({ x: w.px, y: w.py }, null, a.home); a.target = a.queue.shift() ?? a.home; a.wait = Math.random() * 1.5;
     }
     if (a.wait > 0) {
       a.wait -= dt; w.setMoving(false); w.setWork?.(!!a.working);
@@ -979,7 +979,12 @@ export class GameScene {
       const dx = a.target.x - w.px, dy = a.target.y - w.py, d = Math.hypot(dx, dy);
       if (d < 1 && a.queue?.length) a.target = a.queue.shift();
       else if (d < 1) {
-        if (!a.bid) { a.wait = 1 + Math.random() * 3; a.target = { x: a.home.x + (Math.random() - 0.5) * 50, y: a.home.y + (Math.random() - 0.5) * 12 }; }
+        if (!a.bid) {
+          a.wait = 1 + Math.random() * 3;
+          // 閒置的人在廣場附近晃；鋪了路之後落腳點要在路面上
+          const q = { x: a.home.x + (Math.random() - 0.5) * 50, y: a.home.y + (Math.random() - 0.5) * 12 };
+          a.target = !built(game.s, 'rail_line') || this.ground?.paved?.(q.x, q.y) ? q : { x: w.px, y: w.py };
+        }
         else if (a.target === a.site) {
           a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 2.5 + Math.random() * 2; a.working = true;
           // 一半的機會走進建築裡做事（淡出），做完再出來
@@ -1025,6 +1030,26 @@ export class GameScene {
     const p = (this.dayP - jit + 1) % 1;
     return p < 0.6 ? 'work' : p < 0.71 ? 'evening' : p < 0.95 ? 'night' : 'work';
   }
+  /** 鋪好路（軌道車線蓋好）之後，殖民者沿著道路走：從目前位置投影到最近的路段，沿那條路走回中央廣場，
+   *  再沿目的地建築的路走過去。還沒鋪路時直接繞開建築走（沙地上留腳印）。toSite 為 null 時走回廣場（家） */
+  roadPath(from: { x: number; y: number }, toSite: string | null, end: { x: number; y: number }) {
+    if (!built(game.s, 'rail_line')) return [...pathBetween(from, end).slice(1)];
+    let best = { d: Infinity, k: '', i: 0, p: from };
+    for (const [k, r] of Object.entries(ROUTES)) for (let i = 1; i < r.length; i++) {
+      const a = r[i - 1], b = r[i], dx = b.x - a.x, dy = b.y - a.y, l2 = dx * dx + dy * dy || 1;
+      const t = clampN(((from.x - a.x) * dx + (from.y - a.y) * dy) / l2, 0, 1), p = { x: a.x + dx * t, y: a.y + dy * t };
+      const d = Math.hypot(from.x - p.x, from.y - p.y);
+      if (d < best.d) best = { d, k, i, p };
+    }
+    const out: { x: number; y: number }[] = [best.p];
+    if (toSite && best.k === toSite) { out.push(...ROUTES[toSite].slice(best.i)); }
+    else {
+      out.push(...ROUTES[best.k].slice(0, best.i).reverse());   // 走回廣場
+      if (toSite && ROUTES[toSite]) out.push(...ROUTES[toSite].slice(1));
+    }
+    out.push(end);
+    return out;
+  }
   /** 作息的目的地：傍晚去休閒艙（沒有就回中央廣場），晚上回生活艙（沒有就回營地或逃生艙） */
   offDutySpot(kind: 'evening' | 'night'): { x: number; y: number } {
     // 建築正前方再往外一點（不要擠在牆上）
@@ -1042,9 +1067,12 @@ export class GameScene {
       const j = () => (Math.random() - 0.5) * 16;
       // 門口：建築正面底邊中央（休閒艙吃飯、生活艙睡覺都從這裡進出）
       a.door = { x: a.offAt.x + j() * 0.15, y: a.offAt.y - 10 };
-      // 傍晚吃完飯在休閒艙前散開成幾小群（寬約 70、深約 18 像素）
-      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * 70, y: a.offAt.y + Math.random() * 18 } : a.door;
-      a.offPath = pathBetween({ x: w.px, y: w.py }, a.door).slice(1);
+      // 傍晚吃完飯在休閒艙前散開成幾小群；鋪了路之後只在建築前的地坪上（不踩沙地）
+      const paved = built(game.s, 'rail_line');
+      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * (paved ? 36 : 70), y: a.offAt.y + Math.random() * (paved ? 6 : 18) } : a.door;
+      if (paved && kind === 'evening' && !this.ground?.paved?.(a.offAt.x, a.offAt.y)) a.offAt = { x: a.door.x + (Math.random() - 0.5) * 12, y: a.door.y + 4 };
+      const dest = kind === 'evening' ? (built(game.s, 'lounge') ? 'lounge' : null) : (built(game.s, 'hab_pod') ? 'hab_pod' : null);
+      a.offPath = this.roadPath({ x: w.px, y: w.py }, dest, a.door);
       a.offPath.push(a.door);
       a.working = false; w.setWork?.(false); w.setCarry(null);
       w.visible = true; w.alpha = 1;
@@ -1071,7 +1099,12 @@ export class GameScene {
       }
       a.chatting = true;
       a.offWait = (a.offWait ?? 0) - dt;
-      if (a.offWait <= 0) { a.offWait = 2 + Math.random() * 4; a.offPath = [{ x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 }]; }
+      if (a.offWait <= 0) {
+        a.offWait = 2 + Math.random() * 4;
+        const q = { x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 };
+        // 鋪了路之後，閒晃的落腳點要在路面上，踩不到就留在原地
+        if (!built(game.s, 'rail_line') || this.ground?.paved?.(q.x, q.y)) a.offPath = [q];
+      }
       // 對話泡泡：偶爾冒一個，同時最多 4 個
       a.chatCd = (a.chatCd ?? 1 + Math.random() * 4) - dt;
       if (a.chatCd <= 0) { a.chatCd = 3 + Math.random() * 5; if (this.bubbles.length < 4 && Math.random() < 0.6) this.addBubble(w); }

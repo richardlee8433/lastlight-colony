@@ -242,7 +242,7 @@ const CJK = /[一-鿿]/;
   // ── 日夜（純畫面） ──
   /** 把存檔時間設成一天（300 秒）裡的某個比例 */
   const at = (s, p) => { s.t = Math.floor(s.t / 300) * 300 + p * 300; return s; };
-  const scene = (p, fn) => p.evaluate(fn);
+  const scene = (p, fn, arg) => p.evaluate(fn, arg);
   await test('E13', '日夜：白天環境光正常；夜晚變暗變藍、建築亮燈', async () => {
     const errs = [];
     for (const [name, frac, night] of [['白天', 0.2, false], ['夜晚', 0.75, true]]) {
@@ -409,21 +409,31 @@ const CJK = /[一-鿿]/;
     return errs;
   });
 
-  await test('E21', '石磚路：路線只有水平／垂直；白天走路的殖民者大多踩在路面上，路面上走得比沙地快', async () => {
-    const { p } = await open(later(at(snap('ch4'), 0.3))); await clear(p);
-    const r = await scene(p, () => {
-      const s = window.__scene; let moving = 0, onRoad = 0;
-      for (let i = 0; i < 20 * 30; i++) {
-        s.frame(1 / 30);
-        if (i % 5) continue;
-        for (const w of s.walkers) if (!w.ai.off && w.visible && w.alpha > 0.9 && !(w.ai.wait > 0)) { moving++; if (s.ground.paved(w.px, w.py)) onRoad++; }
-      }
-      return { moving, onRoad };
-    });
-    await p.close();
-    const ratio = r.onRoad / Math.max(1, r.moving);
-    console.log(`     走路樣本 ${r.moving}，在路面上 ${(ratio * 100).toFixed(0)}%`);
-    return ratio >= 0.7 ? [] : [`只有 ${(ratio * 100).toFixed(0)}% 的走路時間在路面上`];
+  await test('E21', '鋪路後殖民者（陸戰隊除外）全天都走在路面上：白天上工、傍晚去休閒艙、晚上回生活艙、清晨出門', async () => {
+    const errs = [];
+    for (const [name, frac, sec] of [['白天', 0.3, 20], ['傍晚', 0.6, 40], ['晚上', 0.71, 25], ['清晨', 0.94, 30]]) {
+      const { p } = await open(later(at(snap('ch4'), frac))); await clear(p);
+      const r = await scene(p, (sec) => {
+        const s = window.__scene; let moving = 0, onRoad = 0; const off = [];
+        for (let i = 0; i < sec * 30; i++) {
+          const before = new Map(s.walkers.map((w) => [w, [w.px, w.py]]));
+          s.frame(1 / 30);
+          if (i % 3) continue;
+          for (const w of s.walkers) {
+            const b = before.get(w); if (!b || !w.visible || w.alpha < 0.9) continue;
+            if (Math.hypot(w.px - b[0], w.py - b[1]) < 0.05) continue;   // 只看正在走的
+            moving++;
+            if (s.ground.paved(w.px, w.py)) onRoad++; else if (off.length < 3) off.push(`${Math.round(w.px)},${Math.round(w.py)} ${w.ai.off ?? 'work'}`);
+          }
+        }
+        return { moving, onRoad, off };
+      }, sec);
+      await p.close();
+      const ratio = r.onRoad / Math.max(1, r.moving);
+      console.log(`     ${name}：走路樣本 ${r.moving}，在路面上 ${(ratio * 100).toFixed(1)}%${r.off.length ? '（例：' + r.off.join('；') + '）' : ''}`);
+      if (r.moving && ratio < 0.97) errs.push(`${name}只有 ${(ratio * 100).toFixed(1)}% 在路面上`);
+    }
+    return errs;
   });
 
   await b.close();
