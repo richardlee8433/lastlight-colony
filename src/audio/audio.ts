@@ -131,7 +131,8 @@ class Engine {
     if (this.voiceEl) { this.voiceEl.pause(); this.voiceEl = null; }
     if (this.ctx) this.duck.gain.setTargetAtTime(1, this.ctx.currentTime, 0.4);
     if (!file || !this.ctx) return;
-    const el = new Audio(VOICE_DIR + file);
+    // Artifact 版沒有 voice/ 資料夾，配音內嵌在 window.__VOICE
+    const el = new Audio((window as any).__VOICE?.[file] ?? VOICE_DIR + file);
     this.ctx.createMediaElementSource(el).connect(this.voice);
     const done = () => { if (this.voiceEl === el) { this.voiceEl = null; this.duck.gain.setTargetAtTime(1, this.ctx!.currentTime, 0.4); } };
     el.addEventListener('ended', done); el.addEventListener('error', done);

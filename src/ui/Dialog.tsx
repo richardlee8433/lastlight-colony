@@ -31,7 +31,7 @@ function Scene({ id, day }: { id: string; day: number }) {
   useEffect(() => { sfx('ui'); }, []);
   // 有配音的台詞：換到這句時播，翻頁、跳過或關掉對話時停（用原始台詞編號，路線過濾掉的不影響）
   const idx = SCENES[id].lines.indexOf(lines[i]);
-  useEffect(() => { playVoice(voiceFile(id, idx)); return () => playVoice(null); }, [id, idx]);
+  useEffect(() => { playVoice(voiceFile(id, idx, lang)); return () => playVoice(null); }, [id, idx, lang]);
   useEffect(() => {
     if (!typing) return;
     const step = setInterval(() => setShown((n) => Math.min(text.length, n + 1)), 1000 / CPS[lang]);
