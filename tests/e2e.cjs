@@ -360,6 +360,34 @@ const CJK = /[一-鿿]/;
     return errs;
   });
 
+  await test('E19', '作息：傍晚去休閒艙、晚上回生活艙進門、白天照常工作；日夜關掉時一直工作', async () => {
+    const errs = [];
+    // 無頭瀏覽器每秒只畫幾幀，直接推進場景邏輯 25 秒
+    const run = (p) => scene(p, () => {
+      const s = window.__scene; for (let i = 0; i < 25 * 30; i++) s.frame(1 / 30);
+      const ws = s.walkers, near = (w, id) => { const v = s.views.get(id); return v && Math.hypot(w.px - v.x, w.py - v.y) < 40; };
+      return { n: ws.length, lounge: ws.filter((w) => near(w, 'lounge')).length, hidden: ws.filter((w) => !w.visible).length, off: ws.filter((w) => w.ai.off).length };
+    });
+    for (const [name, frac, check] of [
+      ['傍晚', 0.64, (r) => r.lounge >= r.n * 0.8 ? '' : `只有 ${r.lounge}/${r.n} 人在休閒艙`],
+      ['晚上', 0.8, (r) => r.hidden >= r.n * 0.8 ? '' : `只有 ${r.hidden}/${r.n} 人進門睡覺`],
+      ['白天', 0.3, (r) => (!r.off && !r.hidden) ? '' : `白天還有 ${r.off} 人下班、${r.hidden} 人看不見`],
+    ]) {
+      const { p } = await open(later(at(snap('ch4'), frac))); await clear(p);
+      const r = await run(p); await p.close();
+      if (!r.n) { errs.push(name + '沒有工人'); continue; }
+      const e = check(r); if (e) errs.push(name + '：' + e);
+    }
+    // 日夜關掉：晚上也照常工作
+    const s = later(at(snap('ch4'), 0.8));
+    const { p } = await open(s);
+    await p.evaluate(() => { const v = JSON.parse(localStorage.getItem('lastlight-colony-settings')); v.dayNight = false; localStorage.setItem('lastlight-colony-settings', JSON.stringify(v)); });
+    await p.reload(); await p.waitForTimeout(1500); await p.locator('.tm-btn.main').click(); await p.waitForTimeout(700); await clear(p);
+    const r = await run(p); await p.close();
+    if (r.off || r.hidden) errs.push(`日夜關掉時晚上還有 ${r.off} 人下班`);
+    return errs;
+  });
+
   await b.close();
   fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));
   const fail = results.filter((r) => !r.ok).length;

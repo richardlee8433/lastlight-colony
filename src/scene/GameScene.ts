@@ -909,6 +909,18 @@ export class GameScene {
   moveWalker(w: Walker, dt: number) {
     const a = w.ai;
     const speed = built(game.s, 'rail_line') ? 24 : 16;
+    a.jit ??= Math.random() * 0.03;
+    const ph = this.schedule(a.jit);
+    if (ph !== 'work') {
+      this.offDuty(w, ph, dt, speed);
+      w.position.set(this.snap(w.px), this.snap(w.py)); w.zIndex = w.py; w.update(this.T);
+      return;
+    }
+    if (a.off) {
+      // 回到白天：從家門口出來，先走回自己的家，接著照常上工
+      a.off = null; w.visible = true; w.alpha = 1;
+      a.queue = pathBetween({ x: w.px, y: w.py }, a.home).slice(1); a.target = a.queue.shift() ?? a.home; a.wait = Math.random() * 1.5;
+    }
     if (a.wait > 0) {
       a.wait -= dt; w.setMoving(false); w.setWork?.(!!a.working);
       // 在建築旁工作完，扛著產出走回家
@@ -940,9 +952,51 @@ export class GameScene {
 
   /** 日夜（純畫面，不影響數值）：畫面上的一天 5 分鐘，跟著遊戲時間走（暫停時也停） */
   dayTint = 0xfff2ea;
+  /** 一天裡的時間比例（0～1）；作息用 */
+  dayP = 0.2;
+  /** 作息（純畫面）：白天工作、傍晚去休閒艙、晚上回生活艙睡覺、清晨出門。jit 讓每個人出發時間錯開 */
+  schedule(jit: number): 'work' | 'evening' | 'night' {
+    const p = (this.dayP - jit + 1) % 1;
+    return p < 0.6 ? 'work' : p < 0.71 ? 'evening' : p < 0.95 ? 'night' : 'work';
+  }
+  /** 作息的目的地：傍晚去休閒艙（沒有就回中央廣場），晚上回生活艙（沒有就回營地或逃生艙） */
+  offDutySpot(kind: 'evening' | 'night'): { x: number; y: number } {
+    // 建築正前方再往外一點（不要擠在牆上）
+    const s = game.s, at = (id: string) => { const q = SITES.find((x) => x.id === id)!; return { x: q.x, y: q.y + 12 }; };
+    const camp = built(s, 'emergency_camp');
+    if (kind === 'evening' && built(s, 'lounge')) return at('lounge');
+    if (kind === 'night' && built(s, 'hab_pod')) return at('hab_pod');
+    return camp ? HOME : POD_DOOR;
+  }
+  /** 下班時間的移動：沿著繞開建築的路走到目的地；傍晚在休閒艙附近閒晃，晚上進門（看不見）；回到白天就走回家再照常上工 */
+  offDuty(w: Walker, kind: 'evening' | 'night', dt: number, speed: number) {
+    const a = w.ai;
+    if (a.off !== kind) {
+      a.off = kind; a.offAt = this.offDutySpot(kind);
+      const j = () => (Math.random() - 0.5) * 16;
+      a.offAt = { x: a.offAt.x + j() * (kind === 'evening' ? 2.2 : 1), y: a.offAt.y + Math.abs(j()) * (kind === 'evening' ? 0.6 : 0.2) };
+      a.offPath = pathBetween({ x: w.px, y: w.py }, a.offAt).slice(1);
+      a.working = false; w.setWork?.(false); w.setCarry(null);
+      w.visible = true; w.alpha = 1;
+    }
+    const tgt = a.offPath[0];
+    if (tgt) {
+      const dx = tgt.x - w.px, dy = tgt.y - w.py, d = Math.hypot(dx, dy);
+      if (d < 1) a.offPath.shift();
+      else { const st = Math.min(d, speed * dt); w.px += (dx / d) * st; w.py += (dy / d) * st; w.setMoving(true); w.setDir(Math.sign(dx) || 1); }
+    } else if (kind === 'night') {
+      // 到家：淡出（進門睡覺）
+      w.setMoving(false); w.alpha = Math.max(0, w.alpha - dt * 2); if (w.alpha <= 0) w.visible = false;
+    } else {
+      // 傍晚：在休閒艙附近閒晃
+      a.offWait = (a.offWait ?? 0) - dt; w.setMoving(false);
+      if (a.offWait <= 0) { a.offWait = 1.5 + Math.random() * 3; a.offPath = [{ x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 }]; }
+    }
+  }
   dayLight() {
     // 設定頁關掉日夜變化：固定在上午（影子適中、沒有夜晚）
     const DAY = 300, p = useSettings.getState().dayNight ? (((game.s.t % DAY) + DAY) % DAY) / DAY : 0.2;
+    this.dayP = p;
     // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天：夜晚約 3：1（白天到黃昏 0～0.7、夜晚到清晨 0.7～1）
     const K: [number, number, number][] = [
       [0, this.dayTint, 0], [0.62, this.dayTint, 0], [0.68, 0xffb48a, 0.4], [0.73, 0x5a68a4, 1],
