@@ -9,7 +9,7 @@ import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { artId, buffActive, built, disabled, idle, retired, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
-import { bName, lang, resName, t } from '../i18n';
+import { bName, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
@@ -934,7 +934,8 @@ export class GameScene {
   /** 日夜（純畫面，不影響數值）：畫面上的一天 5 分鐘，跟著遊戲時間走（暫停時也停） */
   dayTint = 0xfff2ea;
   dayLight() {
-    const DAY = 300, p = (((game.s.t % DAY) + DAY) % DAY) / DAY;
+    // 設定頁關掉日夜變化：固定在上午（影子適中、沒有夜晚）
+    const DAY = 300, p = useSettings.getState().dayNight ? (((game.s.t % DAY) + DAY) % DAY) / DAY : 0.2;
     // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天佔一半，夜晚約三成
     const K: [number, number, number][] = [
       [0, this.dayTint, 0], [0.48, this.dayTint, 0], [0.56, 0xffb48a, 0.4], [0.64, 0x5a68a4, 1],
@@ -962,7 +963,7 @@ export class GameScene {
     this.sunRay.alpha = 0.16 * low * (1 - night);
     this.sunRay.tint = this.overlay.tint;
   }
-  /** 小人：腳下畫小影子（跟建築影子同方向）；走進建築影子裡慢慢變暗 25%，走出來再恢復 */
+  /** 小人：腳下畫小影子（跟建築影子同方向）；走進建築影子裡慢慢變暗 40%，走出來再恢復 */
   unitShadows(dt: number) {
     const g = this.unitShadowG, { len, lean, alpha } = this.sun;
     g.clear();
@@ -987,7 +988,7 @@ export class GameScene {
       u.shade = (u.shade ?? 0) + (want - (u.shade ?? 0)) * Math.min(1, dt * 6);
       u.baseTint ??= u.tint ?? 0xffffff;
       if (u.tint !== u.lastTint) u.baseTint = u.tint;   // 別處改了顏色（傷員、掠奪者）：以那個為基準
-      const k = 1 - 0.25 * u.shade * (alpha / 0.42);
+      const k = 1 - 0.4 * u.shade * (alpha / 0.42);
       const bt = debug && inside ? 0xff4040 : u.baseTint;
       const r = Math.round(((bt >> 16) & 255) * k), gg = Math.round(((bt >> 8) & 255) * k), b = Math.round((bt & 255) * k);
       u.tint = (r << 16) | (gg << 8) | b; u.lastTint = u.tint;

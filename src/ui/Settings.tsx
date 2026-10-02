@@ -13,6 +13,7 @@ export const VERSION = '0.66.1';
 export function Settings() {
   useGame((st) => st.v);
   const lang = useLang(), setLang = useSettings((st) => st.setLang);
+  const dayNight = useSettings((st) => st.dayNight), setDayNight = useSettings((st) => st.setDayNight);
   const open = useGame((st) => st.settings), [confirm, setConfirm] = useState(false);
   const act = useGame.getState(), s = game.s;
   const audio = useAudio();
@@ -75,6 +76,12 @@ export function Settings() {
               <input type="range" min={0} max={100} value={Math.round(audio.sfx * 100)} onChange={(e) => audio.set({ sfx: +e.target.value / 100 })} onPointerUp={() => sfx('collect')} aria-label={t('set.sfx')} />
               <b>{Math.round(audio.sfx * 100)}</b></label>
             <label className="check"><input type="checkbox" checked={audio.muted} onChange={(e) => audio.set({ muted: e.target.checked })} /> {t('set.mute')}</label>
+          </section>
+
+          <section className="block">
+            <h3>{t('set.display')}</h3>
+            <label className="check"><input type="checkbox" checked={dayNight} onChange={(e) => setDayNight(e.target.checked)} /> {t('set.dayNight')}</label>
+            <p className="muted small">{t('set.dayNightHint')}</p>
           </section>
 
           <section className="block">
