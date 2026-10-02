@@ -1025,6 +1025,8 @@ export class GameScene {
   }
   /** 一天裡的時間比例（0～1）；作息用 */
   dayP = 0.2;
+  visT: number | null = null;
+  visDt = 0;
   /** 作息（純畫面）：白天工作、傍晚去休閒艙、晚上回生活艙睡覺、清晨出門。jit 讓每個人出發時間錯開 */
   schedule(jit: number): 'work' | 'evening' | 'night' {
     const p = (this.dayP - jit + 1) % 1;
@@ -1112,7 +1114,12 @@ export class GameScene {
   }
   dayLight() {
     // 設定頁關掉日夜變化：固定在上午（影子適中、沒有夜晚）
-    const DAY = 300, p = useSettings.getState().dayNight ? (((game.s.t % DAY) + DAY) % DAY) / DAY : 0.2;
+    // 畫面用的時鐘：game.s.t 只在遊戲 tick（每 0.2 秒）前進，直接用會讓影子一格一格跳；
+    // 改成每幀照實際經過時間往前推，跟遊戲時間差太多（讀檔、離線補算）才對齊回去
+    const gt = game.s.t;
+    if (this.visT == null || Math.abs(this.visT - gt) > 10) this.visT = gt;
+    else { const dt = this.visDt; this.visT += dt + (gt - this.visT) * Math.min(1, dt * 1.5); }
+    const DAY = 300, p = useSettings.getState().dayNight ? (((this.visT % DAY) + DAY) % DAY) / DAY : 0.2;
     this.dayP = p;
     // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天：夜晚約 3：1（白天到黃昏 0～0.7、夜晚到清晨 0.7～1）
     const K: [number, number, number][] = [
@@ -1214,6 +1221,7 @@ export class GameScene {
     // 遊戲暫停時畫面上的人、建築動畫也停住；鏡頭照常可以移動
     const dt = gamePaused() ? 0 : rdt;
     this.T += dt;
+    this.visDt = dt;
     this.dayLight();
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
