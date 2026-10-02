@@ -57,6 +57,8 @@ const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 export const walkerBudget = (pop: number) => (pop <= 10 ? pop : 10 + Math.floor((pop - 10) / 10));
 /** 影子翻轉線在建築高度的多少比例處（從正面底邊往上算） */
 const SHADOW_FOOT = 0.15;
+/** 影子最深的不透明度（清晨、黃昏）；太淡在紅沙地上幾乎看不出來 */
+const SHADOW_ALPHA = 0.58;
 
 export class GameScene {
   app = new Application();
@@ -1135,14 +1137,16 @@ export class GameScene {
     // 太陽：白天（p 0～0.68）從東升到西落。影子一律落在右下（跟手繪圖左上打光一致），只改角度與長短：
     // 清晨長、往右斜很多；中午短；黃昏長、幾乎往正下方
     const u = clampN(p / 0.68, 0, 1), low = 1 - Math.sin(Math.PI * u);
-    // lean：斜切角度（弧度），tan 值就是影子往右偏的比例；清晨約 2.5 倍、黃昏約 0.4 倍
-    const len = 0.32 + 0.55 * low, lean = 1.18 - 0.8 * u;
-    const shAlpha = 0.42 * (1 - night) * (0.7 + 0.3 * low);
+    // lean：斜切角度（弧度），tan 值就是影子往右偏的比例；清晨約 1.7 倍、中午約 0.9 倍、黃昏約 0.5 倍
+    const len = 0.5 + 0.45 * low, lean = 1.05 - 0.6 * u;
+    const shAlpha = SHADOW_ALPHA * (1 - night) * (0.8 + 0.2 * low);
     this.sun = { len, lean, alpha: shAlpha };
     for (const v of this.views.values()) {
       const sh = v.shadow; if (!sh) continue;
       const k = (sh as any).base;
-      sh.scale.set(k, -k * len); sh.skew.x = lean; sh.alpha = shAlpha;
+      // Pixi 的 skew 是把 y 軸轉一個角度（會把影子轉平、縮在建築後面）；除以 cos 變成真的斜切：
+      // 影子的垂直長度維持 len，頂端往右推 tan(lean)·len，矮胖的建築影子也能伸出建築外
+      sh.scale.set(k, (-k * len) / Math.cos(lean)); sh.skew.x = lean; sh.alpha = shAlpha;
     }
     // 斜射光：清晨、黃昏比較明顯，中午和夜晚幾乎沒有；顏色跟著環境光
     this.sunRay.alpha = 0.16 * low * (1 - night);
@@ -1211,7 +1215,7 @@ export class GameScene {
       u.shade = (u.shade ?? 0) + (want - (u.shade ?? 0)) * Math.min(1, dt * 6);
       u.baseTint ??= u.tint ?? 0xffffff;
       if (u.tint !== u.lastTint) u.baseTint = u.tint;   // 別處改了顏色（傷員、掠奪者）：以那個為基準
-      const k = 1 - 0.4 * u.shade * (alpha / 0.42);
+      const k = 1 - 0.4 * u.shade * (alpha / SHADOW_ALPHA);
       const bt = debug && inside ? 0xff4040 : u.baseTint;
       const r = Math.round(((bt >> 16) & 255) * k), gg = Math.round(((bt >> 8) & 255) * k), b = Math.round((bt & 255) * k);
       u.tint = (r << 16) | (gg << 8) | b; u.lastTint = u.tint;
