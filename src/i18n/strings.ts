@@ -402,7 +402,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'set.confirm': ['Delete your save and start from the beginning? This cannot be undone.', '確定要刪除存檔、從頭開始嗎？這個動作無法復原。'],
   'set.confirmYes': ['Delete and restart', '刪除並重來'],
   'set.about': ['About', '關於'],
-  'set.aboutText': ['Lastlight Colony v{v} — an idle colony builder about survivors on a hostile planet. All art, music and sound are generated procedurally in code.', '末光殖民地 v{v}：在陌生行星上求生的放置型殖民地經營遊戲。所有美術、音樂與音效都由程式即時產生。'],
+  'set.aboutText': ['Lastlight Colony v{v} — an idle colony builder about survivors on a hostile planet. Created by Richard Castle together with AI.', '末光殖民地 v{v}：在陌生行星上求生的放置型殖民地經營遊戲。由 Richard Castle 與 AI 共同創作。'],
 
   // ── 場景 ──
   'sc.build': ['Build: {b}', '建造：{b}'],

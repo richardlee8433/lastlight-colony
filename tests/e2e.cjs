@@ -238,6 +238,104 @@ const CJK = /[一-鿿]/;
     });
   }
 
+  // ── 日夜（純畫面） ──
+  /** 把存檔時間設成一天（300 秒）裡的某個比例 */
+  const at = (s, p) => { s.t = Math.floor(s.t / 300) * 300 + p * 300; return s; };
+  const scene = (p, fn) => p.evaluate(fn);
+  await test('E13', '日夜：白天環境光正常；夜晚變暗變藍、建築亮燈', async () => {
+    const errs = [];
+    for (const [name, frac, night] of [['白天', 0.2, false], ['夜晚', 0.75, true]]) {
+      const { p } = await open(later(at(snap('ch6'), frac))); await clear(p); await p.waitForTimeout(600);
+      const r = await scene(p, () => {
+        const s = window.__scene, t = s.overlay.tint, lum = ((t >> 16) & 255) * 0.3 + ((t >> 8) & 255) * 0.6 + (t & 255) * 0.1;
+        // 建築發光層（夜晚亮燈）：每棟建築 lights 裡的子圖，取最亮的
+        let lit = 0; for (const v of s.views.values()) for (const c of v.lights?.children ?? []) if (c.blendMode === 'add') lit = Math.max(lit, c.alpha);
+        return { lum, blue: (t & 255) > ((t >> 16) & 255), lit };
+      });
+      if (night && !(r.lum < 140 && r.blue)) errs.push(`${name}環境光不夠暗或不偏藍（亮度 ${r.lum.toFixed(0)}）`);
+      if (!night && r.lum < 200) errs.push(`${name}環境光太暗（${r.lum.toFixed(0)}）`);
+      if (night && r.lit < 0.8) errs.push(`${name}建築沒亮燈（${r.lit.toFixed(2)}）`);
+      await shot(p, `E13-${night ? 'night' : 'day'}`);
+      await p.close();
+    }
+    return errs;
+  });
+
+  await test('E14', '影子：落在右下（翻到地上、往右斜）；清晨比中午長；夜晚消失', async () => {
+    const errs = [], read = (p) => scene(p, () => { const s = window.__scene; const sh = [...s.views.values()].map((v) => v.shadow).find(Boolean); return sh ? { sy: sh.scale.y, skew: sh.skew.x, a: sh.alpha, len: s.sun.len } : null; });
+    const got = {};
+    for (const [name, frac] of [['清晨', 0.06], ['中午', 0.28], ['夜晚', 0.75]]) {
+      const { p } = await open(later(at(snap('ch6'), frac))); await clear(p); await p.waitForTimeout(600);
+      got[name] = await read(p); await p.close();
+      if (!got[name]) return ['沒有建築影子'];
+    }
+    for (const n of ['清晨', '中午']) {
+      if (!(got[n].sy < 0)) errs.push(`${n}影子沒有翻到地上`);
+      if (!(got[n].skew > 0)) errs.push(`${n}影子沒有往右斜（${got[n].skew.toFixed(2)}）`);
+      if (!(got[n].a > 0.15)) errs.push(`${n}影子太淡（${got[n].a.toFixed(2)}）`);
+    }
+    if (!(got['清晨'].len > got['中午'].len)) errs.push(`清晨影子沒有比中午長（${got['清晨'].len.toFixed(2)} / ${got['中午'].len.toFixed(2)}）`);
+    if (!(got['夜晚'].a < 0.03)) errs.push(`夜晚影子沒有消失（${got['夜晚'].a.toFixed(2)}）`);
+    return errs;
+  });
+
+  await test('E15', '設定頁「日夜變化」：夜晚時關掉立刻變白天，重新整理後仍然關著', async () => {
+    const errs = [];
+    const { p } = await open(later(at(snap('ch6'), 0.75))); await clear(p); await p.waitForTimeout(500);
+    const lum = () => scene(p, () => { const t = window.__scene.overlay.tint; return ((t >> 16) & 255) * 0.3 + ((t >> 8) & 255) * 0.6 + (t & 255) * 0.1; });
+    const before = await lum();
+    await p.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === '≡')?.click());
+    await p.waitForTimeout(400);
+    const box = p.locator('label.check', { hasText: '日夜變化' }).locator('input');
+    if (!(await box.count())) { await p.close(); return ['設定頁沒有「日夜變化」']; }
+    if (!(await box.isChecked())) errs.push('預設不是打開');
+    await box.click(); await p.waitForTimeout(300);
+    await p.evaluate(() => document.querySelector('.close')?.click()); await p.waitForTimeout(500);
+    const after = await lum();
+    if (!(before < 140 && after > 200)) errs.push(`關掉後環境光 ${before.toFixed(0)} → ${after.toFixed(0)}`);
+    await p.reload(); await p.waitForTimeout(1500); await p.locator('.tm-btn.main').click(); await p.waitForTimeout(800); await clear(p);
+    if ((await lum()) < 200) errs.push('重新整理後又變回夜晚');
+    await p.close(); return errs;
+  });
+
+  await test('E16', '小人站在建築影子裡會變暗', async () => {
+    const { p } = await open(later(at(snap('ch6'), 0.06))); await clear(p);
+    await p.waitForTimeout(5000);
+    const r = await scene(p, () => {
+      const s = window.__scene, us = [...s.walkers, ...s.patrols];
+      const dark = us.filter((u) => (u.shade ?? 0) > 0.5).length;
+      return { n: us.length, dark };
+    });
+    await p.close();
+    if (!r.n) return ['地圖上沒有小人'];
+    return r.dark ? [] : [`${r.n} 個小人，沒有一個在影子裡變暗`];
+  });
+
+  await test('E17', '效能：手機尺寸、CPU 降速 4 倍，日夜開／關的每幀場景運算時間', async () => {
+    const res = {};
+    for (const on of [true, false]) {
+      const s = later(at(snap('ch6'), 0.06));
+      const { p } = await open(s, { w: 390, h: 844 });
+      if (!on) await p.evaluate(() => { const v = JSON.parse(localStorage.getItem('lastlight-colony-settings')); v.dayNight = false; localStorage.setItem('lastlight-colony-settings', JSON.stringify(v)); });
+      if (!on) { await p.reload(); await p.waitForTimeout(1500); await p.locator('.tm-btn.main').click(); await p.waitForTimeout(700); }
+      await clear(p);
+      const cdp = await p.context().newCDPSession(p);
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+      res[on ? 'on' : 'off'] = await p.evaluate(() => new Promise((done) => {
+        const s = window.__scene, orig = s.frame.bind(s); let n = 0, tot = 0, worst = 0;
+        s.frame = (dt) => { const t0 = performance.now(); orig(dt); const d = performance.now() - t0; n++; tot += d; worst = Math.max(worst, d); };
+        setTimeout(() => { s.frame = orig; done({ avg: tot / Math.max(1, n), worst, frames: n }); }, 5000);
+      }));
+      await p.close();
+    }
+    const on = res.on, off = res.off;
+    const info = `開 ${on.avg.toFixed(2)} ms（最差 ${on.worst.toFixed(1)}）／關 ${off.avg.toFixed(2)} ms（最差 ${off.worst.toFixed(1)}）`;
+    console.log('     效能：' + info);
+    fs.writeFileSync(path.join(OUT, 'perf.json'), JSON.stringify(res, null, 1));
+    // 一幀 16.7ms；日夜多出來的場景運算超過 4ms（降速後）就算太重
+    return on.avg - off.avg > 4 ? ['日夜多出的運算太重：' + info] : [];
+  });
+
   await b.close();
   fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));
   const fail = results.filter((r) => !r.ok).length;
