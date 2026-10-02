@@ -388,6 +388,26 @@ const CJK = /[一-鿿]/;
     return errs;
   });
 
+  await test('E20', '地圖上的小人數：人口 10 以內全部，之後每 10 人多 1 個；有工人的建築至少 1 個', async () => {
+    const errs = [], rows = [];
+    for (const n of ['ch2', 'ch4', 'ch6']) {
+      const { p } = await open(later(at(snap(n), 0.3))); await clear(p); await p.waitForTimeout(800);
+      const r = await scene(p, () => {
+        const s = window.__scene, st = JSON.parse(localStorage.getItem('lastlight-colony-save-v1')), pop = st.pop;
+        const want = pop <= 10 ? pop : 10 + Math.floor((pop - 10) / 10);
+        const by = {}; for (const w of s.walkers) { const k = w.ai.bid ?? '__idle'; by[k] = (by[k] ?? 0) + 1; }
+        const staffed = Object.entries(st.b).filter(([id, b]) => id !== 'security' && b.level > 0 && b.workers > 0 && [...s.views.values()].some((v) => v.bid === id)).map(([id]) => id);
+        return { pop, want, shown: s.walkers.length, staffed: staffed.length, covered: staffed.filter((id) => by[id]).length };
+      });
+      await p.close();
+      rows.push(`${n} 人口 ${r.pop} → ${r.shown}`);
+      if (r.shown > r.want) errs.push(`${n}：人口 ${r.pop} 應最多 ${r.want} 個，畫了 ${r.shown}`);
+      if (r.staffed <= r.want && r.covered < r.staffed) errs.push(`${n}：${r.staffed} 棟有工人，只有 ${r.covered} 棟有小人`);
+    }
+    console.log('     ' + rows.join('；'));
+    return errs;
+  });
+
   await b.close();
   fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));
   const fail = results.filter((r) => !r.ok).length;

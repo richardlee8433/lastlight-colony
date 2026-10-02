@@ -53,6 +53,8 @@ function shadowMask(cv: HTMLCanvasElement): ShadowMask {
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+/** 地圖上畫幾個走動的殖民者：人口 10 以內全部，之後每 10 人多 1 個 */
+export const walkerBudget = (pop: number) => (pop <= 10 ? pop : 10 + Math.floor((pop - 10) / 10));
 /** 影子翻轉線在建築高度的多少比例處（從正面底邊往上算） */
 const SHADOW_FOOT = 0.15;
 
@@ -890,14 +892,26 @@ export class GameScene {
       for (const w of this.walkers) w.destroy({ children: true });
       this.walkers = [];
     }
-    const want = new Map<string, number>();
+    // 地圖上的小人是「代表」：人口 10 以內全部畫出來，超過後每多 10 人才多畫 1 個（30 人 12 個、90 人 18 個），
+    // 人少一點，作息與聊天才看得清楚，也比較省效能。名額先讓每個有工人的建築至少 1 個，其餘按人數多的分，每棟最多 5 個
+    const raw: [string, number][] = [];
     for (const site of SITES) {
       const bid = this.siteBuilding(site);
-      if (bid && built(s, bid) && s.b[bid].workers > 0) want.set(bid, Math.min(5, s.b[bid].workers));
+      // 陸戰隊由巡邏與迎戰顯示，不在這裡
+      if (bid && bid !== 'security' && built(s, bid) && s.b[bid].workers > 0) raw.push([bid, s.b[bid].workers]);
     }
-    // 陸戰隊出去迎戰時，營區附近不再顯示閒晃的隊員
-    want.delete('security');
-    want.set('__idle', Math.min(8, Math.max(0, idle(s))));
+    raw.push(['__idle', Math.max(0, idle(s))]);
+    const want = new Map<string, number>(raw.map(([k]) => [k, 0]));
+    const people = raw.reduce((n, [, v]) => n + v, 0);
+    let budget = Math.min(people, walkerBudget(s.pop));
+    const order = raw.filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]);
+    for (const [k] of order) { if (budget <= 0) break; want.set(k, 1); budget--; }
+    while (budget > 0) {
+      let best: string | null = null, score = 0;
+      for (const [k, v] of order) { const n = want.get(k)!; if (n < Math.min(5, v) && v / (n + 1) > score) { score = v / (n + 1); best = k; } }
+      if (!best) break;
+      want.set(best, want.get(best)! + 1); budget--;
+    }
     const have = new Map<string, Walker[]>();
     for (const w of this.walkers) { const k = w.ai.bid ?? '__idle'; if (!have.has(k)) have.set(k, []); have.get(k)!.push(w); }
     for (const [k, list] of have) {
