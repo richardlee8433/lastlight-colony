@@ -972,13 +972,14 @@ export class GameScene {
     const g = this.unitShadowG, { len, lean, alpha } = this.sun;
     g.clear();
     const units: any[] = [...this.walkers, ...this.patrols, ...this.defenders, ...this.aliens, ...this.fallen, ...this.patients];
-    const off = Math.tan(lean) * len * 5, rx = 3.5 + len * 2.5;
+    const off = Math.tan(lean) * len * 5, rx = 2.6 + len * 1.6;
     const shadows = [...this.views.values()].map((v) => v.shadow).filter((s): s is Sprite & { smask: ShadowMask } => !!s?.smask && s.alpha > 0.02);
     const pt = new Point(), loc = new Point();
     const debug = (window as any).__shadeDebug;   // 測試用：設成 true 時，站在影子裡的小人標成紅色
     for (const u of units) {
       if (u.destroyed || !u.visible) continue;
-      if (alpha > 0.02) g.ellipse(u.x + off * 0.5, u.y + 0.5 + len * 1.2, rx, 1.6 + len * 0.6).fill({ color: 0x000000, alpha: alpha * 0.9 });
+      // 影子中心壓在腳底（不能往下偏，不然看起來腳離地），只往太陽的反方向（右）稍微拉長
+      if (alpha > 0.02) g.ellipse(u.x + off * 0.25, u.y - 0.3, rx, 1.2 + len * 0.3).fill({ color: 0x000000, alpha: alpha * 0.9 });
       // 是否在某棟建築的影子裡：把腳的位置換算回影子圖的像素，看那裡是不是實心
       let inside = false;
       pt.set(u.x, u.y);
