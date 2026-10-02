@@ -999,6 +999,8 @@ export class GameScene {
   /** 對話泡泡（傍晚在休閒艙前聊天時冒出來） */
   bubbles: { s: Sprite; w: any; t: number }[] = [];
   addBubble(w: any) {
+    // 附近已經有泡泡就不冒，避免疊在一起
+    if (this.bubbles.some((b) => !b.w.destroyed && Math.abs(b.w.x - w.x) < 16 && Math.abs(b.w.y - w.y) < 12)) return;
     const s = new Sprite(bubbleTexture(Math.floor(Math.random() * BUBBLE_ICONS.length)));
     s.anchor.set(0.5, 1); s.eventMode = 'none'; s.zIndex = 1e6;
     this.obj.addChild(s);
