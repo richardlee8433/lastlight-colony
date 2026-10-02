@@ -4,8 +4,10 @@ import { RES_KEYS, ResKey } from '../engine/state';
 import { canAfford, idle } from '../engine/formulas';
 import { CHAPTERS } from '../engine/story';
 import { chapterEndPending, endingQueued } from '../engine/dialog';
-import { bName, chapterText, costText, eventText, raidName, resName, t, tm } from '../i18n';
+import { bName, chapterText, costText, eventText, raidName, resName, t, tm, useLang } from '../i18n';
 import { Icon, fmt, fmtTime } from './common';
+import { playVoice } from '../audio/audio';
+import { introVoiceFile } from '../data/voices';
 
 export function Modal({ children, label, className = '', pause = true }: { children: React.ReactNode; label: string; className?: string; pause?: boolean }) {
   // 訊息視窗開著時遊戲暫停；pause=false 的視窗（例如科技樹）開著時時間照常走
@@ -63,6 +65,7 @@ export function Modals() {
       <Modal label={t('ch.n', { n: ch.chapter })}>
         <p className="eyebrow">{t('ch.n', { n: ch.chapter })}</p>
         <h2>{tx.title}<small>{tx.subtitle}</small></h2>
+        <IntroVoice chapter={ch.chapter} />
         {tx.intro.map((p) => <p key={p}>{p}</p>)}
         {ch.chapter === 1 && <p className="hint">{t('intro.hint')}</p>}
         <button type="button" className="btn wide" onClick={act.seenIntro}>{t(ch.chapter === 1 ? 'intro.start' : 'intro.next')}</button>
@@ -163,5 +166,12 @@ export function Modals() {
       </Modal>
     );
   }
+  return null;
+}
+
+/** 章節開場說明出現時播旁白配音（有錄的章才有），按開始、關掉就停 */
+function IntroVoice({ chapter }: { chapter: number }) {
+  const lang = useLang();
+  useEffect(() => { playVoice(introVoiceFile(chapter, lang)); return () => playVoice(null); }, [chapter, lang]);
   return null;
 }

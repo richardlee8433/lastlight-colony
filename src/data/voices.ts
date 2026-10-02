@@ -12,7 +12,9 @@ const VOICED: Record<'zh' | 'en', Set<string>> = {
   ]),
   zh: new Set(),   // 中文配音之後放 voice/zh-xxx.mp3
 };
-export const voiceFile = (scene: string, line: number, lang: 'zh' | 'en') => {
+export const voiceFile = (scene: string, line: number | 'intro', lang: 'zh' | 'en') => {
   const k = `${scene}-${line}`;
   return VOICED[lang]?.has(k) ? (lang === 'en' ? `${k}.mp3` : `zh-${k}.mp3`) : null;
 };
+/** 章節開場說明的旁白（瑪拉唸）：檔名 c{章}-intro.mp3，key 也加在上面的清單 */
+export const introVoiceFile = (chapter: number, lang: 'zh' | 'en') => voiceFile(`c${chapter}`, 'intro', lang);

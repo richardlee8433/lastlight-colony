@@ -8,14 +8,14 @@ const buildings: Record<string, B> = {
   scrap_heap: { name: 'Scrap Heap', desc: 'Wreckage from the pod, scattered across the ground. Hold the Scrap button above it to collect.', nodes: {
     click_1: ['Magnetic Gloves', 'Click yield +1'], crit_1: ['Sharp Eyes', 'Crit chance +5%'], cap_1: ['Zoned Search', 'Worker cap +1'],
     critx: ['Treasure Instinct', 'Crit multiplier ×2'], buff_10: ['On-site Supervisor', 'Click buff lasts 10 s'] } },
-  algae_tank: { name: 'Algae Vat', desc: 'The colony’s food supply. It starts as a few glass algae vats; from Stage 2 it can be rebuilt into a Bio Harvester, and from Stage 4 into a Hydroponic Farm, each producing more per worker. Rebuilding keeps its level and workers.', nodes: {
+  algae_tank: { name: 'Algae Vat', desc: 'The colony\'s food supply. It starts as a few glass algae vats; from Stage 2 it can be rebuilt into a Bio Harvester, and from Stage 4 into a Hydroponic Farm, each producing more per worker. Rebuilding keeps its level and workers.', nodes: {
     prod_20: ['Light Tuning', 'Output +20%'], cap_1: ['Extra Vat', 'Worker cap +1'], prod_30: ['Dense Strain', 'Output +30%'],
     guide: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'], prod_25: ['Grow Lights', 'Output +25%'], cap_2: ['Vertical Racks', 'Worker cap +2'] } },
   'algae_tank:bio': { name: 'Bio Harvester', desc: 'Culture racks added beside the vats raise edible life gathered from the surface. More output per worker than the Algae Vat. Rebuilding keeps its level and workers.' },
   'algae_tank:hydro': { name: 'Hydroponic Farm', desc: 'The whole facility rebuilt as a pressurized greenhouse growing vegetables in nutrient solution — the most efficient food source. Rebuilding keeps its level and workers.' },
-  o2_scrubber: { name: 'Oxygen Scrubber', desc: 'An oxygen scrubber cobbled together from escape pod wreckage, splitting carbon dioxide into air you can breathe. Teo calls it “Wheezy” — don’t mind the noise. Hold the button above it to pump by hand. Can be rebuilt into an Electrolyzer in Chapter 2.', nodes: {
+  o2_scrubber: { name: 'Oxygen Scrubber', desc: 'An oxygen scrubber cobbled together from escape pod wreckage, splitting carbon dioxide into air you can breathe. Teo calls it “Wheezy” — don\'t mind the noise. Hold the button above it to pump by hand. Can be rebuilt into an Electrolyzer in Chapter 2.', nodes: {
     filter: ['Fresh Filters', 'Output +25%'], cap_1: ['Extra Fan', 'Worker cap +1'], seal: ['Sealed Gaskets', 'Output +30%'], coil: ['Heating Coils', 'Output +30%'] } },
-  'o2_scrubber:elec': { name: 'Electrolyzer', desc: 'Ines’s design: Wheezy gets a drill bit and bores down to the ice layer, melting it and splitting the water into oxygen. Each worker makes more than twice the oxygen of a scrubber. Rebuilding keeps its level and workers.' },
+  'o2_scrubber:elec': { name: 'Electrolyzer', desc: 'Ines\'s design: Wheezy gets a drill bit and bores down to the ice layer, melting it and splitting the water into oxygen. Each worker makes more than twice the oxygen of a scrubber. Rebuilding keeps its level and workers.' },
   emergency_camp: { name: 'Emergency Camp', desc: 'Command Lv1. Inflatable pressurized domes and radiant heaters — the survivors can finally take their helmets off indoors. Unlocks building upgrades and upgrade lines, and advances to Stage 2.' },
   hab_pod: { name: 'Hab Pod', desc: 'Houses 2 people per level. The population cap decides whether new colonists can keep arriving.', nodes: {
     cap_1: ['Bunk Beds', 'Capacity +1'], birth: ['Guide Lights', 'Survivor discovery +10%'], cap_2: ['Extra Partitions', 'Capacity +2'] } },
@@ -28,7 +28,7 @@ const buildings: Record<string, B> = {
   rock_cutter: { name: 'Rock Cutter', desc: 'A laser cutter salvaged from the pod, refitted to slice building stone from the bedrock.', nodes: {
     prod_20: ['Blade Care', 'Output +20%'], cap_1: ['Night Shift', 'Worker cap +1'], click_1: ['Manual Trim', 'Click yield +1'] } },
   central_hub: { name: 'Central Hub', desc: 'Command Lv2. A real settlement center: housing for 4, +100 storage, and advances to Stage 3. Requires population 12.' },
-  databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony’s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more.', nodes: {
+  databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony\'s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more.', nodes: {
     speed_50: ['Index System', 'Research speed +50%'] } },
   rail_line: { name: 'Rail Line', desc: 'All gathering buildings +10% output, workers move faster, and every road in the colony is paved with stone tiles.', nodes: {
     double: ['Double Track', 'Gathering output +5% more, and roads upgrade to metal tiles'] } },
@@ -55,9 +55,9 @@ const buildings: Record<string, B> = {
   spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; add a Xenology Institute to answer that mysterious signal.' },
   turret: { name: 'Defense Turret', desc: 'Fixed defense. One turret per level (ATK 8, HP 40); uses no population and repairs itself after battle.' },
   xeno_lab: { name: 'Xenology Institute', desc: 'A lab devoted to xenocrystal. Unlocks the xeno research line; stationed researchers also speed up all research.' },
-  governor: { name: 'Governor’s Residence', desc: 'The administrative heart of the city, where the colony’s first elected governor works. Morale +15, charter slots +1.' },
+  governor: { name: 'Governor\'s Residence', desc: 'The administrative heart of the city, where the colony\'s first elected governor works. Morale +15, charter slots +1.' },
   sky_residence: { name: 'Skyline Residence', desc: 'High-rise homes under the dome, with the stars right outside the window. +12 population cap and +5 morale per level.' },
-  bioeng: { name: 'Bioengineering Lab', desc: 'Infuses crops and cultures with xenocrystal to boost the whole colony’s output for a short time. Each infusion costs xenocrystal; higher levels make it stronger and longer.' },
+  bioeng: { name: 'Bioengineering Lab', desc: 'Infuses crops and cultures with xenocrystal to boost the whole colony\'s output for a short time. Each infusion costs xenocrystal; higher levels make it stronger and longer.' },
   orbital_beacon: { name: 'Orbital Beacon', desc: 'A beacon tower that broadcasts to the entire system. Built in five phases, each needing metal, tools, xenocrystal and credits; completing the fifth lights the beacon. Requires population 100.' },
   star_dome: { name: 'Star Dome', desc: 'Command Lv5. A glass dome over the whole colony — from this day on, it is a city. Requires population 80 and 5,000 credits earned.' },
 };
@@ -98,7 +98,7 @@ const chapters = [
   {
     title: 'The Fall', subtitle: 'Three survivors, first night',
     intro: [
-      'Good news: we’re alive. Bad news: twelve minutes of oxygen left in the pod. Everything else is just details of the bad news.',
+      'Good news: we\'re alive. Bad news: twelve minutes of oxygen left in the pod. Everything else is just details of the bad news.',
       'Three weeks ago we stole a freighter from the mines on F8. On the run, we caught a faint navigation signal saying there were old colony facilities here. I chose to change course. The ship broke apart in orbit, and we all jumped for the escape pods.',
       'This pod has six seats. Three of us are in it. The air outside is all carbon dioxide, and the life support lights are ticking down one by one. Strip the wreck and cobble together something that makes oxygen. — Mara',
     ],
@@ -107,18 +107,18 @@ const chapters = [
   {
     title: 'Taking Root', subtitle: 'Enough air to go around',
     intro: [
-      'The pressurized camp made it through the first night. In the morning, the comm picked up a distress call — on our ship’s frequency.',
-      'People from the other pods are alive. More are coming: more mouths, and more lungs. Wheezy alone won’t be enough.',
+      'The pressurized camp made it through the first night. In the morning, the comm picked up a distress call — on our ship\'s frequency.',
+      'People from the other pods are alive. More are coming: more mouths, and more lungs. Wheezy alone won\'t be enough.',
       'Bring them home, build them a place to live, make enough air to share, and give them a reason to stay.',
     ],
     goals: ['Build a Hab Pod to raise the population cap', 'Rebuild the Oxygen Scrubber into an Electrolyzer to split oxygen from the ice', 'Keep air security above 60% for 1 minute', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
   },
   {
-    title: 'Blueprints', subtitle: 'We can use them. We don’t understand them.',
+    title: 'Blueprints', subtitle: 'We can use them. We don\'t understand them.',
     intro: [
-      'The night the Central Hub lit up, Ines got the Tech Institute’s scanner working. The moment it powered on, it beeped at Teo’s coaster until dawn.',
-      'The patterns on the coaster are step-by-step manufacturing instructions — just not written by humans. And every one of them needs a material we don’t have: xenocrystal.',
-      'Mine, forge, lay down rails, then build an Expedition Station and send people out to search. We don’t need to understand how it works. We just need to use it.',
+      'The night the Central Hub lit up, Ines got the Tech Institute\'s scanner working. The moment it powered on, it beeped at Teo\'s coaster until dawn.',
+      'The patterns on the coaster are step-by-step manufacturing instructions — just not written by humans. And every one of them needs a material we don\'t have: xenocrystal.',
+      'Mine, forge, lay down rails, then build an Expedition Station and send people out to search. We don\'t need to understand how it works. We just need to use it.',
     ],
     goals: ['Build a Metal Mine', 'Build a Forge', 'Build a Rail Line to connect the gathering sites', 'Build an Expedition Station', 'Complete the first expedition and bring back a blueprint', 'Research the first blueprint tech: High-Pressure Filter', 'Complete the Outpost'],
   },
@@ -127,12 +127,12 @@ const chapters = [
     intro: [
       'The xenocrystal the expeditions bring back is never enough. Ines says one of the blueprints teaches us to make our own: dissolve the crystal clusters underground and let them grow again.',
       'Whatever we build from it will look like nothing we have ever built before.',
-      'Build the Crystal Synthesizer. From today, we don’t just use what the aliens left behind. We make it ourselves.',
+      'Build the Crystal Synthesizer. From today, we don\'t just use what the aliens left behind. We make it ourselves.',
     ],
     goals: ['Build a Crystal Synthesizer', 'Build the Marine Barracks and station marines', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
   {
-    title: 'The Corporation’s Shadow', subtitle: 'The price of freedom',
+    title: 'The Corporation\'s Shadow', subtitle: 'The price of freedom',
     intro: [
       'Three days after the Colony Core lit up, a warship appeared in orbit. Every one of us knew the logo on its hull.',
       'Helion Corp has found us. They did not open fire. They only sent a message: an envoy will be down soon.',
@@ -143,11 +143,11 @@ const chapters = [
   {
     title: 'The Choice', subtitle: 'Whose home is this?',
     intro: [
-      'The first night after the dome closed, the colony’s lights could be seen from orbit.',
-      'Helion’s warship is still up there. So is the signal that led us here. This planet is no longer a hiding place. It is a coordinate everyone knows.',
+      'The first night after the dome closed, the colony\'s lights could be seen from orbit.',
+      'Helion\'s warship is still up there. So is the signal that led us here. This planet is no longer a hiding place. It is a coordinate everyone knows.',
       'Build the Orbital Beacon and find the source of the signal. Then we decide whose home this is.',
     ],
-    goals: ['Build the Governor’s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Complete all five phases: the Orbital Beacon, or a ship built from its core'],
+    goals: ['Build the Governor\'s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Complete all five phases: the Orbital Beacon, or a ship built from its core'],
   },
 ];
 
