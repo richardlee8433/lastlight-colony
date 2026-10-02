@@ -1263,7 +1263,8 @@ async function loadPainted() {
     const cv = makeCanvas(img.width, img.height); cv.getContext('2d').drawImage(img, 0, 0);
     const emissive = emissiveCanvas(cv), halo = haloCanvas(emissive, HALO_PAD * res, 3 * res);
     const glows = (PAINTED_FX[id] ?? []).map(([fx, fy, r, c, a]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, r, c, a }));
-    const smokes = (PAINTED_STEAM[id] ?? []).map(([fx, fy]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, c: 0xeef2f6 }));
+    // 蒸氣出口：手寫的 PAINTED_STEAM，或處理圖時從畫死的白煙位置算出來的（meta.steam）
+    const smokes = [...(PAINTED_STEAM[id] ?? []), ...(m.steam ? [m.steam] : [])].map(([fx, fy]) => ({ x: fx * m.w - m.ax, y: fy * m.h - m.ay, c: 0xeef2f6 }));
     PAINTED.set(id, { canvas: cv, ax: m.ax, ay: m.ay, w: m.w, h: m.h, res, glows, beacons: [], smokes, emissive, halo });
   }));
 }
@@ -1933,6 +1934,16 @@ function dotTexture() {
   const cv = makeCanvas(1, 1); const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 1, 1);
   return (_dotTex = pixelTexture(cv));
 }
+/** 手繪建築的蒸氣：柔邊的白色圓團（16×16，放射漸層） */
+let _puffTex = null;
+function puffTexture() {
+  if (_puffTex) return _puffTex;
+  const cv = makeCanvas(16, 16), g = cv.getContext('2d'), gr = g.createRadialGradient(8, 8, 1, 8, 8, 8);
+  gr.addColorStop(0, 'rgba(255,255,255,0.95)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.7)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 16, 16);
+  _puffTex = Texture.from(cv); _puffTex.source.scaleMode = 'linear';
+  return _puffTex;
+}
 function smokeTexture() {
   if (_smokeTex) return _smokeTex;
   const b = new Pix(5, 5, 2, 2); b.ell(0, 0, 2, 2, 0xd8d8d8); b.set(-1, -1, 0xffffff); b.set(1, 1, 0xa8a8a8);
@@ -1982,15 +1993,18 @@ function fromArt(art) {
     if (art.smokes.length && acc > 0.45) {
       acc = 0;
       for (const e of art.smokes) {
-        const p = new Sprite(smokeTexture()); p.anchor.set(0.5); p.tint = e.c; p.position.set(e.x, e.y); p.alpha = 0.7;
-        smokeL.addChild(p); puffs.push({ p, life: 0, vx: 2 + Math.random() * 3 });
+        const soft = res > 1;   // 手繪建築用柔邊圓團，程式畫的建築維持像素方塊
+        const p = new Sprite(soft ? puffTexture() : smokeTexture()); p.anchor.set(0.5); p.tint = e.c; p.position.set(e.x + (soft ? (Math.random() - 0.5) * 2 : 0), e.y); p.alpha = soft ? 0.9 : 0.7;
+        smokeL.addChild(p); puffs.push({ p, life: 0, vx: 2 + Math.random() * 3, soft });
       }
     }
     for (let i = puffs.length - 1; i >= 0; i--) {
       const q = puffs[i]; q.life += dt;
       q.p.y -= 7 * dt; q.p.x += q.vx * dt;
-      q.p.scale.set(q.life < 1.2 ? 1 : 2);
-      q.p.alpha = Math.max(0, 0.7 - q.life * 0.28);
+      // 柔邊蒸氣：一邊上升一邊慢慢變大變淡（直徑約 4 → 12 像素）；方塊煙維持原本兩段大小
+      if (q.soft) q.p.scale.set(0.25 + q.life * 0.22);
+      else q.p.scale.set(q.life < 1.2 ? 1 : 2);
+      q.p.alpha = Math.max(0, (q.soft ? 0.9 : 0.7) - q.life * (q.soft ? 0.34 : 0.28));
       if (q.life > 2.5) { q.p.destroy(); puffs.splice(i, 1); }
     }
   };

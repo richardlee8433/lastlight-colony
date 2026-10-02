@@ -1038,9 +1038,12 @@ export class GameScene {
     if (a.off !== kind) {
       a.off = kind; a.offAt = this.offDutySpot(kind); a.meal = undefined; a.chatting = false; a.inside = 0;
       const j = () => (Math.random() - 0.5) * 16;
-      // 傍晚在休閒艙前散開成幾小群（寬約 70、深約 18 像素），晚上擠在門口
-      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * 70, y: a.offAt.y + Math.random() * 18 } : { x: a.offAt.x + j(), y: a.offAt.y + Math.abs(j()) * 0.2 };
-      a.offPath = pathBetween({ x: w.px, y: w.py }, a.offAt).slice(1);
+      // 門口：建築正面底邊中央（休閒艙吃飯、生活艙睡覺都從這裡進出）
+      a.door = { x: a.offAt.x + j() * 0.15, y: a.offAt.y - 10 };
+      // 傍晚吃完飯在休閒艙前散開成幾小群（寬約 70、深約 18 像素）
+      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * 70, y: a.offAt.y + Math.random() * 18 } : a.door;
+      a.offPath = pathBetween({ x: w.px, y: w.py }, a.door).slice(1);
+      a.offPath.push(a.door);
       a.working = false; w.setWork?.(false); w.setCarry(null);
       w.visible = true; w.alpha = 1;
     }
@@ -1057,10 +1060,11 @@ export class GameScene {
       w.setMoving(false);
       a.meal ??= 8 + Math.random() * 6;
       if (a.meal > 0) {
+        // 在門口淡出進去吃飯；吃完在門口淡入，再走到門前空地聊天
         a.meal -= dt;
         w.alpha = a.meal > 0.3 ? Math.max(0, w.alpha - dt * 3) : Math.min(1, w.alpha + dt * 3);
         w.visible = w.alpha > 0.01 || a.meal <= 0.3;
-        if (a.meal <= 0) { w.alpha = 1; w.visible = true; }
+        if (a.meal <= 0) { w.alpha = 1; w.visible = true; a.offPath = [a.offAt]; a.offWait = 2 + Math.random() * 3; }
         return;
       }
       a.chatting = true;
