@@ -12,21 +12,30 @@ export type Lang = 'en' | 'zh';
 export const LANGS: { id: Lang; label: string }[] = [{ id: 'en', label: 'English' }, { id: 'zh', label: '繁體中文' }];
 const SETTINGS_KEY = 'lastlight-colony-settings';
 
-function loadLang(): Lang {
+function loadSettings(): { lang: Lang; dayNight: boolean } {
+  let lang: Lang = 'en', dayNight = true;
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) { const v = JSON.parse(raw); if (v.lang === 'zh' || v.lang === 'en') return v.lang; }
+    if (raw) { const v = JSON.parse(raw); if (v.lang === 'zh' || v.lang === 'en') lang = v.lang; if (v.dayNight === false) dayNight = false; }
   } catch { /* 沒有設定：用預設 */ }
-  return 'en';
+  return { lang, dayNight };
 }
 
-interface Settings { lang: Lang; setLang: (l: Lang) => void }
-export const useSettings = create<Settings>((set) => ({
-  lang: loadLang(),
+/** dayNight：日夜變化（純畫面效果，關掉時永遠是白天） */
+interface Settings { lang: Lang; dayNight: boolean; setLang: (l: Lang) => void; setDayNight: (on: boolean) => void }
+const saveSettings = (v: { lang: Lang; dayNight: boolean }) => {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(v)); } catch { /* 無法儲存時只在本次生效 */ }
+};
+export const useSettings = create<Settings>((set, get) => ({
+  ...loadSettings(),
   setLang: (lang) => {
-    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lang })); } catch { /* 無法儲存時只在本次生效 */ }
+    saveSettings({ lang, dayNight: get().dayNight });
     applyDocLang(lang);
     set({ lang });
+  },
+  setDayNight: (dayNight) => {
+    saveSettings({ lang: get().lang, dayNight });
+    set({ dayNight });
   },
 }));
 export const lang = () => useSettings.getState().lang;

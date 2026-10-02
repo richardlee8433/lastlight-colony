@@ -12,7 +12,8 @@ const PAGE = 'file://' + path.join(ROOT, 'dist/index.html');
 const SAVE_KEY = 'lastlight-colony-save-v1';
 const results = [];
 const snap = (name) => JSON.parse(fs.readFileSync(path.join(SNAPS, name + '.json'), 'utf8'));
-const later = (s) => { s.lastSaved = Date.now(); s.events.nextAt = s.t + 3000; s.raid.nextAt = s.t + 3000; if (s.gov?.corp) s.gov.corp.nextEnvoy = s.t + 3000; s.story.queue = []; return s; };
+// 把事件、襲擊、使者都延後，並清掉存檔當下已經跳出來的事件（例如隕石雨），測試畫面才不會被擋住
+const later = (s) => { s.events.active = null; s.lastSaved = Date.now(); s.events.nextAt = s.t + 3000; s.raid.nextAt = s.t + 3000; if (s.gov?.corp) s.gov.corp.nextEnvoy = s.t + 3000; s.story.queue = []; return s; };
 const CJK = /[一-鿿]/;
 
 (async () => {
@@ -237,6 +238,193 @@ const CJK = /[一-鿿]/;
       return errs;
     });
   }
+
+  // ── 日夜（純畫面） ──
+  /** 把存檔時間設成一天（300 秒）裡的某個比例 */
+  const at = (s, p) => { s.t = Math.floor(s.t / 300) * 300 + p * 300; return s; };
+  const scene = (p, fn) => p.evaluate(fn);
+  await test('E13', '日夜：白天環境光正常；夜晚變暗變藍、建築亮燈', async () => {
+    const errs = [];
+    for (const [name, frac, night] of [['白天', 0.2, false], ['夜晚', 0.75, true]]) {
+      const { p } = await open(later(at(snap('ch6'), frac))); await clear(p); await p.waitForTimeout(600);
+      const r = await scene(p, () => {
+        const s = window.__scene, t = s.overlay.tint, lum = ((t >> 16) & 255) * 0.3 + ((t >> 8) & 255) * 0.6 + (t & 255) * 0.1;
+        // 建築發光層（夜晚亮燈）：每棟建築 lights 裡的子圖，取最亮的
+        let lit = 0; for (const v of s.views.values()) for (const c of v.lights?.children ?? []) if (c.blendMode === 'add') lit = Math.max(lit, c.alpha);
+        return { lum, blue: (t & 255) > ((t >> 16) & 255), lit };
+      });
+      if (night && !(r.lum < 140 && r.blue)) errs.push(`${name}環境光不夠暗或不偏藍（亮度 ${r.lum.toFixed(0)}）`);
+      if (!night && r.lum < 200) errs.push(`${name}環境光太暗（${r.lum.toFixed(0)}）`);
+      if (night && r.lit < 0.8) errs.push(`${name}建築沒亮燈（${r.lit.toFixed(2)}）`);
+      await shot(p, `E13-${night ? 'night' : 'day'}`);
+      await p.close();
+    }
+    return errs;
+  });
+
+  await test('E14', '影子：落在右下（翻到地上、往右斜）；清晨比中午長；夜晚消失', async () => {
+    const errs = [], read = (p) => scene(p, () => { const s = window.__scene; const sh = [...s.views.values()].map((v) => v.shadow).find(Boolean); return sh ? { sy: sh.scale.y, skew: sh.skew.x, a: sh.alpha, len: s.sun.len } : null; });
+    const got = {};
+    for (const [name, frac] of [['清晨', 0.06], ['中午', 0.28], ['夜晚', 0.75]]) {
+      const { p } = await open(later(at(snap('ch6'), frac))); await clear(p); await p.waitForTimeout(600);
+      got[name] = await read(p); await p.close();
+      if (!got[name]) return ['沒有建築影子'];
+    }
+    for (const n of ['清晨', '中午']) {
+      if (!(got[n].sy < 0)) errs.push(`${n}影子沒有翻到地上`);
+      if (!(got[n].skew > 0)) errs.push(`${n}影子沒有往右斜（${got[n].skew.toFixed(2)}）`);
+      if (!(got[n].a > 0.15)) errs.push(`${n}影子太淡（${got[n].a.toFixed(2)}）`);
+    }
+    if (!(got['清晨'].len > got['中午'].len)) errs.push(`清晨影子沒有比中午長（${got['清晨'].len.toFixed(2)} / ${got['中午'].len.toFixed(2)}）`);
+    if (!(got['夜晚'].a < 0.03)) errs.push(`夜晚影子沒有消失（${got['夜晚'].a.toFixed(2)}）`);
+    return errs;
+  });
+
+  await test('E15', '設定頁「日夜變化」：夜晚時關掉立刻變白天，重新整理後仍然關著', async () => {
+    const errs = [];
+    const { p } = await open(later(at(snap('ch6'), 0.75))); await clear(p); await p.waitForTimeout(500);
+    const lum = () => scene(p, () => { const t = window.__scene.overlay.tint; return ((t >> 16) & 255) * 0.3 + ((t >> 8) & 255) * 0.6 + (t & 255) * 0.1; });
+    const before = await lum();
+    await p.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === '≡')?.click());
+    await p.waitForTimeout(400);
+    const box = p.locator('label.check', { hasText: '日夜變化' }).locator('input');
+    if (!(await box.count())) { await p.close(); return ['設定頁沒有「日夜變化」']; }
+    if (!(await box.isChecked())) errs.push('預設不是打開');
+    await box.click({ timeout: 5000 }).catch((e) => { throw new Error(e.message.split('\n').filter((l) => /intercept|visible|stable|enabled/.test(l)).slice(0, 3).join(' | ') || e.message.slice(0, 200)); }); await p.waitForTimeout(300);
+    await p.evaluate(() => document.querySelector('.close')?.click()); await p.waitForTimeout(500);
+    const after = await lum();
+    if (!(before < 140 && after > 200)) errs.push(`關掉後環境光 ${before.toFixed(0)} → ${after.toFixed(0)}`);
+    await p.reload(); await p.waitForTimeout(1500); await p.locator('.tm-btn.main').click(); await p.waitForTimeout(800); await clear(p);
+    if ((await lum()) < 200) errs.push('重新整理後又變回夜晚');
+    await p.close(); return errs;
+  });
+
+  await test('E16', '小人站在建築影子裡會變暗', async () => {
+    const { p } = await open(later(at(snap('ch6'), 0.06))); await clear(p);
+    // 小人隨機走動，不一定剛好有人在影子裡：最多看 15 秒，有人變暗就通過
+    let r = { n: 0, dark: 0 };
+    for (let i = 0; i < 15 && !r.dark; i++) {
+      await p.waitForTimeout(1000);
+      r = await scene(p, () => {
+        const s = window.__scene, us = [...s.walkers, ...s.patrols];
+        return { n: us.length, dark: us.filter((u) => (u.shade ?? 0) > 0.5).length };
+      });
+    }
+    await p.close();
+    if (!r.n) return ['地圖上沒有小人'];
+    return r.dark ? [] : [`${r.n} 個小人，沒有一個在影子裡變暗`];
+  });
+
+  await test('E17', '效能：手機尺寸、CPU 降速 4 倍，日夜開／關的每幀場景運算時間', async () => {
+    const res = {};
+    for (const on of [true, false]) {
+      const s = later(at(snap('ch6'), 0.06));
+      const { p } = await open(s, { w: 390, h: 844 });
+      if (!on) await p.evaluate(() => { const v = JSON.parse(localStorage.getItem('lastlight-colony-settings')); v.dayNight = false; localStorage.setItem('lastlight-colony-settings', JSON.stringify(v)); });
+      if (!on) { await p.reload(); await p.waitForTimeout(1500); await p.locator('.tm-btn.main').click(); await p.waitForTimeout(700); }
+      await clear(p);
+      const cdp = await p.context().newCDPSession(p);
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+      res[on ? 'on' : 'off'] = await p.evaluate(() => new Promise((done) => {
+        const s = window.__scene, orig = s.frame.bind(s); let n = 0, tot = 0, worst = 0;
+        s.frame = (dt) => { const t0 = performance.now(); orig(dt); const d = performance.now() - t0; n++; tot += d; worst = Math.max(worst, d); };
+        setTimeout(() => { s.frame = orig; done({ avg: tot / Math.max(1, n), worst, frames: n }); }, 5000);
+      }));
+      await p.close();
+    }
+    const on = res.on, off = res.off;
+    const info = `開 ${on.avg.toFixed(2)} ms（最差 ${on.worst.toFixed(1)}）／關 ${off.avg.toFixed(2)} ms（最差 ${off.worst.toFixed(1)}）`;
+    console.log('     效能：' + info);
+    fs.writeFileSync(path.join(OUT, 'perf.json'), JSON.stringify(res, null, 1));
+    // 一幀 16.7ms；日夜多出來的場景運算超過 4ms（降速後）就算太重
+    return on.avg - off.avg > 4 ? ['日夜多出的運算太重：' + info] : [];
+  });
+
+  await test('E18', '腳印：沙地上會留下、每人最多 3 個；鋪過的路面上沒有腳印', async () => {
+    const errs = [];
+    for (const [name, snapName] of [['第 2 章（全是沙地）', 'ch2'], ['第 6 章（有石磚、金屬路）', 'ch6']]) {
+      const { p } = await open(later(snap(snapName))); await clear(p);
+      await p.waitForTimeout(8000);
+      const r = await scene(p, () => {
+        const s = window.__scene, us = [...s.walkers, ...s.patrols, ...s.defenders];
+        let total = 0, max = 0, onPaved = 0;
+        // 淡出中的（gone）不算在 3 個裡
+        for (const u of us) for (const q of u.prints ?? []) { total++; if (s.ground.paved(q.x, q.y)) onPaved++; }
+        for (const u of us) max = Math.max(max, (u.prints ?? []).filter((q) => q.gone == null).length);
+        return { total, max, onPaved };
+      });
+      await p.close();
+      if (snapName === 'ch2' && !r.total) errs.push(`${name}沒有腳印`);
+      if (r.max > 3) errs.push(`${name}有人留了 ${r.max} 個腳印`);
+      if (r.onPaved) errs.push(`${name}有 ${r.onPaved} 個腳印在鋪過的路面上`);
+    }
+    return errs;
+  });
+
+  await test('E19', '作息：傍晚去休閒艙、晚上回生活艙進門、白天照常工作；日夜關掉時一直工作', async () => {
+    const errs = [];
+    // 無頭瀏覽器每秒只畫幾幀，直接推進場景邏輯 25 秒
+    const run = (p) => scene(p, () => {
+      const s = window.__scene; for (let i = 0; i < 25 * 30; i++) s.frame(1 / 30);
+      const ws = s.walkers, near = (w, id) => { const v = s.views.get(id); return v && Math.hypot(w.px - v.x, w.py - v.y) < 60; };
+      return { n: ws.length, lounge: ws.filter((w) => near(w, 'lounge')).length, hidden: ws.filter((w) => !w.visible).length, off: ws.filter((w) => w.ai.off).length };
+    });
+    for (const [name, frac, check] of [
+      ['傍晚', 0.64, (r) => r.lounge >= r.n * 0.8 ? '' : `只有 ${r.lounge}/${r.n} 人在休閒艙`],
+      ['晚上', 0.8, (r) => r.hidden >= r.n * 0.8 ? '' : `只有 ${r.hidden}/${r.n} 人進門睡覺`],
+      ['白天', 0.3, (r) => (!r.off && !r.hidden) ? '' : `白天還有 ${r.off} 人下班、${r.hidden} 人看不見`],
+    ]) {
+      const { p } = await open(later(at(snap('ch4'), frac))); await clear(p);
+      const r = await run(p); await p.close();
+      if (!r.n) { errs.push(name + '沒有工人'); continue; }
+      const e = check(r); if (e) errs.push(name + '：' + e);
+    }
+    // 日夜關掉：晚上也照常工作
+    const s = later(at(snap('ch4'), 0.8));
+    const { p } = await open(s);
+    await p.evaluate(() => { const v = JSON.parse(localStorage.getItem('lastlight-colony-settings')); v.dayNight = false; localStorage.setItem('lastlight-colony-settings', JSON.stringify(v)); });
+    await p.reload(); await p.waitForTimeout(1500); await p.locator('.tm-btn.main').click(); await p.waitForTimeout(700); await clear(p);
+    const r = await run(p); await p.close();
+    if (r.off || r.hidden) errs.push(`日夜關掉時晚上還有 ${r.off} 人下班`);
+    return errs;
+  });
+
+  await test('E20', '地圖上的小人數：人口 10 以內全部，之後每 10 人多 1 個；有工人的建築至少 1 個', async () => {
+    const errs = [], rows = [];
+    for (const n of ['ch2', 'ch4', 'ch6']) {
+      const { p } = await open(later(at(snap(n), 0.3))); await clear(p); await p.waitForTimeout(800);
+      const r = await scene(p, () => {
+        const s = window.__scene, st = JSON.parse(localStorage.getItem('lastlight-colony-save-v1')), pop = st.pop;
+        const want = pop <= 10 ? pop : 10 + Math.floor((pop - 10) / 10);
+        const by = {}; for (const w of s.walkers) { const k = w.ai.bid ?? '__idle'; by[k] = (by[k] ?? 0) + 1; }
+        const staffed = Object.entries(st.b).filter(([id, b]) => id !== 'security' && b.level > 0 && b.workers > 0 && [...s.views.values()].some((v) => v.bid === id)).map(([id]) => id);
+        return { pop, want, shown: s.walkers.length, staffed: staffed.length, covered: staffed.filter((id) => by[id]).length };
+      });
+      await p.close();
+      rows.push(`${n} 人口 ${r.pop} → ${r.shown}`);
+      if (r.shown > r.want) errs.push(`${n}：人口 ${r.pop} 應最多 ${r.want} 個，畫了 ${r.shown}`);
+      if (r.staffed <= r.want && r.covered < r.staffed) errs.push(`${n}：${r.staffed} 棟有工人，只有 ${r.covered} 棟有小人`);
+    }
+    console.log('     ' + rows.join('；'));
+    return errs;
+  });
+
+  await test('E21', '石磚路：路線只有水平／垂直；白天走路的殖民者大多踩在路面上，路面上走得比沙地快', async () => {
+    const { p } = await open(later(at(snap('ch4'), 0.3))); await clear(p);
+    const r = await scene(p, () => {
+      const s = window.__scene; let moving = 0, onRoad = 0;
+      for (let i = 0; i < 20 * 30; i++) {
+        s.frame(1 / 30);
+        if (i % 5) continue;
+        for (const w of s.walkers) if (!w.ai.off && w.visible && w.alpha > 0.9 && !(w.ai.wait > 0)) { moving++; if (s.ground.paved(w.px, w.py)) onRoad++; }
+      }
+      return { moving, onRoad };
+    });
+    await p.close();
+    const ratio = r.onRoad / Math.max(1, r.moving);
+    console.log(`     走路樣本 ${r.moving}，在路面上 ${(ratio * 100).toFixed(0)}%`);
+    return ratio >= 0.7 ? [] : [`只有 ${(ratio * 100).toFixed(0)}% 的走路時間在路面上`];
+  });
 
   await b.close();
   fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));

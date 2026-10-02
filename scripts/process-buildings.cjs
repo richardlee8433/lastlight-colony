@@ -12,8 +12,10 @@ const RES = 4;
 const LIST = [
   { id: 'escape_pod', w: 70, foot: 0.12 },
   { id: 'scrap_heap', w: 58, foot: 0.12 },
-  { id: 'o2_scrubber', w: 56, foot: 0.1 },
-  { id: 'electrolyzer', w: 70, foot: 0.1 },
+  // steam：圖上畫死的白煙要去掉（改由遊戲畫會動的蒸氣），[x0, y0, x1, y1] 是白煙所在範圍（佔原圖的比例）
+  // vent：蒸氣出口（煙囪口，佔處理後圖的比例），有填就用它，沒填就用白煙底部推算
+  { id: 'o2_scrubber', w: 56, foot: 0.1, steam: [0.55, 0, 1, 0.35], vent: [0.835, 0.245] },
+  { id: 'electrolyzer', w: 70, foot: 0.1, steam: [0.55, 0, 0.75, 0.35], vent: [0.6, 0.255] },
   { id: 'algae_tank', w: 60, foot: 0.08 },
   { id: 'bio_harvester', w: 72, foot: 0.08 },
   { id: 'hydro_farm', w: 80, foot: 0.08 },
@@ -189,7 +191,7 @@ window.blobs = function (d, w, h) {
     const file = path.join(root, 'art-src/buildings', it.id + '.webp');
     if (!fromSheet[it.id] && !fs.existsSync(file)) { console.log('skip', it.id); continue; }
     const src = fromSheet[it.id] ?? 'data:image/webp;base64,' + fs.readFileSync(file).toString('base64');
-    const r = await p.evaluate(async ({ src, W, foot }) => {
+    const r = await p.evaluate(async ({ src, W, foot, steam }) => {
       const img = new Image(); img.src = src; await img.decode();
       const w = img.width, h = img.height;
       const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
@@ -204,6 +206,50 @@ window.blobs = function (d, w, h) {
         for (let k = 0; k < w * h; k++) if (lab[k] >= 0 && sizes[lab[k]] < big * 0.004) d[k * 4 + 3] = 0;
         g.putImageData(im, 0, 0);
       }
+      // 去掉畫死的白煙：範圍內淺色、低彩度、偏冷的大塊像素；記下煙的底部中心（之後在這裡冒會動的蒸氣）
+      let vent = null;
+      if (steam) {
+        const [fx0, fy0, fx1, fy1] = steam, lum = (i) => d[i] * 0.3 + d[i + 1] * 0.6 + d[i + 2] * 0.1;
+        const sat = (i) => Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]);
+        const smoke = new Uint8Array(w * h);
+        for (let y = Math.floor(fy0 * h); y < fy1 * h; y++) for (let x = Math.floor(fx0 * w); x < fx1 * w; x++) {
+          const i = (y * w + x) * 4;
+          if (d[i + 3] > 40 && lum(i) >= 170 && sat(i) <= 70 && d[i + 2] >= d[i] - 10) smoke[y * w + x] = 1;
+        }
+        // 連通的大塊才算（小亮點可能是金屬反光）；連同外圍 3 像素（白煙的描邊與反鋸齒）一起清掉，但不碰白煙範圍以外
+        const seen = new Uint8Array(w * h), opaque = d.reduce((n, v, i) => n + (i % 4 === 3 && v > 16 ? 1 : 0), 0);
+        let sx = 0, sn = 0, sy = 0;
+        for (let k0 = 0; k0 < w * h; k0++) {
+          if (!smoke[k0] || seen[k0]) continue;
+          const q = [k0], reg = []; seen[k0] = 1;
+          while (q.length) { const k = q.pop(); reg.push(k); const x = k % w, y = (k / w) | 0;
+            for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) { const n = ny * w + nx; if (nx >= 0 && ny >= 0 && nx < w && ny < h && smoke[n] && !seen[n]) { seen[n] = 1; q.push(n); } } }
+          if (reg.length < opaque * 0.002) continue;
+          for (const k of reg) { const x = k % w, y = (k / w) | 0;
+            for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const nx = x + dx, ny = y + dy; if (nx >= Math.floor(fx0 * w) && nx < fx1 * w && ny >= 0 && ny < fy1 * h && ny < h) d[(ny * w + nx) * 4 + 3] = 0; }
+            sn++; sy = Math.max(sy, y); }
+          // 出口：白煙最底下幾列的水平中心（煙囪口）
+          sx = 0; let bn = 0; for (const k of reg) { const y = (k / w) | 0; if (y >= sy - 3) { sx += k % w; bn++; } } sx = bn ? sx / bn * sn : sx;
+        }
+        // 白煙範圍內剩下的零碎描邊（不跟建築本體相連的小塊）也清掉
+        if (sn) {
+          const rx0 = Math.floor(fx0 * w), rx1 = Math.ceil(fx1 * w), ry1 = Math.ceil(fy1 * h), lab = new Int32Array(w * h).fill(-1);
+          for (let k0 = 0; k0 < w * h; k0++) {
+            const x0_ = k0 % w, y0_ = (k0 / w) | 0;
+            if (lab[k0] >= 0 || d[k0 * 4 + 3] <= 16 || x0_ < rx0 || x0_ >= rx1 || y0_ >= ry1) continue;
+            const q = [k0], reg = []; lab[k0] = 1; let edge = false;
+            while (q.length) { const k = q.pop(); reg.push(k); const x = k % w, y = (k / w) | 0;
+              for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+                if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+                const n = ny * w + nx; if (d[n * 4 + 3] <= 16 || lab[n] >= 0) continue;
+                if (nx < rx0 || nx >= rx1 || ny >= ry1) { edge = true; continue; }   // 碰到範圍外的建築本體
+                lab[n] = 1; q.push(n); } }
+            if (!edge && reg.length < opaque * 0.004) for (const k of reg) d[k * 4 + 3] = 0;
+          }
+        }
+        g.putImageData(im, 0, 0);
+        if (sn) vent = { x: sx / sn, y: sy };
+      }
       // 裁切
       let x0 = w, y0 = h, x1 = 0, y1 = 0;
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 16) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
@@ -214,11 +260,11 @@ window.blobs = function (d, w, h) {
       const mg = mid.getContext('2d'); mg.imageSmoothingQuality = 'high'; mg.drawImage(cv, x0, y0, cw, ch, 0, 0, mid.width, mid.height);
       const out = document.createElement('canvas'); out.width = ow; out.height = oh;
       const og = out.getContext('2d'); og.imageSmoothingQuality = 'high'; og.drawImage(mid, 0, 0, ow, oh);
-      return { url: out.toDataURL('image/webp', 0.92), ow, oh, foot };
-    }, { src, W: it.w * RES, foot: it.foot });
+      return { url: out.toDataURL('image/webp', 0.92), ow, oh, foot, vent: vent && [+((vent.x - x0) / cw).toFixed(3), +((vent.y - y0) / ch).toFixed(3)] };
+    }, { src, W: it.w * RES, foot: it.foot, steam: it.steam });
     fs.writeFileSync(path.join(outDir, it.id + '.webp'), Buffer.from(r.url.split(',')[1], 'base64'));
     const w = it.w, h = +(r.oh / RES).toFixed(2);
-    meta[it.id] = { w, h, ax: w / 2, ay: +(h * (1 - it.foot)).toFixed(2) };
+    meta[it.id] = { w, h, ax: w / 2, ay: +(h * (1 - it.foot)).toFixed(2), ...(it.vent || r.vent ? { steam: it.vent ?? r.vent } : {}) };
     console.log(it.id, r.ow + 'x' + r.oh, fs.statSync(path.join(outDir, it.id + '.webp')).size);
   }
   fs.writeFileSync(path.join(outDir, 'meta.json'), JSON.stringify({ res: RES, buildings: meta }, null, 2) + '\n');

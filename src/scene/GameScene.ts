@@ -1,30 +1,81 @@
 // Pixi 場景：地圖、建築／工地、工人、點擊回饋。狀態來自引擎，每次版本號改變時同步。
-import { Application, Container, Graphics, Rectangle, Sprite, Text } from 'pixi.js';
+import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, loadSprites, hasTerrain, setCharZoom,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, loadSprites, hasTerrain, setCharZoom,
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { artId, buffActive, built, disabled, idle, retired, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
-import { bName, lang, resName, t } from '../i18n';
+import { bName, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 
-type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container };
+type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
+/** 對話泡泡的小圖示（像素圖，每行一列，# 是深色、. 是空白）：…、愛心、！、？、音符、笑 */
+const BUBBLE_ICONS = [
+  ['.....', '.....', '#.#.#', '.....'],
+  ['.#.#.', '#####', '.###.', '..#..'],
+  ['..#..', '..#..', '.....', '..#..'],
+  ['.##..', '...#.', '..#..', '..#..'],
+  ['..##.', '..#.#', '###..', '##...'],
+  ['#...#', '.....', '#...#', '.###.'],
+];
+const BUBBLE_TEX = new Map<number, Texture>();
+/** 白色圓角泡泡＋左下的小尾巴，裡面放一個圖示；最近鄰取樣保持像素感 */
+function bubbleTexture(k: number): Texture {
+  let t = BUBBLE_TEX.get(k);
+  if (t) return t;
+  const cv = document.createElement('canvas'); cv.width = 11; cv.height = 10;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = '#2a1e1a'; g.fillRect(1, 0, 9, 1); g.fillRect(1, 7, 9, 1); g.fillRect(0, 1, 1, 6); g.fillRect(10, 1, 1, 6);
+  g.fillRect(2, 8, 2, 1); g.fillRect(2, 9, 1, 1);
+  g.fillStyle = '#fff8ec'; g.fillRect(1, 1, 9, 6); g.fillRect(3, 7, 1, 1);
+  g.fillStyle = k === 1 ? '#d8405a' : '#3a2a24';
+  BUBBLE_ICONS[k].forEach((row, y) => [...row].forEach((c, x) => { if (c === '#') g.fillRect(3 + x, 2 + y, 1, 1); }));
+  t = Texture.from(cv); t.source.scaleMode = 'nearest';
+  BUBBLE_TEX.set(k, t);
+  return t;
+}
+/** 影子的實心範圍（建築圖的不透明像素），用來判斷小人是不是站在影子裡 */
+type ShadowMask = { a: Uint8Array; w: number; h: number };
+const MASKS = new Map<HTMLCanvasElement, ShadowMask>();
+function shadowMask(cv: HTMLCanvasElement): ShadowMask {
+  let m = MASKS.get(cv);
+  if (!m) {
+    const d = cv.getContext('2d')!.getImageData(0, 0, cv.width, cv.height).data, a = new Uint8Array(cv.width * cv.height);
+    for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3] > 128 ? 1 : 0;
+    MASKS.set(cv, (m = { a, w: cv.width, h: cv.height }));
+  }
+  return m;
+}
 type Walker = Container & { ai: any; px: number; py: number; setMoving: any; setDir: any; setCarry: any; setWork?: (w: boolean) => void; update: any };
 
 const clampN = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+/** 地圖上畫幾個走動的殖民者：人口 10 以內全部，之後每 10 人多 1 個 */
+export const walkerBudget = (pop: number) => (pop <= 10 ? pop : 10 + Math.floor((pop - 10) / 10));
+/** 影子翻轉線在建築高度的多少比例處（從正面底邊往上算） */
+const SHADOW_FOOT = 0.15;
 
 export class GameScene {
   app = new Application();
   world = new Container();
   obj = new Container();
   lightL = new Container();
+  /** 建築的影子（在地面之上、建築之下），方向和長短跟著日夜的太陽走 */
+  shadowL = new Container();
+  /** 斜射光：清晨、黃昏從一側照過來的淡淡光線 */
+  sunRay = new Sprite();
+  /** 腳印（每幀重畫）：每個小人身後最多 3 個，只留在沙地上 */
+  footG = new Graphics();
+  /** 小人腳下的影子（每幀重畫） */
+  unitShadowG = new Graphics();
+  /** 目前的太陽：影子長度、斜度（弧度）、影子濃度 */
+  sun = { len: 0.5, lean: 0.6, alpha: 0.3 };
   hud = new Container();
   fxL = new Container();
-  ground: (Container & { roads?: Sprite | null }) | null = null;
+  ground: (Container & { roads?: Sprite | null; paved?: (x: number, y: number) => boolean }) | null = null;
   overlay = new Graphics();
   ambient: any = null;
   props: any[] = [];
@@ -74,10 +125,17 @@ export class GameScene {
     this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
     this.app.stage.addChild(this.world, this.hud, this.fxL);
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
-    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG]) c.eventMode = 'none';
+    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL]) c.eventMode = 'none';
+    // 斜射光：一張斜向漸層（左上亮、往右下淡出），用加亮混合疊在環境光上
+    { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d')!;
+      const gr = g.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.25)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+      this.sunRay.texture = Texture.from(cv); this.sunRay.width = MW; this.sunRay.height = MH; this.sunRay.blendMode = 'add'; this.sunRay.alpha = 0; this.sunRay.eventMode = 'none'; }
+    this.lightL.addChildAt(this.sunRay, 0);
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
     this.Z = this.zoomFor(this.app.screen.width);
+    (window as any).__scene = this;   // 測試用：瀏覽器測試讀場景狀態（不影響遊戲）
     setCharZoom(this.Z);
     this.fx = createFx(this.fxL, this.Z);
     this.bindInput();
@@ -245,7 +303,7 @@ export class GameScene {
   /** 地面解析度：跟著畫面縮放，最多 3 倍（再高的話記憶體和重畫時間划不來） */
   groundRes() { return clampN(this.Z, 2, 3); }
   /** 已蓋好的建築位置與它的道路／地基鋪面等級（0 沙路、1 金屬地磚、2 石磚）：
-   *  整個殖民地一致，由軌道車線決定：還沒蓋是沙路、蓋好鋪石磚、升級雙線運轉後換成金屬地磚 */
+   *  整個殖民地一致，由軌道車線決定：還沒蓋時不畫路（小人走過留腳印）、蓋好鋪石磚、升級雙線運轉後換成金屬地磚 */
   mapSites() {
     const s = game.s;
     const out: (Site & { r: number; tier: number })[] = [];
@@ -281,6 +339,9 @@ export class GameScene {
     ground.eventMode = 'none';
     this.ground = ground;
     this.world.addChildAt(ground, 0);
+    this.world.addChildAt(this.shadowL, 1);
+    this.shadowL.addChild(this.unitShadowG);
+    this.shadowL.addChildAt(this.footG, 0);
     for (const p of plan.props) {
       const c = createProp(p.kind, propStage, p.seed);
       c.position.set(p.x, p.y); c.zIndex = p.y; c.lights.position.set(p.x, p.y);
@@ -288,7 +349,9 @@ export class GameScene {
       this.obj.addChild(c); this.lightL.addChild(c.lights);
       this.props.push(c);
     }
-    this.overlay.clear().rect(0, 0, MW, MH).fill(hasTerrain() ? 0xfff2ea : STAGES[stage].ambient);
+    // 環境光：白色底，顏色由 dayLight() 用 tint 每幀調整（白天暖白、黃昏橘、夜晚藍、清晨淡紫）
+    this.overlay.clear().rect(0, 0, MW, MH).fill(0xffffff);
+    this.dayTint = hasTerrain() ? 0xfff2ea : STAGES[stage].ambient;
     this.overlay.blendMode = 'multiply';
     this.ambient = createAmbient(stage, MW, MH);
     this.lightL.addChild(this.ambient);
@@ -323,6 +386,17 @@ export class GameScene {
       b.lights.position.set(site.x, site.y);
       this.lightL.addChild(b.lights);
       v.lights = b.lights;
+      // 影子：建築本身的圖染成黑色、壓扁翻到地上，再依太陽方向斜切（只有手繪建築）
+      if (b.art?.emissive) {
+        const sh = new Sprite(b.sprite.texture);
+        // 建築是斜上方視角畫的，地面接觸面從正面底邊往後延伸；影子從接觸面中間翻下去，才會貼著建築
+        const fp = b.art.ay * SHADOW_FOOT;
+        sh.anchor.set(b.sprite.anchor.x, (b.art.ay - fp) / b.art.h); sh.tint = 0x000000; sh.position.set(site.x, site.y - fp);
+        (sh as any).base = b.sprite.scale.x;
+        (sh as any).smask = shadowMask(b.art.canvas);
+        // 小人影子那層要在建築影子之上
+        this.shadowL.addChildAt(sh, Math.max(0, this.shadowL.children.length - 1)); v.shadow = sh;
+      }
     } else {
       b.alpha = 0.35;
       b.sprite.tint = 0xb8c0d8;
@@ -353,6 +427,7 @@ export class GameScene {
     return v;
   }
   dropView(v: View) {
+    v.shadow?.destroy();
     v.lights?.destroy({ children: true });
     v.ring?.destroy(); v.sel?.destroy();
     v.plate?.destroy({ children: true });
@@ -817,14 +892,26 @@ export class GameScene {
       for (const w of this.walkers) w.destroy({ children: true });
       this.walkers = [];
     }
-    const want = new Map<string, number>();
+    // 地圖上的小人是「代表」：人口 10 以內全部畫出來，超過後每多 10 人才多畫 1 個（30 人 12 個、90 人 18 個），
+    // 人少一點，作息與聊天才看得清楚，也比較省效能。名額先讓每個有工人的建築至少 1 個，其餘按人數多的分，每棟最多 5 個
+    const raw: [string, number][] = [];
     for (const site of SITES) {
       const bid = this.siteBuilding(site);
-      if (bid && built(s, bid) && s.b[bid].workers > 0) want.set(bid, Math.min(5, s.b[bid].workers));
+      // 陸戰隊由巡邏與迎戰顯示，不在這裡
+      if (bid && bid !== 'security' && built(s, bid) && s.b[bid].workers > 0) raw.push([bid, s.b[bid].workers]);
     }
-    // 陸戰隊出去迎戰時，營區附近不再顯示閒晃的隊員
-    want.delete('security');
-    want.set('__idle', Math.min(8, Math.max(0, idle(s))));
+    raw.push(['__idle', Math.max(0, idle(s))]);
+    const want = new Map<string, number>(raw.map(([k]) => [k, 0]));
+    const people = raw.reduce((n, [, v]) => n + v, 0);
+    let budget = Math.min(people, walkerBudget(s.pop));
+    const order = raw.filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]);
+    for (const [k] of order) { if (budget <= 0) break; want.set(k, 1); budget--; }
+    while (budget > 0) {
+      let best: string | null = null, score = 0;
+      for (const [k, v] of order) { const n = want.get(k)!; if (n < Math.min(5, v) && v / (n + 1) > score) { score = v / (n + 1); best = k; } }
+      if (!best) break;
+      want.set(best, want.get(best)! + 1); budget--;
+    }
     const have = new Map<string, Walker[]>();
     for (const w of this.walkers) { const k = w.ai.bid ?? '__idle'; if (!have.has(k)) have.set(k, []); have.get(k)!.push(w); }
     for (const [k, list] of have) {
@@ -845,7 +932,8 @@ export class GameScene {
     const home = camp ? HOME : POD_DOOR;
     // 沿著道路走（中間的轉折點），不直線穿過其他建築
     const path = site ? (camp ? ROUTES[site.id] : routeFromPod(site.id)) : null;
-    const via = path ? path.slice(1, -1).map((p) => ({ x: p.x + (j() >> 2), y: p.y + (j() >> 3) })) : [];
+    // 轉角點只偏 1～2 像素，走的時候不會踩出路面
+    const via = path ? path.slice(1, -1).map((p) => ({ x: p.x + (j() >> 3), y: p.y + (j() >> 4) })) : [];
     w.ai = bid
       ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + j(), y: site!.y + 6 } }
       : { bid: null, wait: Math.random() * 2, home: { x: home.x + j() * 2, y: home.y + (j() >> 1) } };
@@ -860,9 +948,25 @@ export class GameScene {
   snap(v: number) { return Math.round(v * this.Z) / this.Z; }
   moveWalker(w: Walker, dt: number) {
     const a = w.ai;
-    const speed = built(game.s, 'rail_line') ? 24 : 16;
+    // 走在石磚、金屬路上才會加速
+    const speed = this.ground?.paved?.(w.px, w.py) ? 24 : 16;
+    a.jit ??= Math.random() * 0.03;
+    const ph = this.schedule(a.jit);
+    if (ph !== 'work') {
+      this.offDuty(w, ph, dt, speed);
+      w.position.set(this.snap(w.px), this.snap(w.py)); w.zIndex = w.py; w.update(this.T);
+      return;
+    }
+    if (a.off) {
+      a.chatting = false; a.meal = undefined;
+      // 回到白天：從家門口出來，先走回自己的家，接著照常上工
+      a.off = null; w.visible = true; w.alpha = 1;
+      a.queue = pathBetween({ x: w.px, y: w.py }, a.home).slice(1); a.target = a.queue.shift() ?? a.home; a.wait = Math.random() * 1.5;
+    }
     if (a.wait > 0) {
       a.wait -= dt; w.setMoving(false); w.setWork?.(!!a.working);
+      // 進建築：前 0.3 秒淡出、最後 0.3 秒淡入
+      if (a.inside > 0) { const el = a.inside - a.wait; w.alpha = Math.max(0, Math.min(1, Math.max(1 - el / 0.3, 1 - a.wait / 0.3))); if (a.wait <= 0) { a.inside = 0; w.alpha = 1; } }
       // 在建築旁工作完，扛著產出走回家
       if (a.wait <= 0 && a.working) {
         a.working = false; w.setWork?.(false);
@@ -878,6 +982,8 @@ export class GameScene {
         if (!a.bid) { a.wait = 1 + Math.random() * 3; a.target = { x: a.home.x + (Math.random() - 0.5) * 50, y: a.home.y + (Math.random() - 0.5) * 12 }; }
         else if (a.target === a.site) {
           a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 2.5 + Math.random() * 2; a.working = true;
+          // 一半的機會走進建築裡做事（淡出），做完再出來
+          a.inside = Math.random() < 0.5 ? a.wait : 0;
         } else { a.queue = [...a.via, a.site]; a.target = a.queue.shift(); a.wait = 0.4; w.setCarry(null); }
       } else {
         const st = Math.min(d, speed * dt);
@@ -890,10 +996,192 @@ export class GameScene {
     w.update(this.T);
   }
 
+  /** 日夜（純畫面，不影響數值）：畫面上的一天 5 分鐘，跟著遊戲時間走（暫停時也停） */
+  dayTint = 0xfff2ea;
+  /** 對話泡泡（傍晚在休閒艙前聊天時冒出來） */
+  bubbles: { s: Sprite; w: any; t: number }[] = [];
+  addBubble(w: any) {
+    // 附近已經有泡泡就不冒，避免疊在一起
+    if (this.bubbles.some((b) => !b.w.destroyed && Math.abs(b.w.x - w.x) < 16 && Math.abs(b.w.y - w.y) < 12)) return;
+    const s = new Sprite(bubbleTexture(Math.floor(Math.random() * BUBBLE_ICONS.length)));
+    s.anchor.set(0.5, 1); s.eventMode = 'none'; s.zIndex = 1e6;
+    this.obj.addChild(s);
+    this.bubbles.push({ s, w, t: 0 });
+  }
+  /** 泡泡跟著說話的人，往上飄一點，2.2 秒後淡出 */
+  moveBubbles(dt: number) {
+    for (const b of [...this.bubbles]) {
+      b.t += dt;
+      const gone = b.t > 2.2 || b.w.destroyed || !b.w.visible || !b.w.ai?.chatting;
+      if (gone) { b.s.alpha -= dt * 4; if (b.s.alpha <= 0) { b.s.destroy(); this.bubbles.splice(this.bubbles.indexOf(b), 1); continue; } }
+      else b.s.alpha = Math.min(1, b.t * 5);
+      if (!b.w.destroyed) b.s.position.set(this.snap(b.w.x + 4), this.snap(b.w.y - 17 - Math.min(2, b.t * 2)));
+    }
+  }
+  /** 一天裡的時間比例（0～1）；作息用 */
+  dayP = 0.2;
+  /** 作息（純畫面）：白天工作、傍晚去休閒艙、晚上回生活艙睡覺、清晨出門。jit 讓每個人出發時間錯開 */
+  schedule(jit: number): 'work' | 'evening' | 'night' {
+    const p = (this.dayP - jit + 1) % 1;
+    return p < 0.6 ? 'work' : p < 0.71 ? 'evening' : p < 0.95 ? 'night' : 'work';
+  }
+  /** 作息的目的地：傍晚去休閒艙（沒有就回中央廣場），晚上回生活艙（沒有就回營地或逃生艙） */
+  offDutySpot(kind: 'evening' | 'night'): { x: number; y: number } {
+    // 建築正前方再往外一點（不要擠在牆上）
+    const s = game.s, at = (id: string) => { const q = SITES.find((x) => x.id === id)!; return { x: q.x, y: q.y + 12 }; };
+    const camp = built(s, 'emergency_camp');
+    if (kind === 'evening' && built(s, 'lounge')) return at('lounge');
+    if (kind === 'night' && built(s, 'hab_pod')) return at('hab_pod');
+    return camp ? HOME : POD_DOOR;
+  }
+  /** 下班時間的移動：沿著繞開建築的路走到目的地；傍晚在休閒艙附近閒晃，晚上進門（看不見）；回到白天就走回家再照常上工 */
+  offDuty(w: Walker, kind: 'evening' | 'night', dt: number, speed: number) {
+    const a = w.ai;
+    if (a.off !== kind) {
+      a.off = kind; a.offAt = this.offDutySpot(kind); a.meal = undefined; a.chatting = false; a.inside = 0;
+      const j = () => (Math.random() - 0.5) * 16;
+      // 門口：建築正面底邊中央（休閒艙吃飯、生活艙睡覺都從這裡進出）
+      a.door = { x: a.offAt.x + j() * 0.15, y: a.offAt.y - 10 };
+      // 傍晚吃完飯在休閒艙前散開成幾小群（寬約 70、深約 18 像素）
+      a.offAt = kind === 'evening' ? { x: a.offAt.x + (Math.random() - 0.5) * 70, y: a.offAt.y + Math.random() * 18 } : a.door;
+      a.offPath = pathBetween({ x: w.px, y: w.py }, a.door).slice(1);
+      a.offPath.push(a.door);
+      a.working = false; w.setWork?.(false); w.setCarry(null);
+      w.visible = true; w.alpha = 1;
+    }
+    const tgt = a.offPath[0];
+    if (tgt) {
+      const dx = tgt.x - w.px, dy = tgt.y - w.py, d = Math.hypot(dx, dy);
+      if (d < 1) a.offPath.shift();
+      else { const st = Math.min(d, speed * dt); w.px += (dx / d) * st; w.py += (dy / d) * st; w.setMoving(true); w.setDir(Math.sign(dx) || 1); }
+    } else if (kind === 'night') {
+      // 到家：淡出（進門睡覺）
+      w.setMoving(false); w.alpha = Math.max(0, w.alpha - dt * 2); if (w.alpha <= 0) w.visible = false;
+    } else {
+      // 傍晚：先進休閒艙吃飯（淡出 8～14 秒），再出來在門前聊天（閒晃＋對話泡泡）
+      w.setMoving(false);
+      a.meal ??= 8 + Math.random() * 6;
+      if (a.meal > 0) {
+        // 在門口淡出進去吃飯；吃完在門口淡入，再走到門前空地聊天
+        a.meal -= dt;
+        w.alpha = a.meal > 0.3 ? Math.max(0, w.alpha - dt * 3) : Math.min(1, w.alpha + dt * 3);
+        w.visible = w.alpha > 0.01 || a.meal <= 0.3;
+        if (a.meal <= 0) { w.alpha = 1; w.visible = true; a.offPath = [a.offAt]; a.offWait = 2 + Math.random() * 3; }
+        return;
+      }
+      a.chatting = true;
+      a.offWait = (a.offWait ?? 0) - dt;
+      if (a.offWait <= 0) { a.offWait = 2 + Math.random() * 4; a.offPath = [{ x: a.offAt.x + (Math.random() - 0.5) * 16, y: a.offAt.y + (Math.random() - 0.5) * 4 }]; }
+      // 對話泡泡：偶爾冒一個，同時最多 4 個
+      a.chatCd = (a.chatCd ?? 1 + Math.random() * 4) - dt;
+      if (a.chatCd <= 0) { a.chatCd = 3 + Math.random() * 5; if (this.bubbles.length < 4 && Math.random() < 0.6) this.addBubble(w); }
+    }
+  }
+  dayLight() {
+    // 設定頁關掉日夜變化：固定在上午（影子適中、沒有夜晚）
+    const DAY = 300, p = useSettings.getState().dayNight ? (((game.s.t % DAY) + DAY) % DAY) / DAY : 0.2;
+    this.dayP = p;
+    // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天：夜晚約 3：1（白天到黃昏 0～0.7、夜晚到清晨 0.7～1）
+    const K: [number, number, number][] = [
+      [0, this.dayTint, 0], [0.62, this.dayTint, 0], [0.68, 0xffb48a, 0.4], [0.73, 0x5a68a4, 1],
+      [0.93, 0x5a68a4, 1], [0.97, 0xc8b4dc, 0.35], [1, this.dayTint, 0],
+    ];
+    let i = 1; while (i < K.length - 1 && K[i][0] < p) i++;
+    const [p0, c0, n0] = K[i - 1], [p1, c1, n1] = K[i], f = (p - p0) / (p1 - p0 || 1);
+    const mix = (a: number, b: number, sh: number) => Math.round(((a >> sh) & 255) + (((b >> sh) & 255) - ((a >> sh) & 255)) * f);
+    this.overlay.tint = (mix(c0, c1, 16) << 16) | (mix(c0, c1, 8) << 8) | mix(c0, c1, 0);
+    const night = n0 + (n1 - n0) * f;
+    setNight(night);
+    // 太陽：白天（p 0～0.68）從東升到西落。影子一律落在右下（跟手繪圖左上打光一致），只改角度與長短：
+    // 清晨長、往右斜很多；中午短；黃昏長、幾乎往正下方
+    const u = clampN(p / 0.68, 0, 1), low = 1 - Math.sin(Math.PI * u);
+    // lean：斜切角度（弧度），tan 值就是影子往右偏的比例；清晨約 2.5 倍、黃昏約 0.4 倍
+    const len = 0.32 + 0.55 * low, lean = 1.18 - 0.8 * u;
+    const shAlpha = 0.42 * (1 - night) * (0.7 + 0.3 * low);
+    this.sun = { len, lean, alpha: shAlpha };
+    for (const v of this.views.values()) {
+      const sh = v.shadow; if (!sh) continue;
+      const k = (sh as any).base;
+      sh.scale.set(k, -k * len); sh.skew.x = lean; sh.alpha = shAlpha;
+    }
+    // 斜射光：清晨、黃昏比較明顯，中午和夜晚幾乎沒有；顏色跟著環境光
+    this.sunRay.alpha = 0.16 * low * (1 - night);
+    this.sunRay.tint = this.overlay.tint;
+  }
+  /** 腳印：小人每走 7 像素在腳下留一個（左右腳交錯），每人身後保持 3 個；
+   *  第 4 個出現時最舊的那個不是瞬間消失，而是 0.6 秒淡出；停下來 4 秒後也慢慢淡掉。鋪過的路面上不留 */
+  footprints() {
+    const g = this.footG, paved = this.ground?.paved, T = this.T;
+    const STRIDE = 7, KEEP = 3, FADE = 0.6, IDLE = 4;
+    g.clear();
+    const units: any[] = [...this.walkers, ...this.patrols, ...this.defenders, ...this.aliens];
+    for (const u of units) {
+      if (u.destroyed || !u.visible) continue;
+      // prints：{ x, y, t 留下的時間, gone 開始淡出的時間 }
+      const prints: { x: number; y: number; t: number; gone?: number }[] = (u.prints ??= []);
+      if (u.fx == null) { u.fx = u.x; u.fy = u.y; u.step = 0; }
+      const dx = u.x - u.fx, dy = u.y - u.fy, d = Math.hypot(dx, dy);
+      if (d > 30) { u.fx = u.x; u.fy = u.y; prints.length = 0; }   // 瞬移（重新產生、換位置）不留腳印
+      else if (d >= STRIDE) {
+        // 左右腳：垂直於行進方向偏 1 像素多一點
+        const side = (u.step++ % 2 ? 1 : -1), nx = -dy / d, ny = dx / d;
+        const px = u.x + nx * side * 1.3, py = u.y + ny * side * 0.7;
+        if (!paved?.(px, py)) {
+          prints.push({ x: px, y: py, t: T });
+          const live = prints.filter((q) => q.gone == null);
+          if (live.length > KEEP) live[0].gone = T;
+        }
+        u.fx = u.x; u.fy = u.y;
+      }
+      for (const q of prints) if (q.gone == null && T - q.t > IDLE) q.gone = T;   // 停下來太久：慢慢淡掉
+      for (let i = prints.length - 1; i >= 0; i--) if (prints[i].gone != null && T - prints[i].gone! > FADE) prints.splice(i, 1);
+      const live = prints.filter((q) => q.gone == null);
+      for (const q of prints) {
+        // 越新越深（最新 0.65、最舊 0.35）；淡出中的從目前的深淺降到 0
+        const rank = q.gone == null ? live.indexOf(q) : -1;
+        const base = rank >= 0 ? 0.35 + 0.3 * (rank / Math.max(1, KEEP - 1)) : 0.35;
+        const a = q.gone == null ? base : base * Math.max(0, 1 - (T - q.gone) / FADE);
+        if (a > 0.01) g.ellipse(q.x, q.y, 1.5, 0.9).fill({ color: 0x4a1c10, alpha: a });
+      }
+    }
+  }
+  /** 小人：腳下畫小影子（跟建築影子同方向）；走進建築影子裡慢慢變暗 40%，走出來再恢復 */
+  unitShadows(dt: number) {
+    const g = this.unitShadowG, { len, lean, alpha } = this.sun;
+    g.clear();
+    const units: any[] = [...this.walkers, ...this.patrols, ...this.defenders, ...this.aliens, ...this.fallen, ...this.patients];
+    const off = Math.tan(lean) * len * 5, rx = 2.6 + len * 1.6;
+    const shadows = [...this.views.values()].map((v) => v.shadow).filter((s): s is Sprite & { smask: ShadowMask } => !!s?.smask && s.alpha > 0.02);
+    const pt = new Point(), loc = new Point();
+    const debug = (window as any).__shadeDebug;   // 測試用：設成 true 時，站在影子裡的小人標成紅色
+    for (const u of units) {
+      if (u.destroyed || !u.visible) continue;
+      // 影子中心壓在腳底（不能往下偏，不然看起來腳離地），只往太陽的反方向（右）稍微拉長
+      if (alpha > 0.02) g.ellipse(u.x + off * 0.25, u.y - 0.3, rx, 1.2 + len * 0.3).fill({ color: 0x000000, alpha: alpha * 0.9 });
+      // 是否在某棟建築的影子裡：把腳的位置換算回影子圖的像素，看那裡是不是實心
+      let inside = false;
+      pt.set(u.x, u.y);
+      for (const sh of shadows) {
+        sh.toLocal(pt, this.shadowL, loc);
+        const t = sh.texture, px = Math.floor(loc.x + sh.anchor.x * t.width), py = Math.floor(loc.y + sh.anchor.y * t.height);
+        if (px < 0 || py < 0 || px >= sh.smask.w || py >= sh.smask.h) continue;
+        if (sh.smask.a[py * sh.smask.w + px]) { inside = true; break; }
+      }
+      const want = inside ? 1 : 0;
+      u.shade = (u.shade ?? 0) + (want - (u.shade ?? 0)) * Math.min(1, dt * 6);
+      u.baseTint ??= u.tint ?? 0xffffff;
+      if (u.tint !== u.lastTint) u.baseTint = u.tint;   // 別處改了顏色（傷員、掠奪者）：以那個為基準
+      const k = 1 - 0.4 * u.shade * (alpha / 0.42);
+      const bt = debug && inside ? 0xff4040 : u.baseTint;
+      const r = Math.round(((bt >> 16) & 255) * k), gg = Math.round(((bt >> 8) & 255) * k), b = Math.round((bt & 255) * k);
+      u.tint = (r << 16) | (gg << 8) | b; u.lastTint = u.tint;
+    }
+  }
   frame(rdt: number) {
     // 遊戲暫停時畫面上的人、建築動畫也停住；鏡頭照常可以移動
     const dt = gamePaused() ? 0 : rdt;
     this.T += dt;
+    this.dayLight();
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
       this.cam.x += (this.camGoal.x - this.cam.x) * Math.min(1, rdt * 6);
@@ -931,6 +1219,9 @@ export class GameScene {
     this.moveDefenders(dt);
     this.movePatrols(dt);
     this.drawShots(dt);
+    this.footprints();
+    this.moveBubbles(dt);
+    this.unitShadows(dt);
     this.updateRaidMark();
     if (this.hold) {
       this.hold.next -= dt;

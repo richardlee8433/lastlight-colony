@@ -9,7 +9,7 @@ import EN from '../src/i18n/data-en';
 import { DEFS } from '../src/engine/state';
 import { RESEARCH_DEFS } from '../src/engine/formulas';
 import { stepFacing } from '../src/art/facing.js';
-import { patrolAt } from '../src/scene/layout';
+import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
 
 const results: { id: string; name: string; ok: boolean; info: string }[] = [];
 function check(id: string, name: string, fn: () => string[] | string | void) {
@@ -110,6 +110,13 @@ check('S10', '巡邏 2 分鐘：30～165Hz、縮放 2／3 倍，轉向次數都�
     if (changes > 20) errs.push(`${fps}Hz×${Z}：${changes} 次`);
   }
   if (new Set(counts).size > 2) errs.push(`不同更新率結果差太多：${counts.join(',')}`);
+  return errs;
+});
+
+check('S11', '建築道路只有水平／垂直線段（都市計畫式的直角道路）', () => {
+  const errs: string[] = [];
+  if (!ROADS || !Object.keys(ROADS).length) return ['讀不到道路'];
+  for (const [id, r] of Object.entries(ROADS) as [string, { x: number; y: number }[]][]) for (let i = 1; i < r.length; i++) if (r[i].x !== r[i - 1].x && r[i].y !== r[i - 1].y) errs.push(`${id} 第 ${i} 段是斜的`);
   return errs;
 });
 
