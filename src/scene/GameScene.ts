@@ -1131,7 +1131,9 @@ export class GameScene {
     const gt = game.s.t;
     if (this.visT == null || Math.abs(this.visT - gt) > 10) this.visT = gt;
     else { const dt = this.visDt; this.visT += dt + (gt - this.visT) * Math.min(1, dt * 1.5); }
-    const DAY = 300, p = useSettings.getState().dayNight ? (((this.visT % DAY) + DAY) % DAY) / DAY : 0.2;
+    // 錄影／測試用：window.__dayP 設成 0～1 時固定在那個時間（可以做日夜縮時）
+    const ov = (window as any).__dayP;
+    const DAY = 300, p = typeof ov === 'number' ? ov : useSettings.getState().dayNight ? (((this.visT % DAY) + DAY) % DAY) / DAY : 0.2;
     this.dayP = p;
     // 關鍵影格：[時間比例, 環境光顏色, 亮燈程度]；白天：夜晚約 3：1（白天到黃昏 0～0.7、夜晚到清晨 0.7～1）
     const K: [number, number, number][] = [
