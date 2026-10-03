@@ -1,1 +1,748 @@
-{}
+{
+ "c1-open": { "lines": [
+  "Appell. Hand hoch, wer noch atmet.",
+  "Beide Hände oben. Zählt mich für zwei Atemzüge.",
+  "Drei Hände! … Okay, eine davon ist Teos Schraubenschlüssel.",
+  "Was ist mit den anderen Kapseln?",
+  "(wirft einen Blick auf die drei leeren Sitze) Sie haben Baken. Sie werden uns finden.",
+  "Nehmt das Wrack nach Schrott aus. Ab jetzt machen wir unsere Luft selbst."
+ ], "log": "Wir sind abgestürzt. Mara meinte, jemand sollte alles aufschreiben, also habe ich mich gemeldet. Das ist die erste Seite des Kolonie-Logbuchs." },
+ "c1-ls3": { "lines": [
+  "Noch drei Minuten Lebenserhaltung … Ich sollte mein Testament schreiben. „Meine Socken vermache ich—“",
+  "Keiner will deine Socken.",
+  "Testament später. Bau erst den Sauerstoffwäscher, sonst hast du keine Zeit mehr, es fertigzuschreiben."
+ ] },
+ "c1-scrubber": { "lines": [
+  "(klopft zweimal auf die Maschine) Braver Junge. Sagt alle Hallo. Das ist Wheezy.",
+  "Er … hustet.",
+  "Das ist sein Arbeitsgeräusch. Mach ihn nicht schlecht. Wheezy ist das Einzige auf diesem Planeten, das für uns atmen will.",
+  "Wheezy, unser Leben liegt in deinen Händen. Bitte verschluck dich nicht."
+ ], "log": "Teo hat aus Kapseltrümmern einen Sauerstoffwäscher gebaut und ihn Wheezy genannt. Er ist laut. Wir lieben ihn." },
+ "c1-will": { "lines": [
+  "Gute Nachricht: Ich brauche das Testament nicht. Ich hab eine Einkaufsliste draus gemacht.",
+  "Punkt eins: mehr Sauerstoff. Punkt zwei: Socken."
+ ] },
+ "c1-coaster": { "lines": [
+  "Teo! Da leuchtet eine Platte im Wrack!",
+  "(dreht sie um) Nicht von unserem Schiff. Hitzefest, flach, genau die richtige Größe.",
+  "Richtige Größe wofür?",
+  "Für einen Untersetzer.",
+  "… Wirf sie nicht weg. Ich hab das Gefühl, sie beobachtet uns.",
+  "Dann kann sie mir beim Teetrinken zusehen."
+ ], "log": "Ich habe im Wrack eine leuchtende Kristallplatte gefunden. Jetzt ist sie Teos Untersetzer. Mara sagt, sie beobachtet uns. Wenn ich die Tasse hochhebe, scheint sie heller zu werden." },
+ "c1-algae": { "lines": [
+  "Die ersten Algen! Ich probier mal … hm. Wie nasse Pappe.",
+  "Das nennt man Umami.",
+  "Schon gut. Wenigstens besser als die Rationen auf F8.",
+  "… Stimmt. Die Rationen auf F8 waren schlimmer als Pappe.",
+  "Und es atmet Sauerstoff aus. Hier draußen ist Essen, das man essen und atmen kann, ein Drei-Sterne-Restaurant."
+ ], "log": "Die ersten Algen. Schmecken wie nasse Pappe. Teo besteht darauf, dass das Umami ist. Trotzdem besser als die Rationen auf F8. Da sind sich alle einig." },
+ "c1-f8": { "lines": [
+  "(zieht die letzte Schraube fest) So. Das hält noch eine Weile.",
+  "Du siehst so glücklich aus, wenn du was reparierst.",
+  "Auf F8 wurde dir eine kaputte Maschine vom Lohn abgezogen. Irgendwann haben wir uns um die Maschinen besser gekümmert als um uns selbst.",
+  "Hier reparierst du es einfach, wenn es kaputtgeht. Keiner zieht dir was ab.",
+  "Dann kümmer dich doch auch ein bisschen um dich selbst?",
+  "… Wenn ich mit der hier fertig bin."
+ ], "log": "Teo sagt, auf F8 wurde eine kaputte Maschine vom Lohn abgezogen, deshalb haben sie sich um die Maschinen besser gekümmert als um sich selbst. Ich hab ihm gesagt, er soll sich auch um sich kümmern. Er meinte, nach dieser hier. Seitdem hat er drei fertig." },
+ "c1-assign": { "lines": [
+  "Glückwunsch, alle zusammen. Ihr seid jetzt Angestellte.",
+  "Und der Lohn?",
+  "Nicht sterben. Zu den Zusatzleistungen gehört, auch morgen nicht zu sterben.",
+  "Mehr, als Helion uns je gegeben hat."
+ ] },
+ "c1-signal": { "lines": [
+  "Also, wo sind diese alten Kolonieanlagen, die man uns versprochen hat?",
+  "Das Signal hat gesagt, dass es welche gibt. Nicht, dass sie noch stehen.",
+  "Das Funkgerät fängt es immer noch ab und zu auf. Mal da, mal weg. Ich kann nicht sagen, woher es kommt.",
+  "Mara, warum hast du beschlossen abzuhauen? Von F8, meine ich.",
+  "… Wheezys Filter muss gewechselt werden. Teo, los.",
+  "Den hab ich gestern gewechselt.",
+  "Dann wechsel ihn nochmal."
+ ], "log": "Das Signal, das uns hergeführt hat, ertönt immer noch ab und zu. Ich hab Mara gefragt, warum sie abgehauen ist. Sie hat Teo den Filter wechseln lassen. Teo hat ihn zweimal gewechselt." },
+ "c1-limit": { "lines": [
+  "Wheezy ist am Limit. Noch eine Schraube und er fällt auseinander.",
+  "Dann bau doch einen neuen?",
+  "Womit? Es gibt nur so viel Wrack, und wir können nur so viel.",
+  "Dann halten wir durch. Wir sehen weiter, wenn die anderen Kapseln uns finden."
+ ], "log": "Teo sagt, Wheezy ist am Limit. Noch eine Schraube und er fällt auseinander. Es gibt nur so viel Wrack, und wir können nur so viel. Mara sagt, wir halten durch, bis die anderen Kapseln uns finden." },
+ "hypoxia": { "lines": [
+  "Alle herhören, der Sauerstoff ist alle! Langsam atmen, nicht reden—",
+  "Darf ich stattdessen schreiben?",
+  "… Ja. Schreib: „Sofort mehr Leute an die Sauerstoffmaschinen.“"
+ ] },
+ "c1-end": { "lines": [
+  "Kolonie-Logbuch, Nacht {day}.",
+  "Wir haben im Druckzelt die Helme abgenommen. Die Luft riecht nach Rost und Algen—",
+  "aber jeder Atemzug davon ist einer, den wir selbst gemacht haben.",
+  "… Nicht schlecht.",
+  "Mara, weinst du?",
+  "Das sind die Algen. Allergie.",
+  "Appell.",
+  "Hier.",
+  "Hier! … Mara, wir sind nur zu dritt. Das musst du nicht jeden Abend machen.",
+  "Doch."
+ ], "log": "Heute Nacht haben wir im Druckzelt die Helme abgenommen. Die Luft riecht nach Rost und Algen, aber jeder Atemzug davon ist einer, den wir selbst gemacht haben. Vor dem Schlafen hat Mara wieder Appell gemacht. Nur wir drei, und sie hat es trotzdem getan." },
+ "c2-open": { "lines": [
+  "Mara! Das Funkgerät empfängt was! Die Frequenz unseres Schiffs!",
+  "Welche Kapsel?",
+  "Ich kann es nicht verstehen … aber da redet jemand.",
+  "Mehr Münder.",
+  "Und mehr Lungen. Wheezy schafft das nicht allein. Wir brauchen genug Luft für alle."
+ ] },
+ "c2-ines": { "lines": [
+  "War noch jemand in deiner Kapsel?",
+  "… Vier. Jetzt eine.",
+  "(Stille.)",
+  "Danke. Grundregel: Dorothy wird nicht verliehen.",
+  "Wer ist Dorothy?",
+  "Mein Werkzeugkasten. Zuverlässiger als die meisten Menschen.",
+  "Du hast Wheezy ziemlich lange angestarrt. Ein Problem?",
+  "Ja. Er ist niedlich, aber er hält keine zehn Leute am Atmen. Unter uns ist Eis. Gebt mir Stein und Bauteile, dann bau ich ihm einen Bohrer an und mach eine Elektrolysestation draus, die Eis in Luft verwandelt.",
+  "Willkommen an Bord, Ines. Der Lohn ist nicht sterben.",
+  "… Hab ich gehört. Zusatzleistungen auch."
+ ], "log": "Wir haben Ines gerettet, und ihren Werkzeugkasten Dorothy. Mara hat gefragt, ob noch jemand in ihrer Kapsel war. Sie sagte: vier, jetzt eine. Dann sagte sie: „Dorothy wird nicht verliehen.“ Ihr dritter Satz war Kritik an Wheezy. Teo schmollt immer noch." },
+ "c2-elec-i": { "lines": [
+  "Umbau fertig. Ins Eis bohren, Eis zu Wasser, Wasser zu Sauerstoff. Das ist Ingenieurskunst.",
+  "Du hast ihm den Lüfter abgebaut.",
+  "Der Lüfter ist noch da. Ich hab ihm nur eine sinnvolle Aufgabe gegeben.",
+  "… Heißt er noch Wheezy?",
+  "Nenn ihn, wie du willst. Wunder lassen sich nicht in Serie bauen, aber aufrüsten schon.",
+  "Das kommt ins Logbuch!"
+ ], "log": "Ines hat Wheezy zur Elektrolysestation umgebaut. Teo hat den ganzen Nachmittag zugesehen und immer wieder gefragt, ob der Lüfter Schmerzen hat. Ines sagte: Wunder lassen sich nicht in Serie bauen, aber aufrüsten schon." },
+ "c2-upgrade": { "lines": [
+  "Wer hat diesen Algentank entworfen?",
+  "Ich. Wieso?",
+  "Zwei Rohre sind vertauscht, der Filter ist ein Helmvisier und der Rahmen ist ein Kapselsitz.",
+  "Und?",
+  "Und für das, womit du arbeiten musstest … nicht schlecht.",
+  "Sie hat dich gerade gelobt!",
+  "Sie hat „nicht schlecht“ gesagt.",
+  "Von Ines IST das ein Lob!"
+ ], "log": "Ines hat den Algentank zum Bio-Ernter umgebaut und Teos Entwurf „nicht schlecht“ genannt. Teo tat so, als wäre es ihm egal, und hat beim Abendessen eine zweite Schüssel Algen gegessen." },
+ "c2-pop10": { "lines": [
+  "Wir sind zehn! Ich gebe allen Spitznamen. Teo ist Opa Schraubenschlüssel.",
+  "… Akzeptabel.",
+  "Ines ist Dorothys Mama.",
+  "(stockt) … Ungenau, aber ich akzeptiere.",
+  "Mara ist Käpt'n Frost.",
+  "Abgelehnt.",
+  "Käpt'n Frost hat ihren Spitznamen abgelehnt. Notiert."
+ ], "log": "Wir sind jetzt zehn. Ich hab allen Spitznamen gegeben. Nur Käpt'n Frost hat ihren abgelehnt." },
+ "c2-rescue": { "lines": [
+  "In welcher Kapsel warst du?",
+  "(keuchend) Kapsel fünf … oder sechs? Ich weiß es nicht mehr.",
+  "Egal. Name?",
+  "(Mara schreibt den Namen auf ihre Appell-Liste. Ihr Stift hält neben drei Namen an, die durchgestrichen und neu geschrieben wurden, und bleibt dort lange stehen.)",
+  "Mara?",
+  "Nichts. Bringt ihn in die Wohnkapsel."
+ ], "log": "Wir haben noch jemanden gerettet. Maras Appell-Liste wird immer länger. Ganz oben stehen drei Namen, durchgestrichen und neu geschrieben. Ich habe nicht gefragt." },
+ "c2-assembly": { "lines": [
+  "Teo, dieser Schraubenschlüssel ist eine Antiquität. Jedes Werkzeug in Dorothy ist besser.",
+  "Dieser Schraubenschlüssel hat dreißig Jahre lang mit mir Grubenwagen repariert.",
+  "Deshalb ist er verbogen.",
+  "Logbuch: In der ersten Nacht der Montagewerkstatt haben zwei Ingenieure bis zum Morgengrauen über Schraubenschlüssel gestritten."
+ ], "log": "Die erste Nacht der Montagewerkstatt: Ines und Teo haben bis zum Morgengrauen darüber gestritten, wessen Schraubenschlüssel besser ist. Niemand wurde verletzt. Außer einem Schraubenschlüssel. Später, als Teo eingeschlafen war, sah ich, wie Ines seinen Schraubenschlüssel nahm und ihn heimlich ein kleines bisschen geradebog. Am nächsten Tag hat keiner der beiden ein Wort darüber verloren." },
+ "c2-lounge": { "lines": [
+  "Eine Aufenthaltskapsel! Wir haben einen Aufenthaltsraum! Das heißt, wir haben Freizeit!",
+  "Auf F8 war Freizeit ein anderes Wort für Schlaf.",
+  "In einer Rettungskapsel ist Freizeit ein anderes Wort für Warten aufs Sterben.",
+  "Und hier?",
+  "… Hier ist Freizeit einfach Freizeit.",
+  "Ich glaube, wir könnten hier lange bleiben."
+ ], "log": "Heute haben wir in der Aufenthaltskapsel einen Film geschaut. Wir haben ihn im Wrack gefunden, nur die zweite Hälfte war noch da. Niemanden hat es gestört. Zum ersten Mal hatte ich das Gefühl, dass wir hier lange bleiben könnten." },
+ "c2-ship": { "lines": [
+  "Ines, du bist die Ingenieurin. Wenn wir genug Teile sammeln, könnten wir ein Schiff bauen und abhauen?",
+  "Theoretisch.",
+  "Und praktisch?",
+  "Praktisch haben wir noch nicht mal Stühle.",
+  "Wie lange?",
+  "(Alle drehen sich zu Mara um.)",
+  "… Lange. Willst du weg?",
+  "Ich bin Pilotin. Ich will es nur wissen."
+ ], "log": "Jemand hat Ines gefragt, ob wir ein Schiff bauen und abhauen könnten. Sie sagte, wir haben noch nicht mal Stühle. Mara hat gefragt, wie lange. Mara stellt nie überflüssige Fragen." },
+ "c2-end": { "lines": [
+  "Kolonie-Logbuch, Tag {day}.",
+  "Wir sind jetzt um ein Vielfaches mehr, und niemand muss mehr seine Atemzüge zählen.",
+  "Ist Wheezy in Rente?",
+  "Nö. Befördert. Jetzt ist er Senior-Wheezy.",
+  "Außerdem ist Maras Appell-Liste auf Seite drei.",
+  "… Appell."
+ ], "log": "Wir sind jetzt um ein Vielfaches mehr, und niemand muss mehr seine Atemzüge zählen. Maras Appell dauert inzwischen lange. Sie macht ihn trotzdem jeden Abend." },
+ "c3-open": { "lines": [
+  "Der Scanner im Technikinstitut piept die ganze Zeit … Teos Untersetzer an.",
+  "Ich hab nachgesehen. Die Muster sind Fertigungsanleitungen, Schritt für Schritt, völlig klar. Nur nicht von Menschen geschrieben.",
+  "Mein Untersetzer ist also eine Bedienungsanleitung?",
+  "Eine sehr wählerische Anleitung. Jeder Schritt braucht eine Art leuchtenden Kristall, und wir haben keinen einzigen.",
+  "Im Ödland könnte es mehr geben. Metall abbauen, Werkzeug machen, dann eine Expeditionsstation bauen und Leute suchen schicken."
+ ] },
+ "c3-mine": { "lines": [
+  "Treffer! Eine echte Metallader. Kein Wrack, kein Schrott.",
+  "Endlich … endlich müssen wir die Rettungskapsel nicht mehr zerlegen.",
+  "Teo weint.",
+  "Das ist Erzstaub.",
+  "In dieser Kolonie kriegen die Leute ziemlich oft was ins Auge."
+ ], "log": "Wir sind auf echtes Metall gestoßen. Teo sagte, ihm sei Erzstaub ins Auge gekommen. Heute ist ziemlich viel Erzstaub in ziemlich viele Augen gekommen." },
+ "c3-forge": { "lines": [
+  "Auf F8 haben wir unser ganzes Leben nach den Bauplänen anderer gearbeitet.",
+  "Jetzt arbeiten wir wieder nach den Bauplänen anderer. Nur hält diesmal niemand eine Peitsche.",
+  "… Und die Baupläne hab ich gezeichnet.",
+  "Kannst du mich nicht mal eine Minute sentimental sein lassen?"
+ ], "log": "Die Schmiede brennt. Teo hielt eine bewegende Rede, und Ines hat die Stimmung ruiniert. Ich hab beides aufgeschrieben." },
+ "c3-rail": { "lines": [
+  "Der Schienenwagen fährt! Ich bin eine ganze Runde gefahren. Von der Mine zu den Algentanks in einer Minute!",
+  "Doppelte Transportmenge, und keiner muss mehr Erz auf dem Rücken schleppen.",
+  "Auf F8 waren Grubenwagen für Erz. Nicht für Spritztouren.",
+  "Dann sind sie hier eben für Spritztouren.",
+  "… Ruft mich nächstes Mal."
+ ], "log": "Die Schienenstrecke ist eröffnet, und zum ersten Mal fühlt sich die Kolonie wie ein zusammenhängender Ort an. Mara sagte, wir sollen sie nächstes Mal rufen. Käpt'n Frost will Wagen fahren. Notiert." },
+ "c3-exp1": { "lines": [
+  "Die Expedition ist zurück! Wir haben neben einem Kristallhaufen eine ganze, unversehrte Kristallplatte ausgegraben, und das hier—",
+  "Die Steine leuchten! Lila! Darf ich sie als Nachtlicht nehmen?",
+  "Das ist Xenokristall. Genau das, was die Baupläne brauchen. Die Energiedichte ist furchterregend, und mehr als diesen kleinen Beutel haben wir nicht gefunden. Nicht neben dein Bett.",
+  "Die neue Platte zeigt … einen Filter? Einen Sauerstofffilter.",
+  "Bringt sie ins Technikinstitut. Mal sehen, ob wir ihn nach der Anleitung bauen können.",
+  "Stellt euch das mal vor. Jemand hat hier Anleitungen und Material hinterlassen und darauf gewartet, dass wir sie finden. Ein Geschenk!",
+  "Technisch ist das der sauberste Entwurf, den ich je gesehen habe. Ich will wissen, wer ihn gezeichnet hat.",
+  "Niemand hinterlässt etwas umsonst.",
+  "Mara, du bist zu düster.",
+  "Auf F8 landete jedes „Geschenk“ des Konzerns am Ende auf der Rechnung.",
+  "Und wer kriegt diese Rechnung?",
+  "(Niemand antwortet.)"
+ ], "log": "Die erste Expedition kam mit einem vollständigen Bauplan und einem kleinen Beutel leuchtender lila Steine zurück. Ich wollte einen als Nachtlicht. Ines hat ihn beschlagnahmt. Ich sagte, es sei ein Geschenk. Mara sagte, niemand hinterlässt etwas umsonst." },
+ "c3-filter": { "lines": [
+  "Der Hochdruckfilter ist drin. Die Sauerstoffproduktion ist um die Hälfte gestiegen.",
+  "Und wie funktioniert er?",
+  "Ich kann ihn benutzen, aber ich weiß nicht, warum er funktioniert. Wie meine Knie.",
+  "… Ich bin dem Bauplan Schritt für Schritt gefolgt. Jeden Schritt habe ich verstanden. Zusammengenommen nicht.",
+  "Noch etwas. In dem Moment, als er eingebaut war, hat der Xenokristall im Lager geflackert. Als würde er sich … synchronisieren.",
+  "Ist das gefährlich?",
+  "Es ist sehr schwach. Es reicht nicht mal über das Lager hinaus. Ich führe Buch darüber.",
+  "Dann benutzen wir ihn vorerst. Eines Tages verstehen wir es."
+ ], "log": "Wir haben nach einem Alien-Bauplan einen Hochdruckfilter gebaut. Teo sagte: „Ich kann ihn benutzen, aber ich weiß nicht, warum er funktioniert. Wie meine Knie.“ Ines sagte, der Xenokristall hat geflackert. Sie hat es aufgeschrieben. Ich auch." },
+ "c3-wheezy": { "lines": [
+  "(Spät in der Nacht. Nur Teo ist noch bei der Elektrolysestation.)",
+  "(klopft zweimal auf Wheezy) Der neue Filter ist besser als du, was?",
+  "Aliens haben ihn gezeichnet. Ich kann ihn nicht lesen. Ines auch nicht.",
+  "… Keine Sorge. Sie lassen dich nicht zurück.",
+  "(Wheezy hustet.)",
+  "Ja. Das glaube ich auch."
+ ], "log": "Ich bin mitten in der Nacht aufgestanden, um Wasser zu trinken, und sah Teo neben Wheezy sitzen. Er klopfte zweimal auf ihn und sagte: „Keine Sorge. Sie lassen dich nicht zurück.“ Wheezy hustete. Ich glaube nicht, dass er mit Wheezy geredet hat." },
+ "c3-resonance": { "lines": [
+  "Die drei Bruchstücke passen zusammen! Perfekt, nicht mal eine Naht.",
+  "Es ist eine Methode, Werkzeug zu machen. Es schwingt beim Schlagen mit dem Material mit … das spart eine Menge Rohstoff.",
+  "Sogar mein Schraubenschlüssel wird eifersüchtig."
+ ], "log": "Die drei Bruchstücke, die die Expeditionen gefunden haben, ergeben einen zweiten Bauplan: Resonanzwerkzeug. Teos Schraubenschlüssel wirkt ein bisschen geknickt." },
+ "c3-rollcall": { "lines": [
+  "Appell. …",
+  "(Mara hat drei Seiten der Appell-Liste umgeblättert und ist immer noch nicht fertig.)",
+  "Mara, wir sind fünfundzwanzig. Du bist erst bei Sonnenaufgang fertig.",
+  "Ich weiß.",
+  "Warum machst du es dann noch?",
+  "… Ich kann mir nicht mehr alle Gesichter merken. Wenigstens die Namen will ich behalten.",
+  "Dann helfe ich. Du machst die erste Hälfte, ich die zweite.",
+  "… Okay."
+ ], "log": "Wir sind jetzt fünfundzwanzig. Maras Appell braucht zwei Leute. Sie macht die erste Hälfte, ich die zweite. Die drei Namen ganz oben liest sie immer selbst." },
+ "c3-ship": { "lines": [
+  "Ines, wir haben jetzt Metall und eine Schmiede. Wegen dem Schiff …",
+  "Der Rumpf ja. Der Antrieb nein.",
+  "Was ist der Unterschied?",
+  "Der Unterschied ist, dass wir nicht mal Pläne für einen Antrieb haben. Außer eine Expedition gräbt eines Tages welche aus.",
+  "(Mara hält in ihrer Arbeit inne.)",
+  "Mara, du zählst schon wieder, wie lange.",
+  "Ich zähle, wann der Filter gewechselt werden muss."
+ ], "log": "Jemand hat wieder gefragt, ob wir ein Schiff bauen können. Ines sagte: der Rumpf ja, der Antrieb nein. Mara sagte, sie zählt Filter, aber was sie in der Hand hielt, war kein Filter." },
+ "c3-outpost": { "lines": [
+  "Das Funkgerät im Außenposten empfängt etwas Seltsames … wie Rauschen, aber mit Rhythmus.",
+  "Moment. Den Rhythmus kenne ich. Das ist das Signal, das uns nach K-7 geführt hat!",
+  "Lass hören. … Die Wellenform passt exakt zu den Mustern auf der Kristallplatte.",
+  "Mein Untersetzer plaudert mit jemandem?",
+  "Woher kommt es?",
+  "Aus dem Osten. Weit weg. Als wäre es … schon immer da gewesen.",
+  "(leise) Es gibt es also wirklich."
+ ], "log": "Das Funkgerät im Außenposten hat wieder dieses Signal aufgefangen, das uns hergeführt hat. Seine Wellenform passt zu Teos Untersetzer. Mara sagte: „Es gibt es also wirklich.“ Ich glaube, heute Nacht schlafe ich nicht." },
+ "c3-end": { "lines": [
+  "Kolonie-Logbuch, Tag {day}.",
+  "Wir haben Baupläne gefunden, die jemand anderes hinterlassen hat. Folgt man ihnen, entsteht das Ding, aber niemand versteht, warum.",
+  "Das Signal, das uns hergeführt hat, ist immer noch da. Vor dem Schlafen sage ich aus dem Fenster gute Nacht. Nur für alle Fälle."
+ ], "log": "Wir haben Baupläne gefunden, die jemand anderes hinterlassen hat. Folgt man ihnen, entsteht das Ding, aber niemand versteht, warum. Das Signal, das uns hergeführt hat, ist immer noch da." },
+ "c4-open": { "lines": [
+  "Ich habe den Bauplan des Synthesizers durchgelesen. Wenn wir ihm folgen, können wir Xenokristall selbst herstellen.",
+  "Material?",
+  "Bauteile, Metall, Werkzeug und eine Menge Geduld.",
+  "Dann müssen wir nicht mehr auf Expeditionen warten!",
+  "Gut. Baut ihn."
+ ] },
+ "c4-synth": { "lines": [
+  "(Der Synthesizer ist fertig. Seine Linien fließen wie Wasser, und seine Hülle leuchtet violett.)",
+  "Das … haben wir gebaut?",
+  "Ich hab ihn gebaut. Aber es fühlt sich nicht so an, als hätte ich ihn gebaut.",
+  "Jede Strebe folgt dem Bauplan. Keine einzige ist überflüssig. Nichts, was wir je gebaut haben, sah so aus.",
+  "Wenn er funktioniert, funktioniert er. Schaltet ihn ein.",
+  "(In dem Moment, als er anläuft, leuchtet jeder Xenokristall in der Basis gleichzeitig violett auf und pulsiert eine volle Minute lang hell und dunkel.)",
+  "Er singt!",
+  "Er zieht Strom.",
+  "Ines!",
+  "… Na gut. Er zieht auf sehr regelmäßige Weise Strom. Beim Filter hat es nur einmal geflackert. Diesmal ist es die ganze Basis.",
+  "Ist das gut oder schlecht?",
+  "Ich weiß es nicht.",
+  "(blickt zu den Kristallhaufen) Da draußen leuchten sie auch."
+ ], "log": "Der Kristallsynthesizer ist fertig. Er sieht aus wie nichts, was wir je gebaut haben. Teo sagte: „Ich hab ihn gebaut. Aber es fühlt sich nicht so an, als hätte ich ihn gebaut.“ Als er anlief, leuchtete jeder Xenokristall in der Basis eine volle Minute lang. Ich sagte, er singt. Ines sagte, er zieht Strom. In dieser Nacht gingen die Lichter draußen auf der Ebene nicht aus." },
+ "c4-warn": { "lines": [
+  "Meldung vom Außenposten— draußen auf der Ebene … so viele Lichter. Aus jedem Kristallhaufen.",
+  "Wie viele?",
+  "Zu viele zum Zählen. Ihre Rücken leuchten, wie der Xenokristall.",
+  "Sie wollen zum Synthesizer.",
+  "Alle rein. Wer eine Waffe halten kann, kommt mit mir."
+ ] },
+ "c4-raid1": { "lines": [
+  "Appell.",
+  "(Der Appell dauert diesmal lange. Bei manchen Namen antwortet der Sanitäter. Bei zwei Namen antwortet niemand.)",
+  "… Nochmal.",
+  "Mara. Es ändert sich nicht.",
+  "Zwei haben es nicht geschafft. Drei schwer verletzt. Und einer … hätte es fast nicht geschafft.",
+  "Sie sind nur auf den Synthesizer und das Lager los. Die Wohnkapseln gleich daneben haben sie nicht angerührt.",
+  "Sie wissen, was sie wollen.",
+  "Dann müssen wir auch wissen, was wir wollen. Eine Kaserne. Eine Krankenstation. Nächstes Mal sind wir bereit."
+ ], "log": "Heute wurden wir zum ersten Mal angegriffen. Zwei sind nicht zurückgekommen. Drei wurden schwer verletzt, und einer wäre fast auch nicht zurückgekommen. Beim Appell blieben zwei Namen ohne Antwort. Mara hat sie zweimal vorgelesen." },
+ "c4-memorial": { "lines": [
+  "Auf die erste Wand der Gedenkhalle kommen diese zwei Namen.",
+  "Ja. Und danach alle, die es nie bis hierher geschafft haben.",
+  "Die vierzehn aus Sektor Sieben. Ich erinnere mich an sie.",
+  "Die drei aus meiner Kapsel.",
+  "… Und aus meiner Kapsel. Drei leere Sitze.",
+  "(Es ist das erste Mal, dass jemand Mara das sagen hört.)",
+  "Ich hab die Liste. Ich hab sie für dich aufbewahrt.",
+  "(nach einer langen Pause) … Danke."
+ ], "log": "Die Gedenkhalle ist fertig. Auf der ersten Wand stehen die zwei, die wir beim ersten Angriff verloren haben, danach alle, die es nie bis hierher geschafft haben. Die letzten drei Namen hat Mara selbst eingemeißelt. Sie sagte, es seien die drei leeren Sitze in ihrer Kapsel. Mehr sagte sie nicht." },
+ "c4-armor": { "lines": [
+  "Die Läufe sind kalibriert. Mehr holen wir aus den Pulverwaffen von F8 nicht raus.",
+  "Wir treffen sie, aber ihre Panzer sind hart. Die Kugeln prallen ab.",
+  "Einer der Baupläne ist ein Kristallpanzer. Damit haltet ihr wenigstens mehr Treffer aus.",
+  "Steht in den Bauplänen auch was … Größeres?",
+  "Da ist einer, den ich nicht lesen kann. So etwas wie Xenokristall-Energie direkt abfeuern.",
+  "Noch nicht. Wir verstehen nicht mal, was der Synthesizer gemacht hat."
+ ] },
+ "c4-teach": { "lines": [
+  "Nein, nein, so hält man keinen Schraubenschlüssel. Hier, schau her.",
+  "Aber im Bauplan steht …",
+  "Ein Bauplan sagt dir, wie. Nie, warum. Das Warum lernst du mit den Händen.",
+  "(im Vorbeigehen) Er hat recht.",
+  "… Was hast du gerade gesagt?",
+  "Ich sagte, dein Schraubenschlüssel ist immer noch verbogen."
+ ], "log": "Teo hat angefangen, den Jüngeren das Reparieren beizubringen. Er sagt, ein Bauplan sagt dir nur, wie, nie warum. Ines sagte, er hat recht, und tat dann sofort so, als hätte sie es nicht gesagt." },
+ "c4-sefa": { "lines": [
+  "Hallo! Ich bin Sefa, Biologin. Mein Forschungsschiff hat drei Systeme entfernt ein Signal aufgefangen. Sehr regelmäßig, ganz und gar nicht natürlich. Also bin ich ihm hierher gefolgt.",
+  "Drei Systeme entfernt?",
+  "Ja! Ich bin ihm den ganzen Weg gefolgt. Also, wo sind die Tiere mit den leuchtenden Rücken?",
+  "Du meinst die Glimmer?",
+  "Ihr habt ihnen Namen gegeben! Wunderbar!",
+  "Letzte Woche haben sie unseren Synthesizer angeknabbert.",
+  "Dafür gibt es einen Grund! Für jedes Verhalten gibt es einen Grund.",
+  "Wer kann dieses Signal sonst noch empfangen?",
+  "(kurze Pause) … Jeder, der zuhört."
+ ], "log": "Die Neue, Dr. Sefa, ist Biologin. Ihre erste Frage war, wo die Glimmer sind. Ihre zweite auch. Sie sagt, sie sei einem Signal hierher gefolgt. Mara fragte, wer es sonst noch hören kann. Sefa sagte: jeder, der zuhört." },
+ "c4-guard": { "lines": [
+  "Ist es euch aufgefallen? Sie greifen jedes Mal nur das an, was dem Xenokristall am nächsten ist.",
+  "Und bevor der Synthesizer lief, habt ihr da je so viele gesehen?",
+  "Nein … nur ein paar, die uns aus der Ferne beobachtet haben.",
+  "Die Kristallhaufen sind ihre Nester. Sie jagen nicht. Sie bewachen.",
+  "Den Xenokristall bewachen? Warum?",
+  "Ich weiß es nicht. Genau das will ich herausfinden.",
+  "Und was machen wir jetzt?",
+  "… Ich habe noch keine Antwort. Gebt mir Zeit."
+ ], "log": "Dr. Sefa sagt, die Glimmer greifen uns nicht an. Sie bewachen den Xenokristall. Wir fragten, warum. Sie sagte, sie weiß es nicht. Es war das erste Mal, dass sie „Ich weiß es nicht“ gesagt hat." },
+ "c4-names": { "lines": [
+  "Wie habt ihr den mit dem abgebrochenen Horn genannt?",
+  "„Kerbe“. Sehr anschaulich.",
+  "Einfallslos. Er heißt Nummer Drei.",
+  "Warum Nummer Drei?",
+  "Als Dritter rein, als Dritter raus, drei Treffer kassiert und stehen geblieben.",
+  "… Das ist ein guter Name.",
+  "Ich gebe seit dreißig Jahren Maschinen Namen.",
+  "Logbuch: Das zweite Paar beste Freunde, die sich ständig zanken, ist geboren."
+ ], "log": "Dr. Sefa und Teo haben sich den ganzen Nachmittag über den Namen eines Glimmers gestritten. Am Ende wurde es Nummer Drei. Sefa sagt, es sei der beste Name, den sie je gehört hat. Teo tat so, als wäre es ihm egal, aber er hatte ein bisschen Schwung im Schritt." },
+ "c4-med": { "lines": [
+  "Die Krankenstation ist fertig. Kein Zusammenflicken mehr im Werkzeugschuppen.",
+  "Der Werkzeugschuppen ist gemütlich.",
+  "Du bist der Einzige, der auf einem Haufen Schraubenschlüssel schlafen kann.",
+  "Ines, warum hattest du es so eilig, sie zu bauen?",
+  "… Weil ich weiß, wie still es wird, während man auf Rettung wartet."
+ ], "log": "Die Krankenstation ist fertig. Ich hab Ines gefragt, warum sie es so eilig hatte, sie zu bauen. Sie sagte, weil sie weiß, wie still es wird, während man auf Rettung wartet. Dann ging sie etwas anderes reparieren." },
+ "c4-hydro": { "lines": [
+  "Die Hydrokulturfarm hat ihr erstes Blatt! Ein echtes Blatt! Es ist grün!",
+  "Auf F8 habe ich dreißig Jahre lang kein lebendes Blatt gesehen.",
+  "Sie machen auch Sauerstoff. Wheezy hat endlich Kollegen.",
+  "Wheezy braucht keine Kollegen.",
+  "Wheezy braucht Urlaub."
+ ], "log": "Die Hydrokulturfarm hat ihr erstes echtes Blatt getrieben. Teo sagte, er habe seit dreißig Jahren kein lebendes Blatt gesehen, und dann kam ihm wieder Erzstaub ins Auge. Hier gibt es kein Erz." },
+ "c4-gene": { "lines": [
+  "(starrt auf den Bildschirm) Das stimmt nicht.",
+  "Was?",
+  "Ich habe die Überreste der Glimmer vom ersten Angriff analysiert. Es gibt einen Abschnitt in ihrem Genom, den ich nicht lesen kann.",
+  "Eine Mutation?",
+  "Keine Mutation. Mutationen sind unordentlich. Das hier ist … zu ordentlich.",
+  "Was heißt das?",
+  "Ich kann noch nichts beweisen. (legt die Probe zurück ins Kühllager) Aber ich suche weiter."
+ ], "log": "Dr. Sefa sagt, in den Genen der Glimmer gibt es etwas zu Ordentliches. Sie kann noch nichts beweisen. Sie hat die Proben ins Kühllager gelegt und zweimal abgeschlossen." },
+ "c4-end": { "lines": [
+  "Juno, darf ich eine Zeile ins Logbuch schreiben?",
+  "Klar!",
+  "„Sie sind keine Monster. Wir sind diejenigen, die in das Zuhause von jemand anderem eingedrungen sind.“",
+  "… Das ist schwer.",
+  "Noch eine. „Und sie sind nicht einfach Tiere. Ihr Verhalten ist zu regelmäßig. Als würden sie einem Befehl folgen.“",
+  "Wessen Befehl?",
+  "Genau das will ich herausfinden."
+ ], "log": "Dr. Sefa hat zwei Zeilen ins Logbuch geschrieben: „Sie sind keine Monster. Wir sind diejenigen, die in das Zuhause von jemand anderem eingedrungen sind.“ „Ihr Verhalten ist zu regelmäßig. Als würden sie einem Befehl folgen.“" },
+ "c5-open": { "lines": [
+  "Das Schiff im Orbit … ist von Helion. Ein Kriegsschiff.",
+  "Das letzte Logo, das ich je wiedersehen wollte.",
+  "Wir haben uns so weit draußen versteckt. Wie haben sie uns gefunden?",
+  "Ich weiß es nicht. Aber sie haben nicht geschossen.",
+  "Nicht schießen heißt, sie wollen etwas, das mehr wert ist als unser Leben.",
+  "(Sefa blickt zu den Kristallhaufen und sagt nichts.)"
+ ] },
+ "c5-crowd": { "lines": [
+  "(Vor den Wohnkapseln gibt es Tumult. Zwei Kolonisten schubsen sich wegen einer Koje, und jemand greift nach den Rationen.)",
+  "Hört auf! Hört auf! Ihr zwei … äh, wie heißt ihr nochmal?",
+  "(verblüfft) Du kennst mich nicht? Ich bin letzten Monat angekommen.",
+  "… Tut mir leid.",
+  "(In dieser Nacht blättert Mara Seite um Seite durch die Appell-Liste.)",
+  "Appell. …",
+  "Mara, wir sind fünfzig. Selbst zu zweit schaffen wir das nicht.",
+  "Ich weiß.",
+  "Früher bedeutete der Appell, dass jeder wusste, dass er noch hierher gehört. Jetzt weiß nicht mal ich mehr, wer wer ist.",
+  "Dann verlass dich nicht auf dein Gedächtnis.",
+  "Was meinst du?",
+  "Mehr Maschinen brauchen Normen. Mehr Menschen brauchen Regeln, denen alle zustimmen. Nicht jemand, der Befehle gibt. Die Art, die alle unterschreiben.",
+  "Auf F8 hat der Konzern die Regeln geschrieben.",
+  "Also schreiben wir sie diesmal.",
+  "… Baut ein Verwaltungszentrum. Wir schreiben eine Charta, die uns allen gehört."
+ ], "log": "Heute haben sich Leute um eine Koje geprügelt, und ich wusste ihre Namen nicht. Maras Appell-Liste hat zu viele Seiten. Ines sagt, mit mehr Menschen brauchen wir Regeln, denen alle zustimmen. Wir werden unsere eigene Charta schreiben." },
+ "c5-calder": { "lines": [
+  "(Ein Shuttle landet auf dem Platz. Ein Mann mit Brille steigt aus, ein Klemmbrett unter dem Arm. Hinter ihm geht ein Mann mittleren Alters mit einem Kontobuch.)",
+  "Danke für Ihre Zeit. Ich bin Calder, Gesandter von Helion Interstellare Erschließung.",
+  "(rückt seine Brille zurecht) Gemäß dem Gesetz über die Interstellare Erschließung durch Helion gehören dieser Planet und alle seine Ressourcen ab heute dem Konzern. Sie werden jede Woche dreißig Prozent Ihrer Erträge abführen.",
+  "Wir haben auf diesem Planeten aus eigener Kraft überlebt.",
+  "Sie haben mit dem Frachter des Konzerns überlebt, mit den Rettungskapseln des Konzerns und mit Technikern, die der Konzern ausgebildet hat. Die Klauseln sind sehr eindeutig.",
+  "(Teo starrt den Mann hinter Calder an.)",
+  "Zudem übernehmen gemäß der Klausel „Kind des Vertrags“ in einem Bergbausektor geborene Arbeiter ab dem Tag ihrer Geburt die Vertragsschulden ihrer Eltern. Ein Name auf der Liste: Juno.",
+  "(Alle sehen Juno an. Juno sagt nichts.)",
+  "Sie ist neunzehn.",
+  "Die Klauseln berücksichtigen kein Alter. Der Konzern lässt Ihnen Bedenkzeit. Bei meinem nächsten Besuch erwartet der Konzern eine Antwort.",
+  "(Als Calder geht, dreht sich der Mann mit dem Kontobuch zu Teo um.)"
+ ] },
+ "c5-juno": { "lines": [], "log": "Heute gibt es nichts aufzuschreiben." },
+ "c5-charter": { "lines": [
+  "Die erste Charta ist beschlossen. Wir haben jetzt Gesetze.",
+  "Ich beantrage noch einen: Keiner isst die Algen von anderen.",
+  "Unterstützt.",
+  "Und noch einer. Die Baupläne gehören allen. Nicht einer Person und nicht dem Konzern.",
+  "(Kurze Stille.)",
+  "Unterstützt.",
+  "Unterstützt.",
+  "Angenommen.",
+  "Calder hat gesagt, mein Name wurde am Tag meiner Geburt in einen Konzernvertrag geschrieben.",
+  "Das ist das erste Mal, dass ich meinen Namen unter etwas setze, das mir gehört. Nein, allen. Das zählt auch als meins.",
+  "(blickt auf die letzte Seite der Charta mit über fünfzig Unterschriften) … Das funktioniert besser als der Appell."
+ ], "log": "Wir haben jetzt Gesetze. Artikel eins (inoffiziell, aber einstimmig): Keiner isst die Algen von anderen. Artikel zwei: Die Baupläne gehören allen. Artikel zwei habe ich vorgeschlagen. Auf der letzten Seite der Charta stehen über fünfzig Unterschriften. Mara sagt, das funktioniert besser als der Appell." },
+ "c5-voss": { "lines": [
+  "(Spät in der Nacht, an der Elektrolysestation. Teo sitzt allein neben Wheezy. Der Mann mit dem Kontobuch kommt herüber.)",
+  "Teo. Lange nicht gesehen.",
+  "Aufseher Voss. Sektor Sieben.",
+  "Ehemaliger Aufseher. Jetzt Begleiter des Gesandten. Der Konzern schickt Leute, die Fragen stellen, auf die längsten Reisen.",
+  "Der Unfall in Sektor Sieben damals. An wie viele Namen erinnern Sie sich?",
+  "(nach einer langen Pause) Vierzehn. Ich erinnere mich an alle.",
+  "(Teo antwortet nicht. Nach einer Weile rückt er zur Seite und lässt die halbe Bank frei.)",
+  "(setzt sich) Es gibt etwas, das Sie wissen sollten. Der Konzern ist nicht wegen ein paar entlaufener Bergleute so weit gekommen.",
+  "Weswegen dann?",
+  "Wegen der Dinge, die Sie nicht verstehen.",
+  "Letzten Monat hat das Langstrecken-Scannernetz des Konzerns ein Signal aufgefangen. Das regelmäßigste, das je aufgezeichnet wurde. Natürliche Kristalle tun so etwas nicht. Für eine regelmäßige Resonanz gibt es nur eine Erklärung: Jemand benutzt die Technik dieser Zivilisation.",
+  "… Der Tag, an dem der Synthesizer anlief.",
+  "Der Konzern sucht seit Jahrzehnten nach dieser Technik. Nicht einmal der Konzern weiß, woher diese Zivilisation kam oder warum sie verschwand.",
+  "Also hat das Licht, das in jener Nacht die Glimmer angelockt hat, auch euch angelockt.",
+  "Strukturell betrachtet, ja.",
+  "… Ich lege ab jetzt eine Serviette unter meine Tasse."
+ ], "log": "Mitten in der Nacht saß Teo bei Wheezy und redete mit dem Mann, der Calders Kontobuch trägt. Er heißt Voss. Früher war er Teos Aufseher. Am Morgen hat Teo uns erzählt: Helion ist wegen der Baupläne gekommen. Sie haben uns an dem Tag gehört, als der Synthesizer anlief. Teo legt jetzt eine Serviette unter seine Tasse." },
+ "c5-debate": { "lines": [
+  "Calders Shuttle kommt runter. Er will eine Antwort.",
+  "Ich habe auf F8 dreißig Jahre lang bezahlt. Am Ende gehörte sogar mein Name dem Konzern.",
+  "Technisch gesehen: Sie haben ein Kriegsschiff. Wir haben einen Synthesizer, der singt.",
+  "Wenn wir zahlen, schicken sie Leute, die den Synthesizer übernehmen. Und die Kristallhaufen.",
+  "…",
+  "Juno?",
+  "Ich habe keine Meinung. Meine Meinungen gehören sowieso dem Konzern.",
+  "(Stille.)",
+  "Früher habe immer ich gesagt: „Macht es.“ Diesmal ist es anders.",
+  "Diesmal entscheiden wir gemeinsam."
+ ] },
+ "c5-coop": { "lines": [
+  "Danke für Ihre vernünftige Entscheidung. Der Konzern schickt Personal, das bei der Verwaltung Ihrer Xenokristall-Anlagen hilft.",
+  "Im Gegenzug schützen Truppen des Konzerns Sie vor der einheimischen Tierwelt.",
+  "Schützen.",
+  "Klausel 12. Schwarz auf weiß.",
+  "(Als Calder fort ist, repariert Teo wortlos weiter an Wheezy.)",
+  "Wenigstens sind wir nicht allein, wenn die Glimmer das nächste Mal kommen.",
+  "(sehr leise) Genau das macht mir Sorgen."
+ ], "log": "Wir haben wieder einen Vertrag unterschrieben." },
+ "c5-voss-leave": { "lines": [
+  "Das Schiff des Gesandten fliegt morgen ab. Ich gehe mit.",
+  "Sie könnten bleiben.",
+  "Effizient betrachtet hat ein Mann, der nur Bücher führt, in einer Kolonie, die bereits unterschrieben hat, keinen Zweck. Sie können nicht gewinnen, und ich kann nicht helfen.",
+  "(wendet sich an Mara) Aber es gibt eine Schuld, die ich begleichen möchte.",
+  "Sie suchen jemanden. Vertragsnummer F8-7-2291. Vor drei Jahren in die Raffinerie Tita Vier verlegt.",
+  "(verblüfft) … Woher wissen Sie das?",
+  "Ich erinnere mich an jede Verlegung. Es war meine Arbeit, und es ist meine Schuld.",
+  "Mara … wer ist das?",
+  "… Meine Schwester. Sie heißt Lia.",
+  "… Danke.",
+  "(eine Pause) … Danke. Diese Worte sage ich selten."
+ ], "log": "Voss ist mit Calder gegangen. Vorher hat er Mara den Namen eines Ortes gegeben. Mara sagt, dorthin wurde ihre Schwester Lia geschickt. Mara hat die ganze Nacht Sternkarten angesehen." },
+ "c5-resist": { "lines": [
+  "(rückt seine Brille zurecht) Der Konzern wird diese Ablehnung festhalten.",
+  "(tritt vor und stellt sich zu den Kolonisten) Dann halten Sie auch das fest: Anhang D wurde vor drei Jahren geändert. Abgeschriebene Teile gehen in das Eigentum des Nutzers über. Ihr Vertrag ist die alte Fassung.",
+  "(sieht Voss lange an) … Herr Voss.",
+  "Ich habe Ihren Bericht gelesen. Die Zahlen waren korrekt.",
+  "(Calder geht.)",
+  "Voss, du gehst nicht mit?",
+  "Effizient betrachtet hat es langfristig die geringsten Kosten, auf der richtigen Seite zu stehen.",
+  "War das ein Witz?",
+  "Ich mache keine Witze.",
+  "(In dieser Nacht, vor der Gedenkhalle.)",
+  "Juno, du hast mich mal gefragt, warum ich abgehauen bin.",
+  "Mhm.",
+  "Ich habe eine Schwester. Sie heißt Lia. Der Konzern hat ihren Vertrag an einen anderen Bergbausektor verkauft und mir nie gesagt, wohin.",
+  "Ich habe das Schiff gestohlen, um sie zu suchen.",
+  "… Willst du sie immer noch finden?",
+  "Jeden Tag.",
+  "Aber heute will ich erst diesen Ort halten."
+ ], "log": "Wir haben abgelehnt. Voss ist geblieben. Er sagt, auf der richtigen Seite zu stehen hat langfristig die geringsten Kosten. In dieser Nacht hat Mara mir erzählt, dass sie eine Schwester namens Lia hat. Ich habe den Namen auf die erste Seite des Logbuchs geschrieben, neben diese drei Namen." },
+ "c5-sefa": { "lines": [
+  "Dr. Sefa. Ich habe viel von Ihnen gehört.",
+  "Wir sind uns nie begegnet.",
+  "Der Konzern hat Ihre Arbeiten gelesen. Sie sind unabhängige Forscherin. Kein Vertrag, keine Schulden. Warum stellen Sie sich zu einer Bande Flüchtiger?",
+  "Unsere Forschungsabteilung kann Ihnen ein ganzes Labor bieten.",
+  "Als mir das letzte Mal ein Konzern ein Labor angeboten hat, waren die Arten auf jenem Planeten drei Jahre später ausgestorben. Meine Arbeiten sind der einzige Beweis, dass es sie je gab.",
+  "Ich will keine Grabinschriften mehr schreiben.",
+  "(Nachdem Calder gegangen ist.)",
+  "Mara, ich dachte immer, ich sei hergekommen, um diesen Planeten zu erforschen.",
+  "Jetzt glaube ich, dieser Planet hat mich aufgenommen.",
+  "Dann gehörst du zur Kolonie.",
+  "(lachend) Werde ich dann auch beim Appell aufgerufen?",
+  "Wirst du."
+ ], "log": "Calder wollte Dr. Sefa abwerben. Sefa sagte, sie will keine Grabinschriften mehr schreiben. Mara hat ihren Namen auf die Appell-Liste gesetzt." },
+ "c5-corp-help": { "lines": [
+  "Helions Soldaten sind da! Sie haben … die Glimmer im Nu vertrieben.",
+  "Die zehnfache Feuerkraft von uns.",
+  "(blickt auf die gefallenen Glimmer auf der Ebene) Sie haben nicht mal hingesehen, bevor sie geschossen haben.",
+  "Sie sind zuerst losgestürmt.",
+  "Ich weiß. Ich will mir nur … merken, wie sie aussahen.",
+  "(Sefa kniet nieder und schließt einem von ihnen die Augen.)"
+ ], "log": "Helions Soldaten haben uns geholfen, die Glimmer zu vertreiben. Alle waren erleichtert. Dr. Sefa hockte lange draußen auf der Ebene und kam mit einem Probenglas zurück." },
+ "c5-warn": { "lines": [
+  "Eine zweite Ablehnung. Der Konzern hat sie aktenkundig.",
+  "Ich bin verpflichtet, Sie zu erinnern: Gemäß Klausel 31 darf der Konzern gegen Vermögenswerte, die die Erfüllung verweigern, „notwendige Rückführungsmaßnahmen“ ergreifen.",
+  "Das heißt Truppen.",
+  "Das heißt Klausel 31.",
+  "Dann geh zurück und sag dem Konzern—",
+  "Unsere Waffen sind nach Bauplänen gebaut, die nicht mal ihr lesen könnt.",
+  "Unsere Freunde gibt es nicht nur auf diesem Planeten."
+ ] },
+ "c5-alliance1": { "lines": [
+  "Der Raumhafen hat eine Antwort! Die Allianz Freier Kolonien, aus einem Nachbarsystem!",
+  "(Rauschen) … Wir hören, Helion ist bei euch. Wir helfen euch, sie aufzuhalten.",
+  "Bedingungen?",
+  "Ein Bauplan. Wir hören, ihr habt welche.",
+  "(Teo berührt seinen Untersetzer.)",
+  "Eine Kopie des Resonanzwerkzeugs, ja. Das Original bleibt hier.",
+  "… Abgemacht."
+ ], "log": "Wir haben unseren ersten Freund auf einem anderen Planeten. Der Preis war die Kopie eines Bauplans. Teo sagt, es ist das erste Mal in seinem Leben, dass er jemandem Pläne gibt, statt sie von jemandem zu bekommen." },
+ "c5-rifle": { "lines": [
+  "Das Kristallgewehr ist fertig. Es regt den Xenokristall an und feuert die Energie aus dem Lauf.",
+  "(Ein Marine gibt einen Probeschuss ab. Ein violetter Strahl zieht über die Ebene und hinterlässt ein glattes Loch in der Klippe.)",
+  "… Das schlägt Schießpulver um Längen.",
+  "Weißt du, wie es funktioniert?",
+  "Jeden Schritt verstehe ich. Zusammengenommen nicht. Wie beim Filter.",
+  "Wenn es sie aufhält, reicht das.",
+  "Jeder Schuss verbraucht Xenokristall. Je mehr wir benutzen, desto weniger kommen wir ohne aus.",
+  "… Ich weiß."
+ ] },
+ "c5-commando": { "lines": [
+  "Die Kommandos ziehen sich zurück!",
+  "Früher waren es Glimmer. Heute waren es Leute in derselben Uniform, die ich früher getragen habe.",
+  "Die meisten sind Vertragssoldaten. Beim Konzern verschuldet, genau wie ihr alle.",
+  "… Verluste?",
+  "Keine bei uns. Sie haben sich zurückgezogen, sobald die Kristallgewehre gefeuert haben. Aber ein Drittel unseres Xenokristalls ist weg.",
+  "Keine bei uns. Allianzschiffe haben ihren Funk aus dem Orbit gestört, ihre Unterstützung kam nie an.",
+  "Gut. Appell."
+ ], "log": "Zum ersten Mal haben uns Menschen angegriffen. Wir haben gehalten. Teo sagt, sie trugen dieselbe Uniform wie er früher. Beim Appell haben alle geantwortet." },
+ "c5-alliance2": { "lines": [
+  "Wir haben erfahren, dass Helions Hauptflotte ihren Heimathafen verlassen hat.",
+  "Um euch weiter zu helfen, brauchen wir mehr. Jeden Monat eine regelmäßige Lieferung Xenokristall.",
+  "Weniger, als Helion will.",
+  "Aber es kommt aus denselben Kristallhaufen.",
+  "Strukturell betrachtet erhöhen sie den Preis, solange sie können. Verglichen mit Helion sind die Bedingungen trotzdem besser.",
+  "… Vorerst zustimmen. Wir brauchen Zeit."
+ ], "log": "Die Allianz will jeden Monat eine Lieferung Xenokristall. Weniger, als Helion will. Dr. Sefa sagt, es kommt aus denselben Kristallhaufen." },
+ "c5-signal": { "lines": [], "log": "Wir haben eine Ladung Schrott in Richtung dieses Signals geschickt, und es hat tatsächlich Xenokristall zurückgeschickt. Ines sagt, alles, was es will, sind Metall, Kabel und Dichtungen, als würde jemand etwas sehr Altes reparieren. Ich habe gefragt, wer. Niemand weiß es." },
+ "c5-pattern": { "lines": [
+  "Das Mikroskop im Xenologie-Institut ist zehnmal besser als das auf meinem Schiff.",
+  "Ich habe die Muster der Glimmer mit Teos Untersetzer verglichen.",
+  "Die Proben stammen von denen, die Helions Soldaten abgeschossen haben.",
+  "Die Probe stammt von dem, den die Expedition neben einem Bauplan gefunden hat. Als er fiel, schirmte sein Körper die Platte noch ab.",
+  "Und?",
+  "Das Format ist identisch. Die Muster auf ihnen sind genauso geschrieben wie die Baupläne.",
+  "Also sind sie … auch Baupläne?",
+  "Das kann kein Zufall sein. Aber ich brauche mehr Zeit."
+ ], "log": "Dr. Sefa sagt, die Muster auf den Glimmern sind genauso geschrieben wie die Baupläne. Sie sagt, das kann kein Zufall sein, aber sie braucht mehr Zeit. Teo hat die ganze Nacht seinen Untersetzer angestarrt." },
+ "c5-end": { "lines": [
+  "Kolonie-Logbuch, Tag {day}.",
+  "Wir haben Gesetze und Handel.",
+  "Und eine Rechnung, die wir jede Woche bezahlen.",
+  "Und einen ehemaligen Aufseher, der den Konzern mit dessen eigenem Kleingedruckten bekämpft.",
+  "Und ein Geheimnis: Jemand anderes hat auf diesem Planeten Dinge hinterlassen. Die Glimmer gehören dazu.",
+  "Die Kuppel schließt sich morgen. Schlaft heute Nacht ein bisschen, alle.",
+  "… Appell."
+ ], "log": "Wir haben Gesetze und Handel. Jemand anderes hat auf diesem Planeten Dinge hinterlassen, und die Glimmer gehören dazu. Die Kuppel schließt sich morgen." },
+ "c6-open": { "lines": [
+  "Die Kuppel ist dicht … alle Luftsensoren auf Grün.",
+  "Theoretisch können wir die Helme jetzt draußen abnehmen.",
+  "Theoretisch? Nach dir.",
+  "… Ich gehe.",
+  "Mara?",
+  "Nicht weinen. Das verschwendet Wasser.",
+  "Du bist doch diejenige, die weint!",
+  "(wischt sich die Augen) … Appell. Alle Helme ab."
+ ], "log": "An dem Tag, an dem sich die Kuppel schloss, haben wir zum ersten Mal draußen die Helme abgenommen. Mara sagte allen, sie sollen nicht weinen, und hat dann selbst geweint." },
+ "c6-wheezy": { "lines": [], "log": "Teo hat Wheezys allerersten Lüfter ausgebaut und auf einen Sockel mitten in der Kuppel gestellt. Auf der Tafel steht: „Wheezy. Der Erste, der für uns atmen wollte.“ Ines sagt, er dreht sich noch. Teo sagt, er ist in Rente, also lasst ihn ruhen." },
+ "c6-governor": { "lines": [
+  "Die Gouverneursresidenz ist fertig. Organisatorisch bedeutet das, dass die Kolonie jetzt eine offizielle Führung hat.",
+  "Die Gouverneursresidenz ist fertig. Nach Helions Regeln braucht die Kolonie eine verantwortliche Person als Ansprechpartner.",
+  "Wen?",
+  "Musst du das wirklich fragen?",
+  "… Ich bin nur die Rettungskapsel geflogen.",
+  "Und dann hast du uns alle hierher gebracht."
+ ] },
+ "c6-salary": { "lines": [], "log": "Heute hat ein Neuer Mara gefragt: „Ich habe gehört, der Lohn hier ist nicht sterben?“ Mara erstarrte lange und sagte dann: „… Zu den Zusatzleistungen gehört, auch morgen nicht zu sterben.“ Als sie sich umdrehte, sah ich sie lächeln." },
+ "c6-beacon1": { "lines": [
+  "Phase eins der Bake ist fertig. Kaum war sie an, hat sie sich auf eine Frequenz eingeloggt—",
+  "Das ist das Signal! Das, das uns hergeführt hat!",
+  "Und die Kristallhaufen antworten. Alle, gleichzeitig leuchtend.",
+  "Nichts davon steht in den Akten des Konzerns.",
+  "(Alle Kristallhaufen auf der Ebene leuchten auf einmal auf. Die Glimmer heben die Köpfe aus ihren Nestern und blicken zum Himmel.)",
+  "Sefa? Weinst du?",
+  "… Sie warten. Sie haben schon immer auf etwas gewartet."
+ ] },
+ "c6-lastlight": { "lines": [
+  "Das Signal ist entschlüsselt. Es ist ein Schiff … ein Kolonieschiff, das hier vor hundert Jahren abgestürzt ist. Die Lastlight.",
+  "Lebt noch jemand?",
+  "Nur die KI des Schiffs sendet noch. Ein automatisches Navigationssignal: „Kolonieanlagen in diesem Gebiet. Versorgung willkommen.“ Hundert Jahre lang sagt sie dasselbe.",
+  "Wir sind also einem Schiff gefolgt, auf dem niemand mehr ist.",
+  "Die KI hat noch den letzten Logbucheintrag. Sie sind auch wegen der Baupläne gekommen.",
+  "Und dann?",
+  "… Sie haben beschlossen, gegen die Glimmer Krieg zu führen. Keiner von ihnen hat überlebt.",
+  "(Ines wirft einen Blick auf die Kristallgewehre im Lager.)",
+  "(Stille.)",
+  "Die Kursänderung war meine Entscheidung.",
+  "Meine Kapsel hatte sechs Sitze. Als das Schiff im Orbit zerbrach, habe ich nicht auf die anderen drei gewartet. Ich habe den Startknopf gedrückt.",
+  "Die ganze Zeit dachte ich, ich sei schuld, dass wir abgestürzt sind.",
+  "Ein Schiff hat dich hergelockt.",
+  "Und dann hast du uns alle hierher gebracht.",
+  "Du hast uns nicht ins Verderben geführt. Du hast uns nach Hause gebracht.",
+  "(nach langer Zeit) … Wir werden nicht wie die Lastlight enden. Juno, schreib es auf."
+ ], "log": "Die Lastlight, ein Kolonieschiff von vor hundert Jahren. Ihr Navigationssignal hat uns hergeführt. Sie sind auch wegen der Baupläne gekommen, haben den Krieg gewählt, und keiner hat überlebt. Heute hat Mara die Geschichte der drei leeren Sitze erzählt. Wir werden uns an sie erinnern, und an den Tag, an dem sie es endlich ausgesprochen hat." },
+ "c6-truth": { "lines": [
+  "In dem Moment, als das Bioingenieurlabor den Xenokristall injiziert hat, haben alle Glimmer innegehalten und sich zu uns umgedreht.",
+  "Ich habe den Vergleich abgeschlossen. Diese zu ordentliche Sequenz in ihren Genen wurde hineingeschrieben. Im Format der Baupläne.",
+  "Von wem?",
+  "Von denen, die die Baupläne hinterlassen haben. Sie haben die Glimmer verändert, damit sie die Baupläne und die Kristallhaufen bewachen.",
+  "Sie sind keine Monster. Sie sind Wächter.",
+  "Jedes Stück Xenokristall, das wir benutzen, ist ein Stück aus dem, was sie bewachen.",
+  "Wie viele haben Helions Soldaten in den letzten Monaten abgeschossen? Ich habe gezählt. Dreiundvierzig.",
+  "Was bewachen sie? Und bis wann?",
+  "Ich weiß es nicht. Aber worauf sie warten, ist noch nicht gekommen."
+ ], "log": "Dr. Sefa sagt, die Glimmer sind Wächter, die jemand geschaffen hat. Die, die die Baupläne hinterlassen haben, haben sie die Kristallhaufen bewachen lassen. Jedes Stück Xenokristall, das wir benutzen, stammt aus dem, was sie bewachen." },
+ "c6-debate": { "lines": [
+  "Alle sind da. Wir müssen etwas entscheiden.",
+  "Zuerst die Fakten. Die Kuppel, der Koloniekern, die Hydrokulturfarmen — alles läuft mit Xenokristall. Ohne ihn kann diese Stadt nicht so weitermachen wie bisher.",
+  "Zurück zu menschlicher Technik ist nicht unmöglich. Aber das heißt, die Kuppel abreißen, die Hälfte der Leute wegschicken und monatelang neu bauen.",
+  "Und Helion verwaltet jetzt den Synthesizer. Wenn wir ihn weiter benutzen, brechen wir den Vertrag.",
+  "Außerdem hängt unsere Verteidigung an den Kristallgewehren. Auf Xenokristall zu verzichten heißt, auch auf unsere Verteidigung zu verzichten.",
+  "Die Allianz hat geantwortet. Wenn wir gehen, können uns ihre Schiffe abholen. Wenn wir bleiben, wollen sie die Hälfte des Xenokristalls.",
+  "Wenn wir ihn weiter benutzen, werden die Glimmer immer wieder kommen. Wir werden zur Lastlight.",
+  "Ines, was ist mit einem Schiff?",
+  "Geht. Die Kernteile der Bake lösen das Antriebsproblem. Aber es reicht nur für eins: die Bake oder das Schiff.",
+  "Wenn wir zu gehen versuchen, lässt Helion uns nicht. Das Kriegsschiff ist direkt da oben im Orbit.",
+  "Wenn wir zu gehen versuchen, sagt Helion, wir hätten unsere Schulden noch nicht bezahlt. Wie auf F8.",
+  "Mara, du willst gehen, oder? Lia.",
+  "… Ich will gehen. Ich will auch bleiben.",
+  "Ich habe Angst.",
+  "(Alle sehen Mara an. Es ist das erste Mal, dass sie das sagt.)",
+  "Angst, falsch zu wählen und wieder drei Sitze leer zu lassen.",
+  "Dann wähl nicht allein.",
+  "Diesmal entscheiden wir gemeinsam."
+ ] },
+ "c6-leave": { "lines": [
+  "Wir gehen. Wir geben ihnen den Xenokristall zurück.",
+  "(schließt die Augen) Danke.",
+  "Wir bauen den Kern der Bake aus und machen daraus den Antrieb des Schiffs. Ich brauche jeden, der ein Werkzeug halten kann.",
+  "(reicht Juno seinen verbogenen Schraubenschlüssel) Nimm ihn. Auf dem Schiff wirst du ihn brauchen.",
+  "Aber das ist doch dein …",
+  "Ich bin zu alt, um ein ganzes Schiff zu reparieren. Aber ich hab dir beigebracht, wie man ihn hält.",
+  "(schiebt nach einer Pause Dorothy zu Juno hinüber) Und das hier.",
+  "Dorothy wird nicht verliehen!",
+  "Dorothy war der Name meiner Mutter. Sie hat immer gesagt, Werkzeug gehört zu den Leuten, die damit umgehen können.",
+  "… Nur dir. Bring sie zurück."
+ ], "log": "Wir haben beschlossen zu gehen und den Glimmern den Xenokristall zurückzugeben. Teo hat mir seinen Schraubenschlüssel gegeben. Ines hat mir Dorothy geliehen. Sie sagte, Dorothy war der Name ihrer Mutter. Gerade halte ich die zwei wichtigsten Dinge der Kolonie in den Händen." },
+ "c6-stay": { "lines": [
+  "Wir bleiben.",
+  "Aber wir werden nicht zur Lastlight. Wenn wir den Xenokristall benutzen, lernen wir, mit seinen Wächtern zu leben.",
+  "… Dann werde ich weiter über sie wachen. Und mir für sie merken, wie viel wir genommen haben.",
+  "Der Kern der Bake kommt wieder rein. Die letzten zwei Phasen brauchen uns alle.",
+  "(reicht Ines seinen verbogenen Schraubenschlüssel) Die letzten zwei Phasen gehören dir.",
+  "Hast du nicht gesagt, dieser Schraubenschlüssel ist seit dreißig Jahren bei dir?",
+  "Deshalb gehört er dir. Ich kann die Arbeit nicht mehr machen, aber er schon.",
+  "(schiebt nach einer Pause Dorothy zu Teo hinüber) Dann pass du auf die hier auf.",
+  "Dorothy wird nicht verliehen.",
+  "Dorothy war der Name meiner Mutter. Sie hat immer gesagt, Werkzeug gehört zu den Leuten, die damit umgehen können.",
+  "… Nur dir. Bring sie zurück."
+ ], "log": "Wir haben beschlossen zu bleiben. Teo hat Ines seinen Schraubenschlüssel gegeben. Ines hat Teo Dorothy geliehen und gesagt, Dorothy war der Name ihrer Mutter. Beide sagen, es ist nur vorübergehend." },
+ "c6-blocked": { "lines": [
+  "(Der Antrieb des Schiffs zündet zum ersten Mal. Das Funkgerät knistert.)",
+  "Danke für Ihre Zeit. Laut Vertrag hat die Kolonie offene Schulden. Bis sie vollständig beglichen sind, darf niemand den Hafen verlassen.",
+  "… Wie auf F8.",
+  "Die Klauseln berücksichtigen keinen Ort.",
+  "Dann sag dem Konzern: Wir schulden niemandem auch nur einen Atemzug.",
+  "(Im Orbit öffnet Helions Kriegsschiff die Geschützpforten.)",
+  "(Der Antrieb des Schiffs zündet zum ersten Mal. Im Orbit dreht Helions Kriegsschiff bei und stellt sich zwischen die Kolonie und die Sterne.)",
+  "(über Funk) Der Konzern hat Ihren Abreiseantrag registriert. Antrag abgelehnt.",
+  "Nicht wir sind es, die sie wollen. Sondern der Kern der Bake, den wir ausgebaut haben.",
+  "Die Allianzschiffe sind unterwegs! Aber sie brauchen noch drei Tage!",
+  "Dann halten wir drei Tage durch.",
+  "Kolonie-Logbuch, Tag {day}.",
+  "Wir haben beschlossen zu gehen. Nicht, weil man hier nicht leben kann, sondern weil das hier ihr Zuhause ist.",
+  "Aber jemand lässt uns nicht gehen.",
+  "Zuhause ist nicht dort, wo man landet. Sondern dort, wo man beschließt zu bleiben.",
+  "Wir wollen selbst entscheiden. Ob wir bleiben oder gehen.",
+  "… Juno.",
+  "Ja?",
+  "Käpt'n Frost. Ich nehme an."
+ ], "log": "Wir haben beschlossen zu gehen und diesen Planeten seinen Wächtern zurückzugeben. Aber Helion steht zwischen uns und den Sternen. Zuhause ist nicht dort, wo man landet. Sondern dort, wo man beschließt zu bleiben. Wir wollen selbst entscheiden. Käpt'n Frost hat ihren Spitznamen endlich angenommen." },
+ "c6-end": { "lines": [
+  "(Die Bake leuchtet auf. Jeder Bauplan leuchtet gleichzeitig, und Teos Untersetzer auch.)",
+  "Alle Baupläne … leuchten. Sie zeigen auf dieselben Koordinaten auf der Sternkarte.",
+  "Bei diesen Koordinaten ist nichts. Jedenfalls auf keiner Karte des Konzerns.",
+  "Auf Helions Karten ist dort nichts.",
+  "(Draußen auf der Ebene hebt jeder Glimmer den Kopf zum Himmel.)",
+  "Worauf sie gewartet haben … ist da.",
+  "(Im Orbit erscheint lautlos ein Schiff, das keinem Menschen gehört. Seine Hülle fließt wie Wasser, genau wie der Synthesizer.)",
+  "Jetzt wissen sie, dass wir hier sind.",
+  "Dann sollen sie wissen: Die Leute hier machen ihre Luft selbst.",
+  "Kolonie-Logbuch, Tag {day}.",
+  "Zuhause ist nicht dort, wo man landet. Sondern dort, wo man beschließt zu bleiben.",
+  "Wir haben beschlossen zu bleiben. Und dann hat jemand angeklopft.",
+  "… Juno.",
+  "Ja?",
+  "Käpt'n Frost. Ich nehme an."
+ ], "log": "Die Bake leuchtet. Jeder Bauplan leuchtete gleichzeitig auf und zeigte auf dieselben Koordinaten. Die Glimmer blickten zum Himmel, und im Orbit erschien ein Schiff, das keinem Menschen gehört. Zuhause ist nicht dort, wo man landet. Sondern dort, wo man beschließt zu bleiben. Wir haben beschlossen zu bleiben. Käpt'n Frost hat ihren Spitznamen endlich angenommen." }
+}

@@ -10,12 +10,13 @@ import { DEFS } from '../src/engine/state';
 import { RESEARCH_DEFS } from '../src/engine/formulas';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
+import { PACKS } from '../src/i18n/locales';
 
 const results: { id: string; name: string; ok: boolean; info: string }[] = [];
 function check(id: string, name: string, fn: () => string[] | string | void) {
   let errs: string[] = [];
   try { const r = fn(); errs = Array.isArray(r) ? r : r ? [r] : []; } catch (e: any) { errs = ['例外：' + e.message]; }
-  results.push({ id, name, ok: errs.length === 0, info: errs.slice(0, 8).join('；') + (errs.length > 8 ? `……共 ${errs.length} 項` : '') });
+  results.push({ id, name, ok: errs.length === 0, info: (process.env.ALL ? errs : errs.slice(0, 8)).join('；') + (errs.length > 8 && !process.env.ALL ? `……共 ${errs.length} 項` : '') });
 }
 
 // ── 劇情對話 ──
@@ -117,6 +118,38 @@ check('S11', '建築道路只有水平／垂直線段（都市計畫式的直角
   const errs: string[] = [];
   if (!ROADS || !Object.keys(ROADS).length) return ['讀不到道路'];
   for (const [id, r] of Object.entries(ROADS) as [string, { x: number; y: number }[]][]) for (let i = 1; i < r.length; i++) if (r[i].x !== r[i - 1].x && r[i].y !== r[i - 1].y) errs.push(`${id} 第 ${i} 段是斜的`);
+  return errs;
+});
+
+// ── 其他語言（德、日、西、葡）：缺的會退回英文，所以這裡只擋「翻壞」的情況 ──
+// 參數名稱要跟英文一致（{n|單|複} 算 n；日文、中文的量詞 {unit} 可以多出來）
+const params = (x: string) => new Set([...x.matchAll(/\{(\w+)(?:\|[^}]*)?\}/g)].map((m) => m[1]).filter((k) => k !== 'unit'));
+const sameParams = (a: string, b: string) => { const x = params(a), y = params(b); return x.size === y.size && [...x].every((k) => y.has(k)); };
+const flat = (o: any, pre = ''): [string, string][] => typeof o === 'string' ? [[pre, o]] : o && typeof o === 'object' ? Object.entries(o).flatMap(([k, v]) => flat(v, pre ? `${pre}.${k}` : k)) : [];
+check('S12', '德、日、西、葡翻譯：介面與劇情齊全、句數一致、參數沒有翻漏或多出', () => {
+  const errs: string[] = [];
+  const enData = Object.fromEntries(flat(EN));
+  for (const [l, p] of Object.entries(PACKS)) {
+    const missUi = Object.keys(STRINGS).filter((k) => !(k in p.ui) && STRINGS[k][0].trim());
+    if (missUi.length) errs.push(`${l} 介面缺 ${missUi.length} 條（例：${missUi.slice(0, 3).join(', ')}）`);
+    for (const [k, v] of Object.entries(p.ui)) {
+      if (!STRINGS[k]) errs.push(`${l} 介面多出不存在的 ${k}`);
+      else if (!sameParams(STRINGS[k][0], v)) errs.push(`${l} 介面 ${k} 參數不同`);
+    }
+    const data = flat(p.data);
+    if (!data.length) errs.push(`${l} 沒有資料翻譯`);
+    for (const [k, v] of data) {
+      if (!(k in enData)) errs.push(`${l} 資料多出 ${k}`);
+      else if (!sameParams(enData[k], v)) errs.push(`${l} 資料 ${k} 參數不同`);
+    }
+    for (const [id, sc] of Object.entries(SCENES)) {
+      const t = p.dialogs[id];
+      if (!t) { errs.push(`${l} 劇情缺 ${id}`); continue; }
+      if (t.lines.length !== sc.lines.length) errs.push(`${l} ${id} 句數 ${t.lines.length}／原文 ${sc.lines.length}`);
+      t.lines.forEach((x, i) => { if (!x?.trim()) errs.push(`${l} ${id}#${i} 空白`); else if (sc.lines[i] && !sameParams(sc.lines[i][2], x)) errs.push(`${l} ${id}#${i} 參數不同`); });
+      if (!!sc.log !== !!t.log) errs.push(`${l} ${id} 日誌${sc.log ? '缺' : '多出'}`);
+    }
+  }
   return errs;
 });
 

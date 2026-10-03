@@ -1,1 +1,198 @@
-{}
+{
+ "buildings": {
+  "escape_pod": { "name": "Rettungskapsel", "desc": "Hier hat alles angefangen. Drei Überlebende hineingezwängt — kaum bewohnbar.", "nodes": { "beacon": ["Notfrequenz", "Überlebendensuche +10%"] } },
+  "scrap_heap": { "name": "Schrotthaufen", "desc": "Trümmer der Kapsel, über den Boden verstreut. Halte den Schrott-Knopf darüber gedrückt, um zu sammeln.", "nodes": {
+   "click_1": ["Magnethandschuhe", "Klickertrag +1"], "crit_1": ["Scharfer Blick", "Volltrefferchance +5%"], "cap_1": ["Zonensuche", "Arbeiterlimit +1"],
+   "critx": ["Schatzinstinkt", "Volltreffer-Multiplikator ×2"], "buff_10": ["Vorarbeiter vor Ort", "Klick-Bonus hält 10 s"] } },
+  "algae_tank": { "name": "Algentank", "desc": "Die Nahrungsquelle der Kolonie. Anfangs nur ein paar gläserne Algentanks; ab Stufe 2 lässt er sich zum Bio-Ernter umbauen, ab Stufe 4 zur Hydrokulturfarm — jeweils mit mehr Ertrag pro Arbeiter. Beim Umbau bleiben Stufe und Arbeiter erhalten.", "nodes": {
+   "prod_20": ["Lichtabstimmung", "Ertrag +20%"], "cap_1": ["Zusatztank", "Arbeiterlimit +1"], "prod_30": ["Dichter Stamm", "Ertrag +30%"],
+   "guide": ["Sammelführer", "Ertrag +25%"], "crit_1": ["Wachsames Auge", "Volltrefferchance +5%"], "prod_25": ["Wachstumslampen", "Ertrag +25%"], "cap_2": ["Vertikalregale", "Arbeiterlimit +2"] } },
+  "algae_tank:bio": { "name": "Bio-Ernter", "desc": "Neben den Tanks kommen Kulturregale dazu, in denen essbares Leben von der Oberfläche gezüchtet wird. Mehr Ertrag pro Arbeiter als der Algentank. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
+  "algae_tank:hydro": { "name": "Hydrokulturfarm", "desc": "Die ganze Anlage wird zum Druckgewächshaus umgebaut, in dem Gemüse in Nährlösung wächst — die effizienteste Nahrungsquelle. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
+  "o2_scrubber": { "name": "Sauerstoffwäscher", "desc": "Ein aus Kapseltrümmern zusammengeschusterter Sauerstoffwäscher, der Kohlendioxid in atembare Luft spaltet. Teo nennt ihn „Wheezy“ — stört euch nicht am Lärm. Halte den Knopf darüber gedrückt, um von Hand zu pumpen. Lässt sich in Kapitel 2 zur Elektrolysestation umbauen.", "nodes": {
+   "filter": ["Frische Filter", "Ertrag +25%"], "cap_1": ["Zusatzlüfter", "Arbeiterlimit +1"], "seal": ["Abgedichtete Dichtungen", "Ertrag +30%"], "coil": ["Heizspiralen", "Ertrag +30%"] } },
+  "o2_scrubber:elec": { "name": "Elektrolysestation", "desc": "Ines' Entwurf: Wheezy bekommt einen Bohrer, bohrt bis zur Eisschicht, schmilzt sie und spaltet das Wasser in Sauerstoff. Jeder Arbeiter erzeugt mehr als doppelt so viel Sauerstoff wie im Wäscher. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
+  "emergency_camp": { "name": "Notlager", "desc": "Kommando Lv1. Aufblasbare Druckkuppeln und Strahlungsheizer — die Überlebenden können drinnen endlich die Helme abnehmen. Schaltet Gebäude-Upgrades und Upgrade-Linien frei und führt zu Stufe 2." },
+  "hab_pod": { "name": "Wohnkapsel", "desc": "Bietet pro Stufe Platz für 2 Personen. Das Bevölkerungslimit entscheidet, ob neue Kolonisten ankommen können.", "nodes": {
+   "cap_1": ["Etagenbetten", "Kapazität +1"], "birth": ["Leitlichter", "Überlebendensuche +10%"], "cap_2": ["Zusätzliche Trennwände", "Kapazität +2"] } },
+  "cargo": { "name": "Versorgungsdepot", "desc": "Jede Stufe erhöht das Lager jeder Ressource um 100.", "nodes": { "stack": ["Stapelgestelle", "+50 Lager pro Stufe"] } },
+  "lounge": { "name": "Aufenthaltskapsel", "desc": "Moral +5 pro Stufe. Jeder stationierte Arbeiter bringt 10% Nahrungssicherheit.", "nodes": {
+   "morale_5": ["Filmabend", "Moral +5"], "window_90": ["Gemeinsame Mahlzeiten", "Zeitfenster der Nahrungssicherheit wird 90 s"] } },
+  "assembly": { "name": "Montagewerkstatt", "desc": "Zerlegt Schrott und baut daraus Bauteile. Stoppt, wenn der Schrott ausgeht.", "nodes": {
+   "ratio_1": ["Sortierband", "Verhältnis 0,4 → 0,5"], "ratio_2": ["Präzisionsvorrichtungen", "Verhältnis 0,5 → 0,6"] } },
+  "rock_cutter": { "name": "Steinschneider", "desc": "Ein aus der Kapsel geborgener Laserschneider, umgebaut, um Bausteine aus dem Felsgrund zu schneiden.", "nodes": {
+   "prod_20": ["Klingenpflege", "Ertrag +20%"], "cap_1": ["Nachtschicht", "Arbeiterlimit +1"], "click_1": ["Handarbeit", "Klickertrag +1"] } },
+  "central_hub": { "name": "Zentrale", "desc": "Kommando Lv2. Ein echtes Siedlungszentrum: Wohnraum für 4, +100 Lager, und es geht weiter zu Stufe 3. Benötigt Bevölkerung 12." },
+  "databank": { "name": "Technikinstitut", "desc": "Sammelt alles, woran sich die Kolonisten erinnern, und treibt die Technik der Kolonie voran. Geforscht wird nur mit stationierten Forschern — mehr geht schneller, Upgrades schaffen Platz für mehr.", "nodes": { "speed_50": ["Indexsystem", "Forschungstempo +50%"] } },
+  "rail_line": { "name": "Schienenstrecke", "desc": "Alle Sammelgebäude +10% Ertrag, Arbeiter laufen schneller, und jeder Weg der Kolonie wird mit Steinplatten gepflastert.", "nodes": { "double": ["Zweigleisig", "Sammelertrag weitere +5%, Straßen werden zu Metallplatten"] } },
+  "metal_mine": { "name": "Metallmine", "desc": "Gräbt sich bis zu den Metalladern hinab. Der Ertrag ist gering, aber jeder weitere Schritt braucht ihn.", "nodes": {
+   "prod_20": ["Stollenausbau", "Ertrag +30%"], "click_1": ["Adersonde", "Klickertrag +1"], "crystal_sense": ["Kristallgespür", "Klicks haben 10% Chance, 1 Xenokristall-Splitter zu finden"] } },
+  "expedition": { "name": "Expeditionsstation", "desc": "Fahrzeuge und Ausrüstung, um Teams ins Ödland zu schicken, auf der Suche nach Bauplänen einer unbekannten Zivilisation. Jede Fahrt braucht 2 Kolonisten für etwa 3 Minuten; die erste bringt immer einen Bauplan mit. Upgrades bringen mehr Beute und machen Bauplan-Bruchstücke leichter auffindbar." },
+  "forge": { "name": "Schmiede", "desc": "Schmiedet Metall zu Werkzeug oder Waffen. Ab Stufe 4 kannst du Arbeiter an die Waffen setzen. Gebäude brauchen ab Lv5 Werkzeug.", "nodes": {
+   "tools_25": ["Normformen", "Werkzeugertrag +25%"], "click_1": ["Schmiedemeister", "Klickertrag +1"], "weapon_atk": ["Waffenkalibrierung", "Waffenangriff +1"] } },
+  "outpost": { "name": "Außenposten", "desc": "Kommando Lv3. Der Wachturm sieht weiter — auch das, was näher kommt. Führt zu Stufe 4. Benötigt Bevölkerung 22." },
+  "memorial": { "name": "Gedenkhalle", "desc": "Für alle, die es nicht bis hierher geschafft haben. Moral +10 und Überlebendensuche +10% pro Stufe. Gebaut aus dem Rest der Kapselhülle: Die Kapsel wird ausgemustert, ihr Wohnraum (+4 Bevölkerung), ihr Lager (+100) und ihre Notfrequenz (Überlebendensuche +10%) gehen hierher über.", "nodes": { "morale_5": ["Ewiges Licht", "Moral +5"] } },
+  "crystal_synth": { "name": "Kristallsynthesizer", "desc": "Löst unterirdische Kristallhaufen auf und lässt sie zu energiespeicherndem Xenokristall neu wachsen. Der Ertrag ist winzig, aber alle Alien-Technik hängt davon ab.", "nodes": {
+   "prod_30": ["Resonanztank", "Ertrag +30%"], "cap_1": ["Zweiter Reaktor", "Arbeiterlimit +1"] } },
+  "security": { "name": "Marine-Kaserne", "desc": "Stationierte Arbeiter sind Marines; jeder belegt 1 Bevölkerung. Waffen auf Lager werden automatisch ausgegeben und erhöhen den Angriff von 2 auf 5.", "nodes": {
+   "hp_5": ["Schutzwesten", "Marine-LP +5"], "shift": ["Sanitäter-Rotation", "Genesungszeit −50%"], "atk_2": ["Taktikübungen", "Marine-Angriff +2"] } },
+  "water_cycle": { "name": "Wasseraufbereitung", "desc": "Gewinnt Abwasser und Kondenswasser zurück. Nährstoffverbrauch −10%, und jede Stufe einer Wohnkapsel bietet 1 Platz mehr." },
+  "med_bay": { "name": "Krankenstation", "desc": "Ein Druck-Medizinmodul, in dem verletzte Marines behandelt werden. 2 Betten pro Stufe; stationierte Sanitäter lassen Patienten in diesen Betten schneller genesen.", "nodes": {
+   "diag": ["Autodiagnose", "Heiltempo +50%"], "beds": ["Intensivbetten", "+1 Bett pro Stufe"] } },
+  "colony_core": { "name": "Koloniekern", "desc": "Kommando Lv4. Ein Xenokristall-Reaktor — die Kolonie überlebt nicht mehr nur. Benötigt Bevölkerung 40 und 2 abgewehrte Angriffe." },
+  "admin": { "name": "Verwaltungszentrum", "desc": "Der Ratssaal der Kolonie. Schaltet Steuern und Koloniechartas frei; Steuern bringen Credits, aber jede Steuerstufe kostet 5 Moral.", "nodes": { "council": ["Erweiterter Rat", "Charta-Plätze +1"] } },
+  "trade_post": { "name": "Handelsposten", "desc": "Der Markt der Kolonie. Arbeiter verdienen hier Credits, und du kannst mit dem Helion-Konzern handeln.", "nodes": {
+   "prod_30": ["Nachtmarkt", "Ertrag +30%"], "cap_2": ["Mehr Stände", "Arbeiterlimit +2"] } },
+  "spaceport": { "name": "Raumhafen", "desc": "Empfängt Shuttles anderer Kolonien. Öffnet den Handel mit der Allianz Freier Kolonien; mit einem Xenologie-Institut kannst du auf dieses rätselhafte Signal antworten." },
+  "turret": { "name": "Verteidigungsgeschütz", "desc": "Feste Verteidigung. Ein Geschütz pro Stufe (ANG 8, LP 40); braucht keine Bevölkerung und repariert sich nach dem Kampf selbst." },
+  "xeno_lab": { "name": "Xenologie-Institut", "desc": "Ein Labor nur für Xenokristall. Schaltet die Xeno-Forschungslinie frei; stationierte Forscher beschleunigen außerdem jede Forschung." },
+  "governor": { "name": "Gouverneursresidenz", "desc": "Das Verwaltungsherz der Stadt, wo der erste gewählte Gouverneur der Kolonie arbeitet. Moral +15, Charta-Plätze +1." },
+  "sky_residence": { "name": "Skyline-Residenz", "desc": "Hochhäuser unter der Kuppel, mit den Sternen direkt vor dem Fenster. +12 Bevölkerungslimit und +5 Moral pro Stufe." },
+  "bioeng": { "name": "Bioingenieurlabor", "desc": "Durchsetzt Pflanzen und Kulturen mit Xenokristall, um kurzzeitig die Erträge der ganzen Kolonie zu steigern. Jede Infusion kostet Xenokristall; höhere Stufen machen sie stärker und länger." },
+  "orbital_beacon": { "name": "Orbitalbake", "desc": "Ein Baken-Turm, der ins ganze System sendet. In fünf Phasen gebaut, jede braucht Metall, Werkzeug, Xenokristall und Credits; mit der fünften leuchtet die Bake. Benötigt Bevölkerung 100." },
+  "star_dome": { "name": "Sternkuppel", "desc": "Kommando Lv5. Eine Glaskuppel über der ganzen Kolonie — ab heute ist sie eine Stadt. Benötigt Bevölkerung 80 und 5.000 verdiente Credits." }
+ },
+ "research": {
+  "gather_1": ["Sammeln I", "Alle Sammelerträge +10%"],
+  "storage_1": ["Normregale", "Alle Lager +25%"],
+  "crit_1": ["Präzises Handwerk", "Volltrefferchance aller Klicks +3%"],
+  "ration_1": ["Sparsame Rezepte", "Nährstoffverbrauch −10%"],
+  "process_1": ["Prozessoptimierung", "Verarbeitungstempo +20%"],
+  "gather_2": ["Sammeln II", "Alle Sammelerträge +10%"],
+  "click_1": ["Verstärkte Handschuhe", "Alle Klickerträge +1"],
+  "weapon_1": ["Waffentuning I", "Waffenangriff +2"],
+  "arms_line": ["Waffenfertigung", "Waffenertrag +30%"],
+  "weapon_2": ["Waffentuning II", "Waffenangriff +2"],
+  "crystal_armor": ["Kristallpanzer", "Marine-LP +5"],
+  "crystal_ration": ["Notrationen", "Nährstoffverbrauch −10%"],
+  "crystal_resonance": ["Kristallresonanz", "Alle Sammelerträge +10%"],
+  "bp_filter": ["Hochdruckfilter", "Bauplan-Technik: Sauerstoffgebäude +50% Ertrag"],
+  "bp_resonance": ["Resonanzwerkzeug", "Bauplan-Technik: Bauen und Aufrüsten kosten 15% weniger"],
+  "warehouse": ["Lagererweiterung", "Alle Lager +50%"],
+  "xeno_growth": ["Kristallkatalyse", "Xenokristall-Ertrag +40%"],
+  "xeno_hab": ["Gittermaterial", "Jede Stufe einer Wohnkapsel bietet 1 Platz mehr"],
+  "xeno_turret": ["Kristallläufe", "Geschützangriff +6"],
+  "xeno_blade": ["Kristallgewehr", "Waffenangriff +3"]
+ },
+ "charters": {
+  "rationing": ["Rationierung", "Nährstoffverbrauch −20%", "Moral −10"],
+  "double_shift": ["Doppelschichten", "Alle Erträge +15%", "Moral −10"],
+  "open_immigration": ["Offene Einwanderung", "Überlebendensuche +30%", "Moral −5"],
+  "rest_day": ["Ruhetag", "Moral +15", "Alle Erträge −10%"],
+  "corp_contract": ["Konzernvertrag", "Credit-Einnahmen +40%", "Konzernbeziehung +1, Moral −5"],
+  "alien_first": ["Xeno zuerst", "Xenokristall-Ertrag +25%", "Metallertrag −15%"]
+ },
+ "chapters": [
+  {
+   "title": "Der Absturz",
+   "subtitle": "Drei Überlebende, erste Nacht",
+   "intro": [
+    "Die gute Nachricht: Wir leben. Die schlechte: In der Kapsel ist noch Sauerstoff für zwölf Minuten. Alles andere sind nur Details der schlechten Nachricht.",
+    "Vor drei Wochen haben wir aus den Minen auf F8 einen Frachter gestohlen. Auf der Flucht fingen wir ein schwaches Navigationssignal auf, das von alten Kolonieanlagen hier sprach. Ich habe beschlossen, den Kurs zu ändern. Das Schiff zerbrach im Orbit, und wir alle sprangen in die Rettungskapseln.",
+    "Diese Kapsel hat sechs Sitze. Drei von uns sitzen drin. Die Luft draußen ist reines Kohlendioxid, und die Lämpchen der Lebenserhaltung gehen eins nach dem anderen aus. Nehmt das Wrack auseinander und bastelt etwas, das Sauerstoff macht. — Mara"
+   ],
+   "goals": [
+    "Halte den Schrott-Knopf über dem Schrotthaufen gedrückt und sammle 20 Schrott",
+    "Baue einen Sauerstoffwäscher, bevor die Lebenserhaltung versagt",
+    "Baue einen Algentank für Nährstoffe (er macht auch ein wenig Sauerstoff)",
+    "Teile Kolonisten zur Arbeit an einem Gebäude ein",
+    "Rüste den Schrotthaufen auf Lv2 auf, um mehr Teile herauszuholen",
+    "Rüste den Sauerstoffwäscher auf Lv3 auf, damit Wheezy alle am Atmen hält",
+    "Rüste den Algentank auf Lv3 auf",
+    "Stelle das druckdichte Notlager fertig"
+   ]
+  },
+  {
+   "title": "Wurzeln schlagen",
+   "subtitle": "Genug Luft für alle",
+   "intro": [
+    "Das Drucklager hat die erste Nacht überstanden. Am Morgen fing das Funkgerät einen Notruf auf — auf der Frequenz unseres Schiffs.",
+    "Die Leute aus den anderen Kapseln leben. Es kommen mehr: mehr Münder und mehr Lungen. Wheezy allein wird nicht reichen.",
+    "Bring sie nach Hause, bau ihnen ein Zuhause, mach genug Luft zum Teilen und gib ihnen einen Grund zu bleiben."
+   ],
+   "goals": [
+    "Baue eine Wohnkapsel, um das Bevölkerungslimit zu erhöhen",
+    "Baue den Sauerstoffwäscher zur Elektrolysestation um, um Sauerstoff aus dem Eis zu gewinnen",
+    "Halte die Luftsicherheit 1 Minute lang über 60%",
+    "Baue eine Montagewerkstatt, um Schrott zu Bauteilen zu machen",
+    "Erreiche Bevölkerung 12",
+    "Stelle die Zentrale fertig"
+   ]
+  },
+  {
+   "title": "Baupläne",
+   "subtitle": "Wir können sie nutzen. Verstehen tun wir sie nicht.",
+   "intro": [
+    "In der Nacht, als die Zentrale anging, brachte Ines den Scanner des Technikinstituts zum Laufen. Kaum eingeschaltet, piepte er bis zum Morgengrauen Teos Untersetzer an.",
+    "Die Muster auf dem Untersetzer sind Schritt-für-Schritt-Fertigungsanleitungen — nur nicht von Menschen geschrieben. Und jede davon braucht ein Material, das wir nicht haben: Xenokristall.",
+    "Abbauen, schmieden, Schienen legen, dann eine Expeditionsstation bauen und Leute auf die Suche schicken. Wir müssen nicht verstehen, wie es funktioniert. Wir müssen es nur benutzen."
+   ],
+   "goals": [
+    "Baue eine Metallmine",
+    "Baue eine Schmiede",
+    "Baue eine Schienenstrecke, um die Sammelstellen zu verbinden",
+    "Baue eine Expeditionsstation",
+    "Schließe die erste Expedition ab und bring einen Bauplan mit",
+    "Erforsche die erste Bauplan-Technik: Hochdruckfilter",
+    "Stelle den Außenposten fertig"
+   ]
+  },
+  {
+   "title": "Xenokristall",
+   "subtitle": "Was bewachen sie?",
+   "intro": [
+    "Der Xenokristall, den die Expeditionen mitbringen, reicht nie. Ines sagt, einer der Baupläne bringt uns bei, selbst welchen herzustellen: die Kristallhaufen unter der Erde auflösen und neu wachsen lassen.",
+    "Was wir daraus bauen, wird nichts ähneln, was wir je gebaut haben.",
+    "Bau den Kristallsynthesizer. Ab heute benutzen wir nicht nur, was die Aliens zurückgelassen haben. Wir machen es selbst."
+   ],
+   "goals": [
+    "Baue einen Kristallsynthesizer",
+    "Baue die Marine-Kaserne und stationiere Marines",
+    "Baue eine Krankenstation, damit Verwundete behandelt werden können",
+    "Wehre 2 Alien-Angriffe ab",
+    "Erreiche Bevölkerung 40",
+    "Stelle den Koloniekern fertig"
+   ]
+  },
+  {
+   "title": "Der Schatten des Konzerns",
+   "subtitle": "Der Preis der Freiheit",
+   "intro": [
+    "Drei Tage nachdem der Koloniekern anging, tauchte ein Kriegsschiff im Orbit auf. Jeder von uns kannte das Logo auf seinem Rumpf.",
+    "Der Helion-Konzern hat uns gefunden. Sie haben nicht das Feuer eröffnet. Sie haben nur eine Nachricht geschickt: Ein Gesandter kommt bald herunter.",
+    "Um frei zu sein, muss die Kolonie für sich selbst aufkommen, und so viele Menschen müssen zusammenstehen wollen. Gebt euch Gesetze, treibt Handel und entscheidet dann: mit dem Konzern zusammenarbeiten oder Nein sagen."
+   ],
+   "goals": [
+    "Baue das Verwaltungszentrum",
+    "Beschließe deine erste Koloniecharta",
+    "Empfange den Gesandten des Konzerns und triff eine Entscheidung",
+    "Verdiene insgesamt 5.000 Credits",
+    "Erreiche Bevölkerung 80",
+    "Stelle die Sternkuppel fertig"
+   ]
+  },
+  {
+   "title": "Die Entscheidung",
+   "subtitle": "Wessen Zuhause ist das?",
+   "intro": [
+    "In der ersten Nacht nachdem sich die Kuppel geschlossen hatte, waren die Lichter der Kolonie vom Orbit aus zu sehen.",
+    "Helions Kriegsschiff ist immer noch da oben. Und das Signal, das uns hergeführt hat, auch. Dieser Planet ist kein Versteck mehr. Er ist eine Koordinate, die jeder kennt.",
+    "Bau die Orbitalbake und finde die Quelle des Signals. Dann entscheiden wir, wessen Zuhause das ist."
+   ],
+   "goals": [
+    "Baue die Gouverneursresidenz",
+    "Baue eine Skyline-Residenz",
+    "Injiziere einmal Xenokristall im Bioingenieurlabor",
+    "Erreiche Bevölkerung 100",
+    "Schließe alle fünf Phasen ab: die Orbitalbake oder ein Schiff aus ihrem Kern"
+   ]
+  }
+ ],
+ "events": {
+  "meteor": { "title": "Meteoritenschauer", "text": "Ein Feuerstreif zieht über den Himmel — Trümmer stürzen auf: {building}.", "options": ["Für {cost} Stein verstärken", "Aussitzen ({building} steht 60 s still)"] },
+  "rescue": { "title": "Notsignal", "text": "Das Funkgerät fängt aus der nahen Schlucht ein abgehacktes Notsignal auf. Es könnten andere Überlebende sein — oder nur eine Bake, die immer noch sendet.", "options": ["2 untätige Kolonisten schicken (3 Min.)", "Ignorieren"] },
+  "rescue_ines": { "title": "Ein abgerissener Notruf", "text": "Über das Klirren von Metall hinweg knistert eine Frauenstimme aus dem Funkgerät: „Hier ist … Kapsel drei, Ines … meine Kapsel steckt in einer Gletscherspalte fest … ich habe Werkzeug, aber keine Luft. Bitte beeilt euch.“", "options": ["Mara und Juno fahren hin (2 Min., keine Arbeiter nötig)", "Später (das Signal wiederholt sich)"] },
+  "choice6": { "title": "Wessen Zuhause ist das?", "text": "Alle sind da. Die Glimmer sind Wächter, und jedes Stück Xenokristall, das wir benutzen, stammt aus dem, was sie bewachen. Der Kern der Bake reicht nur für eines: die Bake zum Leuchten bringen oder ein Schiff antreiben.", "options": ["Auf Xenokristall verzichten und mit einem Schiff fortgehen", "Xenokristall behalten und bleiben"] },
+  "envoy": { "title": "Gesandter des Konzerns", "text": "Ein Shuttle mit dem Helion-Logo landet auf dem Platz. Der Gesandte ist höflich: Die Schürfrechte auf diesem Planeten gehören dem Konzern, aber solange Sie pünktlich {demand} zahlen, ist der Konzern bereit, Ihren Vertragsbruch „vorübergehend“ zu übersehen.", "options": ["{demand} zahlen", "Ablehnen (bisher {refusals}-mal abgelehnt)"] }
+ }
+}
