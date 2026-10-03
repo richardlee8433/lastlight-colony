@@ -14,6 +14,7 @@ export const fmt = (n: number) => {
 export const fmtTime = (sec: number) => {
   sec = Math.max(0, Math.floor(sec));
   const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  if (lang() === 'ja') return h ? `${h}時間${m}分` : m ? `${m}分${String(s).padStart(2, '0')}秒` : `${s}秒`;
   if (lang() === 'zh') return h ? `${h} 小時 ${m} 分` : m ? `${m} 分 ${String(s).padStart(2, '0')} 秒` : `${s} 秒`;
   return h ? `${h}h ${m}m` : m ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`;
 };

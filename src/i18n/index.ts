@@ -1,22 +1,31 @@
-// 中英文切換：介面文字查 strings.ts；建築、研究、憲章、章節、事件等資料文字，中文直接用 data/*.json，英文查 data-en.ts。
+// 語言切換：介面文字查 strings.ts（英、中）；建築、研究、憲章、章節、事件等資料文字，中文直接用 data/*.json，英文查 data-en.ts。
+// 德、日、西、葡查 locales/ 的翻譯包，缺的退回英文。
 // 引擎不產生任何顯示文字，只留下 Msg（代碼＋參數），由這裡翻譯。
 import { create } from 'zustand';
 import { STRINGS } from './strings';
 import EN from './data-en';
+import { PACKS, PackLang } from './locales';
+import { SCENES } from '../data/dialogs';
 import { DEF, Msg, ResKey } from '../engine/state';
 import { CHARTER_DEFS, RESEARCH_DEFS } from '../engine/formulas';
 import { CHAPTERS, Chapter } from '../engine/story';
 import EVENTS from '../data/events.json';
 
-export type Lang = 'en' | 'zh';
-export const LANGS: { id: Lang; label: string }[] = [{ id: 'en', label: 'English' }, { id: 'zh', label: '繁體中文' }];
+export type Lang = 'en' | 'zh' | PackLang;
+/** label：設定頁用的全名；short：首頁右上角的短標籤 */
+export const LANGS: { id: Lang; label: string; short: string; tag: string }[] = [
+  { id: 'en', label: 'English', short: 'EN', tag: 'en' }, { id: 'zh', label: '繁體中文', short: '中文', tag: 'zh-Hant' },
+  { id: 'de', label: 'Deutsch', short: 'DE', tag: 'de' }, { id: 'ja', label: '日本語', short: '日本語', tag: 'ja' },
+  { id: 'es', label: 'Español', short: 'ES', tag: 'es' }, { id: 'pt', label: 'Português (Brasil)', short: 'PT', tag: 'pt-BR' },
+];
+export const langTag = (l: Lang) => LANGS.find((x) => x.id === l)?.tag ?? 'en';
 const SETTINGS_KEY = 'lastlight-colony-settings';
 
 function loadSettings(): { lang: Lang; dayNight: boolean; analytics: boolean } {
   let lang: Lang = 'en', dayNight = true, analytics = true;
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) { const v = JSON.parse(raw); if (v.lang === 'zh' || v.lang === 'en') lang = v.lang; if (v.dayNight === false) dayNight = false; if (v.analytics === false) analytics = false; }
+    if (raw) { const v = JSON.parse(raw); if (LANGS.some((x) => x.id === v.lang)) lang = v.lang; if (v.dayNight === false) dayNight = false; if (v.analytics === false) analytics = false; }
   } catch { /* 沒有設定：用預設 */ }
   return { lang, dayNight, analytics };
 }
@@ -46,7 +55,7 @@ export const lang = () => useSettings.getState().lang;
 export const useLang = () => useSettings((s) => s.lang);
 
 export function applyDocLang(l: Lang = lang()) {
-  document.documentElement.lang = l === 'zh' ? 'zh-Hant' : 'en';
+  document.documentElement.lang = langTag(l);
   document.title = l === 'zh' ? '末光殖民地' : 'Lastlight Colony';
 }
 
@@ -54,7 +63,8 @@ type Params = Record<string, unknown>;
 /** 介面文字。{name} 換成參數；英文可用 {n|one|many} 依數量選單複數 */
 export function t(key: string, p?: Params): string {
   const e = STRINGS[key];
-  let s = e ? (lang() === 'zh' ? e[1] : e[0]) : key;
+  const l = lang();
+  let s = e ? (l === 'zh' ? e[1] : l === 'en' ? e[0] : PACKS[l].ui[key] ?? e[0]) : key;
   if (!p) return s;
   s = s.replace(/\{(\w+)\|([^|}]*)\|([^}]*)\}/g, (_, k, one, many) => (Number(p[k]) === 1 ? one : many));
   return s.replace(/\{(\w+)\}/g, (m, k) => (k in p ? String(p[k]) : m));
@@ -62,6 +72,26 @@ export function t(key: string, p?: Params): string {
 
 // ── 資料文字 ──
 const zh = () => lang() === 'zh';
+/** 目前語言的翻譯資料（英文、中文時是 null）；個別欄位缺翻譯時退回英文 */
+const xd = (): any => { const l = lang(); return l === 'zh' || l === 'en' ? null : PACKS[l].data; };
+/** 劇情台詞：idx 是 dialogs.ts 裡的原始編號 */
+export function sceneLine(id: string, idx: number, l: Lang = lang()): string {
+  const line = SCENES[id]?.lines[idx];
+  if (!line) return '';
+  if (l === 'zh') return line[1];
+  if (l === 'en') return line[2];
+  return PACKS[l].dialogs[id]?.lines?.[idx] || line[2];
+}
+/** 劇情的日誌段落 */
+export function sceneLog(id: string, l: Lang = lang()): string | null {
+  const log = SCENES[id]?.log;
+  if (!log) return null;
+  if (l === 'zh') return log[0];
+  if (l === 'en') return log[1];
+  return PACKS[l].dialogs[id]?.log || log[1];
+}
+/** 畫布（Pixi）文字用的字型：日文用日文字形 */
+export const canvasFont = () => (lang() === 'ja' ? '"Noto Sans JP", "Noto Sans TC", sans-serif' : '"Noto Sans TC", sans-serif');
 export const resName = (k: ResKey | string) => t('res.' + k);
 // 改建過的建築（糧食設施）名稱與說明跟著形態走；形態由 store 提供，i18n 不直接讀遊戲狀態
 let formGetter: (id: string) => number = () => 0;
@@ -72,37 +102,37 @@ function formKey(id: string, form = formGetter(id)) {
 }
 export const bName = (id: string, form?: number) => {
   const k = formKey(id, form);
-  if (k) return (zh() ? k.f.name : EN.buildings[k.key]?.name) ?? k.f.name;
-  return (zh() ? DEF[id]?.name : EN.buildings[id]?.name) ?? id;
+  if (k) return (zh() ? k.f.name : xd()?.buildings?.[k.key]?.name ?? EN.buildings[k.key]?.name) ?? k.f.name;
+  return (zh() ? DEF[id]?.name : xd()?.buildings?.[id]?.name ?? EN.buildings[id]?.name) ?? id;
 };
 export const bDesc = (id: string, form?: number) => {
   const k = formKey(id, form);
-  if (k) return (zh() ? k.f.desc : EN.buildings[k.key]?.desc) ?? k.f.desc;
-  return (zh() ? DEF[id]?.desc : EN.buildings[id]?.desc) ?? '';
+  if (k) return (zh() ? k.f.desc : xd()?.buildings?.[k.key]?.desc ?? EN.buildings[k.key]?.desc) ?? k.f.desc;
+  return (zh() ? DEF[id]?.desc : xd()?.buildings?.[id]?.desc ?? EN.buildings[id]?.desc) ?? '';
 };
 export function nodeText(bid: string, nid: string): [string, string] {
-  if (!zh()) { const n = EN.buildings[bid]?.nodes?.[nid]; if (n) return n; }
+  if (!zh()) { const n = xd()?.buildings?.[bid]?.nodes?.[nid] ?? EN.buildings[bid]?.nodes?.[nid]; if (n) return n; }
   const n = DEF[bid]?.upgrades?.find((u) => u.id === nid);
   return n ? [n.name, n.desc] : [nid, ''];
 }
 export function researchText(id: string): [string, string] {
-  if (!zh() && EN.research[id]) return EN.research[id];
+  if (!zh()) { const r = xd()?.research?.[id] ?? EN.research[id]; if (r) return r; }
   const r = RESEARCH_DEFS.find((x) => x.id === id);
   return r ? [r.name, r.desc] : [id, ''];
 }
 /** [名稱, 效果, 代價] */
 export function charterText(id: string): [string, string, string] {
-  if (!zh() && EN.charters[id]) return EN.charters[id];
+  if (!zh()) { const c = xd()?.charters?.[id] ?? EN.charters[id]; if (c) return c; }
   const c = CHARTER_DEFS.find((x) => x.id === id);
   return c ? [c.name, c.desc, c.cost] : [id, '', ''];
 }
 export function chapterText(ch: Chapter): { title: string; subtitle: string; intro: string[]; goals: string[] } {
-  const e = EN.chapters[ch.chapter - 1];
-  if (!zh() && e) return e;
+  const e = EN.chapters[ch.chapter - 1], x = xd()?.chapters?.[ch.chapter - 1];
+  if (!zh() && e) return x ? { title: x.title ?? e.title, subtitle: x.subtitle ?? e.subtitle, intro: x.intro ?? e.intro, goals: x.goals ?? e.goals } : e;
   return { title: ch.title, subtitle: ch.subtitle, intro: ch.intro, goals: ch.goals.map((g) => g.label) };
 }
 export function eventText(kind: string): { title: string; text: string; options: string[] } {
-  return zh() ? (EVENTS as any)[kind] : EN.events[kind];
+  return zh() ? (EVENTS as any)[kind] : xd()?.events?.[kind] ?? EN.events[kind];
 }
 export const raidName = (kind?: string) => t('raid.' + (kind ?? 'alien'));
 export const kindName = (kind: string) => t('kind.' + kind);

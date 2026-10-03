@@ -62,7 +62,7 @@ export function Settings() {
             <h3>{t('set.lang')}</h3>
             <div className="seg" role="radiogroup" aria-label={t('set.lang')}>
               {LANGS.map((l) => (
-                <button key={l.id} type="button" role="radio" aria-checked={lang === l.id} lang={l.id === 'zh' ? 'zh-Hant' : 'en'}
+                <button key={l.id} type="button" role="radio" aria-checked={lang === l.id} lang={l.tag}
                   className={'btn' + (lang === l.id ? '' : ' alt')} onClick={() => { setLang(l.id); act.bump(); }}>{l.label}</button>
               ))}
             </div>

@@ -9,7 +9,7 @@ import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { artId, buffActive, built, disabled, idle, retired, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
-import { bName, lang, resName, t, useSettings } from '../i18n';
+import { bName, canvasFont, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
@@ -363,7 +363,7 @@ export class GameScene {
 
   makePlate(text: string, kind: string) {
     const Z = this.Z, fs = Z >= 3 ? 15 : Z >= 2 ? 12 : 10;
-    const tx = new Text({ text, style: { fontFamily: '"Noto Sans TC", sans-serif', fontSize: fs, fontWeight: '700', fill: kind === 'plate' ? 0xfff8ec : 0xc9c3d6, stroke: { color: 0x120e18, width: fs >= 12 ? 3 : 2 } } });
+    const tx = new Text({ text, style: { fontFamily: canvasFont(), fontSize: fs, fontWeight: '700', fill: kind === 'plate' ? 0xfff8ec : 0xc9c3d6, stroke: { color: 0x120e18, width: fs >= 12 ? 3 : 2 } } });
     const w = Math.ceil(tx.width / Z) + 8;
     const c = new Container() as any;
     const bg = createPixelSprite(renderPanel(w, 11, Math.min(6, game.s.stage), kind));
@@ -441,7 +441,7 @@ export class GameScene {
     const Z = this.Z, st = Math.min(6, game.s.stage), id = v.bid!, d = DEF[id];
     const res = (d.produce?.res ?? d.recipe!.out) as string;
     const fs = Z >= 3 ? 15 : Z >= 2 ? 12 : 10;
-    const txt = (text: string, size: number, fill: number) => new Text({ text, style: { fontFamily: '"Noto Sans TC", sans-serif', fontSize: size, fontWeight: '900', fill, stroke: { color: 0x120e18, width: size >= 12 ? 3 : 2 } } });
+    const txt = (text: string, size: number, fill: number) => new Text({ text, style: { fontFamily: canvasFont(), fontSize: size, fontWeight: '900', fill, stroke: { color: 0x120e18, width: size >= 12 ? 3 : 2 } } });
     // 卡片寬度跟著最長的按鈕文字（英文資源名比中文長）
     const words = [resName(res), t('sc.halt'), t('sc.paused')];
     const textW = Math.max(...words.map((w) => { const m = txt(w, fs, 0); const n = m.width; m.destroy(); return n; })) / Z;

@@ -3,7 +3,7 @@ import { useGame, game } from '../store/gameStore';
 import { SCENES } from '../data/dialogs';
 import { endOfChapter, lineOk } from '../engine/dialog';
 import { CHARACTERS, CharacterId, portraitURL } from '../art/portraitArt';
-import { t, useLang } from '../i18n';
+import { sceneLine, t, useLang } from '../i18n';
 import { sfx, playVoice } from '../audio/audio';
 import { voiceFile } from '../data/voices';
 
@@ -24,13 +24,14 @@ function Scene({ id, day }: { id: string; day: number }) {
   // 只播符合目前路線的台詞（第 5～6 章的分支）
   const lines = SCENES[id].lines.filter((l) => lineOk(game.s, l[3]));
   const [i, setI] = useState(0), [shown, setShown] = useState(0);
-  const [who, zh, en] = lines[i];
-  const text = (lang === 'zh' ? zh : en).replace('{day}', String(day));
+  const [who] = lines[i];
+  // 原始台詞編號（路線過濾掉的不影響）：翻譯與配音都用它對應
+  const idx = SCENES[id].lines.indexOf(lines[i]);
+  const text = sceneLine(id, idx, lang).replace('{day}', String(day));
   const typing = shown < text.length;
 
   useEffect(() => { sfx('ui'); }, []);
   // 有配音的台詞：換到這句時播，翻頁、跳過或關掉對話時停（用原始台詞編號，路線過濾掉的不影響）
-  const idx = SCENES[id].lines.indexOf(lines[i]);
   useEffect(() => { playVoice(voiceFile(id, idx, lang)); return () => playVoice(null); }, [id, idx, lang]);
   useEffect(() => {
     if (!typing) return;

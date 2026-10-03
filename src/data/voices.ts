@@ -1,5 +1,5 @@
 // 台詞配音清單：檔案放在 public/voice/，檔名是「對話 id-台詞編號.mp3」（編號從 0 開始，照 dialogs.ts 裡的順序）。
-// 錄好一句就把 key 加到對應語言；沒列出的台詞照舊只有文字。目前只有英文配音，中文介面不播。
+// 錄好一句就把 key 加到對應語言；沒列出的台詞照舊只有文字。目前只有英文配音：中文介面不播，其他語言播英文（像看字幕）。
 const VOICED: Record<'zh' | 'en', Set<string>> = {
   en: new Set([
     'c1-intro',    // 第 1 章開場說明（瑪拉旁白，三段接起來約 41 秒）
@@ -13,9 +13,9 @@ const VOICED: Record<'zh' | 'en', Set<string>> = {
   ]),
   zh: new Set(),   // 中文配音之後放 voice/zh-xxx.mp3
 };
-export const voiceFile = (scene: string, line: number | 'intro', lang: 'zh' | 'en') => {
-  const k = `${scene}-${line}`;
+export const voiceFile = (scene: string, line: number | 'intro', l: string) => {
+  const k = `${scene}-${line}`, lang = l === 'zh' ? 'zh' : 'en';
   return VOICED[lang]?.has(k) ? (lang === 'en' ? `${k}.mp3` : `zh-${k}.mp3`) : null;
 };
 /** 章節開場說明的旁白（瑪拉唸）：檔名 c{章}-intro.mp3，key 也加在上面的清單 */
-export const introVoiceFile = (chapter: number, lang: 'zh' | 'en') => voiceFile(`c${chapter}`, 'intro', lang);
+export const introVoiceFile = (chapter: number, lang: string) => voiceFile(`c${chapter}`, 'intro', lang);

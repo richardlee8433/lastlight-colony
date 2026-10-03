@@ -1,20 +1,19 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useGame, game } from '../store/gameStore';
-import { SCENES } from '../data/dialogs';
 import { CHAPTERS } from '../engine/story';
 import { Msg } from '../engine/state';
 import { portraitURL } from '../art/portraitArt';
-import { chapterText, t, tm, useLang } from '../i18n';
+import { chapterText, sceneLog, t, tm, useLang } from '../i18n';
 import { Modal } from './Modals';
 
 type Entry = Msg & { d: number };
 
 /** 一則日誌的文字；沒有日誌段落的對話場景回傳 null */
-function entryText(e: Entry, zh: boolean): string | null {
+function entryText(e: Entry): string | null {
   const p = e.p ?? {};
   if (e.k === 'scene') {
-    const log = SCENES[String(p.id)]?.log;
-    return log ? log[zh ? 0 : 1].replace('{day}', String(e.d)) : null;
+    const log = sceneLog(String(p.id));
+    return log ? log.replace('{day}', String(e.d)) : null;
   }
   if (e.k === 'log.built') return tm({ k: 'log.built' + (p.v ?? 0), p: { b: p.b } });
   if (e.k === 'log.chapter') {
@@ -28,14 +27,14 @@ function entryText(e: Entry, zh: boolean): string | null {
 export function Journal() {
   useGame((st) => st.v);
   const open = useGame((st) => st.journal);
-  const zh = useLang() === 'zh';
+  useLang();   // 換語言時重畫
   const box = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => { if (open && box.current) box.current.scrollTop = box.current.scrollHeight; }, [open]);
   if (!open) return null;
   const act = useGame.getState();
   const days: { d: number; items: { text: string; head: boolean }[] }[] = [];
   for (const e of game.s.journal?.entries ?? []) {
-    const text = entryText(e, zh);
+    const text = entryText(e);
     if (!text) continue;
     if (days.at(-1)?.d !== e.d) days.push({ d: e.d, items: [] });
     days.at(-1)!.items.push({ text, head: e.k === 'log.chapter' });

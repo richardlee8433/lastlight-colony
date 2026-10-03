@@ -51,7 +51,7 @@ export function TitleScreen() {
       <div className="title-lang" role="radiogroup" aria-label={t('set.lang')}>
         {LANGS.map((l) => (
           <button key={l.id} type="button" role="radio" aria-checked={lang === l.id} className={lang === l.id ? 'on' : ''}
-            lang={l.id === 'zh' ? 'zh-Hant' : 'en'} onClick={() => { setLang(l.id); act.bump(); }}>{l.id === 'zh' ? '中文' : 'EN'}</button>
+            lang={l.tag} title={l.label} onClick={() => { setLang(l.id); act.bump(); }}>{l.short}</button>
         ))}
       </div>
 
