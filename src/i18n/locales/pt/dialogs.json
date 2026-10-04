@@ -125,10 +125,10 @@
   "...Aceitável.",
   "A Ines é a Mãe da Dorothy.",
   "(hesita) ...Impreciso, mas aceito.",
-  "A Mara é a Capitã Gelada.",
+  "A Mara é a Capitã Fria.",
   "Negado.",
-  "A Capitã Gelada negou o apelido. Anotado."
- ], "log": "Agora somos dez. Dei apelido pra todo mundo. Só a Capitã Gelada recusou o dela." },
+  "A Capitã Fria negou o apelido. Anotado."
+ ], "log": "Agora somos dez. Dei apelido pra todo mundo. Só a Capitã Fria recusou o dela." },
  "c2-rescue": { "lines": [
   "Em qual cápsula você estava?",
   "(ofegante) A cinco... ou a seis? Não lembro.",
@@ -195,7 +195,7 @@
   "Em F8, carrinho de mina era pra minério. Não pra passeio.",
   "Então aqui é pra passeio.",
   "...Da próxima vez, me chamem."
- ], "log": "A linha férrea foi inaugurada e, pela primeira vez, a colônia parece um lugar só. A Mara disse pra chamar ela da próxima vez. A Capitã Gelada quer andar de carrinho. Anotado." },
+ ], "log": "A linha férrea foi inaugurada e, pela primeira vez, a colônia parece um lugar só. A Mara disse pra chamar ela da próxima vez. A Capitã Fria quer andar de carrinho. Anotado." },
  "c3-exp1": { "lines": [
   "A expedição voltou! Desenterramos uma placa de cristal inteirinha perto de um aglomerado, e isto—",
   "As pedras estão brilhando! Roxas! Posso usar como abajur?",
@@ -335,13 +335,13 @@
   "Olá! Sou a Sefa, bióloga. Minha nave de pesquisa captou um sinal a três sistemas daqui. Muito regular, nada natural. Então eu segui até aqui.",
   "A três sistemas?",
   "Sim! Segui o caminho todo. Então, cadê os animais com as costas brilhantes?",
-  "Você quer dizer os fulgores?",
+  "Você quer dizer os Glimmers?",
   "Vocês deram nome a eles! Que maravilha!",
   "Semana passada eles roeram nosso sintetizador.",
   "Tem um motivo pra isso! Todo comportamento tem um motivo.",
   "Quem mais consegue captar esse sinal?",
   "(uma pausa) ...Qualquer um que esteja ouvindo."
- ], "log": "A recém-chegada, a Dra. Sefa, é bióloga. A primeira pergunta dela foi onde estavam os fulgores. A segunda também. Ela diz que seguiu um sinal até aqui. A Mara perguntou quem mais podia ouvir. A Sefa disse: qualquer um que esteja ouvindo." },
+ ], "log": "A recém-chegada, a Dra. Sefa, é bióloga. A primeira pergunta dela foi onde estavam os Glimmers. A segunda também. Ela diz que seguiu um sinal até aqui. A Mara perguntou quem mais podia ouvir. A Sefa disse: qualquer um que esteja ouvindo." },
  "c4-guard": { "lines": [
   "Vocês repararam? Toda vez eles só atacam o que está mais perto do xenocristal.",
   "E antes de o sintetizador ligar, vocês já tinham visto tantos assim?",
@@ -351,7 +351,7 @@
   "Não sei. É isso que eu quero descobrir.",
   "E o que a gente faz?",
   "...Ainda não tenho resposta. Me deem tempo."
- ], "log": "A Dra. Sefa diz que os fulgores não estão nos atacando. Estão protegendo o xenocristal. Perguntamos por quê. Ela disse que não sabe. Foi a primeira vez que ela disse “não sei”." },
+ ], "log": "A Dra. Sefa diz que os Glimmers não estão nos atacando. Estão protegendo o xenocristal. Perguntamos por quê. Ela disse que não sabe. Foi a primeira vez que ela disse “não sei”." },
  "c4-names": { "lines": [
   "Que nome vocês deram para aquele do chifre quebrado?",
   "“Lascado”. Bem descritivo.",
@@ -361,7 +361,7 @@
   "...É um bom nome.",
   "Faz trinta anos que eu dou nome pra máquina.",
   "Diário: nasce a segunda dupla de melhores amigos que vivem brigando."
- ], "log": "A Dra. Sefa e o Teo passaram a tarde discutindo o nome de um fulgor. No fim ficou Terceiro. A Sefa diz que é o melhor nome que já ouviu. O Teo fingiu que não ligava, mas estava andando meio saltitante." },
+ ], "log": "A Dra. Sefa e o Teo passaram a tarde discutindo o nome de um Glimmer. No fim ficou Terceiro. A Sefa diz que é o melhor nome que já ouviu. O Teo fingiu que não ligava, mas estava andando meio saltitante." },
  "c4-med": { "lines": [
   "A enfermaria está pronta. Chega de remendar gente no galpão de ferramentas.",
   "O galpão é aconchegante.",
@@ -379,12 +379,12 @@
  "c4-gene": { "lines": [
   "(olhando para a tela) Isso está errado.",
   "O quê?",
-  "Analisei os restos dos fulgores do primeiro ataque. Tem um trecho do genoma deles que eu não consigo ler.",
+  "Analisei os restos dos Glimmers do primeiro ataque. Tem um trecho do genoma deles que eu não consigo ler.",
   "Uma mutação?",
   "Não é mutação. Mutações são bagunçadas. Isto é... organizado demais.",
   "O que isso quer dizer?",
   "Ainda não consigo provar nada. (guarda a amostra de volta na câmara fria) Mas vou continuar procurando."
- ], "log": "A Dra. Sefa diz que tem algo organizado demais nos genes dos fulgores. Ela ainda não consegue provar nada. Guardou as amostras na câmara fria e trancou com duas voltas." },
+ ], "log": "A Dra. Sefa diz que tem algo organizado demais nos genes dos Glimmers. Ela ainda não consegue provar nada. Guardou as amostras na câmara fria e trancou com duas voltas." },
  "c4-end": { "lines": [
   "Juno, posso escrever uma linha no diário?",
   "Claro!",
@@ -460,7 +460,7 @@
   "Mês passado, a rede de scanners de longo alcance da empresa captou um sinal. O mais regular já registrado. Cristais naturais não fazem isso. Uma ressonância regular só tem uma explicação: alguém está usando a tecnologia daquela civilização.",
   "...O dia em que o sintetizador ligou.",
   "A empresa procura essa tecnologia há décadas. Nem a empresa sabe de onde veio aquela civilização, nem por que ela sumiu.",
-  "Então a luz que atraiu os fulgores naquela noite é a mesma que atraiu vocês.",
+  "Então a luz que atraiu os Glimmers naquela noite é a mesma que atraiu vocês.",
   "Estruturalmente falando, sim.",
   "...De agora em diante vou pôr um guardanapo embaixo da caneca."
  ], "log": "No meio da noite, o Teo estava ao lado do Wheezy conversando com o homem que carrega o livro-caixa do Calder. O nome dele é Voss. Ele era o capataz do Teo. De manhã, o Teo contou pra gente: a Helion veio pelos projetos. Eles nos ouviram no dia em que o sintetizador ligou. Agora o Teo põe um guardanapo embaixo da caneca." },
@@ -482,7 +482,7 @@
   "Proteger.",
   "Cláusula 12. Preto no branco.",
   "(Depois que o Calder vai embora, o Teo volta a consertar o Wheezy sem dizer uma palavra.)",
-  "Pelo menos, da próxima vez que os fulgores vierem, não vamos estar sozinhos.",
+  "Pelo menos, da próxima vez que os Glimmers vierem, não vamos estar sozinhos.",
   "(bem baixinho) É exatamente isso que me preocupa."
  ], "log": "Assinamos um contrato de novo." },
  "c5-voss-leave": { "lines": [
@@ -532,13 +532,13 @@
   "Vai."
  ], "log": "O Calder tentou levar a Dra. Sefa. A Sefa disse que não quer mais escrever epitáfios. A Mara pôs o nome dela na lista de chamada." },
  "c5-corp-help": { "lines": [
-  "Os soldados da Helion chegaram! Eles... espantaram os fulgores num instante.",
+  "Os soldados da Helion chegaram! Eles... espantaram os Glimmers num instante.",
   "Dez vezes o nosso poder de fogo.",
-  "(olhando para os fulgores caídos na planície) Eles nem olharam antes de atirar.",
+  "(olhando para os Glimmers caídos na planície) Eles nem olharam antes de atirar.",
   "Eles avançaram primeiro.",
   "Eu sei. Só quero... lembrar como eles eram.",
   "(A Sefa se ajoelha e fecha os olhos de um deles.)"
- ], "log": "Os soldados da Helion nos ajudaram a espantar os fulgores. Todo mundo ficou aliviado. A Dra. Sefa ficou um bom tempo agachada na planície e voltou com um frasco de amostra." },
+ ], "log": "Os soldados da Helion nos ajudaram a espantar os Glimmers. Todo mundo ficou aliviado. A Dra. Sefa ficou um bom tempo agachada na planície e voltou com um frasco de amostra." },
  "c5-warn": { "lines": [
   "Uma segunda recusa. A empresa tem registro.",
   "Sou obrigado a lembrá-los: pela cláusula 31, a empresa pode tomar “medidas de recuperação necessárias” contra ativos que se recusem a cumprir.",
@@ -568,8 +568,8 @@
   "...Eu sei."
  ] },
  "c5-commando": { "lines": [
-  "Os comandos estão recuando!",
-  "Antes eram fulgores. Hoje era gente com o mesmo uniforme que eu usava.",
+  "As tropas de comando estão recuando!",
+  "Antes eram Glimmers. Hoje era gente com o mesmo uniforme que eu usava.",
   "A maioria é soldado contratado. Endividado com a empresa, igual a vocês.",
   "...Baixas?",
   "Nenhuma do nosso lado. Eles recuaram assim que os rifles de cristal dispararam. Mas um terço do nosso xenocristal foi embora.",
@@ -587,23 +587,23 @@
  "c5-signal": { "lines": [], "log": "Mandamos uma carga de sucata na direção daquele sinal, e ele mandou xenocristal de volta, de verdade. A Ines diz que tudo o que ele quer é metal, fiação e vedações, como se alguém estivesse consertando uma coisa muito antiga. Perguntei quem. Ninguém sabe." },
  "c5-pattern": { "lines": [
   "O microscópio do Instituto de Xenologia é dez vezes melhor que o da minha nave.",
-  "Comparei os padrões dos fulgores com o porta-copos do Teo.",
+  "Comparei os padrões dos Glimmers com o porta-copos do Teo.",
   "As amostras são dos que os soldados da Helion abateram.",
   "A amostra é daquele que a expedição achou perto de um projeto. Quando caiu, o corpo dele ainda protegia a placa.",
   "E?",
   "O formato é idêntico. Os padrões deles são escritos do mesmo jeito que os projetos.",
   "Então eles... também são projetos?",
   "Isso não pode ser coincidência. Mas eu preciso de mais tempo."
- ], "log": "A Dra. Sefa diz que os padrões dos fulgores são escritos do mesmo jeito que os projetos. Ela diz que não pode ser coincidência, mas precisa de mais tempo. O Teo passou a noite inteira olhando o porta-copos." },
+ ], "log": "A Dra. Sefa diz que os padrões dos Glimmers são escritos do mesmo jeito que os projetos. Ela diz que não pode ser coincidência, mas precisa de mais tempo. O Teo passou a noite inteira olhando o porta-copos." },
  "c5-end": { "lines": [
   "Diário da colônia, dia {day}.",
   "Temos leis e comércio.",
   "E uma conta que pagamos toda semana.",
   "E um ex-capataz que briga com a empresa usando as letras miúdas dela.",
-  "E um segredo: outra pessoa deixou coisas neste planeta. Os fulgores também são uma delas.",
+  "E um segredo: outra pessoa deixou coisas neste planeta. Os Glimmers também são uma delas.",
   "O domo se fecha amanhã. Todo mundo, durma um pouco esta noite.",
   "...Chamada."
- ], "log": "Temos leis e comércio. Outra pessoa deixou coisas neste planeta, e os fulgores são uma delas. O domo se fecha amanhã." },
+ ], "log": "Temos leis e comércio. Outra pessoa deixou coisas neste planeta, e os Glimmers são uma delas. O domo se fecha amanhã." },
  "c6-open": { "lines": [
   "O domo está vedado... todos os sensores de ar no verde.",
   "Na teoria, já dá pra tirar o capacete do lado de fora.",
@@ -625,11 +625,11 @@
  ] },
  "c6-salary": { "lines": [], "log": "Hoje um recém-chegado perguntou à Mara: “Ouvi dizer que aqui o salário é não morrer?” A Mara ficou parada um bom tempo e depois disse: “...Entre os benefícios: não morrer amanhã também.” Quando ela se virou, vi que estava sorrindo." },
  "c6-beacon1": { "lines": [
-  "A primeira fase do farol está pronta. Assim que ligou, travou numa frequência—",
+  "A primeira fase do sinalizador está pronta. Assim que ligou, travou numa frequência—",
   "É aquele sinal! O que nos trouxe pra cá!",
   "E os aglomerados de cristal estão respondendo. Todos, acendendo juntos.",
   "Nada disso está nos arquivos da empresa.",
-  "(Todos os aglomerados da planície se acendem ao mesmo tempo. Os fulgores levantam a cabeça nos ninhos e olham para o céu.)",
+  "(Todos os aglomerados da planície se acendem ao mesmo tempo. Os Glimmers levantam a cabeça nos ninhos e olham para o céu.)",
   "Sefa? Você está chorando?",
   "...Eles estão esperando. Sempre estiveram esperando alguma coisa."
  ] },
@@ -640,7 +640,7 @@
   "Então o que a gente seguiu foi uma nave sem mais ninguém a bordo.",
   "A IA ainda guarda o último registro do diário. Eles também vieram atrás dos projetos.",
   "E então?",
-  "...Eles escolheram entrar em guerra com os fulgores. Não sobrou nenhum.",
+  "...Eles escolheram entrar em guerra com os Glimmers. Não sobrou nenhum.",
   "(A Ines olha de relance para os rifles de cristal no armazém.)",
   "(Silêncio.)",
   "Mudar o curso foi decisão minha.",
@@ -652,16 +652,16 @@
   "(depois de muito tempo) ...Não vamos acabar como a Lastlight. Juno, anota isso."
  ], "log": "A Lastlight, uma nave colonial de cem anos atrás. O sinal de navegação dela foi o que nos trouxe para cá. Eles também vieram atrás dos projetos, escolheram a guerra, e ninguém sobreviveu. Hoje a Mara contou a história dos três assentos vazios. Vamos nos lembrar deles, e do dia em que ela finalmente disse isso." },
  "c6-truth": { "lines": [
-  "Na hora em que o laboratório de bioengenharia injetou o xenocristal, todos os fulgores pararam e se viraram para nós.",
+  "Na hora em que o laboratório de bioengenharia injetou o xenocristal, todos os Glimmers pararam e se viraram para nós.",
   "Terminei a comparação. Aquela sequência organizada demais nos genes deles foi escrita. No formato dos projetos.",
   "Escrita por quem?",
-  "Por quem deixou os projetos. Eles alteraram os fulgores para que protegessem os projetos e os aglomerados.",
+  "Por quem deixou os projetos. Eles alteraram os Glimmers para que protegessem os projetos e os aglomerados.",
   "Eles não são monstros. São guardiões.",
   "Cada pedaço de xenocristal que usamos é um pedaço tirado do que eles protegem.",
   "Quantos os soldados da Helion abateram nestes meses? Eu contei. Quarenta e três.",
   "O que eles protegem? E até quando?",
   "Não sei. Mas o que eles esperam ainda não chegou."
- ], "log": "A Dra. Sefa diz que os fulgores são guardiões que alguém criou. Quem deixou os projetos os pôs para vigiar os aglomerados. Cada pedaço de xenocristal que usamos sai do que eles protegem." },
+ ], "log": "A Dra. Sefa diz que os Glimmers são guardiões que alguém criou. Quem deixou os projetos os pôs para vigiar os aglomerados. Cada pedaço de xenocristal que usamos sai do que eles protegem." },
  "c6-debate": { "lines": [
   "Estão todos aqui. Temos uma coisa para decidir.",
   "Primeiro os fatos. O domo, o núcleo da colônia, as fazendas hidropônicas, tudo funciona com xenocristal. Sem ele, esta cidade não consegue continuar como está.",
@@ -669,9 +669,9 @@
   "E agora quem administra o sintetizador é a Helion. Se continuarmos usando, quebramos o contrato.",
   "Além disso, nossa defesa depende dos rifles de cristal. Abrir mão do xenocristal é abrir mão da nossa defesa junto.",
   "A Aliança respondeu. Se a gente for embora, as naves deles podem nos buscar. Se a gente ficar, eles querem metade do xenocristal.",
-  "Se continuarmos usando, os fulgores vão continuar vindo. Vamos virar a Lastlight.",
+  "Se continuarmos usando, os Glimmers vão continuar vindo. Vamos virar a Lastlight.",
   "Ines, e uma nave?",
-  "Dá. As peças do núcleo do farol resolvem o problema do motor. Mas só dá para uma coisa: o farol ou a nave.",
+  "Dá. As peças do núcleo do sinalizador resolvem o problema do motor. Mas só dá para uma coisa: o sinalizador ou a nave.",
   "Se tentarmos partir, a Helion não vai deixar. A nave de guerra está bem ali em órbita.",
   "Se tentarmos partir, a Helion vai dizer que ainda não pagamos o que devemos. Igual em F8.",
   "Mara, você quer ir, não quer? A Lia.",
@@ -685,7 +685,7 @@
  "c6-leave": { "lines": [
   "Vamos embora. Devolvemos o xenocristal para eles.",
   "(fechando os olhos) Obrigada.",
-  "Vamos desmontar o núcleo do farol e adaptar como motor da nave. Preciso de todo mundo que consegue segurar uma ferramenta.",
+  "Vamos desmontar o núcleo do sinalizador e adaptar como motor da nave. Preciso de todo mundo que consegue segurar uma ferramenta.",
   "(entrega a chave torta para a Juno) Toma. Você vai precisar dela na nave.",
   "Mas essa é a sua...",
   "Estou velho demais pra consertar uma nave inteira. Mas te ensinei a segurar.",
@@ -693,12 +693,12 @@
   "A Dorothy não se empresta!",
   "Dorothy era o nome da minha mãe. Ela sempre dizia que ferramenta é de quem sabe usar.",
   "...Só pra você. Traz ela de volta."
- ], "log": "Decidimos partir e devolver o xenocristal aos fulgores. O Teo me deu a chave inglesa dele. A Ines me emprestou a Dorothy. Ela disse que Dorothy era o nome da mãe dela. Agora estou segurando as duas coisas mais importantes da colônia." },
+ ], "log": "Decidimos partir e devolver o xenocristal aos Glimmers. O Teo me deu a chave inglesa dele. A Ines me emprestou a Dorothy. Ela disse que Dorothy era o nome da mãe dela. Agora estou segurando as duas coisas mais importantes da colônia." },
  "c6-stay": { "lines": [
   "Nós ficamos.",
   "Mas não vamos virar a Lastlight. Se usarmos o xenocristal, vamos aprender a viver com os guardiões dele.",
   "...Então vou continuar cuidando deles. E lembrar, por eles, quanto nós tiramos.",
-  "O núcleo do farol volta para o lugar. As duas últimas fases precisam de todos nós.",
+  "O núcleo do sinalizador volta para o lugar. As duas últimas fases precisam de todos nós.",
   "(entrega a chave torta para a Ines) As duas últimas fases são suas.",
   "Você não disse que essa chave está com você há trinta anos?",
   "Por isso é sua. Eu não aguento mais o trabalho, mas ela ainda aguenta.",
@@ -716,7 +716,7 @@
   "(Em órbita, a nave de guerra da Helion abre as portinholas dos canhões.)",
   "(O motor da nave liga pela primeira vez. Em órbita, a nave de guerra da Helion vira e se põe entre a colônia e as estrelas.)",
   "(pelo rádio) A empresa registrou seu pedido de partida. Pedido negado.",
-  "Não é a gente que eles querem. É o núcleo do farol que nós tiramos.",
+  "Não é a gente que eles querem. É o núcleo do sinalizador que nós tiramos.",
   "As naves da Aliança estão a caminho! Mas ainda estão a três dias daqui!",
   "Então aguentamos três dias.",
   "Diário da colônia, dia {day}.",
@@ -726,14 +726,14 @@
   "Queremos decidir por nós mesmos. Seja ficar ou partir.",
   "...Juno.",
   "Hã?",
-  "Capitã Gelada. Eu aceito."
- ], "log": "Decidimos partir e devolver este planeta aos seus guardiões. Mas a Helion está entre nós e as estrelas. Lar não é onde você pousa. É onde você decide ficar. Queremos decidir por nós mesmos. A Capitã Gelada finalmente aceitou o apelido." },
+  "Capitã Fria. Eu aceito."
+ ], "log": "Decidimos partir e devolver este planeta aos seus guardiões. Mas a Helion está entre nós e as estrelas. Lar não é onde você pousa. É onde você decide ficar. Queremos decidir por nós mesmos. A Capitã Fria finalmente aceitou o apelido." },
  "c6-end": { "lines": [
-  "(O farol se acende. Todos os projetos brilham ao mesmo tempo, e o porta-copos do Teo também.)",
+  "(O sinalizador se acende. Todos os projetos brilham ao mesmo tempo, e o porta-copos do Teo também.)",
   "Todos os projetos... estão brilhando. Apontando para as mesmas coordenadas no mapa estelar.",
   "Não há nada nessas coordenadas. Pelo menos em nenhum mapa da empresa.",
   "Nos mapas da Helion, não tem nada lá.",
-  "(Na planície, todos os fulgores levantam a cabeça para o céu.)",
+  "(Na planície, todos os Glimmers levantam a cabeça para o céu.)",
   "O que eles estavam esperando... chegou.",
   "(Em órbita, uma nave que não pertence a nenhum humano aparece em silêncio. O casco dela, como o sintetizador, flui como água.)",
   "Agora eles sabem que estamos aqui.",
@@ -743,6 +743,6 @@
   "Decidimos ficar. E então, alguém bateu à porta.",
   "...Juno.",
   "Hã?",
-  "Capitã Gelada. Eu aceito."
- ], "log": "O farol está aceso. Todos os projetos brilharam ao mesmo tempo, apontando para as mesmas coordenadas. Os fulgores olharam para o céu, e uma nave que não pertence a nenhum humano apareceu em órbita. Lar não é onde você pousa. É onde você decide ficar. Decidimos ficar. A Capitã Gelada finalmente aceitou o apelido." }
+  "Capitã Fria. Eu aceito."
+ ], "log": "O sinalizador está aceso. Todos os projetos brilharam ao mesmo tempo, apontando para as mesmas coordenadas. Os Glimmers olharam para o céu, e uma nave que não pertence a nenhum humano apareceu em órbita. Lar não é onde você pousa. É onde você decide ficar. Decidimos ficar. A Capitã Fria finalmente aceitou o apelido." }
 }

@@ -49,7 +49,7 @@
   "governor": { "name": "Residência do Governador", "desc": "O coração administrativo da cidade, onde trabalha o primeiro governador eleito da colônia. Moral +15, espaços de carta +1." },
   "sky_residence": { "name": "Residência Horizonte", "desc": "Prédios residenciais sob o domo, com as estrelas logo ali na janela. +12 no limite de população e +5 de moral por nível." },
   "bioeng": { "name": "Laboratório de bioengenharia", "desc": "Injeta xenocristal em plantações e culturas para turbinar por um tempo a produção da colônia inteira. Cada infusão custa xenocristal; níveis mais altos a deixam mais forte e mais longa." },
-  "orbital_beacon": { "name": "Farol orbital", "desc": "Uma torre-farol que transmite para o sistema inteiro. Construída em cinco fases, cada uma com metal, ferramentas, xenocristal e créditos; concluir a quinta acende o farol. Exige população 100." },
+  "orbital_beacon": { "name": "Sinalizador orbital", "desc": "Uma torre de sinalização que transmite para o sistema inteiro. Construída em cinco fases, cada uma com metal, ferramentas, xenocristal e créditos; concluir a quinta acende o farol. Exige população 100." },
   "star_dome": { "name": "Domo Estelar", "desc": "Comando Nv5. Um domo de vidro sobre a colônia inteira: a partir de hoje, é uma cidade. Exige população 80 e 5.000 créditos ganhos." }
  },
  "research": {
@@ -177,14 +177,14 @@
    "intro": [
     "Na primeira noite depois que o domo se fechou, as luzes da colônia podiam ser vistas da órbita.",
     "A nave de guerra da Helion ainda está lá em cima. E o sinal que nos trouxe para cá também. Este planeta não é mais um esconderijo. É uma coordenada que todo mundo conhece.",
-    "Construa o farol orbital e encontre a origem do sinal. Depois, vamos decidir de quem é este lar."
+    "Construa o sinalizador orbital e encontre a origem do sinal. Depois, vamos decidir de quem é este lar."
    ],
    "goals": [
     "Construa a Residência do Governador",
     "Construa uma Residência Horizonte",
     "Injete xenocristal uma vez no laboratório de bioengenharia",
     "Chegue a uma população de 100",
-    "Conclua as cinco fases: o farol orbital, ou uma nave feita com o núcleo dele"
+    "Conclua as cinco fases: o sinalizador orbital, ou uma nave feita com o núcleo dele"
    ]
   }
  ],
@@ -192,7 +192,7 @@
   "meteor": { "title": "Chuva de meteoros", "text": "Um rastro de fogo corta o céu: destroços estão caindo em direção a {building}.", "options": ["Reforçar por {cost} de pedra", "Aguentar ({building} para por 60 s)"] },
   "rescue": { "title": "Sinal de socorro", "text": "O rádio capta um sinal de socorro entrecortado vindo do cânion ali perto. Podem ser outros sobreviventes, ou só um farol que continua transmitindo.", "options": ["Mandar 2 colonos ociosos (3 min)", "Ignorar"] },
   "rescue_ines": { "title": "Um pedido de socorro falhando", "text": "Entre batidas de metal, uma voz de mulher chia no rádio: “Aqui é... a cápsula três, Ines... minha cápsula está presa numa fenda de gelo... tenho ferramentas, mas não tenho ar. Por favor, rápido.”", "options": ["Mara e Juno vão de veículo (2 min, sem precisar de trabalhadores)", "Depois (o sinal vai se repetir)"] },
-  "choice6": { "title": "De quem é este lar?", "text": "Estão todos aqui. Os fulgores são guardiões, e cada pedaço de xenocristal que usamos sai do que eles protegem. O núcleo do farol só dá para uma coisa: acender o farol ou mover uma nave.", "options": ["Abrir mão do xenocristal e construir uma nave para partir", "Ficar com o xenocristal e permanecer"] },
+  "choice6": { "title": "De quem é este lar?", "text": "Estão todos aqui. Os Glimmers são guardiões, e cada pedaço de xenocristal que usamos sai do que eles protegem. O núcleo do farol só dá para uma coisa: acender o farol ou mover uma nave.", "options": ["Abrir mão do xenocristal e construir uma nave para partir", "Ficar com o xenocristal e permanecer"] },
   "envoy": { "title": "Emissário da corporação", "text": "Uma nave com o logotipo da Helion pousa na praça. O emissário é educado: os direitos de exploração deste planeta pertencem à corporação, mas, desde que vocês paguem {demand} em dia, a corporação está disposta a fazer vista grossa “temporariamente” para a quebra de contrato.", "options": ["Pagar {demand}", "Recusar (recusado {refusals} vezes)"] }
  }
 }
