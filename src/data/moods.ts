@@ -143,8 +143,48 @@ const JUNO: Table = {
   'c6-blocked': { 9: A, 12: S, 13: A },
 };
 
+// 伊涅絲（預設：嚴肅；她的 joy 是淡淡的微笑，所以嘴硬的稱讚、吐槽、溫柔的時候也用）
+const INES: Table = {
+  'c2-ines': { 1: S, 5: J, 9: J },
+  'c2-elec-i': { 0: J, 4: J },
+  'c2-upgrade': { 2: A, 4: J },
+  'c2-pop10': { 3: J },
+  'c2-assembly': { 0: J, 2: J },
+  'c2-lounge': { 2: S },
+  'c2-ship': { 6: S },
+  'c3-mine': { 0: J },
+  'c3-forge': { 2: J },
+  'c3-rail': { 1: J },
+  'c3-exp1': { 0: J, 2: A },
+  'c3-filter': { 0: J },
+  'c3-outpost': { 2: A },
+  'c4-synth': { 7: A, 11: S },
+  'c4-raid1': { 6: A },
+  'c4-memorial': { 3: S },
+  'c4-teach': { 5: J },
+  'c4-guard': { 4: A },
+  'c4-med': { 2: J, 4: S },
+  'c4-hydro': { 2: J, 4: J },
+  'c4-gene': { 1: A, 3: A },
+  'c5-open': { 2: A },
+  'c5-debate': { 2: A },
+  'c5-coop': { 5: S },
+  'c5-corp-help': { 1: A },
+  'c5-warn': { 5: A },
+  'c5-alliance1': { 5: A },
+  'c5-rifle': { 4: S },
+  'c5-commando': { 4: S },
+  'c6-open': { 1: J },
+  'c6-governor': { 5: J },
+  'c6-lastlight': { 3: S, 13: J },
+  'c6-truth': { 2: A },
+  'c6-debate': { 3: A, 4: A },
+  'c6-leave': { 6: S, 8: S, 9: J },
+  'c6-stay': { 5: J, 7: S, 9: S, 10: J },
+};
+
 /** 各角色的表情表（靜態檢查用來確認標的台詞真的是那個角色說的） */
-export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO };
+export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES };
 
 export const MOODS: Table = {};
 for (const t of Object.values(MOOD_TABLES)) for (const [id, m] of Object.entries(t)) MOODS[id] = { ...MOODS[id], ...m };
