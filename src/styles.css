@@ -25,6 +25,9 @@
 
 /* 日文介面：日文字形（漢字寫法跟繁中不同） */
 html[lang="ja"] { --font: "Noto Sans JP", "Noto Sans TC", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif; }
+html, body { overflow: hidden; overscroll-behavior: none; }
+/* body 固定在視窗上：iOS 的網頁不會被拖動或回彈 */
+body { position: fixed; inset: 0; }
 html, body, #root { height: 100%; margin: 0; background: var(--ink); color: var(--text); font-family: var(--font); font-size: 14px; }
 * { box-sizing: border-box; }
 button { font: inherit; color: inherit; }
