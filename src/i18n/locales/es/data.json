@@ -1,1 +1,198 @@
-{}
+{
+ "buildings": {
+  "escape_pod": { "name": "Cápsula de escape", "desc": "Donde empezó todo. Tres supervivientes apretujados dentro: apenas habitable.", "nodes": { "beacon": ["Banda de socorro", "Búsqueda de supervivientes +10%"] } },
+  "scrap_heap": { "name": "Montón de chatarra", "desc": "Restos de la cápsula esparcidos por el suelo. Mantén pulsado el botón de Chatarra encima para recoger.", "nodes": {
+   "click_1": ["Guantes magnéticos", "Rendimiento por clic +1"], "crit_1": ["Ojo avizor", "Probabilidad de crítico +5%"], "cap_1": ["Búsqueda por zonas", "Límite de trabajadores +1"],
+   "critx": ["Instinto de tesoro", "Multiplicador de crítico ×2"], "buff_10": ["Supervisor en terreno", "La bonificación por clic dura 10 s"] } },
+  "algae_tank": { "name": "Tanque de algas", "desc": "El suministro de comida de la colonia. Empieza como unos pocos tanques de algas de vidrio; desde la etapa 2 se puede reconstruir como recolector biológico y desde la etapa 4 como granja hidropónica, cada uno con más producción por trabajador. Al reconstruir se conservan el nivel y los trabajadores.", "nodes": {
+   "prod_20": ["Ajuste de luz", "Producción +20%"], "cap_1": ["Tanque extra", "Límite de trabajadores +1"], "prod_30": ["Cepa densa", "Producción +30%"],
+   "guide": ["Guía de campo", "Producción +25%"], "crit_1": ["Vista aguda", "Probabilidad de crítico +5%"], "prod_25": ["Luces de cultivo", "Producción +25%"], "cap_2": ["Estanterías verticales", "Límite de trabajadores +2"] } },
+  "algae_tank:bio": { "name": "Recolector biológico", "desc": "Junto a los tanques se añaden estanterías de cultivo que crían vida comestible recogida en la superficie. Más producción por trabajador que el tanque de algas. Al reconstruir se conservan el nivel y los trabajadores." },
+  "algae_tank:hydro": { "name": "Granja hidropónica", "desc": "Toda la instalación reconstruida como un invernadero presurizado que cultiva verduras en solución nutritiva: la fuente de comida más eficiente. Al reconstruir se conservan el nivel y los trabajadores." },
+  "o2_scrubber": { "name": "Depurador de oxígeno", "desc": "Un depurador de oxígeno improvisado con restos de la cápsula de escape, que separa el dióxido de carbono en aire respirable. Teo lo llama «Wheezy»; no hagas caso del ruido. Mantén pulsado el botón de encima para bombear a mano. En el capítulo 2 se puede reconstruir como estación de electrólisis.", "nodes": {
+   "filter": ["Filtros nuevos", "Producción +25%"], "cap_1": ["Ventilador extra", "Límite de trabajadores +1"], "seal": ["Juntas selladas", "Producción +30%"], "coil": ["Resistencias", "Producción +30%"] } },
+  "o2_scrubber:elec": { "name": "Estación de electrólisis", "desc": "Diseño de Ines: Wheezy recibe una broca y perfora hasta la capa de hielo, lo derrite y separa el agua en oxígeno. Cada trabajador produce más del doble de oxígeno que en el depurador. Al reconstruir se conservan el nivel y los trabajadores." },
+  "emergency_camp": { "name": "Campamento de emergencia", "desc": "Mando Nv1. Cúpulas presurizadas inflables y calefactores radiantes: por fin los supervivientes pueden quitarse el casco bajo techo. Desbloquea las mejoras de edificios y las líneas de mejoras, y avanza a la etapa 2." },
+  "hab_pod": { "name": "Cápsula habitacional", "desc": "Aloja a 2 personas por nivel. El límite de población decide si pueden seguir llegando nuevos colonos.", "nodes": {
+   "cap_1": ["Literas", "Capacidad +1"], "birth": ["Luces guía", "Búsqueda de supervivientes +10%"], "cap_2": ["Tabiques extra", "Capacidad +2"] } },
+  "cargo": { "name": "Depósito de suministros", "desc": "Cada nivel aumenta en 100 el almacenamiento de todos los recursos.", "nodes": { "stack": ["Estructuras apilables", "+50 de almacén por nivel"] } },
+  "lounge": { "name": "Cápsula de descanso", "desc": "Moral +5 por nivel. Cada trabajador destinado aquí suma un 10% de seguridad alimentaria.", "nodes": {
+   "morale_5": ["Noche de cine", "Moral +5"], "window_90": ["Comidas compartidas", "La ventana de seguridad alimentaria pasa a 90 s"] } },
+  "assembly": { "name": "Taller de montaje", "desc": "Desarma la chatarra y la convierte en piezas. Se detiene cuando se acaba la chatarra.", "nodes": {
+   "ratio_1": ["Línea de clasificación", "Proporción 0,4 → 0,5"], "ratio_2": ["Plantillas de precisión", "Proporción 0,5 → 0,6"] } },
+  "rock_cutter": { "name": "Cortadora de roca", "desc": "Una cortadora láser rescatada de la cápsula, adaptada para sacar piedra de construcción del lecho rocoso.", "nodes": {
+   "prod_20": ["Cuidado de la hoja", "Producción +20%"], "cap_1": ["Turno de noche", "Límite de trabajadores +1"], "click_1": ["Acabado manual", "Rendimiento por clic +1"] } },
+  "central_hub": { "name": "Centro principal", "desc": "Mando Nv2. Un verdadero centro de asentamiento: vivienda para 4, +100 de almacén y avanza a la etapa 3. Requiere población 12." },
+  "databank": { "name": "Instituto Tecnológico", "desc": "Reúne todo lo que recuerdan los colonos e impulsa la tecnología de la colonia. Solo se investiga con investigadores destinados aquí: cuantos más, más rápido; las mejoras dejan sitio para más.", "nodes": { "speed_50": ["Sistema de índices", "Velocidad de investigación +50%"] } },
+  "rail_line": { "name": "Línea férrea", "desc": "Todos los edificios de recolección +10% de producción, los trabajadores se mueven más rápido y todos los caminos de la colonia se pavimentan con losas de piedra.", "nodes": { "double": ["Vía doble", "Recolección otro +5% y las calles pasan a placas de metal"] } },
+  "metal_mine": { "name": "Mina de metal", "desc": "Excava hasta las vetas de metal. La producción es baja, pero cada paso adelante la necesita.", "nodes": {
+   "prod_20": ["Apuntalamiento", "Producción +30%"], "click_1": ["Sonda de vetas", "Rendimiento por clic +1"], "crystal_sense": ["Sentido del cristal", "Los clics tienen un 10% de probabilidad de dar 1 esquirla de xenocristal"] } },
+  "expedition": { "name": "Estación de expediciones", "desc": "Vehículos y equipo para enviar equipos al páramo en busca de planos que dejó una civilización desconocida. Cada viaje lleva a 2 colonos durante unos 3 minutos; el primero siempre trae un plano. Las mejoras traen más botín y facilitan encontrar fragmentos de planos." },
+  "forge": { "name": "Forja", "desc": "Forja metal para hacer herramientas o armas. Desde la etapa 4 puedes pasar trabajadores a las armas. Los edificios necesitan herramientas desde Nv5.", "nodes": {
+   "tools_25": ["Moldes estándar", "Producción de herramientas +25%"], "click_1": ["Maestro herrero", "Rendimiento por clic +1"], "weapon_atk": ["Calibrado de armas", "Ataque de las armas +1"] } },
+  "outpost": { "name": "Puesto avanzado", "desc": "Mando Nv3. La torre de vigilancia ve más lejos, incluido lo que se acerca. Avanza a la etapa 4. Requiere población 22." },
+  "memorial": { "name": "Salón Conmemorativo", "desc": "Para quienes no llegaron hasta aquí. Moral +10 y búsqueda de supervivientes +10% por nivel. Se construye con lo último del casco de la cápsula de escape: la cápsula se retira, y su espacio habitable (+4 de población), su almacén (+100) y su banda de socorro (búsqueda de supervivientes +10%) pasan aquí.", "nodes": { "morale_5": ["Lámpara eterna", "Moral +5"] } },
+  "crystal_synth": { "name": "Sintetizador de cristal", "desc": "Disuelve los cúmulos de cristal subterráneos y los hace crecer de nuevo como xenocristal que almacena energía. La producción es diminuta, pero toda la tecnología alienígena depende de ella.", "nodes": {
+   "prod_30": ["Tanque de resonancia", "Producción +30%"], "cap_1": ["Segundo reactor", "Límite de trabajadores +1"] } },
+  "security": { "name": "Cuartel de marines", "desc": "Los trabajadores destinados aquí son marines; cada uno ocupa 1 de población. Las armas en almacén se entregan automáticamente y suben el ataque de 2 a 5.", "nodes": {
+   "hp_5": ["Chalecos blindados", "PV de los marines +5"], "shift": ["Turnos de médicos", "Tiempo de recuperación −50%"], "atk_2": ["Ejercicios tácticos", "Ataque de los marines +2"] } },
+  "water_cycle": { "name": "Reciclador de agua", "desc": "Recupera aguas residuales y condensación. Consumo de nutrientes −10%, y cada nivel de cápsula habitacional aloja a 1 más." },
+  "med_bay": { "name": "Enfermería", "desc": "Un módulo médico presurizado donde se tratan los marines heridos. 2 camas por nivel; los médicos destinados aquí hacen que los pacientes en esas camas se recuperen más rápido.", "nodes": {
+   "diag": ["Autodiagnóstico", "Velocidad de curación +50%"], "beds": ["Camas de cuidados intensivos", "+1 cama por nivel"] } },
+  "colony_core": { "name": "Núcleo de la colonia", "desc": "Mando Nv4. Un reactor de xenocristal: la colonia ya no solo sobrevive. Requiere población 40 y 2 ataques repelidos." },
+  "admin": { "name": "Centro Administrativo", "desc": "La sala del consejo de la colonia. Desbloquea los impuestos y las cartas de la colonia; los impuestos dan créditos, pero cada nivel de impuestos cuesta 5 de moral.", "nodes": { "council": ["Consejo ampliado", "Espacios para cartas +1"] } },
+  "trade_post": { "name": "Puesto comercial", "desc": "El mercado de la colonia. Los trabajadores ganan créditos aquí, y puedes comerciar con la Corporación Helion.", "nodes": {
+   "prod_30": ["Mercado nocturno", "Producción +30%"], "cap_2": ["Más puestos", "Límite de trabajadores +2"] } },
+  "spaceport": { "name": "Puerto espacial", "desc": "Recibe lanzaderas de otras colonias. Abre el comercio con la Alianza de Colonias Libres; añade un Instituto de Xenología para responder a esa señal misteriosa." },
+  "turret": { "name": "Torreta defensiva", "desc": "Defensa fija. Una torreta por nivel (ATQ 8, PV 40); no usa población y se repara sola tras el combate." },
+  "xeno_lab": { "name": "Instituto de Xenología", "desc": "Un laboratorio dedicado al xenocristal. Desbloquea la línea de investigación xeno; los investigadores destinados aquí también aceleran toda la investigación." },
+  "governor": { "name": "Residencia del Gobernador", "desc": "El corazón administrativo de la ciudad, donde trabaja el primer gobernador electo de la colonia. Moral +15, espacios para cartas +1." },
+  "sky_residence": { "name": "Residencia Horizonte", "desc": "Viviendas en altura bajo la cúpula, con las estrellas al otro lado de la ventana. +12 al límite de población y +5 de moral por nivel." },
+  "bioeng": { "name": "Laboratorio de bioingeniería", "desc": "Infunde xenocristal en cultivos y organismos para potenciar durante un rato la producción de toda la colonia. Cada infusión cuesta xenocristal; los niveles superiores la hacen más fuerte y duradera." },
+  "orbital_beacon": { "name": "Baliza orbital", "desc": "Una torre baliza que transmite a todo el sistema. Se construye en cinco fases, cada una con metal, herramientas, xenocristal y créditos; al completar la quinta, la baliza se enciende. Requiere población 100." },
+  "star_dome": { "name": "Cúpula Estelar", "desc": "Mando Nv5. Una cúpula de cristal sobre toda la colonia: desde hoy es una ciudad. Requiere población 80 y 5.000 créditos ganados." }
+ },
+ "research": {
+  "gather_1": ["Recolección I", "Toda la recolección +10%"],
+  "storage_1": ["Estanterías estándar", "Todo el almacén +25%"],
+  "crit_1": ["Manejo preciso", "Probabilidad de crítico de todos los clics +3%"],
+  "ration_1": ["Recetas austeras", "Consumo de nutrientes −10%"],
+  "process_1": ["Ajuste de procesos", "Velocidad de procesamiento +20%"],
+  "gather_2": ["Recolección II", "Toda la recolección +10%"],
+  "click_1": ["Guantes reforzados", "Rendimiento de todos los clics +1"],
+  "weapon_1": ["Ajuste de armas I", "Ataque de las armas +2"],
+  "arms_line": ["Línea de armamento", "Producción de armas +30%"],
+  "weapon_2": ["Ajuste de armas II", "Ataque de las armas +2"],
+  "crystal_armor": ["Armadura de cristal", "PV de los marines +5"],
+  "crystal_ration": ["Raciones de emergencia", "Consumo de nutrientes −10%"],
+  "crystal_resonance": ["Resonancia cristalina", "Toda la recolección +10%"],
+  "bp_filter": ["Filtro de alta presión", "Tecnología de plano: los edificios de oxígeno producen +50%"],
+  "bp_resonance": ["Herramientas de resonancia", "Tecnología de plano: construir y mejorar cuesta un 15% menos"],
+  "warehouse": ["Ampliación del almacén", "Todo el almacén +50%"],
+  "xeno_growth": ["Catálisis cristalina", "Producción de xenocristal +40%"],
+  "xeno_hab": ["Materiales reticulares", "Cada nivel de cápsula habitacional aloja a 1 más"],
+  "xeno_turret": ["Cañones de cristal", "Ataque de las torretas +6"],
+  "xeno_blade": ["Rifle de cristal", "Ataque de las armas +3"]
+ },
+ "charters": {
+  "rationing": ["Racionamiento", "Consumo de nutrientes −20%", "Moral −10"],
+  "double_shift": ["Turnos dobles", "Toda la producción +15%", "Moral −10"],
+  "open_immigration": ["Inmigración abierta", "Búsqueda de supervivientes +30%", "Moral −5"],
+  "rest_day": ["Día de descanso", "Moral +15", "Toda la producción −10%"],
+  "corp_contract": ["Contrato corporativo", "Ingresos de créditos +40%", "Relación con la corporación +1, moral −5"],
+  "alien_first": ["Lo xeno primero", "Producción de xenocristal +25%", "Producción de metal −15%"]
+ },
+ "chapters": [
+  {
+   "title": "La caída",
+   "subtitle": "Tres supervivientes, primera noche",
+   "intro": [
+    "Buenas noticias: estamos vivos. Malas noticias: quedan doce minutos de oxígeno en la cápsula. Todo lo demás son solo detalles de las malas noticias.",
+    "Hace tres semanas robamos un carguero de las minas de F8. Durante la huida captamos una débil señal de navegación que decía que aquí había antiguas instalaciones coloniales. Decidí cambiar el rumbo. La nave se partió en órbita y todos saltamos a las cápsulas de escape.",
+    "Esta cápsula tiene seis asientos. Vamos tres. El aire de fuera es todo dióxido de carbono, y las luces del soporte vital se apagan una a una. Desarmad los restos y armad algo que fabrique oxígeno. —Mara"
+   ],
+   "goals": [
+    "Mantén pulsado el botón de Chatarra sobre el montón de chatarra para recoger 20 de chatarra",
+    "Construye un depurador de oxígeno antes de que se agote el soporte vital",
+    "Construye un tanque de algas para tener nutrientes (también da un poco de oxígeno)",
+    "Asigna colonos a trabajar en un edificio",
+    "Mejora el montón de chatarra a Nv2 para sacar más piezas",
+    "Mejora el depurador de oxígeno a Nv3 para que Wheezy mantenga a todos respirando",
+    "Mejora el tanque de algas a Nv3",
+    "Completa el campamento de emergencia presurizado"
+   ]
+  },
+  {
+   "title": "Echar raíces",
+   "subtitle": "Aire suficiente para todos",
+   "intro": [
+    "El campamento presurizado aguantó la primera noche. Por la mañana, la radio captó una llamada de socorro, en la frecuencia de nuestra nave.",
+    "La gente de las otras cápsulas está viva. Vienen más: más bocas y más pulmones. Wheezy solo no va a bastar.",
+    "Tráelos a casa, constrúyeles un lugar donde vivir, fabrica aire suficiente para compartir y dales un motivo para quedarse."
+   ],
+   "goals": [
+    "Construye una cápsula habitacional para subir el límite de población",
+    "Reconstruye el depurador de oxígeno como estación de electrólisis para sacar oxígeno del hielo",
+    "Mantén la seguridad del aire por encima del 60% durante 1 minuto",
+    "Construye un taller de montaje para convertir chatarra en piezas",
+    "Alcanza una población de 12",
+    "Completa el centro principal"
+   ]
+  },
+  {
+   "title": "Planos",
+   "subtitle": "Sabemos usarlos. No sabemos entenderlos.",
+   "intro": [
+    "La noche en que se encendió el centro principal, Ines hizo funcionar el escáner del Instituto Tecnológico. En cuanto lo encendió, se pasó pitándole al posavasos de Teo hasta el amanecer.",
+    "Los patrones del posavasos son instrucciones de fabricación paso a paso, solo que no las escribieron humanos. Y todas necesitan un material que no tenemos: el xenocristal.",
+    "Excavad, forjad, tended raíles, luego construid una estación de expediciones y enviad gente a buscar. No necesitamos entender cómo funciona. Solo necesitamos usarlo."
+   ],
+   "goals": [
+    "Construye una mina de metal",
+    "Construye una forja",
+    "Construye una línea férrea para conectar los puntos de recolección",
+    "Construye una estación de expediciones",
+    "Completa la primera expedición y trae un plano",
+    "Investiga la primera tecnología de plano: filtro de alta presión",
+    "Completa el puesto avanzado"
+   ]
+  },
+  {
+   "title": "Xenocristal",
+   "subtitle": "¿Qué están protegiendo?",
+   "intro": [
+    "El xenocristal que traen las expediciones nunca alcanza. Ines dice que uno de los planos nos enseña a fabricarlo: disolver los cúmulos de cristal bajo tierra y dejar que vuelvan a crecer.",
+    "Lo que construyamos con eso no se parecerá a nada que hayamos construido antes.",
+    "Construye el sintetizador de cristal. Desde hoy no solo usamos lo que dejaron los alienígenas. Lo fabricamos nosotros."
+   ],
+   "goals": [
+    "Construye un sintetizador de cristal",
+    "Construye el cuartel de marines y destina marines",
+    "Construye una enfermería para poder tratar a los heridos",
+    "Repele 2 ataques alienígenas",
+    "Alcanza una población de 40",
+    "Completa el núcleo de la colonia"
+   ]
+  },
+  {
+   "title": "La sombra de la corporación",
+   "subtitle": "El precio de la libertad",
+   "intro": [
+    "Tres días después de que se encendiera el núcleo de la colonia, apareció una nave de guerra en órbita. Todos conocíamos el logotipo de su casco.",
+    "La Corporación Helion nos ha encontrado. No abrieron fuego. Solo enviaron un mensaje: pronto bajará un enviado.",
+    "Para ser libre, la colonia tiene que mantenerse sola, y toda esta gente tiene que querer mantenerse unida. Aprobad leyes, comerciad y luego decidid: trabajar con la corporación o decirles que no."
+   ],
+   "goals": [
+    "Construye el Centro Administrativo",
+    "Aprueba tu primera carta de la colonia",
+    "Recibe al enviado de la corporación y toma una decisión",
+    "Gana 5.000 créditos en total",
+    "Alcanza una población de 80",
+    "Completa la Cúpula Estelar"
+   ]
+  },
+  {
+   "title": "La decisión",
+   "subtitle": "¿De quién es este hogar?",
+   "intro": [
+    "La primera noche después de cerrarse la cúpula, las luces de la colonia se veían desde la órbita.",
+    "La nave de guerra de Helion sigue ahí arriba. También la señal que nos trajo aquí. Este planeta ya no es un escondite. Es una coordenada que todos conocen.",
+    "Construye la baliza orbital y encuentra el origen de la señal. Después decidiremos de quién es este hogar."
+   ],
+   "goals": [
+    "Construye la Residencia del Gobernador",
+    "Construye una Residencia Horizonte",
+    "Inyecta xenocristal una vez en el laboratorio de bioingeniería",
+    "Alcanza una población de 100",
+    "Completa las cinco fases: la baliza orbital, o una nave construida con su núcleo"
+   ]
+  }
+ ],
+ "events": {
+  "meteor": { "title": "Lluvia de meteoritos", "text": "Una ristra de fuego cruza el cielo: caen escombros hacia {building}.", "options": ["Reforzar por {cost} de piedra", "Aguantar ({building} se detiene 60 s)"] },
+  "rescue": { "title": "Señal de socorro", "text": "La radio capta una señal de socorro entrecortada del cañón cercano. Podrían ser otros supervivientes, o solo una baliza que sigue transmitiendo.", "options": ["Enviar 2 colonos desocupados (3 min)", "Ignorarla"] },
+  "rescue_ines": { "title": "Una llamada de socorro entrecortada", "text": "Entre golpes de metal, una voz de mujer crepita en la radio: «Aquí... cápsula tres, Ines... mi cápsula está atascada en una grieta de hielo... tengo herramientas, pero no aire. Por favor, daos prisa».", "options": ["Mara y Juno van en vehículo (2 min, no hacen falta trabajadores)", "Más tarde (la señal se repetirá)"] },
+  "choice6": { "title": "¿De quién es este hogar?", "text": "Estamos todos. Los fulgores son guardianes, y cada pedazo de xenocristal que usamos sale de lo que ellos protegen. El núcleo de la baliza solo alcanza para una cosa: encender la baliza o impulsar una nave.", "options": ["Renunciar al xenocristal y construir una nave para irnos", "Conservar el xenocristal y quedarnos"] },
+  "envoy": { "title": "Enviado de la corporación", "text": "Una lanzadera con el logotipo de Helion aterriza en la plaza. El enviado es cortés: los derechos de explotación de este planeta pertenecen a la corporación, pero mientras paguen {demand} puntualmente, la corporación está dispuesta a pasar por alto «temporalmente» su incumplimiento de contrato.", "options": ["Pagar {demand}", "Negarse (rechazado {refusals} veces)"] }
+ }
+}
