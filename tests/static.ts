@@ -11,6 +11,8 @@ import { RESEARCH_DEFS } from '../src/engine/formulas';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
 import { PACKS } from '../src/i18n/locales';
+import { MOODS } from '../src/data/moods';
+import { existsSync } from 'fs';
 
 const results: { id: string; name: string; ok: boolean; info: string }[] = [];
 function check(id: string, name: string, fn: () => string[] | string | void) {
@@ -150,6 +152,23 @@ check('S12', '德、日、西、葡翻譯：介面與劇情齊全、句數一致
       if (!!sc.log !== !!t.log) errs.push(`${l} ${id} 日誌${sc.log ? '缺' : '多出'}`);
     }
   }
+  return errs;
+});
+
+check('S13', '表情標記都對到存在的台詞，而且標的是有立繪的角色；每張表情圖都有對應的預設立繪', () => {
+  const errs: string[] = [];
+  const CHARS = ['mara', 'teo', 'juno', 'ines', 'sefa', 'voss', 'calder'];
+  for (const [id, m] of Object.entries(MOODS)) {
+    const sc = SCENES[id];
+    if (!sc) { errs.push(`沒有 ${id} 這段對話`); continue; }
+    for (const i of Object.keys(m)) {
+      const line = sc.lines[+i];
+      if (!line) errs.push(`${id}#${i} 沒有這句`);
+      else if (!CHARS.includes(line[0])) errs.push(`${id}#${i} 是 ${line[0]}（沒有立繪）`);
+    }
+  }
+  for (const c of CHARS) for (const mood of ['angry', 'sad', 'joy'])
+    if (existsSync(`src/assets/portraits/${c}-${mood}.webp`) && !existsSync(`src/assets/portraits/${c}.webp`)) errs.push(`${c} 有 ${mood} 表情但沒有預設立繪`);
   return errs;
 });
 

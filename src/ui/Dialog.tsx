@@ -6,6 +6,7 @@ import { CHARACTERS, CharacterId, portraitURL } from '../art/portraitArt';
 import { sceneLine, t, useLang } from '../i18n';
 import { sfx, playVoice } from '../audio/audio';
 import { voiceFile } from '../data/voices';
+import { lineMood } from '../data/moods';
 
 const CPS = { zh: 28, en: 55 };   // 每秒打出幾個字
 
@@ -45,7 +46,7 @@ function Scene({ id, day }: { id: string; day: number }) {
   };
   // 主要角色有立繪；一般殖民者和旁白（narr）沒有立繪，用旁白樣式
   const hasArt = (CHARACTERS as readonly string[]).includes(who);
-  const art = hasArt ? portraitURL(who as CharacterId) : null;
+  const art = hasArt ? portraitURL(who as CharacterId, lineMood(id, idx)) : null;
   return (
     <>
     <div className="dlg-veil" onClick={next} aria-hidden="true" />
