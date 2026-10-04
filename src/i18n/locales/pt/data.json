@@ -49,7 +49,7 @@
   "governor": { "name": "Residência do Governador", "desc": "O coração administrativo da cidade, onde trabalha o primeiro governador eleito da colônia. Moral +15, espaços de carta +1." },
   "sky_residence": { "name": "Residência Horizonte", "desc": "Prédios residenciais sob o domo, com as estrelas logo ali na janela. +12 no limite de população e +5 de moral por nível." },
   "bioeng": { "name": "Laboratório de bioengenharia", "desc": "Injeta xenocristal em plantações e culturas para turbinar por um tempo a produção da colônia inteira. Cada infusão custa xenocristal; níveis mais altos a deixam mais forte e mais longa." },
-  "orbital_beacon": { "name": "Farol orbital", "desc": "Uma torre-farol que transmite para o sistema inteiro. Construída em cinco fases, cada uma com metal, ferramentas, xenocristal e créditos; concluir a quinta acende o farol. Exige população 100." },
+  "orbital_beacon": { "name": "Sinalizador orbital", "desc": "Uma torre de sinalização que transmite para o sistema inteiro. Construída em cinco fases, cada uma com metal, ferramentas, xenocristal e créditos; concluir a quinta acende o farol. Exige população 100." },
   "star_dome": { "name": "Domo Estelar", "desc": "Comando Nv5. Um domo de vidro sobre a colônia inteira: a partir de hoje, é uma cidade. Exige população 80 e 5.000 créditos ganhos." }
  },
  "research": {
@@ -177,14 +177,14 @@
    "intro": [
     "Na primeira noite depois que o domo se fechou, as luzes da colônia podiam ser vistas da órbita.",
     "A nave de guerra da Helion ainda está lá em cima. E o sinal que nos trouxe para cá também. Este planeta não é mais um esconderijo. É uma coordenada que todo mundo conhece.",
-    "Construa o farol orbital e encontre a origem do sinal. Depois, vamos decidir de quem é este lar."
+    "Construa o sinalizador orbital e encontre a origem do sinal. Depois, vamos decidir de quem é este lar."
    ],
    "goals": [
     "Construa a Residência do Governador",
     "Construa uma Residência Horizonte",
     "Injete xenocristal uma vez no laboratório de bioengenharia",
     "Chegue a uma população de 100",
-    "Conclua as cinco fases: o farol orbital, ou uma nave feita com o núcleo dele"
+    "Conclua as cinco fases: o sinalizador orbital, ou uma nave feita com o núcleo dele"
    ]
   }
  ],
