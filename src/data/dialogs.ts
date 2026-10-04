@@ -31,12 +31,12 @@ export const SCENES: Record<string, SceneText> = {
   },
   'c1-scrubber': {
     lines: [
-      ['teo', '（拍了機器兩下）好孩子。來，跟大家打招呼。牠叫阿喘。', '(pats the machine twice) Good boy. Say hello, everyone. This is Wheezy.'],
-      ['juno', '牠……在咳嗽耶。', "It's... coughing."],
-      ['teo', '那是牠的工作聲。別嫌牠吵，牠是這顆星球上唯一願意幫我們呼吸的傢伙。', "That's its working noise. Don't knock it. Wheezy's the only thing on this planet willing to breathe for us."],
+      ['teo', '（拍了機器兩下）好孩子。來，跟大家打招呼。它叫阿喘。', '(pats the machine twice) Good boy. Say hello, everyone. This is Wheezy.'],
+      ['juno', '它……在咳嗽耶。', "It's... coughing."],
+      ['teo', '那是它的工作聲。別嫌它吵，它是這顆星球上唯一願意幫我們呼吸的傢伙。', "That's its working noise. Don't knock it. Wheezy's the only thing on this planet willing to breathe for us."],
       ['mara', '阿喘，我們的命交給你了。拜託別卡痰。', 'Wheezy, our lives are in your hands. Please don\'t choke.'],
     ],
-    log: ['提歐用逃生艙的殘骸拼出一台氧氣再生器，取名阿喘。牠很吵，但我們愛牠。', "Teo built an oxygen scrubber out of pod wreckage and named it Wheezy. It's loud. We love it."],
+    log: ['提歐用逃生艙的殘骸拼出一台氧氣再生器，取名阿喘。它很吵，但我們愛它。', "Teo built an oxygen scrubber out of pod wreckage and named it Wheezy. It's loud. We love it."],
   },
   'c1-will': {
     lines: [
@@ -100,7 +100,7 @@ export const SCENES: Record<string, SceneText> = {
   // 只寫進日誌
   'c1-limit': {
     lines: [
-      ['teo', '阿喘到極限了。再鎖一顆螺絲，牠就要散了。', "Wheezy is at its limit. One more bolt and it falls apart."],
+      ['teo', '阿喘到極限了。再鎖一顆螺絲，它就要散了。', "Wheezy is at its limit. One more bolt and it falls apart."],
       ['juno', '那換一台新的？', 'Then build a new one?'],
       ['teo', '用什麼換？殘骸就這麼多，我們會的也就這麼多。', "With what? There's only so much wreckage, and only so much we know how to do."],
       ['mara', '那就先撐著。等其他艙的人到了再說。', "Then we hold on. We'll see once the other pods find us."],
@@ -149,7 +149,7 @@ export const SCENES: Record<string, SceneText> = {
       ['juno', '桃樂絲是誰？', "Who's Dorothy?"],
       ['ines', '我的工具箱。她比大部分人可靠。', "My toolbox. She's more reliable than most people."],
       ['teo', '妳剛剛盯著阿喘看很久。有意見？', 'You were staring at Wheezy for a long time. Got a problem?'],
-      ['ines', '有。牠很可愛，但撐不起十個人。地底下有冰層。給我岩材和零件，我幫牠裝上鑽頭，改建成電解站，把冰變成空氣。', "Yes. It's adorable, but it won't keep ten people breathing. There's ice under us. Give me stone and parts and I'll fit it with a drill and rebuild it into an electrolyzer that turns ice into air."],
+      ['ines', '有。它很可愛，但撐不起十個人。地底下有冰層。給我岩材和零件，我幫它裝上鑽頭，改建成電解站，把冰變成空氣。', "Yes. It's adorable, but it won't keep ten people breathing. There's ice under us. Give me stone and parts and I'll fit it with a drill and rebuild it into an electrolyzer that turns ice into air."],
       ['mara', '歡迎加入，伊涅絲。薪水是不會死。', 'Welcome aboard, Ines. The pay is not dying.'],
       ['ines', '……我聽說了。福利也是。', '...So I heard. Benefits too.'],
     ],
@@ -158,9 +158,9 @@ export const SCENES: Record<string, SceneText> = {
   'c2-elec-i': {
     lines: [
       ['ines', '改建完成。鑽頭接到冰層，冰變水、水變氧氣——這才叫工程。', 'Rebuild done. Drill into the ice, ice to water, water to oxygen. Now that is engineering.'],
-      ['teo', '妳把牠的風扇拆掉了。', 'You took its fan off.'],
+      ['teo', '妳把它的風扇拆掉了。', 'You took its fan off.'],
       ['ines', '風扇還在，我只是讓它做更有意義的事。', "The fan is still there. I just gave it something meaningful to do."],
-      ['teo', '……牠還叫阿喘嗎？', '...Is it still called Wheezy?'],
+      ['teo', '……它還叫阿喘嗎？', '...Is it still called Wheezy?'],
       ['ines', '叫什麼都行。奇蹟不能量產，但可以升級。', "Call it whatever you like. Miracles don't scale, but they can be upgraded."],
       ['juno', '我要把這句寫進日誌！', "I'm putting that in the log!"],
     ],
@@ -242,7 +242,7 @@ export const SCENES: Record<string, SceneText> = {
       ['juno', '殖民地日誌，第 {day} 天。', 'Colony log, day {day}.'],
       ['juno', '人數翻了好幾倍，但沒有人再需要數自己還剩幾口氣。', 'There are many times more of us now, and nobody has to count their breaths anymore.'],
       ['teo', '阿喘退休了嗎？', 'Did Wheezy retire?'],
-      ['juno', '沒有，牠升官了。現在是資深阿喘。', 'Nope. Promoted. Senior Wheezy now.'],
+      ['juno', '沒有，它升官了。現在是資深阿喘。', 'Nope. Promoted. Senior Wheezy now.'],
       ['juno', '還有，瑪拉的點名表已經寫到第三頁了。', "Also, Mara's roll sheet is on its third page."],
       ['mara', '……點名。', '...Roll call.'],
     ],
@@ -328,7 +328,7 @@ export const SCENES: Record<string, SceneText> = {
       ['narr', '（阿喘咳了一聲）', '(Wheezy coughs.)'],
       ['teo', '嗯。我也是這麼想。', "Yeah. That's what I think too."],
     ],
-    log: ['半夜起來喝水，看到提歐坐在阿喘旁邊，拍了牠兩下，跟牠說：「別擔心，他們不會丟下你的。」阿喘咳了一聲。我覺得他不是在跟阿喘說話。', 'I got up for water in the middle of the night and saw Teo sitting next to Wheezy. He patted it twice and said, "Don\'t worry. They won\'t leave you behind." Wheezy coughed. I don\'t think he was talking to Wheezy.'],
+    log: ['半夜起來喝水，看到提歐坐在阿喘旁邊，拍了它兩下，跟它說：「別擔心，他們不會丟下你的。」阿喘咳了一聲。我覺得他不是在跟阿喘說話。', 'I got up for water in the middle of the night and saw Teo sitting next to Wheezy. He patted it twice and said, "Don\'t worry. They won\'t leave you behind." Wheezy coughed. I don\'t think he was talking to Wheezy.'],
   },
   'c3-resonance': {
     lines: [

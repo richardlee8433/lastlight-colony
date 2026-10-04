@@ -1,9 +1,10 @@
+import { LangPicker } from './LangPicker';
 import { useEffect, useMemo, useState } from 'react';
 import { trackStart } from '../analytics';
 import { useGame, game } from '../store/gameStore';
 import { CHAPTERS } from '../engine/story';
 import { dayOf } from '../engine/dialog';
-import { LANGS, chapterText, t, useLang, useSettings } from '../i18n';
+import { chapterText, t, useLang } from '../i18n';
 import { Modal } from './Modals';
 import { VERSION } from './Settings';
 import bg from '../assets/title.webp';
@@ -27,7 +28,7 @@ export function TitleScreen() {
     if (!open) setMood({ stage: Math.min(6, game.s.stage), raid: !!game.s.raid?.incoming, finished: game.s.finished });
     setTitleMusic(open);
   }, [open]);
-  const lang = useLang(), setLang = useSettings((st) => st.setLang);
+  useLang();   // 換語言時重畫
   const [confirm, setConfirm] = useState(false), [about, setAbout] = useState(false);
   const box = useCover();
   const stars = useMemo(() => Array.from({ length: 46 }, (_, i) => ({ x: (i * 37.7) % 100, y: ((i * 53.3) % 38) + 1, s: 1 + (i % 3), d: (i * 0.61) % 4 })), []);
@@ -48,12 +49,7 @@ export function TitleScreen() {
       </div>
       <div className="title-shade" aria-hidden="true" />
 
-      <div className="title-lang" role="radiogroup" aria-label={t('set.lang')}>
-        {LANGS.map((l) => (
-          <button key={l.id} type="button" role="radio" aria-checked={lang === l.id} className={lang === l.id ? 'on' : ''}
-            lang={l.tag} title={l.label} onClick={() => { setLang(l.id); act.bump(); }}>{l.short}</button>
-        ))}
-      </div>
+      <LangPicker className="title-lang" />
 
       <div className="title-main">
       <header className="title-logo">

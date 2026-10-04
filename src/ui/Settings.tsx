@@ -1,18 +1,19 @@
+import { LangPicker } from './LangPicker';
 import { useEffect, useState } from 'react';
 import { useGame, game } from '../store/gameStore';
 import { CHAPTERS } from '../engine/story';
 import { built } from '../engine/formulas';
-import { LANGS, t, useLang, useSettings } from '../i18n';
+import { t, useLang, useSettings } from '../i18n';
 import { fmtTime } from './common';
 import { Modal } from './Modals';
 import { sfx, useAudio } from '../audio/audio';
 
-export const VERSION = '0.69';
+export const VERSION = '0.69.1';
 
 // 設定頁：語言、存檔、重新開始、關於
 export function Settings() {
   useGame((st) => st.v);
-  const lang = useLang(), setLang = useSettings((st) => st.setLang);
+  useLang();   // 換語言時重畫
   const dayNight = useSettings((st) => st.dayNight), setDayNight = useSettings((st) => st.setDayNight);
   const analytics = useSettings((st) => st.analytics), setAnalytics = useSettings((st) => st.setAnalytics);
   const open = useGame((st) => st.settings), [confirm, setConfirm] = useState(false);
@@ -60,12 +61,7 @@ export function Settings() {
 
           <section className="block">
             <h3>{t('set.lang')}</h3>
-            <div className="seg" role="radiogroup" aria-label={t('set.lang')}>
-              {LANGS.map((l) => (
-                <button key={l.id} type="button" role="radio" aria-checked={lang === l.id} lang={l.tag}
-                  className={'btn' + (lang === l.id ? '' : ' alt')} onClick={() => { setLang(l.id); act.bump(); }}>{l.label}</button>
-              ))}
-            </div>
+            <LangPicker />
           </section>
 
           <section className="block">
