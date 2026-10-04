@@ -33,9 +33,11 @@ export function LangPicker({ className = '' }: { className?: string }) {
       {open && (
         <ul className="lang-list" role="listbox" aria-label={t('set.lang')}>
           {LANGS.map((l) => (
-            <li key={l.id} role="option" aria-selected={l.id === lang} lang={l.tag} className={l.id === lang ? 'on' : ''}
-              onClick={() => { setLang(l.id); useGame.getState().bump(); setOpen(false); }}>
-              {l.label}{l.id === lang && <b aria-hidden="true">✓</b>}
+            <li key={l.id} role="option" aria-selected={l.id === lang} lang={l.tag} className={l.id === lang ? 'on' : ''}>
+              {/* 用真正的按鈕：iOS Safari 對純 li 的點擊不一定會觸發 */}
+              <button type="button" onClick={() => { setLang(l.id); useGame.getState().bump(); setOpen(false); }}>
+                {l.label}{l.id === lang && <b aria-hidden="true">✓</b>}
+              </button>
             </li>
           ))}
         </ul>
