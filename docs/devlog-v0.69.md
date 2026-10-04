@@ -1,60 +1,51 @@
 # Lastlight Colony v0.69 : Six Languages
 
-各位指揮官好！
-
-v0.69 上線了。這次更新只有一個主題，但影響每一位玩家：**末光殖民地現在支援六種語言了！**
+🌍 Deutsch · 日本語 · Español · Português (Brasil)
 
 ---
 
-## 🌍 新增四種語言
+## Deutsch
 
-除了 English 和繁體中文，現在還可以用：
+**Lastlight Colony spricht jetzt Deutsch!**
 
-- **Deutsch**（德文）
-- **日本語**（日文）
-- **Español**（西班牙文）
-- **Português (Brasil)**（巴西葡萄牙文）
+Ab sofort kannst du das ganze Spiel auf Deutsch spielen: Oberfläche, Gebäude, Technologien, Kapitelziele und alle Dialoge.
 
-介面、建築與科技說明、章節目標，以及**全部的劇情對話和殖民地日誌**都翻譯好了。
+So stellst du die Sprache um: Tippe auf dem Startbildschirm oben rechts auf das 🌐-Symbol, oder öffne **Einstellungen → Sprache**. Dein Spielstand bleibt dabei erhalten.
 
-- 在首頁右上角，或設定頁的「語言」就能切換，進度不受影響。
-- 日文使用日文字形顯示，讀起來更自然。
-- 選德、日、西、葡文時，第 1 章開場會播**英文配音**，搭配你的語言字幕。
-
-如果你的朋友不太讀英文或中文，現在可以邀請他們一起來玩了！
+Viel Spaß, Kommandant!
 
 ---
 
-謝謝大家的遊玩和回饋！有任何想法，都歡迎留言。
-末光還亮著，我們下次更新見！✨
+## 日本語
 
----
----
+**Lastlight Colony が日本語に対応しました！**
 
-# Lastlight Colony v0.69 : Six Languages
+画面表示、建物、技術、章の目標、そしてすべての会話を日本語で楽しめます。
 
-Hello, Commanders!
+切り替え方：タイトル画面の右上にある 🌐 アイコンをタップするか、**設定 → 言語** から選んでください。セーブデータはそのまま引き継がれます。
 
-v0.69 is here. It's a one-feature update, but it reaches a lot more people: **Lastlight Colony now speaks six languages!**
-
-## 🌍 Four new languages
-
-Alongside English and Traditional Chinese, you can now play in:
-
-- **Deutsch** (German)
-- **日本語** (Japanese)
-- **Español** (Spanish)
-- **Português (Brasil)** (Brazilian Portuguese)
-
-The interface, building and tech descriptions, chapter goals, and **every line of story dialogue and the colony log** are all translated.
-
-- Switch from the top-right corner of the title screen or under Settings → Language. Your progress stays the same.
-- Japanese uses proper Japanese glyphs for a more natural read.
-- In German, Japanese, Spanish and Portuguese, the Chapter 1 opening plays the **English voice acting** with subtitles in your language.
-
-If you have friends who don't read English or Chinese, now's a great time to bring them along!
+指揮官、ようこそ！
 
 ---
 
-Thanks for playing and for all your feedback! If you have ideas, leave a comment.
-The last light is still on. See you next update! ✨
+## Español
+
+**¡Lastlight Colony ya está en español!**
+
+Ahora puedes jugar todo el juego en español: la interfaz, los edificios, las tecnologías, los objetivos de cada capítulo y todos los diálogos.
+
+Cómo cambiar el idioma: toca el icono 🌐 en la esquina superior derecha de la pantalla de inicio, o ve a **Ajustes → Idioma**. Tu partida se conserva.
+
+¡Bienvenido, comandante!
+
+---
+
+## Português (Brasil)
+
+**Lastlight Colony agora está em português!**
+
+Agora dá para jogar tudo em português: a interface, os prédios, as tecnologias, os objetivos de cada capítulo e todos os diálogos.
+
+Como trocar o idioma: toque no ícone 🌐 no canto superior direito da tela inicial, ou vá em **Configurações → Idioma**. Seu progresso continua salvo.
+
+Bem-vindo, comandante!
