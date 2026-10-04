@@ -4,8 +4,10 @@
 export type Mood = 'angry' | 'sad' | 'joy';
 
 const A = 'angry', S = 'sad', J = 'joy';
-export const MOODS: Record<string, Record<number, Mood>> = {
-  // ── 瑪拉 ──
+type Table = Record<string, Record<number, Mood>>;
+
+// 瑪拉（預設：嘴角一勾的冷笑）
+const MARA: Table = {
   'c1-open': { 4: S },
   'c1-signal': { 1: S, 4: S, 6: A },
   'c1-limit': { 3: S },
@@ -50,5 +52,101 @@ export const MOODS: Record<string, Record<number, Mood>> = {
   'c6-blocked': { 4: A, 10: A, 18: J },
   'c6-end': { 8: J, 14: J },
 };
+
+// 提歐（預設：自信的微笑）
+const TEO: Table = {
+  'c1-scrubber': { 0: J },
+  'c1-f8': { 2: S, 5: S },
+  'c1-signal': { 0: A, 5: A },
+  'c1-limit': { 0: S, 2: A },
+  'c2-open': { 3: A },
+  'c2-ines': { 6: A },
+  'c2-elec-i': { 1: A, 3: S },
+  'c2-upgrade': { 1: A, 3: A },
+  'c2-lounge': { 1: S },
+  'c2-end': { 2: S },
+  'c3-mine': { 1: J, 3: S },
+  'c3-forge': { 0: S, 3: A },
+  'c3-rail': { 2: A },
+  'c3-exp1': { 10: A },
+  'c3-wheezy': { 3: S, 5: S },
+  'c4-synth': { 2: S, 10: A },
+  'c4-warn': { 3: A },
+  'c4-raid1': { 5: A },
+  'c4-memorial': { 2: S },
+  'c4-teach': { 0: A },
+  'c4-sefa': { 5: A },
+  'c4-hydro': { 1: S, 3: A },
+  'c5-open': { 1: A },
+  'c5-crowd': { 12: A },
+  'c5-voss': { 2: A, 4: A, 8: A, 11: S, 13: A },
+  'c5-debate': { 1: S },
+  'c5-corp-help': { 3: A },
+  'c5-rifle': { 3: A },
+  'c5-commando': { 1: S },
+  'c5-pattern': { 6: S },
+  'c6-truth': { 7: A },
+  'c6-debate': { 10: A },
+  'c6-blocked': { 2: A },
+  'c6-leave': { 5: S },
+  'c6-stay': { 6: S, 8: J },
+};
+
+// 朱諾（預設：開朗的笑容；她難過、緊張的時候比較多，所以標得多）
+const JUNO: Table = {
+  'c1-open': { 3: S },
+  'c1-ls3': { 0: S },
+  'c1-scrubber': { 1: S },
+  'c1-will': { 0: J },
+  'c1-coaster': { 0: J },
+  'c1-f8': { 4: S },
+  'c1-signal': { 2: S, 3: S },
+  'hypoxia': { 1: S },
+  'c1-end': { 4: S },
+  'c2-open': { 0: J, 2: S },
+  'c2-elec-i': { 5: J },
+  'c2-upgrade': { 5: J, 7: J },
+  'c2-pop10': { 0: J },
+  'c2-rescue': { 4: S },
+  'c2-lounge': { 0: J },
+  'c2-end': { 3: J },
+  'c3-mine': { 2: S },
+  'c3-rail': { 0: J },
+  'c3-exp1': { 1: J, 8: A },
+  'c3-resonance': { 0: J },
+  'c3-rollcall': { 2: A, 4: S },
+  'c3-outpost': { 0: S, 1: A, 5: S },
+  'c4-open': { 3: J },
+  'c4-synth': { 6: J, 8: A },
+  'c4-warn': { 0: A, 2: A },
+  'c4-raid1': { 3: S, 4: S },
+  'c4-memorial': { 0: S, 6: S },
+  'c4-sefa': { 3: A },
+  'c4-guard': { 2: S },
+  'c4-med': { 3: A },
+  'c4-hydro': { 0: J },
+  'c4-end': { 3: S, 5: A },
+  'c5-open': { 0: A },
+  'c5-crowd': { 1: A, 3: S, 6: S },
+  'c5-charter': { 3: A, 8: S },
+  'c5-debate': { 4: S, 6: S },
+  'c5-voss-leave': { 7: S },
+  'c5-resist': { 5: S, 11: S, 14: S },
+  'c5-corp-help': { 0: A },
+  'c5-alliance1': { 0: J },
+  'c5-commando': { 0: J },
+  'c6-open': { 0: J, 4: S, 6: J },
+  'c6-beacon1': { 1: A, 5: S },
+  'c6-lastlight': { 0: S, 2: S, 4: S, 6: S, 14: S },
+  'c6-debate': { 11: S },
+  'c6-leave': { 4: S, 7: J },
+  'c6-blocked': { 9: A, 12: S, 13: A },
+};
+
+/** 各角色的表情表（靜態檢查用來確認標的台詞真的是那個角色說的） */
+export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO };
+
+export const MOODS: Table = {};
+for (const t of Object.values(MOOD_TABLES)) for (const [id, m] of Object.entries(t)) MOODS[id] = { ...MOODS[id], ...m };
 
 export const lineMood = (scene: string, line: number): Mood | undefined => MOODS[scene]?.[line];
