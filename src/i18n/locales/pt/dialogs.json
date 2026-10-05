@@ -288,6 +288,40 @@
   "Não sei.",
   "(olhando para os aglomerados de cristal) Lá fora também estão acendendo."
  ], "log": "O sintetizador de cristal ficou pronto. Não se parece com nada que já construímos. O Teo disse: “Eu construí. Mas não parece que fui eu que construí.” Quando ligou, todo o xenocristal da base se acendeu por um minuto inteiro. Eu disse que ele estava cantando. A Ines disse que estava puxando energia. Naquela noite, as luzes lá na planície não se apagaram." },
+ "c4-trader": { "lines": [
+  "O posto avançado pegou um canal novo! Não é o sinal... tem alguém falando!",
+  "(estática) ...Superfície de K-7, aqui é o cargueiro Pega. O posto avançado de vocês está gritando comigo há três dias. Tem alguém morando aí embaixo?",
+  "Tem. Quem é você?",
+  "Eu transporto carga. Não pertenço a nenhuma corporação, nem a ninguém. O que falta pra vocês, eu tenho. O que sobra, eu levo.",
+  "Leva o quê?",
+  "Metal, ferramentas, peças. Comida também serve. Toda colônia de fronteira tem falta disso.",
+  "A gente precisa de eletrônicos. E de combustível.",
+  "Então montem um posto comercial com um pedaço de chão plano do lado. Eu não pouso. Os contêineres descem da órbita.",
+  "Por que você não pousa?",
+  "Pousar é se registrar. E quem se registra, alguém fica sabendo que esteve aqui.",
+  "(O canal se fecha.)",
+  "Ninguém fala do xenocristal. Pra ninguém.",
+  "Por quê?",
+  "Em F8, no momento em que alguém sabia que você tinha algo bom, aquilo deixava de ser seu."
+ ], "log": "O posto avançado falou com um cargueiro chamado Pega. Ele não pertence a nenhuma corporação, joga contêineres da órbita e nunca pousa. A Mara disse que ninguém fala do xenocristal. Escrevi isso no topo da página e sublinhei duas vezes." },
+ "c4-cargo": { "lines": [
+  "(Um contêiner arrastando um paraquedas cai com tudo no terreno livre ao lado do posto comercial.)",
+  "Tá chovendo! Tá chovendo contêiner!",
+  "(abre o contêiner) Novo. Não é sucata. É novo.",
+  "Uma coisa nova... eu já tinha esquecido como são as coisas novas.",
+  "E o preço?",
+  "Mais caro que o armazém da empresa em F8. Mais barato do que não ter."
+ ], "log": "O primeiro contêiner caiu do céu. O que tinha dentro era novo, não tirado de um destroço. O Teo disse que já tinha esquecido como são as coisas novas." },
+ "c4-trader-ride": { "lines": [
+  "Pega, a sua nave... pode levar gente?",
+  "(pausa) Quantos?",
+  "Todos nós.",
+  "Vocês fugiram de F8, não foi? Mineiros com contrato.",
+  "(Ninguém responde.)",
+  "Levar carga é negócio. Levar trabalhador fugido é tráfico de pessoas. Se me pararem, eu perco a nave e vocês são mandados de volta.",
+  "Peças eu posso vender. A nave, vocês vão ter que construir.",
+  "(olha para os destroços) ...Entendido."
+ ], "log": "Perguntei à Pega se ele podia levar a gente embora. Ele disse que levar trabalhador fugido é tráfico de pessoas. Ele vende peças, mas a nave a gente tem que construir. A Mara olhou para os destroços. Acho que ela já sabia a resposta." },
  "c4-warn": { "lines": [
   "Relatório do posto avançado— lá na planície... um monte de luzes. Vindo de todos os aglomerados de cristal.",
   "Quantas?",
@@ -402,6 +436,15 @@
   "Não atirar significa que eles querem algo que vale mais que as nossas vidas.",
   "(A Sefa olha para os aglomerados de cristal e não diz nada.)"
  ] },
+ "c5-trader-word": { "lines": [
+  "(comunicação) K-7, tem uma nave de guerra da Helion estacionada em cima de vocês.",
+  "A gente sabe.",
+  "Não fui eu. Eu juro.",
+  "Eu sei. Se fosse você, não estaria ligando.",
+  "...Falei de vocês pra uns amigos. Não do tipo Helion. Gente das colônias livres. Se eles entrarem em contato, não tenham medo.",
+  "Por que você está ajudando a gente?",
+  "Vocês são bons clientes. E eu também já devi dinheiro pra corporação."
+ ], "log": "Depois que a nave de guerra da Helion chegou, a Pega ligou pra dizer que não tinha sido ele. A Ines acredita nele. Ele contou que falou da gente pra uns amigos nas colônias livres. Parece que ele também já deveu dinheiro pra corporação." },
  "c5-crowd": { "lines": [
   "(Há uma confusão do lado de fora das cápsulas habitacionais. Dois colonos se empurram por causa de um beliche, e alguém está tentando pegar as rações.)",
   "Parem! Parem! Vocês dois... hã, como vocês se chamam mesmo?",
@@ -485,6 +528,14 @@
   "Pelo menos, da próxima vez que os Glimmers vierem, não vamos estar sozinhos.",
   "(bem baixinho) É exatamente isso que me preocupa."
  ], "log": "Assinamos um contrato de novo." },
+ "c5-trader-bye": { "lines": [
+  "(comunicação) Ouvi dizer que vocês assinaram com a Helion.",
+  "A gente precisa dos soldados deles.",
+  "Eu entendo. Mas onde a Helion manda, eu não vou. Se me registrarem, esta nave deixa de ser minha.",
+  "Você vai voltar?",
+  "Quando isto aqui deixar de pertencer à corporação. Talvez.",
+  "...Construam bem a nave de vocês."
+ ], "log": "Depois que fechamos com a Helion, a Pega disse que não vem mais. Onde a Helion manda, ele não vai. As últimas palavras dele: construam bem a nave de vocês." },
  "c5-voss-leave": { "lines": [
   "A nave do emissário parte amanhã. Eu vou junto.",
   "O senhor podia ficar.",

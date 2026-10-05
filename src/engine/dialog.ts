@@ -97,6 +97,10 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c4-raid1', when: (s) => s.raid.count >= 1 && !s.raid.report },
   { id: 'c4-memorial', when: (s) => built(s, 'memorial') && seen(s, 'c4-raid1') },
   { id: 'c4-armor', when: (s) => s.stage >= 4 && s.research.done.includes('weapon_1') },
+  // 喜鵲（v0.70）：合成室開機後前哨站收到他的頻道；第一個貨櫃落地；之後問他能不能載大家走
+  { id: 'c4-trader', when: (s) => s.stage >= 4 && seen(s, 'c4-synth') },
+  { id: 'c4-cargo', when: (s) => (s.market?.drops ?? 0) > 0 },
+  { id: 'c4-trader-ride', when: (s) => seen(s, 'c4-cargo') },
   { id: 'c4-teach', when: (s) => s.stage === 4 && s.story.asm4 !== undefined && s.b.assembly.level > s.story.asm4 },
   { id: 'c4-sefa', when: (s) => seen(s, 'c4-raid1') && s.pop >= 28 },
   { id: 'c4-guard', when: (s) => seen(s, 'c4-sefa') && s.raid.count >= 2 && !s.raid.report },
@@ -107,6 +111,8 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c4-end', when: (s) => s.stage >= 5 && seen(s, 'c4-sefa'), chapterEnd: true },
   // 第 5 章（路線見 story.route／story.lean）
   { id: 'c5-open', when: (s) => s.stage === 5 && s.story.seenIntro >= 5 },
+  // 赫利昂戰艦來了以後喜鵲打來（要已經跟他交易過、蓋了交易站）
+  { id: 'c5-trader-word', when: (s) => seen(s, 'c5-open') && seen(s, 'c4-trader') && built(s, 'trade_post') },
   { id: 'c5-crowd', when: (s) => s.stage >= 5 && seen(s, 'c5-open') && (s.pop >= 45 || daysInChapter(s, 5) >= 1) },
   { id: 'c5-calder', when: (s) => s.stage >= 5 && built(s, 'admin') },
   { id: 'c5-juno', journal: true, when: (s) => seen(s, 'c5-calder') },
@@ -114,6 +120,8 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c5-voss', when: (s) => daysSince(s, 'c5-calder') >= 1 },
   { id: 'c5-debate', when: (s) => seen(s, 'c5-voss') && s.gov.corp.envoys === 0 && s.t >= s.gov.corp.nextEnvoy - 5 && s.gov.corp.nextEnvoy > 0 },
   { id: 'c5-coop', when: (s) => s.story.route === 'coop' },
+  // 合作路線：赫利昂接管，喜鵲道別（之後交易站變成赫利昂的市場）
+  { id: 'c5-trader-bye', when: (s) => seen(s, 'c5-coop') && seen(s, 'c4-trader') },
   { id: 'c5-voss-leave', when: (s) => seen(s, 'c5-coop') },
   { id: 'c5-resist', when: (s) => s.story.route === 'resist' },
   { id: 'c5-warn', when: (s) => s.story.route === 'resist' && s.gov.corp.refusals >= 2 },
@@ -142,7 +150,9 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c6-end', when: (s) => s.finished && s.story.choice6 !== 'leave', chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 5;
+export const DIALOG_VERSION = 6;
+/** 新版本加入的場景：還在這一章（或更早）的舊存檔照常播，不要直接標成播過 */
+const REPLAY_IF: Record<string, number> = { 'c4-trader': 4, 'c4-cargo': 4, 'c4-trader-ride': 4 };
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);
 const CHAPTER_END = new Set(TRIGGERS.filter((x) => x.chapterEnd).map((x) => x.id));
 
@@ -212,7 +222,7 @@ export function migrateDialogs(s: GameState) {
   if (s.finished && !s.story.choice6) s.story.choice6 = 'stay';
   // 第 3～6 章對話（v0.6.1）加入前的存檔：已經過去的里程碑一樣不補播
   if ((s.story.dlgV ?? 1) < DIALOG_VERSION) {
-    for (const x of TRIGGERS) if (!s.story.seen.includes(x.id) && x.when(s)) s.story.seen.push(x.id);
+    for (const x of TRIGGERS) if (!s.story.seen.includes(x.id) && x.when(s) && !(REPLAY_IF[x.id] && s.stage <= REPLAY_IF[x.id])) s.story.seen.push(x.id);
     s.story.dlgV = DIALOG_VERSION;
   }
   // 伊涅絲（v0.6 第 6 步）：已經離開第 2 章的存檔視為早就救回來了，她相關的對話不補播

@@ -3,7 +3,7 @@
 // 什麼時候播放由 engine/dialog.ts 決定；有些小場景只寫進日誌、不跳對話框（見 dialog.ts 的 journal）。這裡只放文字。
 import type { CharacterId } from '../art/portraitArt';
 
-export type Speaker = CharacterId | 'narr' | 'colonist' | 'survivor' | 'marine' | 'youth' | 'alliance';
+export type Speaker = CharacterId | 'narr' | 'colonist' | 'survivor' | 'marine' | 'youth' | 'alliance' | 'trader';
 /** 第 5 章起的路線：coop 合作、resist 抵抗、alien／alliance 抵抗路線裡的策略傾向 */
 export type Route = 'coop' | 'resist' | 'alien' | 'alliance' | 'rifle';  // rifle：外星科技傾向＋研究完異晶槍
 export type Line = [Speaker, string, string, Route?];
@@ -412,6 +412,49 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ['異晶合成室落成了。它長得不像我們蓋過的任何東西。提歐說：「我蓋的。但我不覺得它是我蓋的。」開機的時候，基地裡所有的異晶一起亮了一分鐘。我說它在唱歌，伊涅絲說它在耗電。那天晚上，荒原上的光一直沒熄。', "The crystal synthesizer is finished. It doesn't look like anything we've ever built. Teo said, \"I built it. But it doesn't feel like I built it.\" When it powered on, every xenocrystal in the base lit up for a full minute. I said it was singing. Ines said it was drawing power. That night, the lights out on the flats never went out."],
   },
+  'c4-trader': {
+    lines: [
+      ["juno", "前哨站收到一個新頻道！不是那個訊號……是有人在講話！", "The outpost picked up a new channel! Not the signal... someone's talking!"],
+      ["trader", "（雜訊）……K-7 地面，這裡是貨船「喜鵲」。你們的前哨站吵了我三天。那邊有人住嗎？", "(static) ...K-7 surface, this is the freighter Magpie. Your outpost's been yelling at me for three days. Anyone living down there?"],
+      ["mara", "有。你是誰？", "Yes. Who are you?"],
+      ["trader", "跑貨的。不屬於任何公司，也不屬於任何人。你們缺什麼，我有；你們多什麼，我收。", "I haul cargo. I don't belong to any company, or anyone. What you're short on, I have. What you've got extra, I'll take."],
+      ["teo", "你收什麼？", "Take what?"],
+      ["trader", "金屬、工具、零件，吃的也行。邊境殖民地都缺這些。", "Metal, tools, parts. Food works too. Every frontier colony is short on those."],
+      ["ines", "我們缺電子元件。還有燃料。", "We need electronics. And fuel."],
+      ["trader", "那就蓋個交易點，旁邊留一塊平地。我不降落，貨櫃從軌道丟下去。", "Then set up a trading post with some flat ground next to it. I don't land. Containers come down from orbit."],
+      ["juno", "為什麼不降落？", "Why don't you land?"],
+      ["trader", "降落要登記。登記了，就有人知道我來過。", "Landing means registering. Register, and someone knows I was here."],
+      ["narr", "（通訊結束）", "(The channel closes.)"],
+      ["mara", "異晶的事，誰都別提。", "Nobody mentions the xenocrystal. To anyone."],
+      ["juno", "為什麼？", "Why?"],
+      ["mara", "在 F8，好東西只要被人知道，就不是你的了。", "On F8, the moment anyone knew you had something good, it stopped being yours."],
+    ],
+    log: ["前哨站收到一艘叫「喜鵲」的貨船。他不屬於任何公司，只從軌道丟貨櫃，從不降落。瑪拉說，異晶的事誰都別提。我把這句寫在最上面，畫了兩條線。", "The outpost reached a freighter called the Magpie. It belongs to no company, drops containers from orbit, and never lands. Mara says nobody mentions the xenocrystal. I wrote that at the top of the page and underlined it twice."],
+  },
+  'c4-cargo': {
+    lines: [
+      ["narr", "（一個貨櫃拖著降落傘，砸在交易站旁邊的空地上）", "(A container trailing a parachute slams into the open ground beside the trading post.)"],
+      ["juno", "下雨了！下貨櫃了！", "It's raining! It's raining containers!"],
+      ["ines", "（打開貨櫃）是新的。不是拆下來的，是新的。", "(opens it) New. Not salvaged. New."],
+      ["teo", "新的東西……我都忘了新的東西長什麼樣子。", "Something new... I'd forgotten what new things look like."],
+      ["mara", "價錢呢？", "And the price?"],
+      ["ines", "比 F8 的福利社貴。比沒有便宜。", "More than the F8 company store. Less than not having it."],
+    ],
+    log: ["第一個貨櫃從天上掉下來，裡面的東西是新的，不是從殘骸拆下來的。提歐說，他都忘了新的東西長什麼樣子。", "The first container fell from the sky. What was inside was new, not salvaged from a wreck. Teo said he'd forgotten what new things look like."],
+  },
+  'c4-trader-ride': {
+    lines: [
+      ["juno", "喜鵲，你的船……可以載人嗎？", "Magpie, your ship... can it carry people?"],
+      ["trader", "（停頓）多少人？", "(pause) How many?"],
+      ["juno", "我們全部。", "All of us."],
+      ["trader", "你們是從 F8 跑出來的吧。契約礦工。", "You ran from F8, didn't you. Contract miners."],
+      ["narr", "（沒有人回答）", "(No one answers.)"],
+      ["trader", "載貨是生意。載逃跑的契約工，是走私人口。被攔下來，我的船就沒了，你們會被送回去。", "Hauling cargo is business. Hauling runaway contract workers is human smuggling. Get stopped, I lose my ship and you get sent back."],
+      ["trader", "零件我可以賣你們。船，你們得自己造。", "I can sell you parts. The ship, you'll have to build yourselves."],
+      ["mara", "（看向殘骸堆）……知道了。", "(looks toward the wreckage) ...Understood."],
+    ],
+    log: ["我問喜鵲能不能載我們走。他說，載逃跑的契約工是走私人口。他願意賣零件，船要我們自己造。瑪拉看了殘骸堆一眼。我覺得她早就知道答案了。", "I asked the Magpie if he could take us away. He said carrying runaway contract workers is human smuggling. He'll sell us parts, but we have to build the ship ourselves. Mara glanced at the wreckage. I think she already knew the answer."],
+  },
   'c4-warn': {
     lines: [
       ['juno', '前哨站回報——荒原上……好多光點。從每一個晶簇的方向過來。', 'Outpost report— out on the flats... so many lights. Coming from every crystal cluster.'],
@@ -567,6 +610,18 @@ export const SCENES: Record<string, SceneText> = {
       ['narr', '（賽法看向晶簇的方向，沒說話）', '(Sefa looks toward the crystal clusters and says nothing.)'],
     ],
   },
+  'c5-trader-word': {
+    lines: [
+      ["trader", "（通訊）K-7，你們上空停了一艘赫利昂的戰艦。", "(comm) K-7, there's a Helion warship parked over your heads."],
+      ["mara", "我們知道。", "We know."],
+      ["trader", "不是我說的。我發誓。", "It wasn't me. I swear."],
+      ["ines", "我知道。如果是你說的，你不會打來。", "I know. If it were you, you wouldn't be calling."],
+      ["trader", "……我跟幾個朋友提過你們。不是赫利昂那種朋友，是自由殖民地的人。如果他們聯絡你們，不用怕。", "...I mentioned you to a few friends. Not the Helion kind. Free colony people. If they reach out, don't be afraid."],
+      ["mara", "你為什麼要幫我們？", "Why help us?"],
+      ["trader", "你們是好客戶。而且，我也欠過公司的錢。", "You're good customers. And I've owed the company money too."],
+    ],
+    log: ["赫利昂的戰艦來了以後，喜鵲打來說不是他講的。伊涅絲相信他。他說他跟幾個自由殖民地的朋友提過我們。原來他也欠過公司的錢。", "After the Helion warship arrived, the Magpie called to say it wasn't him. Ines believes him. He says he told a few friends in the free colonies about us. Turns out he owed the company money too."],
+  },
   'c5-crowd': {
     lines: [
       ['narr', '（生活艙外吵成一團。兩個殖民者為了一張床位推來推去，旁邊有人在搶配給）', '(There is a commotion outside the hab pods. Two colonists are shoving each other over a bunk, and someone is grabbing at the rations.)'],
@@ -669,6 +724,17 @@ export const SCENES: Record<string, SceneText> = {
       ['sefa', '（很小聲）那正是我擔心的。', "(very quietly) That is exactly what worries me."],
     ],
     log: ['我們又簽約了。', 'We signed a contract again.'],
+  },
+  'c5-trader-bye': {
+    lines: [
+      ["trader", "（通訊）聽說你們跟赫利昂簽了。", "(comm) Heard you signed with Helion."],
+      ["mara", "我們需要他們的兵。", "We need their soldiers."],
+      ["trader", "我懂。但赫利昂的地盤，我不去。被他們登記到，這艘船就不是我的了。", "I get it. But I don't go where Helion runs things. Once they register me, this ship isn't mine anymore."],
+      ["juno", "那你還會回來嗎？", "Will you come back?"],
+      ["trader", "等哪天這裡不歸公司管了，再說。", "When this place stops belonging to the company. Maybe."],
+      ["trader", "……好好造你們的船。", "...Build your ship well."],
+    ],
+    log: ["我們跟赫利昂合作以後，喜鵲說他不會再來了。赫利昂的地盤，他不去。最後他說：好好造你們的船。", "After we sided with Helion, the Magpie said he won't come anymore. He doesn't go where Helion runs things. His last words: build your ship well."],
   },
   'c5-voss-leave': {
     lines: [

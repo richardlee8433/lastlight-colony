@@ -288,6 +288,40 @@
   "No lo sé.",
   "(mirando hacia los cúmulos de cristal) Allí fuera también se están iluminando."
  ], "log": "El sintetizador de cristal está terminado. No se parece a nada que hayamos construido. Teo dijo: «Lo construí yo. Pero no siento que lo haya construido yo». Al encenderse, todo el xenocristal de la base se iluminó durante un minuto entero. Yo dije que estaba cantando. Ines dijo que estaba consumiendo energía. Esa noche, las luces de la llanura no se apagaron." },
+ "c4-trader": { "lines": [
+  "¡El puesto avanzado captó un canal nuevo! No es la señal... ¡alguien está hablando!",
+  "(estática) ...Superficie de K-7, aquí el carguero Urraca. Vuestro puesto avanzado lleva tres días gritándome. ¿Vive alguien ahí abajo?",
+  "Sí. ¿Quién eres?",
+  "Transporto carga. No pertenezco a ninguna corporación ni a nadie. Lo que os falta, lo tengo. Lo que os sobra, me lo quedo.",
+  "¿Qué te quedas?",
+  "Metal, herramientas, piezas. La comida también sirve. A todas las colonias de frontera les faltan.",
+  "Necesitamos electrónica. Y combustible.",
+  "Entonces montad un puesto comercial con un trozo de suelo llano al lado. Yo no aterrizo. Los contenedores bajan desde la órbita.",
+  "¿Por qué no aterrizas?",
+  "Aterrizar significa registrarse. Y si te registras, alguien sabe que estuviste aquí.",
+  "(El canal se cierra.)",
+  "Del xenocristal no habla nadie. Con nadie.",
+  "¿Por qué?",
+  "En F8, en cuanto alguien sabía que tenías algo bueno, dejaba de ser tuyo."
+ ], "log": "El puesto avanzado contactó con un carguero llamado la Urraca. No pertenece a ninguna corporación, lanza contenedores desde la órbita y nunca aterriza. Mara dice que del xenocristal no habla nadie. Lo escribí arriba del todo y lo subrayé dos veces." },
+ "c4-cargo": { "lines": [
+  "(Un contenedor con paracaídas se estrella en el terreno libre junto al puesto comercial.)",
+  "¡Está lloviendo! ¡Llueven contenedores!",
+  "(lo abre) Nuevo. No es chatarra recuperada. Nuevo.",
+  "Algo nuevo... ya había olvidado cómo son las cosas nuevas.",
+  "¿Y el precio?",
+  "Más caro que el economato de F8. Más barato que no tenerlo."
+ ], "log": "El primer contenedor cayó del cielo. Lo que traía era nuevo, no sacado de un naufragio. Teo dijo que ya había olvidado cómo son las cosas nuevas." },
+ "c4-trader-ride": { "lines": [
+  "Urraca, tu nave... ¿puede llevar gente?",
+  "(pausa) ¿Cuántos?",
+  "A todos nosotros.",
+  "Os escapasteis de F8, ¿verdad? Mineros con contrato.",
+  "(Nadie responde.)",
+  "Llevar carga es un negocio. Llevar trabajadores fugados es tráfico de personas. Si me paran, pierdo la nave y a vosotros os devuelven.",
+  "Piezas os puedo vender. La nave tendréis que construirla vosotros.",
+  "(mira hacia los restos) ...Entendido."
+ ], "log": "Le pregunté a la Urraca si podía llevarnos. Dijo que llevar trabajadores fugados es tráfico de personas. Nos vende piezas, pero la nave tenemos que construirla nosotros. Mara echó un vistazo a los restos. Creo que ya sabía la respuesta." },
  "c4-warn": { "lines": [
   "Informe del puesto avanzado— en la llanura... muchísimas luces. Vienen de todos los cúmulos de cristal.",
   "¿Cuántas?",
@@ -402,6 +436,15 @@
   "No disparar significa que quieren algo que vale más que nuestras vidas.",
   "(Sefa mira hacia los cúmulos de cristal y no dice nada.)"
  ] },
+ "c5-trader-word": { "lines": [
+  "(comunicación) K-7, tenéis un buque de guerra de Helion aparcado encima.",
+  "Lo sabemos.",
+  "No fui yo. Lo juro.",
+  "Lo sé. Si hubieras sido tú, no estarías llamando.",
+  "...Les hablé de vosotros a unos amigos. No de los de Helion. Gente de las colonias libres. Si os contactan, no tengáis miedo.",
+  "¿Por qué nos ayudas?",
+  "Sois buenos clientes. Y yo también le debí dinero a la corporación."
+ ], "log": "Después de que llegara el buque de Helion, la Urraca llamó para decir que no había sido él. Ines le cree. Dice que les habló de nosotros a unos amigos de las colonias libres. Resulta que él también le debió dinero a la corporación." },
  "c5-crowd": { "lines": [
   "(Hay un alboroto fuera de las cápsulas habitacionales. Dos colonos se empujan por una litera, y alguien intenta llevarse las raciones.)",
   "¡Basta! ¡Basta! Vosotros dos... eh, ¿cómo os llamáis?",
@@ -485,6 +528,14 @@
   "Al menos, la próxima vez que vengan los Glimmers, no estaremos solos.",
   "(muy bajito) Eso es justo lo que me preocupa."
  ], "log": "Volvimos a firmar un contrato." },
+ "c5-trader-bye": { "lines": [
+  "(comunicación) Me han dicho que firmasteis con Helion.",
+  "Necesitamos a sus soldados.",
+  "Lo entiendo. Pero yo no voy donde manda Helion. Si me registran, esta nave deja de ser mía.",
+  "¿Volverás?",
+  "Cuando esto deje de ser de la corporación. Quizá.",
+  "...Construid bien vuestra nave."
+ ], "log": "Desde que nos aliamos con Helion, la Urraca dice que ya no vendrá. No va donde manda Helion. Sus últimas palabras: construid bien vuestra nave." },
  "c5-voss-leave": { "lines": [
   "La nave del enviado sale mañana. Me voy con ella.",
   "Podría quedarse.",

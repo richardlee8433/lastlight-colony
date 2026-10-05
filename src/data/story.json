@@ -172,6 +172,11 @@
         "label": "建造異晶合成室"
       },
       {
+        "type": "drop",
+        "gid": "4-drop",
+        "label": "蓋好交易站，等到喜鵲的第一個貨櫃落地"
+      },
+      {
         "type": "build",
         "id": "security",
         "gid": "4-0",
@@ -231,7 +236,7 @@
       {
         "type": "credits",
         "amount": 5000,
-        "label": "累計賺進 5,000 信用點"
+        "label": "第 5 章起累計賺進 5,000 信用點"
       },
       {
         "type": "pop",

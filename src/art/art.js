@@ -191,6 +191,11 @@ export const RES = {
   weapon: { name: '武器', color: 0xff4d4d },
   crystal: { name: '異晶', color: 0xb970ff },
   credit: { name: '信用點', color: 0xffd54a },
+  // v0.70 進口品（只在貨艙，不在頂部資源列）
+  electronics: { name: '電子元件', color: 0x4fd39a },
+  raremetal: { name: '稀有金屬', color: 0x9fd6ee },
+  fuel: { name: '燃料', color: 0xff8a3d },
+  medicine: { name: '醫療物資', color: 0xeef0f4 },
 };
 
 // ───────────────────────────── 階段色調 ─────────────────────────────
@@ -1831,6 +1836,14 @@ export function renderIcon(key) {
     case 'tools': b.line(1, 8, 6, 3, Rm[2]); b.line(2, 8, 7, 3, Rm[1]); b.ell(7, 2, 2, 2, Rm[3]); b.set(8, 1, 0x1a1410); b.set(7, 1, Rm[4]); break;
     case 'weapon': b.rect(1, 3, 7, 3, Rm[2]); b.hline(1, 7, 3, Rm[4]); b.rect(2, 6, 2, 3, Rm[1]); b.set(8, 4, 0xffe0e0); break;
     case 'crystal': b.poly([4, 0, 8, 4, 4, 9, 0, 4], Rm[2]); b.poly([4, 0, 4, 9, 0, 4], Rm[3]); b.line(4, 1, 4, 8, Rm[4]); break;
+    // 電子元件：晶片＋兩側針腳
+    case 'electronics': b.rect(2, 2, 6, 6, Rm[1]); b.rect(3, 3, 4, 4, Rm[2]); b.set(3, 3, Rm[4]); for (const y of [2, 4, 6]) { b.set(0, y + 1, 0xc8c8c8); b.set(9, y + 1, 0xc8c8c8); b.set(1, y + 1, 0x9a9a9a); b.set(8, y + 1, 0x9a9a9a); } break;
+    // 稀有金屬：發亮的梯形錠＋閃光
+    case 'raremetal': b.poly([0, 8, 2, 4, 7, 4, 9, 8], Rm[2]); b.hline(2, 7, 4, Rm[4]); b.hline(1, 8, 8, Rm[0]); b.line(1, 7, 2, 5, Rm[3]); b.set(8, 1, 0xffffff); b.set(7, 1, Rm[4]); b.set(8, 0, Rm[4]); b.set(9, 1, Rm[4]); b.set(8, 2, Rm[4]); break;
+    // 燃料：油桶＋提把
+    case 'fuel': b.rect(2, 2, 6, 7, Rm[2]); b.vline(2, 2, 8, Rm[3]); b.vline(7, 2, 8, Rm[1]); b.hline(3, 6, 5, Rm[0]); b.rect(3, 0, 3, 2, 0x5a4a40); b.set(4, 0, 0x2a201a); b.set(3, 3, Rm[4]); break;
+    // 醫療物資：白箱＋紅十字
+    case 'medicine': b.rect(1, 2, 8, 7, Rm[2]); b.hline(1, 8, 2, Rm[4]); b.hline(1, 8, 8, Rm[0]); b.rect(4, 3, 2, 5, 0xe0393e); b.rect(2, 4, 6, 2, 0xe0393e); b.rect(3, 0, 4, 2, Rm[1]); break;
     case 'credit': b.ell(4, 4, 4, 4, Rm[2]); b.ell(4, 4, 3, 3, Rm[3]); b.vline(4, 2, 6, Rm[0]); b.hline(3, 5, 2, Rm[0]); b.hline(3, 5, 6, Rm[0]); b.set(2, 2, Rm[4]); break;
   }
   b.outline(0x120e18);

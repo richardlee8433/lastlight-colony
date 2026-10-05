@@ -288,6 +288,40 @@
   "Ich weiß es nicht.",
   "(blickt zu den Kristallhaufen) Da draußen leuchten sie auch."
  ], "log": "Der Kristallsynthesizer ist fertig. Er sieht aus wie nichts, was wir je gebaut haben. Teo sagte: „Ich hab ihn gebaut. Aber es fühlt sich nicht so an, als hätte ich ihn gebaut.“ Als er anlief, leuchtete jeder Xenokristall in der Basis eine volle Minute lang. Ich sagte, er singt. Ines sagte, er zieht Strom. In dieser Nacht gingen die Lichter draußen auf der Ebene nicht aus." },
+ "c4-trader": { "lines": [
+  "Der Außenposten hat einen neuen Kanal empfangen! Nicht das Signal ... da redet jemand!",
+  "(Rauschen) ... K-7-Oberfläche, hier ist der Frachter Elster. Euer Außenposten brüllt mich seit drei Tagen an. Wohnt da unten jemand?",
+  "Ja. Wer bist du?",
+  "Ich fahre Fracht. Ich gehöre keinem Konzern und niemandem sonst. Was euch fehlt, habe ich. Was ihr übrig habt, nehme ich.",
+  "Nimmst du was?",
+  "Metall, Werkzeug, Teile. Essen geht auch. Daran fehlt es jeder Grenzkolonie.",
+  "Wir brauchen Elektronik. Und Treibstoff.",
+  "Dann baut einen Handelsposten mit etwas freiem Boden daneben. Ich lande nicht. Die Container kommen aus dem Orbit.",
+  "Warum landest du nicht?",
+  "Landen heißt registrieren. Und wer registriert, von dem weiß jemand, dass er da war.",
+  "(Die Verbindung bricht ab.)",
+  "Über den Xenokristall redet keiner. Mit niemandem.",
+  "Warum?",
+  "Auf F8 gehörte dir nichts Gutes mehr, sobald jemand davon wusste."
+ ], "log": "Der Außenposten hat einen Frachter namens Elster erreicht. Er gehört keinem Konzern, wirft Container aus dem Orbit ab und landet nie. Mara sagt, über den Xenokristall redet keiner. Ich habe das ganz oben auf die Seite geschrieben und zweimal unterstrichen." },
+ "c4-cargo": { "lines": [
+  "(Ein Container mit Fallschirm kracht auf den freien Boden neben dem Handelsposten.)",
+  "Es regnet! Es regnet Container!",
+  "(öffnet ihn) Neu. Nicht ausgeschlachtet. Neu.",
+  "Etwas Neues ... ich hatte vergessen, wie neue Sachen aussehen.",
+  "Und der Preis?",
+  "Teurer als der Werksladen auf F8. Billiger, als es nicht zu haben."
+ ], "log": "Der erste Container ist vom Himmel gefallen. Was drin war, war neu, nicht aus einem Wrack geholt. Teo sagt, er hatte vergessen, wie neue Sachen aussehen." },
+ "c4-trader-ride": { "lines": [
+  "Elster, dein Schiff ... kann es Leute mitnehmen?",
+  "(Pause) Wie viele?",
+  "Uns alle.",
+  "Ihr seid von F8 abgehauen, oder? Vertragsbergleute.",
+  "(Niemand antwortet.)",
+  "Fracht fahren ist ein Geschäft. Entlaufene Vertragsarbeiter fahren ist Menschenschmuggel. Werde ich angehalten, ist mein Schiff weg und ihr werdet zurückgeschickt.",
+  "Teile kann ich euch verkaufen. Das Schiff müsst ihr selbst bauen.",
+  "(blickt zum Wrack) ... Verstanden."
+ ], "log": "Ich habe die Elster gefragt, ob er uns mitnehmen kann. Er sagt, entlaufene Vertragsarbeiter zu fahren ist Menschenschmuggel. Er verkauft uns Teile, aber das Schiff müssen wir selbst bauen. Mara hat zum Wrack geschaut. Ich glaube, sie kannte die Antwort schon." },
  "c4-warn": { "lines": [
   "Meldung vom Außenposten— draußen auf der Ebene … so viele Lichter. Aus jedem Kristallhaufen.",
   "Wie viele?",
@@ -402,6 +436,15 @@
   "Nicht schießen heißt, sie wollen etwas, das mehr wert ist als unser Leben.",
   "(Sefa blickt zu den Kristallhaufen und sagt nichts.)"
  ] },
+ "c5-trader-word": { "lines": [
+  "(Funk) K-7, über euren Köpfen parkt ein Helion-Kriegsschiff.",
+  "Wissen wir.",
+  "Ich war's nicht. Ich schwöre.",
+  "Ich weiß. Wenn du es gewesen wärst, würdest du nicht anrufen.",
+  "... Ich habe ein paar Freunden von euch erzählt. Nicht die Helion-Sorte. Leute aus den freien Kolonien. Wenn sie sich melden, keine Angst.",
+  "Warum hilfst du uns?",
+  "Ihr seid gute Kunden. Und ich hatte auch mal Schulden beim Konzern."
+ ], "log": "Nachdem das Helion-Kriegsschiff da war, hat die Elster angerufen und gesagt, dass er es nicht war. Ines glaubt ihm. Er sagt, er hat ein paar Freunden in den freien Kolonien von uns erzählt. Er hatte also auch mal Schulden beim Konzern." },
  "c5-crowd": { "lines": [
   "(Vor den Wohnkapseln gibt es Tumult. Zwei Kolonisten schubsen sich wegen einer Koje, und jemand greift nach den Rationen.)",
   "Hört auf! Hört auf! Ihr zwei … äh, wie heißt ihr nochmal?",
@@ -485,6 +528,14 @@
   "Wenigstens sind wir nicht allein, wenn die Glimmer das nächste Mal kommen.",
   "(sehr leise) Genau das macht mir Sorgen."
  ], "log": "Wir haben wieder einen Vertrag unterschrieben." },
+ "c5-trader-bye": { "lines": [
+  "(Funk) Hab gehört, ihr habt bei Helion unterschrieben.",
+  "Wir brauchen ihre Soldaten.",
+  "Versteh ich. Aber wo Helion das Sagen hat, fliege ich nicht hin. Registrieren die mich, gehört mir dieses Schiff nicht mehr.",
+  "Kommst du wieder?",
+  "Wenn das hier nicht mehr dem Konzern gehört. Vielleicht.",
+  "... Baut euer Schiff gut."
+ ], "log": "Seit wir mit Helion zusammenarbeiten, sagt die Elster, er kommt nicht mehr. Wo Helion das Sagen hat, fliegt er nicht hin. Seine letzten Worte: Baut euer Schiff gut." },
  "c5-voss-leave": { "lines": [
   "Das Schiff des Gesandten fliegt morgen ab. Ich gehe mit.",
   "Sie könnten bleiben.",

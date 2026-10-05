@@ -1,6 +1,6 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
 import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
-import { formOf, hasXenoLab, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, retirePod, workerCap } from './formulas';
+import { formOf, creditsCh5, hasXenoLab, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, retirePod, workerCap } from './formulas';
 
 export type Why = Msg | null;
 
@@ -22,7 +22,8 @@ export function levelBlock(s: GameState, id: string): Why {
   if (d.requires?.pop && s.pop < d.requires.pop) return msg('why.pop', { n: d.requires.pop });
   for (const [b, n] of Object.entries(d.requires?.levels ?? {})) if (s.b[b].level < n) return msg('why.needLevel', { b, n });
   if (d.requires?.raids && s.raid.won < d.requires.raids) return msg('why.raids', { n: d.requires.raids });
-  if (d.requires?.credits && s.gov.creditsEarned < d.requires.credits) return msg('why.credits', { n: d.requires.credits });
+  if (d.requires?.credits && creditsCh5(s) < d.requires.credits) return msg('why.credits', { n: d.requires.credits });
+  if (d.requires?.scene && !s.story.seen?.includes(d.requires.scene)) return msg('why.scene.' + d.requires.scene);
   if (!canAfford(s, levelCost(s, id))) return msg('why.afford');
   return null;
 }
@@ -33,6 +34,7 @@ export function levelUp(s: GameState, id: string): boolean {
   s.b[id].level++;
   if (d.kind === 'command') {
     s.stage = d.commandLevel! + 1;
+    if (s.stage === 5) s.gov.credits5 = s.gov.creditsEarned;
     notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s);
   } else if (id === 'orbital_beacon') {
     // 分段建造：第五段完成就是結局

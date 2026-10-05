@@ -1,7 +1,7 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
 import { observe } from '../analytics';
-import { AIR_ENABLED, DEF, DEFS, GameState, makeCheckpoint, newAir, newGame, newGov, newRaid, notify } from '../engine/state';
+import { AIR_ENABLED, DEF, DEFS, GameState, makeCheckpoint, newAir, newCargo, newGame, newGov, newMarket, newRaid, notify } from '../engine/state';
 import { LIFE_SUPPORT } from '../engine/air';
 import { CHAPTERS, migrateStoryDone } from '../engine/story';
 import { built, idle, retirePod, storageCap, workerCap } from '../engine/formulas';
@@ -15,6 +15,7 @@ import { applyOffline } from '../engine/offline';
 import * as A from '../engine/actions';
 import { resolveEvent } from '../engine/events';
 import * as G from '../engine/governance';
+import * as M from '../engine/market';
 import { setMood } from '../audio/audio';
 import { setFormGetter } from '../i18n';
 
@@ -65,6 +66,9 @@ function migrate(s: GameState) {
   s.raid ??= newRaid();
   s.res.weapon ??= 0; s.res.crystal ??= 0; s.res.credit ??= 0;
   s.gov ??= newGov();
+  // v0.70 貿易：市場與貨艙
+  s.market ??= newMarket(); s.cargo ??= newCargo();
+  if (s.stage >= 5) s.gov.credits5 ??= 0;
   // 糧食設施合併：舊存檔的生物採集站、水耕農場併進藻類槽（改建成最高的形態，工人位子不少於原本三棟的總和）
   const old = s.b as Record<string, any>, bio = old.bio_harvester, hyd = old.hydro_farm;
   if ((bio?.level ?? 0) > 0 || (hyd?.level ?? 0) > 0) {
@@ -150,6 +154,8 @@ interface Store {
   openTrade: (t: null | 'corp' | 'alliance' | 'signal') => void;
   doTrade: (who: G.Partner, k: any, dir: 'sell' | 'buy') => void;
   fulfill: () => void;
+  buyGood: (k: M.Good) => void;
+  sellGood: (k: any) => void;
   signal: () => void;
   setTax: (n: number) => void;
   toggleCharter: (id: string) => void;
@@ -200,6 +206,8 @@ export const useGame = create<Store>((set, get) => {
     openTrade: (t) => set({ trade: t }),
     doTrade: (who, k, dir) => run((s) => G.trade(s, who, k, dir)),
     fulfill: () => run((s) => G.fulfillContract(s)),
+    buyGood: (k) => run((s) => M.buyGood(s, k)),
+    sellGood: (k) => run((s) => M.sellGood(s, k)),
     signal: () => run((s) => G.signalTrade(s, 5)),
     setTax: (n) => run((s) => G.setTax(s, n)),
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),

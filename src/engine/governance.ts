@@ -49,7 +49,7 @@ export function trade(s: GameState, who: Partner, k: ResKey, dir: 'sell' | 'buy'
   const r = rates(s, who, k);
   if (dir === 'sell') { s.res[k] -= lot; add(s, 'credit', Math.floor(r.sell * lot)); }
   else { s.res.credit -= Math.ceil(r.buy * lot); add(s, k, lot); }
-  if (who === 'corp') { s.gov.corp.traded++; if (s.gov.corp.traded % 10 === 0) s.gov.corp.relation += 1; }
+  if (who === 'corp' && s.story.route === 'coop') { s.gov.corp.traded++; if (s.gov.corp.traded % 10 === 0) s.gov.corp.relation += 1; }
 }
 
 // 聯盟委託：限時交付某資源，完成拿信用點並提高聲望（匯率變好）

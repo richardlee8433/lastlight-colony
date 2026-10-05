@@ -41,7 +41,7 @@
    "diag": ["Autodiagnóstico", "Velocidad de curación +50%"], "beds": ["Camas de cuidados intensivos", "+1 cama por nivel"] } },
   "colony_core": { "name": "Núcleo de la colonia", "desc": "Mando Nv4. Un reactor de xenocristal: la colonia ya no solo sobrevive. Requiere población 40 y 2 ataques repelidos." },
   "admin": { "name": "Centro Administrativo", "desc": "La sala del consejo de la colonia. Desbloquea los impuestos y las cartas de la colonia; los impuestos dan créditos, pero cada nivel de impuestos cuesta 5 de moral.", "nodes": { "council": ["Consejo ampliado", "Espacios para cartas +1"] } },
-  "trade_post": { "name": "Puesto comercial", "desc": "El mercado de la colonia. Los trabajadores ganan créditos aquí, y puedes comerciar con la Corporación Helion.", "nodes": {
+  "trade_post": { "name": "Puesto comercial", "desc": "El mercado de la colonia. Los trabajadores ganan créditos aquí, y puedes comerciar con mercaderes de paso: vender metal, herramientas, piezas y nutrientes, y comprar lo que la colonia no puede fabricar. Cada nivel guarda 100 artículos más en la bodega.", "nodes": {
    "prod_30": ["Mercado nocturno", "Producción +30%"], "cap_2": ["Más puestos", "Límite de trabajadores +2"] } },
   "spaceport": { "name": "Puerto espacial", "desc": "Recibe lanzaderas de otras colonias. Abre el comercio con la Alianza de Colonias Libres; reconstruye el Instituto Tecnológico como Instituto de Xenología para responder a esa señal misteriosa." },
   "turret": { "name": "Torreta defensiva", "desc": "Defensa fija. Una torreta por nivel (ATQ 8, PV 40); no usa población y se repara sola tras el combate." },
@@ -147,6 +147,7 @@
    ],
    "goals": [
     "Construye un sintetizador de cristal",
+    "Construye un puesto comercial y recibe el primer contenedor de la Urraca",
     "Construye el cuartel de marines y destina marines",
     "Construye una enfermería para poder tratar a los heridos",
     "Repele 2 ataques alienígenas",
@@ -166,7 +167,7 @@
     "Construye el Centro Administrativo",
     "Aprueba tu primera carta de la colonia",
     "Recibe al enviado de la corporación y toma una decisión",
-    "Gana 5.000 créditos en total",
+    "Gana 5.000 créditos en el capítulo 5",
     "Alcanza una población de 80",
     "Completa la Cúpula Estelar"
    ]

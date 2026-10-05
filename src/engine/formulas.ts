@@ -93,6 +93,8 @@ export function formOf(s: GameState, id: string): BuildingForm | null {
 }
 /** 畫面用的美術 id（改建後換成新形態的外觀） */
 export const artId = (s: GameState, id: string) => formOf(s, id)?.art ?? id;
+/** 第 5 章開始後累計賺進的信用點 */
+export const creditsCh5 = (s: GameState) => (s.stage >= 5 ? s.gov.creditsEarned - (s.gov.credits5 ?? 0) : 0);
 /** 異星研究院：科技研究院在第 5 章改建後的形態（原本是另一棟建築，v0.70.1 合併） */
 export const hasXenoLab = (s: GameState) => built(s, 'databank') && (s.b.databank.form ?? 0) >= 1;
 export function workerCap(s: GameState, id: string): number {

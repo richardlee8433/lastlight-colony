@@ -2,14 +2,18 @@
 // 每項輸出 PASS／FAIL 與原因；有任何 FAIL 時結束碼為 1。
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { SCENES } from '../src/data/dialogs';
-import { SCENE_IDS } from '../src/engine/dialog';
+import { SCENE_IDS, DIALOG_VERSION } from '../src/engine/dialog';
 import { CHAPTERS } from '../src/engine/story';
 import { STRINGS } from '../src/i18n/strings';
 import EN from '../src/i18n/data-en';
 import { DEFS } from '../src/engine/state';
 import { RESEARCH_DEFS, hasXenoLab, workerCap } from '../src/engine/formulas';
 import { newGame } from '../src/engine/state';
-import { rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
+import { levelBlock, levelUp, rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
+import { step } from '../src/engine/tick';
+import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
+import { creditsCh5 } from '../src/engine/formulas';
+import { CHAPTERS as CH, goalDone } from '../src/engine/story';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
 import { PACKS } from '../src/i18n/locales';
@@ -30,7 +34,7 @@ check('S01', '每個觸發條件都有對應的對話內容，每段對話都有
   for (const id of Object.keys(SCENES)) if (!SCENE_IDS.includes(id)) errs.push(`對話 ${id} 沒有觸發條件`);
   return errs;
 });
-const SPEAKERS = ['mara', 'teo', 'juno', 'ines', 'sefa', 'voss', 'calder', 'narr', 'colonist', 'survivor', 'marine', 'youth', 'alliance'];
+const SPEAKERS = ['mara', 'teo', 'juno', 'ines', 'sefa', 'voss', 'calder', 'narr', 'colonist', 'survivor', 'marine', 'youth', 'alliance', 'trader'];
 const ROUTES = [undefined, 'coop', 'resist', 'alien', 'alliance', 'rifle'];
 check('S02', '每句台詞都有中英文、說話者與路線標籤合法、沒有殘留的 {…} 參數', () => {
   const errs: string[] = [];
@@ -175,6 +179,9 @@ check('S13', '表情標記都對到存在的台詞，而且真的是那個角色
   return errs;
 });
 
+check('S17', '新遊戲的對話版本（dlgV）等於 DIALOG_VERSION，不然新存檔一讀進來就被當成舊存檔轉換（會把還沒播的場景標成播過）', () =>
+  newGame(0).story.dlgV === DIALOG_VERSION ? [] : [`newGame 的 dlgV ${newGame(0).story.dlgV} ≠ DIALOG_VERSION ${DIALOG_VERSION}`]);
+
 check('S14', '研究院合併：第 5 章科技研究院改建成異星研究院，異星研究線解鎖，研究員名額每級 3 人', () => {
   const errs: string[] = [];
   const s = newGame(0);
@@ -192,6 +199,54 @@ check('S14', '研究院合併：第 5 章科技研究院改建成異星研究院
   if (researchBlock(s, labR.id)?.k === 'why.lab') errs.push('改建後異星研究線仍然鎖住');
   if (workerCap(s, 'databank') !== 9) errs.push(`Lv3 改建後研究員上限應為 9，實際 ${workerCap(s, 'databank')}`);
   if (DEFS.some((d) => d.id === 'xeno_lab')) errs.push('xeno_lab 仍是獨立建築');
+  return errs;
+});
+
+check('S15', '第 4 章貿易：合成室開機後喜鵲來聯絡 → 貿易站解鎖 → 賣出、買進 → 60 秒後貨櫃落地，目標完成、播出 c4-cargo', () => {
+  const errs: string[] = [];
+  const s = newGame(0);
+  s.stage = 4; s.story.seenIntro = 4;
+  Object.assign(s.res, { rock: 5000, parts: 5000, metal: 5000, tools: 500, nutrient: 3000, credit: 0 });
+  if (!levelBlock(s, 'trade_post')) errs.push('還沒跟喜鵲聯絡就能蓋貿易站');
+  s.story.seen!.push('c4-synth');
+  step(s);
+  if (!s.story.seen!.includes('c4-trader')) errs.push('合成室開機後沒有觸發 c4-trader');
+  if (levelBlock(s, 'trade_post')) errs.push('看過 c4-trader 仍然不能蓋貿易站：' + levelBlock(s, 'trade_post')!.k);
+  levelUp(s, 'trade_post');
+  if (buyBlock(s, 'electronics')?.k !== 'why.credit') errs.push('沒錢時應該不能買');
+  const p0 = sellPrice(s, 'metal');
+  for (let i = 0; i < 6; i++) sellGood(s, 'metal');
+  if (!(sellPrice(s, 'metal') < p0)) errs.push(`賣多了收購價應該下降：${p0} → ${sellPrice(s, 'metal')}`);
+  const b0 = buyPrice(s, 'electronics');
+  if (!buyGood(s, 'electronics')) errs.push('買電子元件失敗：' + (buyBlock(s, 'electronics')?.k ?? ''));
+  if (!(buyPrice(s, 'electronics') > b0)) errs.push('買了之後售價應該上升');
+  if (cargoUsed(s) !== 10 || s.cargo.electronics !== 0) errs.push(`下單後應該在路上、還沒進貨艙：已用 ${cargoUsed(s)}、貨艙 ${s.cargo.electronics}`);
+  const g = CH[3].goals.find((x) => x.gid === '4-drop');
+  if (!g) errs.push('第 4 章沒有 4-drop 目標');
+  for (let t = 0; t < DROP_TIME + 1; t += 0.2) step(s);
+  if (s.cargo.electronics !== 10) errs.push(`${DROP_TIME} 秒後貨櫃應該落地：貨艙 ${s.cargo.electronics}`);
+  if (g && !goalDone(s, g)) errs.push('第一個貨櫃落地後目標沒完成');
+  if (!s.story.seen!.includes('c4-cargo')) errs.push('第一個貨櫃落地後沒有觸發 c4-cargo');
+  if (s.story.seen!.includes('c4-trader') && !s.story.seen!.includes('c4-trader-ride')) errs.push('c4-cargo 之後沒有接 c4-trader-ride');
+  return errs;
+});
+
+check('S16', '路線交易條件：合作＝赫利昂市場（電子元件較便宜、四種進口品都買得到）；抵抗＋太空港＝稀有金屬較便宜；第 5 章信用點從進入第 5 章才開始算', () => {
+  const errs: string[] = [];
+  const base = newGame(0), raw = buyPrice(base, 'electronics'), rawR = buyPrice(base, 'raremetal');
+  const coop = newGame(0); coop.story.route = 'coop';
+  if (partner(coop) !== 'helion') errs.push('合作路線的交易對象應該是赫利昂');
+  if (!(buyPrice(coop, 'electronics') < raw)) errs.push('赫利昂的電子元件應該比較便宜');
+  coop.b.trade_post.level = 1; coop.res.credit = 99999;
+  for (const k of ['electronics', 'raremetal', 'fuel', 'medicine'] as const) if (buyBlock(coop, k)) errs.push(`赫利昂市場買不到 ${k}：${buyBlock(coop, k)!.k}`);
+  const res = newGame(0); res.story.route = 'resist';
+  if (partner(res) !== 'magpie') errs.push('抵抗路線應該還是喜鵲');
+  res.b.spaceport.level = 1;
+  if (!(buyPrice(res, 'raremetal') < rawR)) errs.push('抵抗路線蓋了太空港，稀有金屬應該比較便宜');
+  const c5 = newGame(0); c5.gov.creditsEarned = 3000; c5.stage = 4;
+  if (creditsCh5(c5) !== 0) errs.push('第 4 章時第 5 章信用點應為 0');
+  c5.stage = 5; c5.gov.credits5 = 3000; c5.gov.creditsEarned = 3500;
+  if (creditsCh5(c5) !== 500) errs.push(`第 5 章信用點應為 500，實際 ${creditsCh5(c5)}`);
   return errs;
 });
 

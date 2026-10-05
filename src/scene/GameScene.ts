@@ -750,6 +750,39 @@ export class GameScene {
       if (u.hitT > 0) { u.hitT -= dt; u.alpha = 0.55; } else u.alpha = 1;
     }
   }
+  /** 正在落下的貨櫃：落地前 DROP_FALL 秒出現在交易站旁上空，掛著降落傘慢慢落下；用畫面時間播放（遊戲時間一 tick 0.2 秒會一頓一頓） */
+  drops = new Map<string, number>();
+  drawDrops(dt: number) {
+    const s = game.s, g = this.shotG, site = SITES.find((x) => x.id === 'trade_post');
+    if (!site || !s.market) return;
+    const FALL = 4, live = new Set<string>();
+    const gx = site.x + 38, gy = site.y + 8;
+    for (const p of s.market.pending) {
+      const key = `${p.k}@${p.at}`;
+      if (p.at - s.t > FALL && !this.drops.has(key)) continue;
+      live.add(key);
+      const el = (this.drops.get(key) ?? 0) + dt;
+      this.drops.set(key, el);
+      // 畫面時間播得順；畫面卡頓（每幀時間有上限）時改跟遊戲時間，不會落後到貨櫃已經進貨艙還在天上
+      const k = Math.min(1, Math.max(el / FALL, 1 - (p.at - s.t) / FALL)), x = Math.round(gx + Math.sin(el * 2.2) * 2), y = Math.round(gy - 90 * (1 - k));
+      // 降落傘：半圓頂＋四條繩
+      g.ellipse(x, y - 16, 9, 5).fill({ color: 0xf2efe6 });
+      g.rect(x - 9, y - 16, 18, 2).fill({ color: 0xd8573a });
+      for (const dx of [-8, -3, 3, 8]) g.moveTo(x + dx, y - 15).lineTo(x + Math.sign(dx) * 3, y - 5).stroke({ color: 0x3a3440, width: 0.6 });
+      // 貨櫃：橘色鐵箱＋兩條深色邊
+      g.rect(x - 5, y - 5, 10, 7).fill({ color: 0xc8742e });
+      g.rect(x - 5, y - 5, 10, 1).fill({ color: 0xe8a050 });
+      g.rect(x - 2, y - 5, 1, 7).fill({ color: 0x8a4a1e });
+      g.rect(x + 2, y - 5, 1, 7).fill({ color: 0x8a4a1e });
+    }
+    // 落地了（從 pending 裡消失）：揚起灰塵、播音效
+    for (const key of [...this.drops.keys()]) if (!live.has(key)) {
+      this.drops.delete(key);
+      const [sx, sy] = this.toScreen(gx, gy);
+      this.fx.burst(sx, sy, 0xcdb892, 10);
+      sfx('collect');
+    }
+  }
   /** 傷員去的地方：有醫療艙就去醫療艙，否則回營區 */
   clinicDoor() {
     const id = built(game.s, 'med_bay') ? 'med_bay' : 'security';
@@ -1276,6 +1309,7 @@ export class GameScene {
     this.moveDefenders(dt);
     this.movePatrols(dt);
     this.drawShots(dt);
+    this.drawDrops(dt);
     this.footprints();
     this.moveBubbles(dt);
     this.unitShadows(dt);

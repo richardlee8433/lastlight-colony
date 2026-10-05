@@ -41,7 +41,7 @@
    "diag": ["Autodiagnóstico", "Velocidade de cura +50%"], "beds": ["Leitos de UTI", "+1 leito por nível"] } },
   "colony_core": { "name": "Núcleo da colônia", "desc": "Comando Nv4. Um reator de xenocristal: a colônia não está mais só sobrevivendo. Exige população 40 e 2 ataques repelidos." },
   "admin": { "name": "Centro Administrativo", "desc": "A sala do conselho da colônia. Libera impostos e cartas da colônia; os impostos trazem créditos, mas cada nível de imposto custa 5 de moral.", "nodes": { "council": ["Conselho ampliado", "Espaços de carta +1"] } },
-  "trade_post": { "name": "Posto comercial", "desc": "O mercado da colônia. Os trabalhadores ganham créditos aqui, e você pode negociar com a Corporação Helion.", "nodes": {
+  "trade_post": { "name": "Posto comercial", "desc": "O mercado da colônia. Os trabalhadores ganham créditos aqui, e você pode negociar com mercadores de passagem: vender metal, ferramentas, peças e nutrientes, e comprar o que a colônia não consegue fabricar. Cada nível guarda mais 100 itens no porão de carga.", "nodes": {
    "prod_30": ["Feira noturna", "Produção +30%"], "cap_2": ["Mais barracas", "Limite de trabalhadores +2"] } },
   "spaceport": { "name": "Espaçoporto", "desc": "Recebe naves de transporte de outras colônias. Abre o comércio com a Aliança das Colônias Livres; reconstrua o Instituto de Tecnologia como Instituto de Xenologia para responder àquele sinal misterioso." },
   "turret": { "name": "Torre de defesa", "desc": "Defesa fixa. Uma torre por nível (ATQ 8, PV 40); não usa população e se conserta sozinha depois do combate." },
@@ -147,6 +147,7 @@
    ],
    "goals": [
     "Construa um sintetizador de cristal",
+    "Construa um posto comercial e receba o primeiro contêiner da Pega",
     "Construa o quartel dos fuzileiros e aloque fuzileiros",
     "Construa uma enfermaria para tratar os feridos",
     "Repila 2 ataques alienígenas",
@@ -166,7 +167,7 @@
     "Construa o Centro Administrativo",
     "Aprove sua primeira carta da colônia",
     "Receba o emissário da corporação e faça uma escolha",
-    "Ganhe 5.000 créditos no total",
+    "Ganhe 5.000 créditos no capítulo 5",
     "Chegue a uma população de 80",
     "Conclua o Domo Estelar"
    ]

@@ -1,8 +1,9 @@
 import BUILDINGS from '../data/buildings.json';
+import type { Good, MarketState } from './market';
 
 export type ResKey = 'nutrient' | 'oxygen' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
 export const RES_KEYS: ResKey[] = ['nutrient', 'oxygen', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
-export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 3, credit: 5 };
+export const RES_UNLOCK: Record<ResKey, number> = { nutrient: 1, oxygen: 1, scrap: 1, rock: 2, parts: 2, metal: 3, tools: 3, weapon: 4, crystal: 3, credit: 4 };
 /** 貨幣不受倉容上限限制 */
 export const UNCAPPED: ResKey[] = ['credit'];
 
@@ -31,7 +32,8 @@ export interface BuildingDef {
   recipe?: { in: ResKey; out: ResKey; ratio: number };
   workersPerLevel?: number;
   effects?: Partial<{ housing: number; storage: number; morale: number; gatherAdd: number; birth: number; consumeMul: number; habBonus: number }>;
-  requires?: { pop?: number; raids?: number; credits?: number; levels?: Record<string, number> };
+  /** scene：要先播過某段劇情才能蓋（例如交易站要先跟喜鵲聯絡上） */
+  requires?: { pop?: number; raids?: number; credits?: number; levels?: Record<string, number>; scene?: string };
   upgrades?: UpgradeNode[];
 }
 export const DEFS = BUILDINGS as unknown as BuildingDef[];
@@ -61,6 +63,8 @@ export interface GovState {
   tax: number;
   charters: string[];
   creditsEarned: number;
+  /** 進入第 5 章時的累計信用點：第 5 章的信用點目標與星辰穹頂只算之後賺的（第 4 章就能跟行商交易了） */
+  credits5?: number;
   corp: { relation: number; refusals: number; paid: number; envoys: number; traded: number; nextEnvoy: number; demand: Cost | null };
   alliance: { rep: number; contract: { res: ResKey; amount: number; reward: number; until: number } | null; nextContract: number };
   signal: { used: number; resetAt: number };
@@ -133,6 +137,9 @@ export interface GameState {
   boost: { until: number; uses: number };
   lastSaved: number;
   notices: Notice[];
+  /** 交易站的市場（行商庫存、還在路上的貨櫃）與貨艙裡的進口品 */
+  market: MarketState;
+  cargo: Record<Good, number>;
   /** 讀檔轉換時要顯示的通知（轉換後才加進 notices） */
   pendingNotice?: string;
 }
@@ -140,6 +147,10 @@ export interface GameState {
 /** 氧氣系統的總開關：氧氣建築（v0.6 第 2 步）完成前先關閉，避免遊戲裡沒有產氧來源。模擬器與測試可以先打開 */
 export let AIR_ENABLED = true;
 export function setAirEnabled(on: boolean) { AIR_ENABLED = on; RES_UNLOCK.oxygen = on ? 1 : 99; }
+
+/** 市場初始值：行商庫存從空的開始算（沒有紀錄的商品視為剛好在目標值），貨艙是空的 */
+export const newMarket = (): MarketState => ({ stock: {}, pending: [], drops: 0 });
+export const newCargo = (): Record<Good, number> => ({ electronics: 0, raremetal: 0, fuel: 0, medicine: 0 });
 
 export const newRaid = (): RaidState => ({ count: 0, won: 0, nextAt: -1, incoming: null, injured: [], armed: 0, report: null });
 
@@ -152,13 +163,14 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 5 },
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 6 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),
     air: newAir(),
     exp: { until: 0, team: 0, count: 0, frags: 0, blueprints: [] },
     boost: { until: 0, uses: 0 },
+    market: newMarket(), cargo: newCargo(),
     lastSaved: now,
     notices: [],
   };

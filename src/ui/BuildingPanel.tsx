@@ -3,8 +3,7 @@ import { AIR_ENABLED, COMMAND_CHAIN, DEF } from '../engine/state';
 import { bDesc, bName, costText, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
-  gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap,
-} from '../engine/formulas';
+  gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap, creditsCh5 } from '../engine/formulas';
 import { boostBlock, levelBlock, nextForm, nodeBlock, rebuildBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
 import { Governance } from './Governance';
@@ -126,7 +125,7 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
       <CostList cost={levelCost(s, id)} />
       {d.requires?.pop ? <p className={'req ' + (s.pop >= d.requires.pop ? 'ok' : '')}>{t('bp.reqPop', { n: d.requires.pop, c: s.pop })}</p> : null}
       {d.requires?.raids ? <p className={'req ' + (s.raid.won >= d.requires.raids ? 'ok' : '')}>{t('bp.reqRaids', { n: d.requires.raids, c: s.raid.won })}</p> : null}
-      {d.requires?.credits ? <p className={'req ' + (s.gov.creditsEarned >= d.requires.credits ? 'ok' : '')}>{t('bp.reqCredits', { n: d.requires.credits, c: Math.floor(s.gov.creditsEarned) })}</p> : null}
+      {d.requires?.credits ? <p className={'req ' + (creditsCh5(s) >= d.requires.credits ? 'ok' : '')}>{t('bp.reqCredits', { n: d.requires.credits, c: Math.floor(creditsCh5(s)) })}</p> : null}
       <button type="button" className="btn wide" disabled={!!why} onClick={() => act.levelUp(id)}>
         {why && why.k !== 'why.afford' ? tm(why) : d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgrade') : t('bp.buildX', { b: bName(id) })}
       </button>

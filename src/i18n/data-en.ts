@@ -51,7 +51,7 @@ const buildings: Record<string, B> = {
   colony_core: { name: 'Colony Core', desc: 'Command Lv4. A xenocrystal reactor — the colony is no longer just surviving. Requires population 40 and 2 raids repelled.' },
   admin: { name: 'Administration Hall', desc: 'The colony council chamber. Unlocks taxes and colony charters; taxes bring in credits, but every tax level costs 5 morale.', nodes: {
     council: ['Expanded Council', 'Charter slots +1'] } },
-  trade_post: { name: 'Trading Post', desc: 'The colony market. Workers earn credits here, and you can trade with Helion Corp.', nodes: {
+  trade_post: { name: 'Trading Post', desc: 'The colony market. Workers earn credits here, and you can trade with passing merchants: sell metal, tools, parts and nutrient, buy goods the colony can\'t make. Each level holds 100 more items in the cargo hold.', nodes: {
     prod_30: ['Night Market', 'Output +30%'], cap_2: ['More Stalls', 'Worker cap +2'] } },
   spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; rebuild the Tech Institute into a Xenology Institute to answer that mysterious signal.' },
   turret: { name: 'Defense Turret', desc: 'Fixed defense. One turret per level (ATK 8, HP 40); uses no population and repairs itself after battle.' },
@@ -129,7 +129,7 @@ const chapters = [
       'Whatever we build from it will look like nothing we have ever built before.',
       'Build the Crystal Synthesizer. From today, we don\'t just use what the aliens left behind. We make it ourselves.',
     ],
-    goals: ['Build a Crystal Synthesizer', 'Build the Marine Barracks and station marines', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
+    goals: ['Build a Crystal Synthesizer', 'Build a Trading Post and receive the Magpie\'s first container', 'Build the Marine Barracks and station marines', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
   {
     title: 'The Corporation\'s Shadow', subtitle: 'The price of freedom',
@@ -138,7 +138,7 @@ const chapters = [
       'Helion Corp has found us. They did not open fire. They only sent a message: an envoy will be down soon.',
       'To be free, the colony has to pay its own way, and this many people have to want to stand together. Pass laws, trade, and then decide: work with the corporation, or tell them no.',
     ],
-    goals: ['Build the Administration Hall', 'Pass your first colony charter', 'Receive the corporate envoy and make a choice', 'Earn 5,000 credits in total', 'Reach population 80', 'Complete the Star Dome'],
+    goals: ['Build the Administration Hall', 'Pass your first colony charter', 'Receive the corporate envoy and make a choice', 'Earn 5,000 credits in Chapter 5', 'Reach population 80', 'Complete the Star Dome'],
   },
   {
     title: 'The Choice', subtitle: 'Whose home is this?',

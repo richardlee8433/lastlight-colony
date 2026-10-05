@@ -1107,11 +1107,14 @@
   {
     "id": "trade_post",
     "name": "交易站",
-    "stage": 5,
+    "stage": 4,
     "kind": "gather",
     "maxLevel": 8,
     "clickable": true,
-    "desc": "殖民地的市集，工人在這裡賺進信用點，也能在這裡和赫利昂企業交易。",
+    "desc": "殖民地的市集，工人在這裡賺進信用點，也能跟路過的行商交易：賣出金屬、工具、零件和營養，買進殖民地造不出來的貨。每升一級，貨艙多放 100 件。",
+    "requires": {
+      "scene": "c4-trader"
+    },
     "baseCost": {
       "rock": 500,
       "parts": 200

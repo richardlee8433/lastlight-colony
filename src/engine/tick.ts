@@ -11,6 +11,7 @@ import { governance } from './governance';
 import { air } from './air';
 import { dialogs } from './dialog';
 import { expedition } from './expedition';
+import { market } from './market';
 
 export const TICK = 0.2;
 
@@ -25,6 +26,7 @@ export function step(s: GameState, dt = TICK, opts: { offline?: boolean; rng?: (
   combat(s, opts.offline, opts.rng, dt);
   expedition(s, opts.rng);
   governance(s, dt, opts.offline ? 0.5 : 1, opts.offline, opts.rng);
+  market(s, dt);
   updateStory(s);
   dialogs(s);
   s.t += dt;
