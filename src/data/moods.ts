@@ -218,8 +218,16 @@ const VOSS: Table = {
   'c6-blocked': { 8: A },
 };
 
+// 卡爾德（預設：職業化的禮貌微笑；joy 是得逞的得意笑；sad 是失望；被拒絕、威脅時 angry）
+const CALDER: Table = {
+  'c5-coop': { 0: J, 3: J },
+  'c5-resist': { 0: A, 2: S, 3: S },
+  'c5-warn': { 0: A, 1: A, 3: A },
+  'c6-blocked': { 3: J, 7: A },
+};
+
 /** 各角色的表情表（靜態檢查用來確認標的台詞真的是那個角色說的） */
-export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES, sefa: SEFA, voss: VOSS };
+export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES, sefa: SEFA, voss: VOSS, calder: CALDER };
 
 export const MOODS: Table = {};
 for (const t of Object.values(MOOD_TABLES)) for (const [id, m] of Object.entries(t)) MOODS[id] = { ...MOODS[id], ...m };
