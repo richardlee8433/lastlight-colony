@@ -93,6 +93,8 @@ export function formOf(s: GameState, id: string): BuildingForm | null {
 }
 /** 畫面用的美術 id（改建後換成新形態的外觀） */
 export const artId = (s: GameState, id: string) => formOf(s, id)?.art ?? id;
+/** 異星研究院：科技研究院在第 5 章改建後的形態（原本是另一棟建築，v0.70.1 合併） */
+export const hasXenoLab = (s: GameState) => built(s, 'databank') && (s.b.databank.form ?? 0) >= 1;
 export function workerCap(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.workersPerLevel || !built(s, id)) return 0;
@@ -175,7 +177,7 @@ export const clickAmount = (s: GameState, id: string) => 1 + nodeEffect(s, id, '
 export const critChance = (s: GameState, id: string) => 0.05 + nodeEffect(s, id, 'critAdd') + researchEffect(s, 'critAdd');
 export const critMult = (s: GameState, id: string) => 5 * nodeEffect(s, id, 'critMul');
 export const researchSpeed = (s: GameState) =>
-  ((built(s, 'databank') ? s.b.databank.workers : 0) + (built(s, 'xeno_lab') ? s.b.xeno_lab.workers : 0)) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
+  (built(s, 'databank') ? s.b.databank.workers : 0) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
 /** 稅收：人口 × 0.02 × 稅率等級（GDD §11），受「企業合約」加成 */
 export const taxIncome = (s: GameState) => (built(s, 'admin') ? s.pop * 0.02 * (s.gov?.tax ?? 0) * (1 + resBonus(s, 'credit')) : 0);
 export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffect(s, 'admin', 'charterSlot') + (built(s, 'governor') ? 1 : 0) : 0);

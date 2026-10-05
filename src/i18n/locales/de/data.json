@@ -23,7 +23,7 @@
   "rock_cutter": { "name": "Steinschneider", "desc": "Ein aus der Kapsel geborgener Laserschneider, umgebaut, um Bausteine aus dem Felsgrund zu schneiden.", "nodes": {
    "prod_20": ["Klingenpflege", "Ertrag +20%"], "cap_1": ["Nachtschicht", "Arbeiterlimit +1"], "click_1": ["Handarbeit", "Klickertrag +1"] } },
   "central_hub": { "name": "Zentrale", "desc": "Kommando Lv2. Ein echtes Siedlungszentrum: Wohnraum für 4, +100 Lager, und es geht weiter zu Stufe 3. Benötigt Bevölkerung 12." },
-  "databank": { "name": "Technikinstitut", "desc": "Sammelt alles, woran sich die Kolonisten erinnern, und treibt die Technik der Kolonie voran. Geforscht wird nur mit stationierten Forschern — mehr geht schneller, Upgrades schaffen Platz für mehr.", "nodes": { "speed_50": ["Indexsystem", "Forschungstempo +50%"] } },
+  "databank": { "name": "Technikinstitut", "desc": "Sammelt alles, woran sich die Kolonisten erinnern, und treibt die Technik der Kolonie voran. Geforscht wird nur mit stationierten Forschern — mehr geht schneller, Upgrades schaffen Platz für mehr. In Kapitel 5 kann es zum Xenologie-Institut umgebaut werden.", "nodes": { "speed_50": ["Indexsystem", "Forschungstempo +50%"] } },
   "rail_line": { "name": "Schienenstrecke", "desc": "Alle Sammelgebäude +10% Ertrag, Arbeiter laufen schneller, und jeder Weg der Kolonie wird mit Steinplatten gepflastert.", "nodes": { "double": ["Zweigleisig", "Sammelertrag weitere +5%, Straßen werden zu Metallplatten"] } },
   "metal_mine": { "name": "Metallmine", "desc": "Gräbt sich bis zu den Metalladern hinab. Der Ertrag ist gering, aber jeder weitere Schritt braucht ihn.", "nodes": {
    "prod_20": ["Stollenausbau", "Ertrag +30%"], "click_1": ["Erzsonde", "Klickertrag +1"], "crystal_sense": ["Kristallgespür", "Klicks haben 10% Chance, 1 Xenokristall-Splitter zu finden"] } },
@@ -43,9 +43,9 @@
   "admin": { "name": "Verwaltungszentrum", "desc": "Der Ratssaal der Kolonie. Schaltet Steuern und Koloniechartas frei; Steuern bringen Credits, aber jede Steuerstufe kostet 5 Moral.", "nodes": { "council": ["Erweiterter Rat", "Charta-Plätze +1"] } },
   "trade_post": { "name": "Handelsposten", "desc": "Der Markt der Kolonie. Arbeiter verdienen hier Credits, und du kannst mit dem Helion-Konzern handeln.", "nodes": {
    "prod_30": ["Nachtmarkt", "Ertrag +30%"], "cap_2": ["Mehr Stände", "Arbeiterlimit +2"] } },
-  "spaceport": { "name": "Raumhafen", "desc": "Empfängt Shuttles anderer Kolonien. Öffnet den Handel mit der Allianz Freier Kolonien; mit einem Xenologie-Institut kannst du auf dieses rätselhafte Signal antworten." },
+  "spaceport": { "name": "Raumhafen", "desc": "Empfängt Shuttles anderer Kolonien. Öffnet den Handel mit der Allianz Freier Kolonien; baue das Technikinstitut zum Xenologie-Institut um, um auf dieses rätselhafte Signal zu antworten." },
   "turret": { "name": "Verteidigungsgeschütz", "desc": "Feste Verteidigung. Ein Geschütz pro Stufe (ANG 8, LP 40); braucht keine Bevölkerung und repariert sich nach dem Kampf selbst." },
-  "xeno_lab": { "name": "Xenologie-Institut", "desc": "Ein Labor nur für Xenokristall. Schaltet die Xeno-Forschungslinie frei; stationierte Forscher beschleunigen außerdem jede Forschung." },
+  "databank:xeno": { "name": "Xenologie-Institut", "desc": "Ein Labor nur für Xenokristall, umgebaut aus dem Technikinstitut. Schaltet die Xeno-Forschungslinie frei und bietet pro Stufe mehr Forschern Platz. Beim Umbau bleiben Stufe und Forscher erhalten." },
   "governor": { "name": "Gouverneursresidenz", "desc": "Das Verwaltungsherz der Stadt, wo der erste gewählte Gouverneur der Kolonie arbeitet. Moral +15, Charta-Plätze +1." },
   "sky_residence": { "name": "Skyline-Residenz", "desc": "Hochhäuser unter der Kuppel, mit den Sternen direkt vor dem Fenster. +12 Bevölkerungslimit und +5 Moral pro Stufe." },
   "bioeng": { "name": "Bioingenieurlabor", "desc": "Durchsetzt Pflanzen und Kulturen mit Xenokristall, um kurzzeitig die Erträge der ganzen Kolonie zu steigern. Jede Infusion kostet Xenokristall; höhere Stufen machen sie stärker und länger." },

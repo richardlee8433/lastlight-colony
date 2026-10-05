@@ -3,7 +3,7 @@
 // 日誌：朱諾的口吻，按天數記錄劇情場景與重大事件（建成、人口、襲擊、研究、缺氧）。
 // 文字在 data/dialogs.ts 與 i18n，這裡只決定「什麼時候」。
 import { AIR_ENABLED, DEFS, GameState, Msg } from './state';
-import { built } from './formulas';
+import { built, hasXenoLab } from './formulas';
 import { lifeSupportLeft } from './air';
 
 /** 一天有幾秒（日誌的「第幾天」） */
@@ -35,7 +35,7 @@ const daysSince = (s: GameState, id: string) => {
 /** 抵抗路線的策略傾向：第二次拒絕時判定一次並記下來（之後的台詞都看這個紀錄）。
  *  外星科技：異星研究院、砲塔、異晶槍與砲管研究；星際聯盟：太空港、聯盟聲望 */
 function decideLean(s: GameState): 'alien' | 'alliance' {
-  const alien = (built(s, 'xeno_lab') ? 1 : 0) + (built(s, 'turret') ? 1 : 0) + (s.research.done.includes('xeno_blade') ? 1 : 0) + (s.research.done.includes('xeno_turret') ? 1 : 0);
+  const alien = (hasXenoLab(s) ? 1 : 0) + (built(s, 'turret') ? 1 : 0) + (s.research.done.includes('xeno_blade') ? 1 : 0) + (s.research.done.includes('xeno_turret') ? 1 : 0);
   const alliance = (built(s, 'spaceport') ? 2 : 0) + Math.min(2, Math.floor((s.gov.alliance.rep ?? 0) / 5));
   return alliance > alien ? 'alliance' : 'alien';
 }
@@ -125,7 +125,7 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c5-alliance2', when: (s) => seen(s, 'c5-commando') && s.story.lean === 'alliance' && built(s, 'spaceport') },
   { id: 'c5-signal', journal: true, when: (s) => !!s.story.signalUsed },
   // 樣本來源依路線：合作路線要等赫利昂士兵打下過微光獸
-  { id: 'c5-pattern', when: (s) => built(s, 'xeno_lab') && (s.story.route === 'resist' || (s.story.route === 'coop' && seen(s, 'c5-corp-help'))) },
+  { id: 'c5-pattern', when: (s) => hasXenoLab(s) && (s.story.route === 'resist' || (s.story.route === 'coop' && seen(s, 'c5-corp-help'))) },
   { id: 'c5-end', when: (s) => s.stage >= 6, chapterEnd: true },
   // 第 6 章
   { id: 'c6-open', when: (s) => s.stage === 6 && s.story.seenIntro >= 6 },

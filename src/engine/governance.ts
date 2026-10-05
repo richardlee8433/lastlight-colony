@@ -1,6 +1,6 @@
 // 階段 5：治理（稅制、殖民憲章，GDD §11）、企業使者（§12）、貿易（§13）
 import { GameState, Msg, ResKey, msg, notify } from './state';
-import { CHARTER_DEFS, add, built, canAfford, charterSlots, pay, storageCap, taxIncome } from './formulas';
+import { CHARTER_DEFS, add, built, canAfford, charterSlots, hasXenoLab, pay, storageCap, taxIncome } from './formulas';
 
 // ── 稅與憲章 ──
 export function setTax(s: GameState, level: number) {
@@ -75,7 +75,7 @@ export function fulfillContract(s: GameState) {
 
 // 神秘訊號：唯一能用廢料換異晶的管道，每 10 分鐘限量 30 異晶
 export const SIGNAL_LIMIT = 30, SIGNAL_RATE = 40, SIGNAL_PERIOD = 600;
-export const signalOpen = (s: GameState) => built(s, 'spaceport') && built(s, 'xeno_lab');
+export const signalOpen = (s: GameState) => built(s, 'spaceport') && hasXenoLab(s);
 export function signalLeft(s: GameState) {
   if (s.t >= s.gov.signal.resetAt) return SIGNAL_LIMIT;
   return SIGNAL_LIMIT - s.gov.signal.used;

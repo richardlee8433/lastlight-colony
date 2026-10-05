@@ -28,8 +28,9 @@ const buildings: Record<string, B> = {
   rock_cutter: { name: 'Rock Cutter', desc: 'A laser cutter salvaged from the pod, refitted to slice building stone from the bedrock.', nodes: {
     prod_20: ['Blade Care', 'Output +20%'], cap_1: ['Night Shift', 'Worker cap +1'], click_1: ['Manual Trim', 'Click yield +1'] } },
   central_hub: { name: 'Central Hub', desc: 'Command Lv2. A real settlement center: housing for 4, +100 storage, and advances to Stage 3. Requires population 12.' },
-  databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony\'s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more.', nodes: {
+  databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony\'s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more. Can be rebuilt into a Xenology Institute in Chapter 5.', nodes: {
     speed_50: ['Index System', 'Research speed +50%'] } },
+  'databank:xeno': { name: 'Xenology Institute', desc: 'A lab devoted to xenocrystal, rebuilt from the Tech Institute. Unlocks the xeno research line and holds more researchers per level. Rebuilding keeps its level and researchers.' },
   rail_line: { name: 'Rail Line', desc: 'All gathering buildings +10% output, workers move faster, and every road in the colony is paved with stone tiles.', nodes: {
     double: ['Double Track', 'Gathering output +5% more, and roads upgrade to metal tiles'] } },
   metal_mine: { name: 'Metal Mine', desc: 'Digs down to the metal veins. Output is low, but every step ahead needs it.', nodes: {
@@ -52,9 +53,8 @@ const buildings: Record<string, B> = {
     council: ['Expanded Council', 'Charter slots +1'] } },
   trade_post: { name: 'Trading Post', desc: 'The colony market. Workers earn credits here, and you can trade with Helion Corp.', nodes: {
     prod_30: ['Night Market', 'Output +30%'], cap_2: ['More Stalls', 'Worker cap +2'] } },
-  spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; add a Xenology Institute to answer that mysterious signal.' },
+  spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; rebuild the Tech Institute into a Xenology Institute to answer that mysterious signal.' },
   turret: { name: 'Defense Turret', desc: 'Fixed defense. One turret per level (ATK 8, HP 40); uses no population and repairs itself after battle.' },
-  xeno_lab: { name: 'Xenology Institute', desc: 'A lab devoted to xenocrystal. Unlocks the xeno research line; stationed researchers also speed up all research.' },
   governor: { name: 'Governor\'s Residence', desc: 'The administrative heart of the city, where the colony\'s first elected governor works. Morale +15, charter slots +1.' },
   sky_residence: { name: 'Skyline Residence', desc: 'High-rise homes under the dome, with the stars right outside the window. +12 population cap and +5 morale per level.' },
   bioeng: { name: 'Bioengineering Lab', desc: 'Infuses crops and cultures with xenocrystal to boost the whole colony\'s output for a short time. Each infusion costs xenocrystal; higher levels make it stronger and longer.' },

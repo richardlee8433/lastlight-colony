@@ -636,7 +636,7 @@
     "stage": 3,
     "kind": "research",
     "maxLevel": 5,
-    "desc": "整理殖民者記得的一切，推動殖民地的科技。派駐研究員才會進行研究，人越多越快；升級可以容納更多研究員。",
+    "desc": "整理殖民者記得的一切，推動殖民地的科技。派駐研究員才會進行研究，人越多越快；升級可以容納更多研究員。第 5 章可以改建成異星研究院。",
     "baseCost": {
       "rock": 150,
       "parts": 60
@@ -654,6 +654,25 @@
         },
         "effect": {
           "researchSpeed": 0.5
+        }
+      }
+    ],
+    "forms": [
+      {
+        "id": "xeno",
+        "stage": 5,
+        "name": "異星研究院",
+        "desc": "專門研究異晶的實驗室，由科技研究院改建。解鎖異晶研究線，每級能容納更多研究員。改建會保留等級與研究員。",
+        "rate": 0,
+        "workersPerLevel": 3,
+        "art": "xeno_lab",
+        "cost": {
+          "rock": 1500,
+          "crystal": 200
+        },
+        "baseCost": {
+          "rock": 150,
+          "parts": 60
         }
       }
     ]
@@ -1137,7 +1156,7 @@
     "stage": 5,
     "kind": "trade",
     "maxLevel": 1,
-    "desc": "能接收其他殖民地的運輸艇。開放自由殖民地聯盟貿易；再建成異星研究院，就能回應那個神秘訊號。",
+    "desc": "能接收其他殖民地的運輸艇。開放自由殖民地聯盟貿易；再把科技研究院改建為異星研究院，就能回應那個神秘訊號。",
     "baseCost": {
       "metal": 800,
       "credit": 400
@@ -1154,19 +1173,6 @@
       "metal": 300,
       "tools": 100
     }
-  },
-  {
-    "id": "xeno_lab",
-    "name": "異星研究院",
-    "stage": 5,
-    "kind": "research",
-    "maxLevel": 5,
-    "desc": "專門研究異晶的實驗室。解鎖異晶研究線，駐點研究員也會加快所有研究。",
-    "baseCost": {
-      "rock": 1500,
-      "crystal": 200
-    },
-    "workersPerLevel": 2
   },
   {
     "id": "star_dome",

@@ -436,6 +436,24 @@ const CJK = /[一-鿿]/;
     return errs;
   });
 
+  await test('E22', '舊存檔的異星研究院（v0.70 以前是獨立建築）讀進來會併進科技研究院：改建成異星形態、研究員搬過去', async () => {
+    const save = later(snap('ch5'));
+    const from = Object.keys(save.b).find((id) => id !== 'databank' && id !== 'security' && save.b[id].workers >= 2);
+    save.b[from].workers -= 2;
+    save.b.databank.level = Math.max(save.b.databank.level, 2); save.b.databank.form = 0;
+    const before = save.b.databank.workers;
+    save.b.xeno_lab = { level: 2, workers: 2, nodes: [] };
+    const { p, errors } = await open(save); await clear(p);
+    await p.waitForTimeout(11000);   // 等自動存檔
+    const st = await p.evaluate(() => JSON.parse(localStorage.getItem('lastlight-colony-save-v1')));
+    await p.close();
+    const errs = [...errors];
+    if (st.b.xeno_lab) errs.push('xeno_lab 還在存檔裡');
+    if ((st.b.databank.form ?? 0) < 1) errs.push(`科技研究院沒有改建（form ${st.b.databank.form}）`);
+    if (st.b.databank.workers < before + 2 && st.b.databank.workers < st.b.databank.level * 3) errs.push(`研究員沒有搬過去：${before} → ${st.b.databank.workers}`);
+    return errs;
+  });
+
   await b.close();
   fs.writeFileSync(path.join(OUT, 'e2e.json'), JSON.stringify(results, null, 1));
   const fail = results.filter((r) => !r.ok).length;

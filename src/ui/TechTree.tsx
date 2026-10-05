@@ -48,7 +48,7 @@ function Tree() {
         <button type="button" className="close" onClick={() => act.openTech(false)} aria-label={t('close')}>×</button>
       </header>
       <div className="tech-status">
-        <span>{t('st.researchers')}{t('colon')}<b>{t('st.researchersV', { a: built(s, 'databank') ? s.b.databank.workers : 0, b: built(s, 'xeno_lab') ? s.b.xeno_lab.workers : 0 })}</b></span>
+        <span>{t('st.researchers')}{t('colon')}<b>{t('st.researchersV', { a: built(s, 'databank') ? s.b.databank.workers : 0 })}</b></span>
         <span>{t('st.researchSpeed')}{t('colon')}<b>×{speed.toFixed(1)}</b></span>
         {active && <span>{t('tt.active', { rs: researchText(active.id)[0] })}{speed > 0 ? ` · ${t('rs.left', { t: fmtTime((active.time - s.research.progress) / speed) })}` : ''}</span>}
       </div>

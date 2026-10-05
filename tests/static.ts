@@ -7,7 +7,9 @@ import { CHAPTERS } from '../src/engine/story';
 import { STRINGS } from '../src/i18n/strings';
 import EN from '../src/i18n/data-en';
 import { DEFS } from '../src/engine/state';
-import { RESEARCH_DEFS } from '../src/engine/formulas';
+import { RESEARCH_DEFS, hasXenoLab, workerCap } from '../src/engine/formulas';
+import { newGame } from '../src/engine/state';
+import { rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
 import { PACKS } from '../src/i18n/locales';
@@ -170,6 +172,26 @@ check('S13', '表情標記都對到存在的台詞，而且真的是那個角色
   }
   for (const c of CHARS) for (const mood of ['angry', 'sad', 'joy'])
     if (existsSync(`src/assets/portraits/${c}-${mood}.webp`) && !existsSync(`src/assets/portraits/${c}.webp`)) errs.push(`${c} 有 ${mood} 表情但沒有預設立繪`);
+  return errs;
+});
+
+check('S14', '研究院合併：第 5 章科技研究院改建成異星研究院，異星研究線解鎖，研究員名額每級 3 人', () => {
+  const errs: string[] = [];
+  const s = newGame(0);
+  s.b.databank.level = 3;
+  const labR = RESEARCH_DEFS.find((r) => r.lab);
+  if (!labR) return '找不到異星研究線的研究';
+  s.stage = 4;
+  if (!rebuildBlock(s, 'databank')) errs.push('第 4 章就能改建');
+  s.stage = 5;
+  s.research.done = RESEARCH_DEFS.filter((r) => !r.lab).map((r) => r.id);   // 前置研究都做完，只看異星研究院這個條件
+  Object.assign(s.res, { rock: 99999, crystal: 99999, parts: 99999 });
+  if (researchBlock(s, labR.id)?.k !== 'why.lab') errs.push(`改建前 ${labR.id} 應該卡在「需要異星研究院」，實際 ${researchBlock(s, labR.id)?.k ?? '可研究'}`);
+  if (!rebuild(s, 'databank')) errs.push('第 5 章改建失敗：' + (rebuildBlock(s, 'databank')?.k ?? ''));
+  if (!hasXenoLab(s)) errs.push('改建後 hasXenoLab 應為 true');
+  if (researchBlock(s, labR.id)?.k === 'why.lab') errs.push('改建後異星研究線仍然鎖住');
+  if (workerCap(s, 'databank') !== 9) errs.push(`Lv3 改建後研究員上限應為 9，實際 ${workerCap(s, 'databank')}`);
+  if (DEFS.some((d) => d.id === 'xeno_lab')) errs.push('xeno_lab 仍是獨立建築');
   return errs;
 });
 

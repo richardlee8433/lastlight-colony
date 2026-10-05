@@ -1,6 +1,6 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
 import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
-import { formOf, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, retirePod, workerCap } from './formulas';
+import { formOf, hasXenoLab, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, retirePod, workerCap } from './formulas';
 
 export type Why = Msg | null;
 
@@ -136,7 +136,7 @@ export function researchBlock(s: GameState, rid: string): Why {
   if (r.stage && s.stage < r.stage) return msg('why.stage', { n: r.stage });
   const miss = r.requires?.find((q) => !s.research.done.includes(q));
   if (miss) return msg('why.needRs', { rs: miss });
-  if (r.lab && !built(s, 'xeno_lab')) return msg('why.lab');
+  if (r.lab && !hasXenoLab(s)) return msg('why.lab');
   if (r.blueprint && !s.exp?.blueprints.includes(r.blueprint)) return msg('why.blueprint', { bp: r.blueprint });
   if (s.research.active) return msg('why.busy');
   if (!canAfford(s, r.cost)) return msg('why.afford');

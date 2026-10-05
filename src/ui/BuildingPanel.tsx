@@ -112,7 +112,7 @@ export function BuildingPanel() {
         </section>
       ) : null}
 
-      {(id === 'databank' || id === 'xeno_lab') && L > 0 && <Research />}
+      {id === 'databank' && L > 0 && <Research />}
     </aside>
   );
 }
@@ -166,7 +166,7 @@ function Stats({ id }: { id: string }) {
   if (d.kind === 'research') {
     // 研究速度是全殖民地共用：資料庫和異星研究院的駐點工人加總
     rows.push([t('st.researchSpeed'), `×${researchSpeed(s).toFixed(1)}`]);
-    rows.push([t('st.researchers'), t('st.researchersV', { a: built(s, 'databank') ? s.b.databank.workers : 0, b: built(s, 'xeno_lab') ? s.b.xeno_lab.workers : 0 })]);
+    rows.push([t('st.researchers'), t('st.researchersV', { a: built(s, 'databank') ? s.b.databank.workers : 0 })]);
   }
   return (
     <section className="block">
