@@ -183,8 +183,31 @@ const INES: Table = {
   'c6-stay': { 5: J, 7: S, 9: S, 10: J },
 };
 
+// 賽法（預設：看著樣本、好奇地張嘴微笑；研究結論與面對企業時用 angry 當嚴肅臉）
+const SEFA: Table = {
+  'c4-sefa': { 4: J, 8: S },
+  'c4-guard': { 0: A, 1: A, 3: A, 7: S },
+  'c4-names': { 1: J, 5: J },
+  'c4-gene': { 0: A, 2: A, 4: A, 6: S },
+  'c4-end': { 2: S, 4: A },
+  'c5-debate': { 3: A },
+  'c5-coop': { 6: S },
+  'c5-sefa': { 1: A, 4: S, 5: S, 8: J, 10: J },
+  'c5-corp-help': { 2: A, 4: S },
+  'c5-rifle': { 6: A },
+  'c5-alliance2': { 3: A },
+  'c5-pattern': { 0: J, 2: S, 3: S, 5: A, 7: A },
+  'c6-beacon1': { 6: S },
+  'c6-lastlight': { 5: S },
+  'c6-truth': { 0: A, 1: A, 3: A, 4: S, 5: S, 6: A, 8: S },
+  'c6-debate': { 6: A },
+  'c6-leave': { 1: J },
+  'c6-stay': { 2: S },
+  'c6-end': { 5: A },
+};
+
 /** 各角色的表情表（靜態檢查用來確認標的台詞真的是那個角色說的） */
-export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES };
+export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES, sefa: SEFA };
 
 export const MOODS: Table = {};
 for (const t of Object.values(MOOD_TABLES)) for (const [id, m] of Object.entries(t)) MOODS[id] = { ...MOODS[id], ...m };
