@@ -206,8 +206,20 @@ const SEFA: Table = {
   'c6-end': { 5: A },
 };
 
+// 沃斯（預設：皺眉的冷笑；揭露公司內情、警告時用 angry 當嚴肅臉；joy 是很克制的淡淡一笑）
+const VOSS: Table = {
+  'c5-voss': { 5: S, 7: A, 9: A, 10: A, 12: A },
+  'c5-voss-leave': { 4: A, 6: S, 10: J },
+  'c5-resist': { 6: J },
+  'c5-warn': { 2: A },
+  'c5-commando': { 2: S },
+  'c6-beacon1': { 3: A },
+  'c6-debate': { 9: A },
+  'c6-blocked': { 8: A },
+};
+
 /** 各角色的表情表（靜態檢查用來確認標的台詞真的是那個角色說的） */
-export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES, sefa: SEFA };
+export const MOOD_TABLES: Record<string, Table> = { mara: MARA, teo: TEO, juno: JUNO, ines: INES, sefa: SEFA, voss: VOSS };
 
 export const MOODS: Table = {};
 for (const t of Object.values(MOOD_TABLES)) for (const [id, m] of Object.entries(t)) MOODS[id] = { ...MOODS[id], ...m };
