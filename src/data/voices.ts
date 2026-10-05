@@ -2,7 +2,8 @@
 // 錄好一句就把 key 加到對應語言；沒列出的台詞照舊只有文字。目前只有英文配音，所有語言（含中文）都播英文、看自己語言的字幕。
 const VOICED: Record<'zh' | 'en', Set<string>> = {
   en: new Set([
-    'c1-intro',    // 第 1 章開場說明（瑪拉旁白，三段接起來約 41 秒）
+    'c1-intro',    // 第 1 章開場說明（瑪拉旁白，約 43 秒）
+    'c2-intro',    // 第 2 章開場說明（瑪拉旁白，約 29 秒）
     // 第 1 章開場（整段 6 句都有配音）
     'c1-open-0',   // 瑪拉：Roll call. Raise your hand if you're still breathing.
     'c1-open-1',   // 提歐：Both hands up. Count me for two breaths.
