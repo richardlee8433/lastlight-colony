@@ -4,6 +4,10 @@ const VOICED: Record<'zh' | 'en', Set<string>> = {
   en: new Set([
     'c1-intro',    // 第 1 章開場說明（瑪拉旁白，約 43 秒）
     'c2-intro',    // 第 2 章開場說明（瑪拉旁白，約 29 秒）
+    'c3-intro',    // 第 3 章開場說明（約 35 秒）
+    'c4-intro',    // 第 4 章開場說明（約 24 秒）
+    'c5-intro',    // 第 5 章開場說明（約 33 秒）
+    'c6-intro',    // 第 6 章開場說明（約 22 秒）
     // 第 1 章開場（整段 6 句都有配音）
     'c1-open-0',   // 瑪拉：Roll call. Raise your hand if you're still breathing.
     'c1-open-1',   // 提歐：Both hands up. Count me for two breaths.
