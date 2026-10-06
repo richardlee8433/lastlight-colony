@@ -8,6 +8,8 @@ import { bName, chapterText, costText, eventText, raidName, resName, t, tm, useL
 import { Icon, fmt, fmtTime } from './common';
 import { playVoice } from '../audio/audio';
 import { introVoiceFile } from '../data/voices';
+import { mods, shipReady } from '../engine/ship';
+import { shipLabel } from './ShipPanel';
 
 export function Modal({ children, label, className = '', pause = true }: { children: React.ReactNode; label: string; className?: string; pause?: boolean }) {
   // 訊息視窗開著時遊戲暫停；pause=false 的視窗（例如科技樹）開著時時間照常走
@@ -150,7 +152,8 @@ export function Modals() {
     const fill = (x: string) => x.replace(/\{building\}/g, bname).replace('{cost}', String(ev.cost ?? '')).replace(/\{demand\}/g, demand).replace('{refusals}', String(s.gov?.corp.refusals ?? 0));
     const blocked = (i: number) => (ev.kind === 'envoy' && i === 0 && dm && !canAfford(s, dm)) ? t('why.afford')
       : (ev.kind === 'meteor' && i === 0 && !canAfford(s, { rock: ev.cost! })) ? t('ev.noRock')
-      : (ev.kind === 'rescue' && i === 0 && idle(s) < 2) ? t('ev.noIdle') : null;
+      : (ev.kind === 'rescue' && i === 0 && idle(s) < 2) ? t('ev.noIdle')
+      : (ev.kind === 'choice6' && i === 0 && !shipReady(s)) ? t('ev.shipNotReady', { ship: shipLabel(s), n: mods(s) }) : null;
     return (
       <Modal label={E.title}>
         <p className="eyebrow">{t('ev.eyebrow')}</p>

@@ -13,6 +13,8 @@ export function levelBlock(s: GameState, id: string): Why {
   if (L >= d.maxLevel) return msg('why.maxLevel');
   // 信標第 3 段之後要先做第 6 章的抉擇（放棄或保留異晶）
   if (id === 'orbital_beacon' && L >= 3 && !s.story.choice6) return msg('why.choice6');
+  // 選了離開：信標的核心拆下來裝進船的引擎，信標停在第 3 段
+  if (id === 'orbital_beacon' && L >= 3 && s.story.choice6 === 'leave') return msg('why.coreShip');
   if (s.stage === 1 && CH1_CAP[id] && L >= CH1_CAP[id]) return msg('why.ch1Cap', { n: CH1_CAP[id] });
   if (d.kind === 'command') {
     const prev = COMMAND_CHAIN[COMMAND_CHAIN.indexOf(id) - 1];
@@ -37,11 +39,9 @@ export function levelUp(s: GameState, id: string): boolean {
     if (s.stage === 5) s.gov.credits5 = s.gov.creditsEarned;
     notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s);
   } else if (id === 'orbital_beacon') {
-    // 分段建造：第五段完成就是結局
-    // 放棄異晶的路線：信標的核心拆下來造船，最後兩段改成造船
-    const ship = s.story.choice6 === 'leave';
-    if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, ship ? 'n.shipDone' : 'n.beaconDone', undefined, 'good'); }
-    else notify(s, ship && s.b[id].level > 3 ? 'n.shipPhase' : 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
+    // 分段建造：第五段完成就是結局（離開的路線改在船塢裝星際引擎，見 ship.ts）
+    if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, 'n.beaconDone', undefined, 'good'); }
+    else notify(s, 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
   } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
   // 紀念堂蓋好：逃生艙退役（最後的外殼用在紀念堂上）
   if (id === 'memorial' && s.b[id].level === 1) { retirePod(s); notify(s, 'n.podRetired', undefined, 'good'); }

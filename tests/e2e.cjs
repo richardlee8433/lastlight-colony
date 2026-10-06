@@ -198,7 +198,7 @@ const CJK = /[一-鿿]/;
     });
   }
 
-  await test('E11', '第 6 章抉擇：討論播完後跳出「這是誰的家？」兩個選項', async () => {
+  await test('E11', '第 6 章抉擇：討論播完後跳出「這是誰的家？」三個選項；船還沒造好時「離開」是灰的', async () => {
     const s = snap('ch6-choice'); s.lastSaved = Date.now(); s.events.active = null;
     const { p } = await open(s); await clear(p, false);
     for (let i = 0; i < 20 && !(await p.locator('.modal h2').count()); i++) { await clear(p, false); await p.waitForTimeout(300); }
@@ -210,11 +210,14 @@ const CJK = /[一-鿿]/;
     }
     const h = await p.locator('.modal h2').first().textContent().catch(() => '');
     const opts = await p.locator('.modal .btn').allTextContents();
+    const leaveOff = await p.locator('.modal .btn').first().isDisabled().catch(() => false);
     await shot(p, 'E11-choice');
     await p.close();
     const errs = [];
     if (!h.includes('這是誰的家')) errs.push('沒有出現抉擇，看到：' + h);
-    if (opts.length !== 2) errs.push('選項數量：' + opts.length);
+    if (opts.length !== 3) errs.push('選項數量：' + opts.length);
+    if (!leaveOff || !opts[0]?.includes('還沒造好')) errs.push('船沒造好，「離開」應該是灰的並註明：' + opts[0]);
+    if (!opts[2]?.includes('先等等')) errs.push('第三個選項應該是「先等等」：' + opts[2]);
     return errs;
   });
 

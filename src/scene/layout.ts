@@ -36,6 +36,8 @@ const RAW_SITES: Site[] = [
   // 階段 5：四個角落與上緣
   { id: 'admin', x: 560, y: 74 },
   { id: 'trade_post', x: 220, y: 74 },
+  // 船塢（第 3 章）：研究院合併後空出來的左上角
+  { id: 'shipyard', x: 86, y: 152 },
   { id: 'turret', x: 712, y: 150 },
   { id: 'spaceport', x: 132, y: 474 },
 ];

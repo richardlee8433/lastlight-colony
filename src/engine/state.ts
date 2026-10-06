@@ -20,7 +20,7 @@ export interface UpgradeNode { id: string; name: string; desc: string; minLevel:
 export interface BuildingForm { id: string; stage: number; name: string; desc: string; rate: number; workersPerLevel: number; art: string; cost: Cost; baseCost: Cost; oxygen?: number }
 export interface BuildingDef {
   id: string; name: string; stage: number; desc: string;
-  kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical' | 'beacon';
+  kind: 'start' | 'gather' | 'process' | 'command' | 'house' | 'storage' | 'morale' | 'research' | 'rail' | 'defense' | 'utility' | 'governance' | 'trade' | 'medical' | 'beacon' | 'ship';
   /** 改建形態（糧食設施：藻類槽 → 生物採集站 → 水耕農場）；第 0 形態就是建築本身 */
   forms?: BuildingForm[];
   /** 每級成本不隨等級成長（軌道信標的分段建造） */
@@ -40,6 +40,7 @@ export const DEFS = BUILDINGS as unknown as BuildingDef[];
 export const DEF: Record<string, BuildingDef> = Object.fromEntries(DEFS.map((d) => [d.id, d]));
 export const COMMAND_CHAIN = DEFS.filter((d) => d.kind === 'command').sort((a, b) => a.commandLevel! - b.commandLevel!).map((d) => d.id);
 
+export interface ShipState { mods: number; wait?: number }
 export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean; form?: number }
 export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'rescue_ines' | 'envoy' | 'choice6'; target?: string; cost?: number }
 export interface BattleReport {
@@ -140,6 +141,8 @@ export interface GameState {
   /** 交易站的市場（行商庫存、還在路上的貨櫃）與貨艙裡的進口品 */
   market: MarketState;
   cargo: Record<Good, number>;
+  /** 船塢（v0.70）：完成幾個模組（0～6）；wait＝第 6 章選了「先等等」時已完成的模組數 */
+  ship: ShipState;
   /** 讀檔轉換時要顯示的通知（轉換後才加進 notices） */
   pendingNotice?: string;
 }
@@ -163,14 +166,14 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 6 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 7 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),
     air: newAir(),
     exp: { until: 0, team: 0, count: 0, frags: 0, blueprints: [] },
     boost: { until: 0, uses: 0 },
-    market: newMarket(), cargo: newCargo(),
+    market: newMarket(), cargo: newCargo(), ship: { mods: 0 },
     lastSaved: now,
     notices: [],
   };

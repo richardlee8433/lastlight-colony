@@ -5,6 +5,7 @@
 import { AIR_ENABLED, DEFS, GameState, Msg } from './state';
 import { built, hasXenoLab } from './formulas';
 import { lifeSupportLeft } from './air';
+import { READY_MODS, mods, shipReady } from './ship';
 
 /** 一天有幾秒（日誌的「第幾天」） */
 export const DAY = 60;
@@ -42,6 +43,8 @@ function decideLean(s: GameState): 'alien' | 'alliance' {
 /** 一句台詞在目前的路線下要不要播（沒有條件的台詞一律播） */
 export function lineOk(s: GameState, r?: string) {
   if (!r) return true;
+  // 船的模組 I～V 是否已完成（第 6 章討論時伊涅絲的說法不同）
+  if (r === 'ship' || r === 'noship') return shipReady(s) === (r === 'ship');
   if (r === 'coop' || r === 'resist') return s.story.route === r;
   if (s.story.route !== 'resist') return false;
   // 提到異晶槍的台詞：要研究完才播
@@ -89,6 +92,9 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   // 造船：金屬礦井升到 Lv3，或第 3 章進行超過 10 分鐘（保底）
   { id: 'c3-ship', when: (s) => s.stage >= 3 && s.stage <= 4 && seen(s, 'c3-open') && (s.b.metal_mine.level >= 3 || daysInChapter(s, 3) >= 10) },
   { id: 'c3-outpost', when: (s) => built(s, 'outpost') },
+  // 船塢（v0.70）：看過 c3-ship 才能蓋；之後每裝好一個模組都有一段小對話（模組可以晚幾章才裝）
+  { id: 'c3-shipyard', when: (s) => built(s, 'shipyard') },
+  { id: 'c3-hull', when: (s) => mods(s) >= 1 },
   { id: 'c3-end', when: (s) => s.stage >= 4, chapterEnd: true },
   // 第 4 章
   { id: 'c4-open', when: (s) => s.stage === 4 && s.story.seenIntro >= 4 },
@@ -101,6 +107,8 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c4-trader', when: (s) => s.stage >= 4 && seen(s, 'c4-synth') },
   { id: 'c4-cargo', when: (s) => (s.market?.drops ?? 0) > 0 },
   { id: 'c4-trader-ride', when: (s) => seen(s, 'c4-cargo') },
+  { id: 'c4-nav', when: (s) => mods(s) >= 2 },
+  { id: 'c4-life', when: (s) => mods(s) >= 3 },
   { id: 'c4-teach', when: (s) => s.stage === 4 && s.story.asm4 !== undefined && s.b.assembly.level > s.story.asm4 },
   { id: 'c4-sefa', when: (s) => seen(s, 'c4-raid1') && s.pop >= 28 },
   { id: 'c4-guard', when: (s) => seen(s, 'c4-sefa') && s.raid.count >= 2 && !s.raid.report },
@@ -134,6 +142,8 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c5-signal', journal: true, when: (s) => !!s.story.signalUsed },
   // 樣本來源依路線：合作路線要等赫利昂士兵打下過微光獸
   { id: 'c5-pattern', when: (s) => hasXenoLab(s) && (s.story.route === 'resist' || (s.story.route === 'coop' && seen(s, 'c5-corp-help'))) },
+  { id: 'c5-supplies', when: (s) => mods(s) >= 4 },
+  { id: 'c5-ship-ready', when: (s) => mods(s) >= READY_MODS },
   { id: 'c5-end', when: (s) => s.stage >= 6, chapterEnd: true },
   // 第 6 章
   { id: 'c6-open', when: (s) => s.stage === 6 && s.story.seenIntro >= 6 },
@@ -142,15 +152,19 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c6-salary', journal: true, when: (s) => s.stage >= 6 && s.pop >= 90 },
   { id: 'c6-beacon1', when: (s) => s.b.orbital_beacon.level >= 1 },
   { id: 'c6-lastlight', when: (s) => s.b.orbital_beacon.level >= 3 && seen(s, 'c6-beacon1') },
+  // 聽完末光號的故事、船體也立起來了：朱諾替船取名「曙光號」
+  { id: 'c6-name', when: (s) => seen(s, 'c6-lastlight') && mods(s) >= 1 },
   { id: 'c6-truth', when: (s) => seen(s, 'c6-lastlight') && (s.boost?.uses ?? 0) > 0 },
   { id: 'c6-debate', when: (s) => seen(s, 'c6-truth') },
   { id: 'c6-leave', when: (s) => s.story.choice6 === 'leave' },
+  { id: 'c6-wait', when: (s) => s.ship?.wait !== undefined },
   { id: 'c6-stay', when: (s) => s.story.choice6 === 'stay' },
+  { id: 'c6-stay-ship', when: (s) => s.story.choice6 === 'stay' && seen(s, 'c6-name') && seen(s, 'c6-stay') },
   { id: 'c6-blocked', when: (s) => s.finished && s.story.choice6 === 'leave', chapterEnd: true },
   { id: 'c6-end', when: (s) => s.finished && s.story.choice6 !== 'leave', chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 6;
+export const DIALOG_VERSION = 7;
 /** 新版本加入的場景：還在這一章（或更早）的舊存檔照常播，不要直接標成播過 */
 const REPLAY_IF: Record<string, number> = { 'c4-trader': 4, 'c4-cargo': 4, 'c4-trader-ride': 4 };
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);
@@ -193,7 +207,9 @@ export function dialogs(s: GameState) {
   if (s.story.route === 'resist' && s.gov.corp.refusals >= 2 && !s.story.lean) s.story.lean = decideLean(s);
   for (const x of TRIGGERS) if (!seen(s, x.id) && x.when(s)) playScene(s, x.id, x.journal);
   // 第 6 章的抉擇：大家討論完（c6-debate 播完）才跳出選擇
-  if (seen(s, 'c6-debate') && !s.story.choice6 && !s.story.queue?.length && !s.events.active) s.events.active = { kind: 'choice6' };
+  // 選了「先等等」：船的模組 I～V 完成（c5-ship-ready 播完）時再跳一次；當時船已經造好的話，只能從船塢面板重新打開
+  const w = s.ship?.wait;
+  if (seen(s, 'c6-debate') && !s.story.choice6 && (w === undefined || (w < READY_MODS && shipReady(s))) && !s.story.queue?.length && !s.events.active) s.events.active = { kind: 'choice6' };
   for (const d of DEFS) if (!j.b.includes(d.id) && built(s, d.id)) { j.b.push(d.id); write(s, 'log.built', { b: d.id, v: j.b.length % 3 }); }
   if (s.pop >= j.pop + POP_STEP) { j.pop = Math.floor(s.pop / POP_STEP) * POP_STEP; write(s, 'log.pop', { n: j.pop }); }
   if (s.raid.count > j.raids) {

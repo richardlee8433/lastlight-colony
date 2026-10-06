@@ -22,7 +22,7 @@ for R in coop resist; do for C in stay leave; do
   SNAPDIR=$SNAP ROUTE=$R CHOICE=$C npx tsx sim/balance.ts >"$LOG" 2>&1
   END=$(grep "結束：" "$LOG" | sed 's/^ *//')
   STAGES=$(grep -E "^  階段 [2-6]" "$LOG" | sed -E 's/^ *階段 ([0-9])：([0-9:]+).*/第\1章 \2/' | tr '\n' ' ')
-  if echo "$END" | grep -q "信標點亮"; then OK=PASS; else OK=FAIL; STATUS=1; fi
+  if echo "$END" | grep -qE "信標點亮|曙光號點火"; then OK=PASS; else OK=FAIL; STATUS=1; fi
   echo "$OK 模擬 $R/$C：$END"
   SIM_ROWS="$SIM_ROWS| $OK | $R / $C | $STAGES | ${END#結束：} |\n"
 done; done

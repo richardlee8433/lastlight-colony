@@ -267,6 +267,9 @@ window.blobs = function (d, w, h) {
     meta[it.id] = { w, h, ax: w / 2, ay: +(h * (1 - it.foot)).toFixed(2), ...(it.vent || r.vent ? { steam: it.vent ?? r.vent } : {}) };
     console.log(it.id, r.ow + 'x' + r.oh, fs.statSync(path.join(outDir, it.id + '.webp')).size);
   }
+  // 船塢 4 張（shipyard、shipyard_1～3）要共用同一個裁切框，換圖時才不會跳動：不經過這支程式，保留原本的 meta
+  const old = JSON.parse(fs.readFileSync(path.join(outDir, 'meta.json'), 'utf8')).buildings;
+  for (const [k, v] of Object.entries(old)) if (k.startsWith('shipyard')) meta[k] = v;
   fs.writeFileSync(path.join(outDir, 'meta.json'), JSON.stringify({ res: RES, buildings: meta }, null, 2) + '\n');
   await b.close();
 })();

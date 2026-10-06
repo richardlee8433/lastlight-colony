@@ -12,7 +12,10 @@ import { newGame } from '../src/engine/state';
 import { levelBlock, levelUp, rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
 import { step } from '../src/engine/tick';
 import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
-import { creditsCh5 } from '../src/engine/formulas';
+import { creditsCh5, artId } from '../src/engine/formulas';
+import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
+import { resolveEvent } from '../src/engine/events';
+import { lineOk } from '../src/engine/dialog';
 import { CHAPTERS as CH, goalDone } from '../src/engine/story';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
@@ -35,7 +38,7 @@ check('S01', '每個觸發條件都有對應的對話內容，每段對話都有
   return errs;
 });
 const SPEAKERS = ['mara', 'teo', 'juno', 'ines', 'sefa', 'voss', 'calder', 'narr', 'colonist', 'survivor', 'marine', 'youth', 'alliance', 'trader'];
-const ROUTES = [undefined, 'coop', 'resist', 'alien', 'alliance', 'rifle'];
+const ROUTES = [undefined, 'coop', 'resist', 'alien', 'alliance', 'rifle', 'ship', 'noship'];
 check('S02', '每句台詞都有中英文、說話者與路線標籤合法、沒有殘留的 {…} 參數', () => {
   const errs: string[] = [];
   for (const [id, sc] of Object.entries(SCENES)) {
@@ -247,6 +250,62 @@ check('S16', '路線交易條件：合作＝赫利昂市場（電子元件較便
   if (creditsCh5(c5) !== 0) errs.push('第 4 章時第 5 章信用點應為 0');
   c5.stage = 5; c5.gov.credits5 = 3000; c5.gov.creditsEarned = 3500;
   if (creditsCh5(c5) !== 500) errs.push(`第 5 章信用點應為 500，實際 ${creditsCh5(c5)}`);
+  return errs;
+});
+
+
+check('S18', '船塢：看過 c3-ship 才能蓋 → 模組依章節開放、進口品從貨艙扣 → 第 6 章沒造好不能離開、「先等等」、造好再跳抉擇 → 離開後信標停在第 3 段、裝星際引擎即結局', () => {
+  const errs: string[] = [];
+  const s = newGame(0);
+  const flush = () => { s.story.queue = []; step(s); };
+  s.stage = 3; s.story.seenIntro = 3;
+  Object.assign(s.res, { rock: 9000, parts: 9000, metal: 9000, tools: 900, nutrient: 3000, crystal: 500, credit: 0 });
+  if (levelBlock(s, 'shipyard')?.k !== 'why.scene.c3-ship') errs.push('沒看過 c3-ship 就能蓋船塢');
+  s.story.seen!.push('c3-ship');
+  if (!levelUp(s, 'shipyard')) errs.push('看過 c3-ship 仍蓋不了船塢：' + levelBlock(s, 'shipyard')?.k);
+  flush();
+  if (!s.story.seen!.includes('c3-shipyard')) errs.push('蓋好船塢沒播 c3-shipyard');
+  if (artId(s, 'shipyard') !== 'shipyard') errs.push('空船塢的圖不對');
+  if (!buildModule(s)) errs.push('第 3 章裝不了船體：' + moduleBlock(s)?.k);
+  flush();
+  if (!s.story.seen!.includes('c3-hull')) errs.push('船體完成沒播 c3-hull');
+  if (artId(s, 'shipyard') !== 'shipyard_1') errs.push('船體完成後應該換成骨架圖');
+  if (moduleBlock(s)?.k !== 'why.stage') errs.push('第 3 章就能裝導航');
+  s.stage = 4;
+  if (moduleBlock(s)?.k !== 'why.afford') errs.push('沒有電子元件也能裝導航');
+  s.cargo.electronics = 60; s.cargo.medicine = 40; s.cargo.fuel = 120; s.cargo.raremetal = 50;
+  buildModule(s); buildModule(s); flush();
+  if (s.ship.mods !== 3 || s.cargo.electronics !== 0) errs.push(`導航＋維生後應有 3 個模組、電子元件用完：${s.ship.mods}、${s.cargo.electronics}`);
+  if (!s.story.seen!.includes('c4-nav') || !s.story.seen!.includes('c4-life')) errs.push('導航、維生沒播對話');
+  // 第 6 章：討論完，船還沒造好
+  s.stage = 6; s.story.seenIntro = 6;
+  s.b.orbital_beacon.level = 3;
+  s.story.seen!.push('c6-beacon1', 'c6-lastlight', 'c6-truth', 'c6-debate');
+  flush();
+  if (!s.story.seen!.includes('c6-name')) errs.push('看過 c6-lastlight、船體完成，沒播 c6-name');
+  if (lineOk(s, 'ship') || !lineOk(s, 'noship')) errs.push('船沒造好時 ship／noship 標籤判斷錯誤');
+  flush();
+  if (s.events.active?.kind !== 'choice6') errs.push('討論完沒跳出抉擇');
+  resolveEvent(s, 0);
+  if (s.story.choice6) errs.push('船沒造好也能選離開');
+  resolveEvent(s, 2);
+  if (s.ship.wait !== 3 || s.events.active) errs.push('選「先等等」應記下 3 個模組並關掉抉擇');
+  flush(); flush();
+  if (!s.story.seen!.includes('c6-wait')) errs.push('選「先等等」沒播 c6-wait');
+  if (s.events.active) errs.push('先等等之後船還沒造好就又跳出抉擇');
+  buildModule(s); buildModule(s); flush();
+  if (!shipReady(s) || !s.story.seen!.includes('c5-ship-ready')) errs.push('模組 I～V 完成沒播 c5-ship-ready');
+  if (artId(s, 'shipyard') !== 'shipyard_3') errs.push('模組 I～V 完成應該是只差引擎的圖');
+  flush();
+  if (s.events.active?.kind !== 'choice6') errs.push('船造好後沒有再跳出抉擇');
+  if (moduleBlock(s)?.k !== 'why.drive') errs.push('還沒決定離開就能裝星際引擎');
+  resolveEvent(s, 0);
+  if (s.story.choice6 !== 'leave') errs.push('船造好後選不了離開');
+  if (levelBlock(s, 'orbital_beacon')?.k !== 'why.coreShip') errs.push('選了離開，信標第 4 段應該被擋下');
+  if (!buildModule(s)) errs.push('選了離開裝不了星際引擎：' + moduleBlock(s)?.k);
+  if (!s.finished || s.ship.mods !== MODULES.length) errs.push('裝好星際引擎應該是結局');
+  flush();
+  if (!s.story.seen!.includes('c6-blocked')) errs.push('結局沒播 c6-blocked');
   return errs;
 });
 

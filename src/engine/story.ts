@@ -3,7 +3,7 @@ import STORY from '../data/story.json';
 import { AIR_ENABLED, GameState } from './state';
 import { built, creditsCh5 } from './formulas';
 
-export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research' | 'drop'; res?: string; id?: string; amount?: number; label: string; after?: 'raid1' }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research' | 'drop' | 'finish'; res?: string; id?: string; amount?: number; label: string; after?: 'raid1' }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 // 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
@@ -44,6 +44,8 @@ function liveDone(s: GameState, g: Goal): boolean {
     case 'expedition': return (s.exp?.count ?? 0) >= g.amount!;
     case 'research': return s.research.done.includes(g.id!);
     case 'drop': return (s.market?.drops ?? 0) > 0;
+    // 第 6 章最後一項：信標第 5 段，或（選了離開）船的星際引擎
+    case 'finish': return s.finished;
     case 'air': return !AIR_ENABLED || (s.air?.safeTime ?? 0) >= g.amount!;
   }
 }

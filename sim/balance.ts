@@ -9,6 +9,8 @@ import { rebuild, rebuildBlock, assign, boostBlock, buyNode, levelBlock, levelUp
 import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
+import { MODULES, buildModule, moduleBlock, mods, shipReady } from '../src/engine/ship';
+import { GOODS, buyBlock, buyGood, cargoUsed } from '../src/engine/market';
 import { airSafety, lifeSupportLeft } from '../src/engine/air';
 import { SCENE_IDS } from '../src/engine/dialog';
 import { expActive, startExpedition, EXP_TEAM } from '../src/engine/expedition';
@@ -38,6 +40,8 @@ function target(s: GameState) {
   if (s.stage === 3) { const g = ['metal_mine', 'forge', 'expedition'].find((id) => !built(s, id)); if (g) return g; }   // 第 3 章照章節目標走
   const t = TARGETS.find((id) => !built(s, id));
   if (t) return t;
+  // 選了離開：信標停在第 3 段，接下來只差船的星際引擎（見 shipWork）
+  if (s.story.choice6 === 'leave' && s.b.orbital_beacon.level >= 3) return undefined!;
   if (s.b.orbital_beacon.level >= DEF.orbital_beacon.maxLevel) return undefined!;
   // 信標要人口 100：人口不夠時先蓋天幕住宅（否則機器人不會去挖岩材）
   if (s.pop < (DEF.orbital_beacon.requires?.pop ?? 0) && s.b.sky_residence.level < DEF.sky_residence.maxLevel && s.pop >= popCap(s) - 2) return 'sky_residence';
@@ -69,6 +73,23 @@ function snap(s: GameState, name: string) {
   writeFileSync(`${SNAPDIR}/${name}.json`, JSON.stringify({ ...s, notices: [], lastSaved: Date.now() }));
 }
 
+// CHOICE=leave：要離開就得造船。第 3 章蓋船塢與船體；交易站蓋好後，下一個模組缺的進口品先下單，材料夠就裝
+const LEAVE = process.env.CHOICE === 'leave';
+const shipLog: string[] = [];
+function shipWork(s: GameState): boolean {
+  if (!built(s, 'shipyard')) { const ok = tryBuy(s, 'shipyard'); if (ok) shipLog.push(`船塢：${fmt(s.t)}（階段 ${s.stage}）`); return ok; }
+  const m = MODULES[mods(s)];
+  if (!m) return false;
+  if (!moduleBlock(s)) { buildModule(s); shipLog.push(`模組 ${mods(s)}：${fmt(s.t)}（階段 ${s.stage}）`); return true; }
+  if (m.stage > s.stage) return false;
+  const pend = (k: string) => s.market.pending.filter((p) => p.k === k).reduce((a, p) => a + p.n, 0);
+  for (const k of GOODS) {
+    const want = (m.cost as any)[k] ?? 0;
+    while (s.cargo[k] + pend(k) < want && cargoUsed(s) + 10 <= 200 && !buyBlock(s, k)) buyGood(s, k);
+  }
+  return false;
+}
+
 function decide(s: GameState) {
   // 第 6 章抉擇跳出來的那一刻（還沒選）
   if (s.events.active?.kind === 'choice6') snap(s, 'ch6-choice');
@@ -78,7 +99,7 @@ function decide(s: GameState) {
   if (s.events.active) {
     const k = s.events.active.kind;
     // ROUTE=resist：一律拒絕使者；CHOICE=leave：第 6 章放棄異晶
-    resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'choice6' ? (process.env.CHOICE === 'leave' ? 0 : 1)
+    resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'choice6' ? (process.env.CHOICE === 'leave' ? (shipReady(s) ? 0 : 2) : 1)
       : k === 'envoy' ? (process.env.ROUTE !== 'resist' && s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
   }
   if (s.stage >= 5 && built(s, 'admin')) {
@@ -99,6 +120,7 @@ function decide(s: GameState) {
     }
     if (startExpedition(s)) expLog.push(fmt(s.t));
   }
+  if (LEAVE && shipWork(s)) return;
   const tgt = target(s);
   if (!tgt) return;
   const need = lacking(s, tgt);
@@ -257,7 +279,8 @@ console.log(`按住點擊比例 ${Math.round(duty * 100)}%`);
 for (const m of marks) console.log('  ' + m);
 for (const m of raids) console.log('  ' + m);
 for (const m of rebuilt) console.log('  ' + m);
-console.log(`  結束：${s.finished ? '信標點亮' : '未完成'}（信標 ${s.b.orbital_beacon.level}/5），時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
+for (const m of shipLog) console.log('  ' + m);
+console.log(`  結束：${s.finished ? (s.story.choice6 === 'leave' ? '曙光號點火' : '信標點亮') : '未完成'}（信標 ${s.b.orbital_beacon.level}/5、船 ${mods(s)}/6），時間 ${fmt(s.t)}，人口 ${s.pop}/${popCap(s)}，士氣 ${s.morale.toFixed(0)}`);
 console.log('  資源：' + RES_KEYS.map((k) => `${k} ${Math.floor(s.res[k])}`).join('、'));
 console.log('  建築：' + DEFS.filter((d) => built(s, d.id)).map((d) => `${d.name}${s.b[d.id].level}`).join(' '));
 console.log(`  氧氣再生器：${scrubberAt < 0 ? '未蓋' : fmt(scrubberAt) + '（維生系統剩 ' + fmt(lsLeftAtScrubber) + '）'}；伊涅絲：${inesAt < 0 ? '未救回' : fmt(inesAt)}；第 1～2 章空氣安全度最低 ${Math.round(minAir12 * 100)}%`);

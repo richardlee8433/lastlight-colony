@@ -2,6 +2,7 @@
 import { DEFS, GameState, Msg, msg, notify } from './state';
 import { add, built, canAfford, idle, pay, popCap } from './formulas';
 import { resolveEnvoy } from './governance';
+import { shipReady } from './ship';
 
 export function scheduleNext(s: GameState, rng = Math.random) {
   s.events.nextAt = s.t + 300 + rng() * 180;
@@ -73,7 +74,13 @@ export function resolveEvent(s: GameState, choice: number) {
   const a = s.events.active;
   if (!a) return;
   if (a.kind === 'envoy') { if (resolveEnvoy(s, choice)) s.events.active = null; return; }
-  if (a.kind === 'choice6') { s.story.choice6 = choice === 0 ? 'leave' : 'stay'; s.events.active = null; return; }
+  if (a.kind === 'choice6') {
+    // 0 離開（船的模組 I～V 要先完成）、1 留下、2 先等等，把船造完（記下當時完成了幾個模組）
+    if (choice === 0 && !shipReady(s)) return;
+    if (choice === 2) s.ship.wait = s.ship.mods;
+    else s.story.choice6 = choice === 0 ? 'leave' : 'stay';
+    s.events.active = null; return;
+  }
   if (a.kind === 'meteor') {
     if (choice === 0) {
       if (!canAfford(s, { rock: a.cost! })) return;

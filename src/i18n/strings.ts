@@ -80,7 +80,6 @@ export const STRINGS: Record<string, [string, string]> = {
 
   // ── 通知 ──
   'n.beaconPhase': ['Orbital Beacon: phase {n} of {m} complete.', '軌道信標：第 {n} / {m} 段建造完成。'],
-  'n.shipPhase': ['The ship: phase {n} of {m} complete.', '船：第 {n} / {m} 段建造完成。'],
   'n.shipDone': ['The ship is ready to launch!', '船造好了，準備點火！'],
   'n.corpHelp': ['Helion troops drove off the glimmers.', '赫利昂駐軍擊退了微光獸。'],
   'n.beaconDone': ['The Orbital Beacon is lit! The colony has declared itself to the whole system.', '軌道信標點亮了！殖民地向整個星系宣告了自己的存在。'],
@@ -88,6 +87,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'why.bioeng': ['Needs a Bioengineering Lab', '需要生物工程室'],
   'why.boosting': ['Boost already active', '加成進行中'],
   'kind.beacon': ['Endgame', '終局'],
+  'kind.ship': ['Shipbuilding', '造船'],
   'rbd.title': ['Rebuild', '改建'],
   'rbd.info': ['Rebuild into {b}: {r} per worker per second, {w} workers per level. Level, workers and upgrades are kept.', '改建成{b}：每位工人每秒 {r}，每級 {w} 位工人。等級、工人與升級線都會保留。'],
   'rbd.btn': ['Rebuild into {b}', '改建成{b}'],
@@ -360,6 +360,27 @@ export const STRINGS: Record<string, [string, string]> = {
   'tr.trendUp': ["Price high", "價格偏高"],
   'tr.trendDown': ["Price low", "價格偏低"],
   'tr.trendFlat': ["Price stable", "價格穩定"],
+  // 船塢（v0.70）
+  'why.shipyard': ["Build the Shipyard first", "先蓋好船塢"],
+  'why.drive': ["The drive needs the beacon's core: only after the colony decides to leave (Chapter 6)", "星際引擎要用信標的核心：第 6 章決定離開之後才能裝"],
+  'why.coreShip': ["The beacon's core went into the ship", "信標的核心已經拆下來裝進船裡了"],
+  'why.scene.c3-ship': ["Nobody has talked about building a ship yet (Chapter 3)", "還沒有人提過造船的事（第 3 章）"],
+  'n.module': ["Ship module complete: {mod} ({n}/{t})", "船的模組完成：{mod}（{n}/{t}）"],
+  'mod.hull': ["Hull", "船體"],
+  'mod.nav': ["Navigation", "導航"],
+  'mod.life': ["Life Support", "維生"],
+  'mod.supplies': ["Long-Range Supplies", "長程補給"],
+  'mod.fuel': ["Launch Fuel", "燃料"],
+  'mod.drive': ["Interstellar Drive", "星際引擎"],
+  'ship.unnamed': ["The ship", "船"],
+  'ship.named': ["The Firstlight", "曙光號"],
+  'sy.head': ["{ship} · modules {n}/{m}", "{ship}・模組 {n}/{m}"],
+  'sy.note': ["Modules I–V are optional long-term progress, not chapter goals. Module VI uses the beacon's core and is only for leaving.", "模組 I～V 是長期進度，不影響章節目標。模組 VI 要用信標的核心，只有決定離開時才能裝。"],
+  'sy.build': ["Install", "裝上"],
+  'sy.chapter': ["Chapter {n}", "第 {n} 章"],
+  'sy.leaveOnly': ["Leaving only", "只限離開路線"],
+  'sy.reopen': ["Decide now", "重新做決定"],
+  'ev.shipNotReady': ["{ship} isn't finished ({n}/5)", "{ship}還沒造好（{n}/5）"],
 
   // ── 對話框 ──
   'fail.eyebrow': ['Colony lost', '殖民地瓦解'],

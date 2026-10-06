@@ -41,6 +41,7 @@
    "diag": ["Autodiagnóstico", "Velocidad de curación +50%"], "beds": ["Camas de cuidados intensivos", "+1 cama por nivel"] } },
   "colony_core": { "name": "Núcleo de la colonia", "desc": "Mando Nv4. Un reactor de xenocristal: la colonia ya no solo sobrevive. Requiere población 40 y 2 ataques repelidos." },
   "admin": { "name": "Centro Administrativo", "desc": "La sala del consejo de la colonia. Desbloquea los impuestos y las cartas de la colonia; los impuestos dan créditos, pero cada nivel de impuestos cuesta 5 de moral.", "nodes": { "council": ["Consejo ampliado", "Espacios para cartas +1"] } },
+  "shipyard": { "name": "Astillero", "desc": "Aquí se construye la nave, módulo a módulo: casco, navegación, soporte vital, suministros de largo alcance, combustible y, por último, el motor interestelar. A partir de la navegación, los módulos necesitan importaciones que la colonia no puede fabricar." },
   "trade_post": { "name": "Puesto comercial", "desc": "El mercado de la colonia. Los trabajadores ganan créditos aquí, y puedes comerciar con mercaderes de paso: vender metal, herramientas, piezas y nutrientes, y comprar lo que la colonia no puede fabricar. Cada nivel guarda 100 artículos más en la bodega.", "nodes": {
    "prod_30": ["Mercado nocturno", "Producción +30%"], "cap_2": ["Más puestos", "Límite de trabajadores +2"] } },
   "spaceport": { "name": "Puerto espacial", "desc": "Recibe lanzaderas de otras colonias. Abre el comercio con la Alianza de Colonias Libres; reconstruye el Instituto Tecnológico como Instituto de Xenología para responder a esa señal misteriosa." },
@@ -185,7 +186,7 @@
     "Construye una Residencia Horizonte",
     "Inyecta xenocristal una vez en el laboratorio de bioingeniería",
     "Alcanza una población de 100",
-    "Completa las cinco fases: la baliza orbital, o una nave construida con su núcleo"
+    "Enciende la baliza orbital o instala el motor interestelar de la nave"
    ]
   }
  ],
@@ -193,7 +194,7 @@
   "meteor": { "title": "Lluvia de meteoritos", "text": "Una ristra de fuego cruza el cielo: caen escombros hacia {building}.", "options": ["Reforzar por {cost} de piedra", "Aguantar ({building} se detiene 60 s)"] },
   "rescue": { "title": "Señal de socorro", "text": "La radio capta una señal de socorro entrecortada del cañón cercano. Podrían ser otros supervivientes, o solo una baliza que sigue transmitiendo.", "options": ["Enviar 2 colonos desocupados (3 min)", "Ignorarla"] },
   "rescue_ines": { "title": "Una llamada de socorro entrecortada", "text": "Entre golpes de metal, una voz de mujer crepita en la radio: «Aquí... cápsula tres, Ines... mi cápsula está atascada en una grieta de hielo... tengo herramientas, pero no aire. Por favor, daos prisa».", "options": ["Mara y Juno van en vehículo (2 min, no hacen falta trabajadores)", "Más tarde (la señal se repetirá)"] },
-  "choice6": { "title": "¿De quién es este hogar?", "text": "Estamos todos. Los Glimmers son guardianes, y cada pedazo de xenocristal que usamos sale de lo que ellos protegen. El núcleo de la baliza solo alcanza para una cosa: encender la baliza o impulsar una nave.", "options": ["Renunciar al xenocristal y construir una nave para irnos", "Conservar el xenocristal y quedarnos"] },
+  "choice6": { "title": "¿De quién es este hogar?", "text": "Estamos todos. Los Glimmers son guardianes, y cada pedazo de xenocristal que usamos sale de lo que ellos protegen. El núcleo de la baliza solo alcanza para una cosa: encender la baliza o impulsar una nave. Para irse, los cinco módulos de la nave tienen que estar terminados.", "options": ["Renunciar al xenocristal y construir una nave para irnos", "Conservar el xenocristal y quedarnos", "Todavía no: primero terminar la nave"] },
   "envoy": { "title": "Enviado de la corporación", "text": "Una lanzadera con el logotipo de Helion aterriza en la plaza. El enviado es cortés: los derechos de explotación de este planeta pertenecen a la corporación, pero mientras paguen {demand} puntualmente, la corporación está dispuesta a pasar por alto «temporalmente» su incumplimiento de contrato.", "options": ["Pagar {demand}", "Negarse (rechazado {refusals} veces)"] }
  }
 }

@@ -41,6 +41,7 @@
    "diag": ["Autodiagnóstico", "Velocidade de cura +50%"], "beds": ["Leitos de UTI", "+1 leito por nível"] } },
   "colony_core": { "name": "Núcleo da colônia", "desc": "Comando Nv4. Um reator de xenocristal: a colônia não está mais só sobrevivendo. Exige população 40 e 2 ataques repelidos." },
   "admin": { "name": "Centro Administrativo", "desc": "A sala do conselho da colônia. Libera impostos e cartas da colônia; os impostos trazem créditos, mas cada nível de imposto custa 5 de moral.", "nodes": { "council": ["Conselho ampliado", "Espaços de carta +1"] } },
+  "shipyard": { "name": "Estaleiro", "desc": "Aqui a nave é construída, módulo por módulo: casco, navegação, suporte de vida, suprimentos de longo alcance, combustível e, por fim, o motor interestelar. A partir da navegação, os módulos precisam de importados que a colônia não consegue fabricar." },
   "trade_post": { "name": "Posto comercial", "desc": "O mercado da colônia. Os trabalhadores ganham créditos aqui, e você pode negociar com mercadores de passagem: vender metal, ferramentas, peças e nutrientes, e comprar o que a colônia não consegue fabricar. Cada nível guarda mais 100 itens no porão de carga.", "nodes": {
    "prod_30": ["Feira noturna", "Produção +30%"], "cap_2": ["Mais barracas", "Limite de trabalhadores +2"] } },
   "spaceport": { "name": "Espaçoporto", "desc": "Recebe naves de transporte de outras colônias. Abre o comércio com a Aliança das Colônias Livres; reconstrua o Instituto de Tecnologia como Instituto de Xenologia para responder àquele sinal misterioso." },
@@ -185,7 +186,7 @@
     "Construa uma Residência Horizonte",
     "Injete xenocristal uma vez no laboratório de bioengenharia",
     "Chegue a uma população de 100",
-    "Conclua as cinco fases: o sinalizador orbital, ou uma nave feita com o núcleo dele"
+    "Acenda o sinalizador orbital ou instale o motor interestelar da nave"
    ]
   }
  ],
@@ -193,7 +194,7 @@
   "meteor": { "title": "Chuva de meteoros", "text": "Um rastro de fogo corta o céu: destroços estão caindo em direção a {building}.", "options": ["Reforçar por {cost} de pedra", "Aguentar ({building} para por 60 s)"] },
   "rescue": { "title": "Sinal de socorro", "text": "O rádio capta um sinal de socorro entrecortado vindo do cânion ali perto. Podem ser outros sobreviventes, ou só um farol que continua transmitindo.", "options": ["Mandar 2 colonos ociosos (3 min)", "Ignorar"] },
   "rescue_ines": { "title": "Um pedido de socorro falhando", "text": "Entre batidas de metal, uma voz de mulher chia no rádio: “Aqui é... a cápsula três, Ines... minha cápsula está presa numa fenda de gelo... tenho ferramentas, mas não tenho ar. Por favor, rápido.”", "options": ["Mara e Juno vão de veículo (2 min, sem precisar de trabalhadores)", "Depois (o sinal vai se repetir)"] },
-  "choice6": { "title": "De quem é este lar?", "text": "Estão todos aqui. Os Glimmers são guardiões, e cada pedaço de xenocristal que usamos sai do que eles protegem. O núcleo do sinalizador só dá para uma coisa: acender o sinalizador ou mover uma nave.", "options": ["Abrir mão do xenocristal e construir uma nave para partir", "Ficar com o xenocristal e permanecer"] },
+  "choice6": { "title": "De quem é este lar?", "text": "Estão todos aqui. Os Glimmers são guardiões, e cada pedaço de xenocristal que usamos sai do que eles protegem. O núcleo do sinalizador só dá para uma coisa: acender o sinalizador ou mover uma nave. Para partir, os cinco módulos da nave precisam estar prontos.", "options": ["Abrir mão do xenocristal e construir uma nave para partir", "Ficar com o xenocristal e permanecer", "Ainda não — primeiro terminar a nave"] },
   "envoy": { "title": "Emissário da corporação", "text": "Uma nave com o logotipo da Helion pousa na praça. O emissário é educado: os direitos de exploração deste planeta pertencem à corporação, mas, desde que vocês paguem {demand} em dia, a corporação está disposta a fazer vista grossa “temporariamente” para a quebra de contrato.", "options": ["Pagar {demand}", "Recusar (recusado {refusals} vezes)"] }
  }
 }

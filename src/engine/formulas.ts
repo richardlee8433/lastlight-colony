@@ -92,7 +92,9 @@ export function formOf(s: GameState, id: string): BuildingForm | null {
   return f > 0 ? DEF[id].forms?.[f - 1] ?? null : null;
 }
 /** 畫面用的美術 id（改建後換成新形態的外觀） */
-export const artId = (s: GameState, id: string) => formOf(s, id)?.art ?? id;
+/** 船塢的圖跟著模組換：空船塢 → 骨架（船體）→ 大致成形（導航、維生）→ 只差引擎（補給、燃料以後） */
+function shipyardArt(s: GameState) { const m = s.ship?.mods ?? 0; return m >= 4 ? 'shipyard_3' : m >= 2 ? 'shipyard_2' : m >= 1 ? 'shipyard_1' : 'shipyard'; }
+export const artId = (s: GameState, id: string) => (id === 'shipyard' ? shipyardArt(s) : formOf(s, id)?.art ?? id);
 /** 第 5 章開始後累計賺進的信用點 */
 export const creditsCh5 = (s: GameState) => (s.stage >= 5 ? s.gov.creditsEarned - (s.gov.credits5 ?? 0) : 0);
 /** 異星研究院：科技研究院在第 5 章改建後的形態（原本是另一棟建築，v0.70.1 合併） */

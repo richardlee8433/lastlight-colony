@@ -47,7 +47,7 @@ const MARA: Table = {
   'c5-alliance2': { 5: A },
   'c6-open': { 3: S, 7: S },
   'c6-lastlight': { 1: A, 9: S, 10: S, 11: S, 15: A },
-  'c6-debate': { 0: A, 12: S, 13: S, 15: S },
+  'c6-debate': { 0: A, 13: S, 14: S, 16: S },
   'c6-stay': { 1: A },
   'c6-blocked': { 4: A, 10: A, 18: J },
   'c6-end': { 8: J, 14: J },
@@ -86,7 +86,7 @@ const TEO: Table = {
   'c5-commando': { 1: S },
   'c5-pattern': { 6: S },
   'c6-truth': { 7: A },
-  'c6-debate': { 10: A },
+  'c6-debate': { 11: A },
   'c6-blocked': { 2: A },
   'c6-leave': { 5: S },
   'c6-stay': { 6: S, 8: J },
@@ -138,7 +138,7 @@ const JUNO: Table = {
   'c6-open': { 0: J, 4: S, 6: J },
   'c6-beacon1': { 1: A, 5: S },
   'c6-lastlight': { 0: S, 2: S, 4: S, 6: S, 14: S },
-  'c6-debate': { 11: S },
+  'c6-debate': { 12: S },
   'c6-leave': { 4: S, 7: J },
   'c6-blocked': { 9: A, 12: S, 13: A },
 };
@@ -214,7 +214,7 @@ const VOSS: Table = {
   'c5-warn': { 2: A },
   'c5-commando': { 2: S },
   'c6-beacon1': { 3: A },
-  'c6-debate': { 9: A },
+  'c6-debate': { 10: A },
   'c6-blocked': { 8: A },
 };
 

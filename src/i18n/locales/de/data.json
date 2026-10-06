@@ -41,6 +41,7 @@
    "diag": ["Autodiagnose", "Heiltempo +50%"], "beds": ["Intensivbetten", "+1 Bett pro Stufe"] } },
   "colony_core": { "name": "Koloniekern", "desc": "Kommando Lv4. Ein Xenokristall-Reaktor — die Kolonie überlebt nicht mehr nur. Benötigt Bevölkerung 40 und 2 abgewehrte Angriffe." },
   "admin": { "name": "Verwaltungszentrum", "desc": "Der Ratssaal der Kolonie. Schaltet Steuern und Koloniechartas frei; Steuern bringen Credits, aber jede Steuerstufe kostet 5 Moral.", "nodes": { "council": ["Erweiterter Rat", "Charta-Plätze +1"] } },
+  "shipyard": { "name": "Werft", "desc": "Hier wird das Schiff gebaut, Modul für Modul: Rumpf, Navigation, Lebenserhaltung, Langstreckenvorräte, Treibstoff und zuletzt der interstellare Antrieb. Ab der Navigation brauchen die Module Importwaren, die die Kolonie nicht herstellen kann." },
   "trade_post": { "name": "Handelsposten", "desc": "Der Markt der Kolonie. Arbeiter verdienen hier Credits, und du kannst mit vorbeiziehenden Händlern handeln: Metall, Werkzeug, Teile und Nährstoffe verkaufen, Waren kaufen, die die Kolonie nicht herstellen kann. Jede Stufe fasst 100 Waren mehr im Frachtraum.", "nodes": {
    "prod_30": ["Nachtmarkt", "Ertrag +30%"], "cap_2": ["Mehr Stände", "Arbeiterlimit +2"] } },
   "spaceport": { "name": "Raumhafen", "desc": "Empfängt Shuttles anderer Kolonien. Öffnet den Handel mit der Allianz Freier Kolonien; baue das Technikinstitut zum Xenologie-Institut um, um auf dieses rätselhafte Signal zu antworten." },
@@ -185,7 +186,7 @@
     "Baue eine Skyline-Residenz",
     "Injiziere einmal Xenokristall im Bioingenieurlabor",
     "Erreiche Bevölkerung 100",
-    "Schließe alle fünf Phasen ab: die Orbitalbake oder ein Schiff aus ihrem Kern"
+    "Die Orbitalbake zum Leuchten bringen oder den interstellaren Antrieb des Schiffs einbauen"
    ]
   }
  ],
@@ -193,7 +194,7 @@
   "meteor": { "title": "Meteoritenschauer", "text": "Ein Feuerstreif zieht über den Himmel — Trümmer stürzen auf: {building}.", "options": ["Für {cost} Stein verstärken", "Aussitzen ({building} steht 60 s still)"] },
   "rescue": { "title": "Notsignal", "text": "Das Funkgerät fängt aus der nahen Schlucht ein abgehacktes Notsignal auf. Es könnten andere Überlebende sein — oder nur eine Bake, die immer noch sendet.", "options": ["2 untätige Kolonisten schicken (3 Min.)", "Ignorieren"] },
   "rescue_ines": { "title": "Ein abgerissener Notruf", "text": "Über das Klirren von Metall hinweg knistert eine Frauenstimme aus dem Funkgerät: „Hier ist … Kapsel drei, Ines … meine Kapsel steckt in einer Gletscherspalte fest … ich habe Werkzeug, aber keine Luft. Bitte beeilt euch.“", "options": ["Mara und Juno fahren hin (2 Min., keine Arbeiter nötig)", "Später (das Signal wiederholt sich)"] },
-  "choice6": { "title": "Wessen Zuhause ist das?", "text": "Alle sind da. Die Glimmer sind Wächter, und jedes Stück Xenokristall, das wir benutzen, stammt aus dem, was sie bewachen. Der Kern der Bake reicht nur für eines: die Bake zum Leuchten bringen oder ein Schiff antreiben.", "options": ["Auf Xenokristall verzichten und mit einem Schiff fortgehen", "Xenokristall behalten und bleiben"] },
+  "choice6": { "title": "Wessen Zuhause ist das?", "text": "Alle sind da. Die Glimmer sind Wächter, und jedes Stück Xenokristall, das wir benutzen, stammt aus dem, was sie bewachen. Der Kern der Bake reicht nur für eines: die Bake zum Leuchten bringen oder ein Schiff antreiben. Zum Fortgehen müssen die fünf Module des Schiffs fertig sein.", "options": ["Auf Xenokristall verzichten und mit einem Schiff fortgehen", "Xenokristall behalten und bleiben", "Noch nicht – erst das Schiff fertig bauen"] },
   "envoy": { "title": "Gesandter des Konzerns", "text": "Ein Shuttle mit dem Helion-Logo landet auf dem Platz. Der Gesandte ist höflich: Die Schürfrechte auf diesem Planeten gehören dem Konzern, aber solange Sie pünktlich {demand} zahlen, ist der Konzern bereit, Ihren Vertragsbruch „vorübergehend“ zu übersehen.", "options": ["{demand} zahlen", "Ablehnen (bisher {refusals}-mal abgelehnt)"] }
  }
 }

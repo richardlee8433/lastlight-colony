@@ -1105,6 +1105,21 @@
     ]
   },
   {
+    "id": "shipyard",
+    "name": "船塢",
+    "stage": 3,
+    "kind": "ship",
+    "maxLevel": 1,
+    "desc": "造船的地方。船分六個模組，一個一個裝上去：船體、導航、維生、長程補給、燃料，最後是星際引擎。導航以後的模組要用到殖民地造不出來的進口品。",
+    "requires": {
+      "scene": "c3-ship"
+    },
+    "baseCost": {
+      "rock": 300,
+      "parts": 100
+    }
+  },
+  {
     "id": "trade_post",
     "name": "交易站",
     "stage": 4,

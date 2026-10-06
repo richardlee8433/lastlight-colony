@@ -16,6 +16,7 @@ import * as A from '../engine/actions';
 import { resolveEvent } from '../engine/events';
 import * as G from '../engine/governance';
 import * as M from '../engine/market';
+import { MODULES, READY_MODS, buildModule } from '../engine/ship';
 import { setMood } from '../audio/audio';
 import { setFormGetter } from '../i18n';
 
@@ -119,6 +120,16 @@ function migrate(s: GameState) {
   if (!s.exp) { s.exp = newExp(); if (s.stage >= 4) { s.exp.count = 1; s.exp.blueprints = ['filter']; } }
   // v0.6 對話與日誌：已經過去的里程碑不補播
   migrateDialogs(s);
+  // v0.70 船塢：第 5 章以後的存檔可能沒播過 c3-ship（只在第 3～4 章觸發），視為討論過造船，船塢才蓋得了
+  s.ship ??= { mods: 0 };
+  const seen = (s.story.seen ??= []);
+  if (s.stage >= 5 && !seen.includes('c3-ship')) seen.push('c3-ship');
+  // 舊版「離開」是在信標第 4、5 段造船：已經選了離開的存檔，船塢與模組 I～V 視為完成，接著裝星際引擎
+  if (s.story.choice6 === 'leave') {
+    if (!built(s, 'shipyard')) s.b.shipyard.level = 1;
+    s.ship.mods = Math.max(s.ship.mods, s.finished ? MODULES.length : READY_MODS);
+    for (const id of ['c3-shipyard', 'c3-hull', 'c4-nav', 'c4-life', 'c5-supplies', 'c5-ship-ready']) if (!seen.includes(id)) seen.push(id);
+  }
   s.notices = [];
   if (s.pendingNotice) { notify(s, s.pendingNotice, undefined, 'info'); delete s.pendingNotice; }
 }
@@ -156,6 +167,9 @@ interface Store {
   fulfill: () => void;
   buyGood: (k: M.Good) => void;
   sellGood: (k: any) => void;
+  buildModule: () => void;
+  /** 第 6 章選了「先等等」之後，從船塢面板重新打開抉擇 */
+  reopenChoice: () => void;
   signal: () => void;
   setTax: (n: number) => void;
   toggleCharter: (id: string) => void;
@@ -208,6 +222,8 @@ export const useGame = create<Store>((set, get) => {
     fulfill: () => run((s) => G.fulfillContract(s)),
     buyGood: (k) => run((s) => M.buyGood(s, k)),
     sellGood: (k) => run((s) => M.sellGood(s, k)),
+    buildModule: () => run((s) => buildModule(s)),
+    reopenChoice: () => run((s) => { if (!s.story.choice6 && s.ship.wait !== undefined && !s.events.active) s.events.active = { kind: 'choice6' }; }),
     signal: () => run((s) => G.signalTrade(s, 5)),
     setTax: (n) => run((s) => G.setTax(s, n)),
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),

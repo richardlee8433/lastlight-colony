@@ -10,6 +10,7 @@ import { Governance } from './Governance';
 import { weaponShare, weaponRatio } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
 import { buildingURL } from './assets';
+import { ShipPanel } from './ShipPanel';
 import { EXP_TEAM, EXP_TIME, FRAGS_PER_BP, expBlock, fragChance, nextBlueprint } from '../engine/expedition';
 
 export function BuildingPanel() {
@@ -58,6 +59,7 @@ export function BuildingPanel() {
         </section>
       )}
       {L > 0 && id === 'forge' && s.stage >= 4 && <ForgeSplit />}
+      {L > 0 && id === 'shipyard' && <ShipPanel />}
       {L > 0 && id === 'security' && <Defense />}
       {L > 0 && id === 'med_bay' && <MedBay />}
       {L > 0 && id === 'expedition' && <Expedition />}

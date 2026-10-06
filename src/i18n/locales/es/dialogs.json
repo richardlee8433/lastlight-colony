@@ -252,6 +252,24 @@
   "Mara, ya estás contando cuánto tiempo otra vez.",
   "Estoy contando cuándo toca cambiar el filtro."
  ], "log": "Alguien volvió a preguntar si podríamos construir una nave. Ines dijo: el casco, sí; el motor, no. Mara dijo que estaba contando filtros, pero lo que tenía en la mano no era un filtro." },
+ "c3-shipyard": { "lines": [
+  "(Los cimientos del astillero están puestos. Entre los andamios vacíos solo sopla el viento.)",
+  "¿Aquí va a haber una nave algún día?",
+  "Sí. En teoría.",
+  "Otra vez en teoría.",
+  "El casco sí podemos hacerlo. Ya lo dije.",
+  "(se queda mirando los andamios vacíos un largo rato) ...Primero, el esqueleto."
+ ], "log": "Construimos un astillero. Ahora mismo solo hay andamios y viento. Ines dice que «en teoría» habrá una nave. Mara se quedó mirando mucho rato. Dejo esta página en blanco hasta que algo atraque aquí de verdad." },
+ "c3-hull": { "lines": [
+  "(El esqueleto del casco ya está en pie. Se ve desde cualquier rincón del campamento.)",
+  "Treinta años arreglando vagonetas de mina. Es la primera vez que arreglo algo que todavía no ha nacido.",
+  "¡Es enorme! ...Vale, más pequeña de lo que pensaba.",
+  "Lo pequeño es lo que vuela.",
+  "¿Y el motor?",
+  "Sigo sin planos. La navegación y el soporte vital sí puedo hacerlos... si tuviéramos electrónica.",
+  "¿Y a quién se la compramos?",
+  "Ni idea. En este planeta no hay tiendas."
+ ], "log": "El esqueleto de la nave ya está en pie. Teo dice que es la primera vez que arregla algo que todavía no ha nacido. Ines dice que nos falta electrónica, pero en este planeta no hay tiendas." },
  "c3-outpost": { "lines": [
   "La radio del puesto avanzado capta algo raro... como estática, pero con ritmo.",
   "Espera. Conozco este ritmo. ¡Es la señal que nos llevó a K-7!",
@@ -322,6 +340,21 @@
   "Piezas os puedo vender. La nave tendréis que construirla vosotros.",
   "(mira hacia los restos) ...Entendido."
  ], "log": "Le pregunté a la Urraca si podía llevarnos. Dijo que llevar trabajadores fugados es tráfico de personas. Nos vende piezas, pero la nave tenemos que construirla nosotros. Mara echó un vistazo a los restos. Creo que ya sabía la respuesta." },
+ "c4-nav": { "lines": [
+  "La navegación está instalada. Ahora la nave sabe dónde está.",
+  "Más de lo que sabemos nosotros.",
+  "¿Y sabe adónde va?",
+  "Eso pregúntaselo a la piloto.",
+  "(Mara no responde.)"
+ ] },
+ "c4-life": { "lines": [
+  "(Teo coloca un filtro viejo en el módulo de soporte vital de la nave.)",
+  "¿Eso es... el filtro de Wheezy?",
+  "El de repuesto. Nos sacó de los peores días. A bordo debería haber algo conocido.",
+  "No cumple la especificación.",
+  "Lo modifiqué.",
+  "...Ahora encaja."
+ ], "log": "El soporte vital de la nave está instalado. Teo también puso el filtro de repuesto de Wheezy. Dice que a bordo debería haber algo conocido." },
  "c4-warn": { "lines": [
   "Informe del puesto avanzado— en la llanura... muchísimas luces. Vienen de todos los cúmulos de cristal.",
   "¿Cuántas?",
@@ -536,6 +569,26 @@
   "Cuando esto deje de ser de la corporación. Quizá.",
   "...Construid bien vuestra nave."
  ], "log": "Desde que nos aliamos con Helion, la Urraca dice que ya no vendrá. No va donde manda Helion. Sus últimas palabras: construid bien vuestra nave." },
+ "c5-supplies": { "lines": [
+  "(Las cajas de suministros suben a bordo, una tras otra.)",
+  "(mete un cuadernillo fino en la última caja)",
+  "¿Qué es eso?",
+  "Una copia del diario. Vaya donde vaya la nave, lo que nos pasó tiene que ir con ella.",
+  "...Ponlo más arriba. Que no se aplaste."
+ ], "log": "Los suministros ya están a bordo. Metí una copia del diario en la última caja. Mara me dijo que la pusiera más arriba para que no se aplastara." },
+ "c5-ship-ready": { "lines": [
+  "(Todas las luces del astillero están encendidas. A la nave solo le falta un motor.)",
+  "Casco, navegación, soporte vital, suministros, combustible. Todo listo.",
+  "Solo le falta un corazón.",
+  "Entonces... ¿de verdad podemos irnos?",
+  "Sigo sin planos para el motor.",
+  "(Todos miran a Mara.)",
+  "...Todavía no hace falta decidir.",
+  "¡Entonces al menos podemos ponerle nombre! ¡La «Mara»!",
+  "Denegado.",
+  "¡La «Fría»!",
+  "Denegado."
+ ], "log": "A la nave solo le falta el motor. Mara dice que todavía no hace falta decidir. Propuse dos nombres; los dos, denegados. Seguiré pensando." },
  "c5-voss-leave": { "lines": [
   "La nave del enviado sale mañana. Me voy con ella.",
   "Podría quedarse.",
@@ -722,7 +775,8 @@
   "La Alianza respondió. Si nos vamos, sus naves pueden recogernos. Si nos quedamos, quieren la mitad del xenocristal.",
   "Si seguimos usándolo, los Glimmers seguirán viniendo. Nos convertiremos en la Lastlight.",
   "Ines, ¿y una nave?",
-  "Se puede. Las piezas del núcleo de la baliza resuelven el problema del motor. Pero solo alcanza para una cosa: la baliza o la nave.",
+  "A la Firstlight solo le falta el motor. El núcleo de la baliza lo resuelve. Pero solo alcanza para una cosa: la baliza o la nave.",
+  "La nave aún no está terminada. E incluso terminada, el motor solo puede usar el núcleo de la baliza. Alcanza para una sola cosa: la baliza o la nave.",
   "Si intentamos irnos, Helion no nos dejará. La nave de guerra está ahí mismo, en órbita.",
   "Si intentamos irnos, Helion dirá que no hemos pagado lo que debemos. Igual que en F8.",
   "Mara, tú quieres irte, ¿verdad? Lia.",
@@ -736,7 +790,7 @@
  "c6-leave": { "lines": [
   "Nos vamos. Les devolvemos el xenocristal.",
   "(cerrando los ojos) Gracias.",
-  "Desmontamos el núcleo de la baliza y lo adaptamos como motor de la nave. Necesito a todo el que pueda sostener una herramienta.",
+  "Sacamos el núcleo de la baliza y lo ponemos en la Firstlight. Necesito a todo el que pueda sostener una herramienta.",
   "(le da su llave torcida a Juno) Tómala. La vas a necesitar en la nave.",
   "Pero esta es tu...",
   "Soy demasiado viejo para arreglar una nave entera. Pero te enseñé a sostenerla.",
@@ -758,6 +812,26 @@
   "Dorothy era el nombre de mi madre. Siempre decía que las herramientas son de quien sabe usarlas.",
   "...Solo a ti. Tráela de vuelta."
  ], "log": "Decidimos quedarnos. Teo le dio su llave inglesa a Ines. Ines le prestó a Dorothy a Teo, y dijo que Dorothy era el nombre de su madre. Los dos dicen que es solo temporal." },
+ "c6-name": { "lines": [
+  "Ya sé cómo se va a llamar la nave.",
+  "¿Otro para denegar?",
+  "La Lastlight fue la última luz. La nuestra se llamará Firstlight: la primera.",
+  "(Un largo silencio.)",
+  "...La Firstlight. Aprobado.",
+  "Es la primera vez que la oigo decir «aprobado»."
+ ], "log": "Nuestra nave tiene nombre: la Firstlight. La Lastlight fue la última luz; nosotros seremos la primera. Mara lo aprobó. Teo dice que es la primera vez que la oye decir «aprobado»." },
+ "c6-wait": { "lines": [
+  "Primero terminamos la nave.",
+  "Pero...",
+  "No quiero elegir quedarme solo porque no tuvimos otra opción.",
+  "Entonces daos prisa. Necesito combustible. Y mucha paciencia."
+ ], "log": "Mara dice que primero terminamos la nave y luego decidimos. No quiere elegir quedarse solo porque no hubo otra opción." },
+ "c6-stay-ship": { "lines": [
+  "(La Firstlight se queda en el astillero, con el hueco del motor vacío.)",
+  "¿Y la Firstlight?",
+  "Se queda ahí.",
+  "Sabemos que podemos irnos cuando queramos. Por eso quedarnos cuenta."
+ ], "log": "La Firstlight se queda en el astillero. Mara dice que, precisamente porque podríamos irnos cuando quisiéramos, quedarnos cuenta." },
  "c6-blocked": { "lines": [
   "(El motor de la nave se enciende por primera vez. La radio crepita.)",
   "Gracias por su tiempo. Según el contrato, la colonia tiene deudas pendientes. Hasta que se salden por completo, nadie puede salir del puerto.",

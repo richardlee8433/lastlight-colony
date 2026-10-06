@@ -522,6 +522,13 @@ const stall = (k, x, y, col) => {
   for (let i = 1; i < 15; i += 3) k.vl(x - 1 + i, y - 18, y - 13, 0xfff4e8);
 };
 
+function drawShipyard(k) {
+  const { M } = k;
+  k.box(-34, 4, 68, 20, 2, M.concrete, { seam: 17 });
+  k.lattice(-26, -2, 4, 30).lattice(22, -2, 4, 30);
+  k.hl(-26, 26, -32, M.yellow[2]).hl(-26, 26, -31, M.yellow[1]);
+  k.lamp(-30, 2, 0xffe08a, 6, 0.5).lamp(30, 2, 0xffe08a, 6, 0.5);
+}
 const B = (id, name, stage, res, draw, hub = false) => ({ id, name, stage, res, draw, hub });
 
 export const BUILDINGS = [
@@ -1053,6 +1060,9 @@ export const BUILDINGS = [
     k.glow(15, -24, 24, 0xffd54a, 0.4);
     if (t >= 2) k.crate(24, 4, 6).crate(25, -1, 5);
   }),
+  // 船塢：手繪圖（shipyard、shipyard_1～3）還沒載入時的備用像素圖——地基、兩座支架、起重機橫樑
+  B('shipyard', '船塢', 3, 'parts', drawShipyard),
+  ...[1, 2, 3].map((n) => B('shipyard_' + n, '船塢', 3, 'parts', drawShipyard)),
   B('spaceport', '太空港', 5, 'parts', (k, t) => {
     const { M } = k;
     k.box(-28, 4, 56, 24, 2, M.concrete, { seam: 14 });

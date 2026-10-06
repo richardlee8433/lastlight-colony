@@ -5,7 +5,7 @@ import type { CharacterId } from '../art/portraitArt';
 
 export type Speaker = CharacterId | 'narr' | 'colonist' | 'survivor' | 'marine' | 'youth' | 'alliance' | 'trader';
 /** 第 5 章起的路線：coop 合作、resist 抵抗、alien／alliance 抵抗路線裡的策略傾向 */
-export type Route = 'coop' | 'resist' | 'alien' | 'alliance' | 'rifle';  // rifle：外星科技傾向＋研究完異晶槍
+export type Route = 'coop' | 'resist' | 'alien' | 'alliance' | 'rifle' | 'ship' | 'noship';  // rifle：外星科技傾向＋研究完異晶槍；ship／noship：船的模組 I～V 完成與否
 export type Line = [Speaker, string, string, Route?];
 export interface SceneText { lines: Line[]; log?: [string, string] }
 
@@ -363,6 +363,30 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ['又有人問能不能造船。伊涅絲說船殼可以，引擎不行。瑪拉說她在算濾網，但她手上拿的不是濾網。', 'Someone asked again if we could build a ship. Ines said the hull, yes, the engine, no. Mara said she was counting filters, but what she was holding was not a filter.'],
   },
+  'c3-shipyard': {
+    lines: [
+      ["narr", "（船塢的地基打好了。空蕩蕩的支架之間，只有風）", "(The shipyard's foundation is laid. Between the empty frames, there is only wind.)"],
+      ["juno", "這裡以後會停一艘船？", "A ship's going to sit here someday?"],
+      ["ines", "會。理論上。", "Yes. In theory."],
+      ["teo", "又是理論上。", "In theory again."],
+      ["ines", "船殼可以。我說過了。", "The hull, we can do. I said so."],
+      ["mara", "（看著空支架，很久）……先蓋骨架。", "(stares at the empty frames for a long time) ...Start with the skeleton."],
+    ],
+    log: ["我們蓋了船塢。現在裡面只有支架和風。伊涅絲說「理論上」會有一艘船。瑪拉站在那裡看了很久。我把這一頁留白，等它真的停進來。", "We built a shipyard. Right now it holds nothing but frames and wind. Ines says there will be a ship \"in theory.\" Mara stood there looking for a long time. I'm leaving this page blank until something actually docks here."],
+  },
+  'c3-hull': {
+    lines: [
+      ["narr", "（船體骨架立起來了，從營地的每個角落都看得到）", "(The hull frame stands upright. It can be seen from every corner of the camp.)"],
+      ["teo", "我修了三十年礦車。第一次修一個還沒出生的東西。", "Thirty years fixing mine carts. First time I've fixed something that isn't born yet."],
+      ["juno", "它好大！……好吧，比我想的小。", "It's huge! ...Okay, smaller than I thought."],
+      ["ines", "小才飛得起來。", "Small is what flies."],
+      ["mara", "引擎呢？", "And the engine?"],
+      ["ines", "還是沒有圖紙。導航和維生做得出來——如果有電子元件的話。", "Still no blueprints. Navigation and life support I can build — if we had electronics."],
+      ["juno", "跟誰買？", "Buy them from who?"],
+      ["ines", "不知道。這顆星球上沒有商店。", "No idea. There are no shops on this planet."],
+    ],
+    log: ["船的骨架立起來了。提歐說，這是他第一次修一個還沒出生的東西。伊涅絲說還缺電子元件，可是這顆星球上沒有商店。", "The ship's skeleton is up. Teo says it's the first time he's fixed something that isn't born yet. Ines says we still need electronics, but there are no shops on this planet."],
+  },
   'c3-outpost': {
     lines: [
       ['juno', '前哨站的收音機收到怪聲音……像雜訊，但是有節奏。', 'The outpost radio is picking up something strange... like static, but with a rhythm.'],
@@ -454,6 +478,26 @@ export const SCENES: Record<string, SceneText> = {
       ["mara", "（看向殘骸堆）……知道了。", "(looks toward the wreckage) ...Understood."],
     ],
     log: ["我問喜鵲能不能載我們走。他說，載逃跑的契約工是走私人口。他願意賣零件，船要我們自己造。瑪拉看了殘骸堆一眼。我覺得她早就知道答案了。", "I asked the Magpie if he could take us away. He said carrying runaway contract workers is human smuggling. He'll sell us parts, but we have to build the ship ourselves. Mara glanced at the wreckage. I think she already knew the answer."],
+  },
+  'c4-nav': {
+    lines: [
+      ["ines", "導航裝好了。這艘船現在知道自己在哪裡。", "Navigation's installed. The ship knows where it is now."],
+      ["juno", "比我們厲害。", "That's more than we do."],
+      ["teo", "它也知道自己要去哪裡嗎？", "Does it know where it's going?"],
+      ["ines", "那要問駕駛。", "Ask the pilot."],
+      ["narr", "（瑪拉沒有回答）", "(Mara doesn't answer.)"],
+    ],
+  },
+  'c4-life': {
+    lines: [
+      ["narr", "（提歐把一個舊濾網裝進船上的維生艙）", "(Teo fits an old filter into the ship's life-support bay.)"],
+      ["juno", "那是……阿喘的濾網？", "Is that... Wheezy's filter?"],
+      ["teo", "備用的。它陪我們撐過最難的那幾天。上了船，也該有個認識的東西。", "The spare. It got us through the worst days. Something on board should be familiar."],
+      ["ines", "規格不合。", "Wrong spec."],
+      ["teo", "我改過了。", "I modified it."],
+      ["ines", "……合了。", "...Now it fits."],
+    ],
+    log: ["船的維生系統裝好了。提歐把阿喘的備用濾網也裝了上去。他說，上了船，也該有個認識的東西。", "The ship's life support is installed. Teo put Wheezy's spare filter in too. He says something on board should be familiar."],
   },
   'c4-warn': {
     lines: [
@@ -736,6 +780,32 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ["我們跟赫利昂合作以後，喜鵲說他不會再來了。赫利昂的地盤，他不去。最後他說：好好造你們的船。", "After we sided with Helion, the Magpie said he won't come anymore. He doesn't go where Helion runs things. His last words: build your ship well."],
   },
+  'c5-supplies': {
+    lines: [
+      ["narr", "（補給箱一箱一箱搬上船）", "(Supply crates go aboard, one after another.)"],
+      ["juno", "（把一本薄薄的冊子塞進最後一箱）", "(tucks a thin booklet into the last crate)"],
+      ["ines", "那是什麼？", "What's that?"],
+      ["juno", "日誌的備份。不管船去哪裡，我們發生過的事都要跟著。", "A copy of the log. Wherever the ship goes, what happened to us goes with it."],
+      ["mara", "……放上面一點。別被壓到。", "...Put it nearer the top. Don't let it get crushed."],
+    ],
+    log: ["補給裝船了。我把日誌的備份放進最後一箱。瑪拉叫我放上面一點，別被壓到。", "Supplies are aboard. I put a copy of the log in the last crate. Mara told me to put it nearer the top so it doesn't get crushed."],
+  },
+  'c5-ship-ready': {
+    lines: [
+      ["narr", "（船塢裡的燈全亮了。船只差一具引擎）", "(Every light in the shipyard is on. The ship lacks only an engine.)"],
+      ["ines", "船殼、導航、維生、補給、燃料。都齊了。", "Hull, navigation, life support, supplies, fuel. All there."],
+      ["teo", "只差一顆心臟。", "Just missing a heart."],
+      ["juno", "那我們……真的可以走了？", "So we... can actually leave?"],
+      ["ines", "引擎還是沒有圖紙。", "Still no blueprint for the engine."],
+      ["narr", "（所有人看向瑪拉）", "(Everyone looks at Mara.)"],
+      ["mara", "……還不用決定。", "...We don't have to decide yet."],
+      ["juno", "那至少可以取名字吧？「瑪拉號」！", "Then can we at least name it? The Mara!"],
+      ["mara", "駁回。", "Denied."],
+      ["juno", "「冷面號」！", "The Frosty!"],
+      ["mara", "駁回。", "Denied."],
+    ],
+    log: ["船只差引擎了。瑪拉說還不用決定。我提了兩個船名，都被駁回了。我會繼續想。", "The ship needs only an engine. Mara says we don't have to decide yet. I suggested two names; both denied. I'll keep thinking."],
+  },
   'c5-voss-leave': {
     lines: [
       ['voss', '使者的船明天離開，我跟著走。', "The envoy's ship leaves tomorrow. I am going with it."],
@@ -981,7 +1051,8 @@ export const SCENES: Record<string, SceneText> = {
       ['juno', '聯盟回訊了。他們說，如果我們要走，他們的船可以接應。如果要留，他們要分一半的異晶。', 'The Alliance replied. If we leave, their ships can meet us. If we stay, they want half the xenocrystal.', 'alliance'],
       ['sefa', '如果繼續用，微光獸會一直來。我們會變成末光號。', 'If we keep using it, the glimmers will keep coming. We will become the Lastlight.'],
       ['teo', '伊涅絲，船呢？', 'Ines, what about a ship?'],
-      ['ines', '有了。引擎的問題，信標的核心零件可以解決。但只夠一樣：信標，或船。', 'We can. The beacon\'s core parts solve the engine problem. But there\'s only enough for one: the beacon, or the ship.'],
+      ['ines', '曙光號只差引擎。信標的核心可以解決。但只夠一樣：信標，或船。', "The Firstlight only needs an engine. The beacon's core can solve that. But it's enough for one thing: the beacon, or the ship.", 'ship'],
+      ['ines', '船還沒造完。就算造完，引擎也只能用信標的核心。只夠一樣：信標，或船。', "The ship isn't finished. Even when it is, the engine can only use the beacon's core. Enough for one thing: the beacon, or the ship.", 'noship'],
       ['voss', '如果要走，赫利昂不會讓我們走。戰艦就在軌道上。', 'If we try to leave, Helion will not let us. The warship is right there in orbit.', 'resist'],
       ['teo', '如果要走，赫利昂會說我們欠的還沒還清。跟 F8 一樣。', "If we try to leave, Helion will say we haven't paid off what we owe. Same as F8.", 'coop'],
       ['juno', '瑪拉，妳想走，對不對？莉亞。', 'Mara, you want to go, don\'t you? Lia.'],
@@ -997,7 +1068,7 @@ export const SCENES: Record<string, SceneText> = {
     lines: [
       ['mara', '我們走。把異晶還給牠們。', "We go. We give the xenocrystal back to them."],
       ['sefa', '（閉上眼睛）謝謝。', '(closing her eyes) Thank you.'],
-      ['ines', '信標的核心拆下來，改裝進船的引擎。我需要所有會拿工具的人。', "We strip the beacon core and refit it into the ship's engine. I need everyone who can hold a tool."],
+      ['ines', '信標的核心拆下來，裝進曙光號。我需要所有會拿工具的人。', "We pull the beacon's core and put it in the Firstlight. I need everyone who can hold a tool."],
       ['teo', '（把那支彎掉的扳手遞給朱諾）拿去。船上用得到。', '(handing his bent wrench to Juno) Take it. You\'ll need it on the ship.'],
       ['juno', '可是這是你的……', "But this is your..."],
       ['teo', '我老了，修不了一整艘船。但我教過妳怎麼拿。', "I'm too old to fix a whole ship. But I taught you how to hold it."],
@@ -1024,7 +1095,36 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ['我們決定留下來。提歐把扳手給了伊涅絲。伊涅絲把桃樂絲借給提歐，她說桃樂絲是她媽媽的名字。他們兩個都說只是暫時的。', 'We decided to stay. Teo gave his wrench to Ines. Ines lent Dorothy to Teo, and said Dorothy was her mother\'s name. Both of them say it\'s only temporary.'],
   },
-  // 放棄異晶的結尾（造船完成時）
+  'c6-name': {
+    lines: [
+      ["juno", "我想好船的名字了。", "I've thought of the ship's name."],
+      ["mara", "又要駁回了嗎？", "Am I denying another one?"],
+      ["juno", "末光號是最後的光。我們的船，就叫「曙光號」。", "The Lastlight was the last light. Ours will be the Firstlight."],
+      ["narr", "（很久）", "(A long silence.)"],
+      ["mara", "……曙光號。准了。", "...The Firstlight. Approved."],
+      ["teo", "第一次聽到她說「准了」。", "First time I've ever heard her say \"approved.\""],
+    ],
+    log: ["我們的船有名字了：曙光號。末光號是最後的光，我們要做第一道。瑪拉說准了。提歐說，這是他第一次聽到她說准了。", "Our ship has a name: the Firstlight. The Lastlight was the last light; we'll be the first. Mara approved it. Teo says it's the first time he's ever heard her say \"approved.\""],
+  },
+  'c6-wait': {
+    lines: [
+      ["mara", "先把船造完。", "We finish the ship first."],
+      ["juno", "可是……", "But..."],
+      ["mara", "我不要因為沒得選，才選留下。", "I won't choose to stay just because we had no other choice."],
+      ["ines", "那就快點。我需要燃料，還有很多耐心。", "Then hurry. I need fuel, and a lot of patience."],
+    ],
+    log: ["瑪拉說，先把船造完再決定。她不要因為沒得選才選留下。", "Mara says we finish the ship before we decide. She won't choose to stay just because there was no other choice."],
+  },
+  'c6-stay-ship': {
+    lines: [
+      ["narr", "（曙光號留在船塢裡，引擎的位置空著）", "(The Firstlight stays in the shipyard, the engine bay empty.)"],
+      ["juno", "那曙光號呢？", "What about the Firstlight?"],
+      ["mara", "留在那裡。", "It stays there."],
+      ["mara", "我們知道自己隨時可以走。所以留下來，才算數。", "We know we could leave any time. That's what makes staying count."],
+    ],
+    log: ["曙光號留在船塢。瑪拉說，正因為隨時可以走，留下來才算數。", "The Firstlight stays in the shipyard. Mara says that because we could leave any time, staying counts."],
+  },
+  // 放棄異晶的結尾（船的星際引擎第一次點火）
   'c6-blocked': {
     lines: [
       ['narr', '（船的引擎第一次點火。通訊器響起）', '(The ship\'s engine fires for the first time. The comm crackles.)', 'coop'],

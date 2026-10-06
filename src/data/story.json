@@ -280,10 +280,8 @@
         "label": "人口達到 100"
       },
       {
-        "type": "level",
-        "id": "orbital_beacon",
-        "amount": 5,
-        "label": "完成五段建造：軌道信標，或用它的核心造船"
+        "type": "finish",
+        "label": "點亮軌道信標，或裝上船的星際引擎"
       }
     ]
   }

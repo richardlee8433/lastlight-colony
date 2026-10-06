@@ -51,6 +51,7 @@ const buildings: Record<string, B> = {
   colony_core: { name: 'Colony Core', desc: 'Command Lv4. A xenocrystal reactor — the colony is no longer just surviving. Requires population 40 and 2 raids repelled.' },
   admin: { name: 'Administration Hall', desc: 'The colony council chamber. Unlocks taxes and colony charters; taxes bring in credits, but every tax level costs 5 morale.', nodes: {
     council: ['Expanded Council', 'Charter slots +1'] } },
+  shipyard: { name: 'Shipyard', desc: 'Where the ship gets built, one module at a time: hull, navigation, life support, long-range supplies, fuel, and finally the interstellar drive. From navigation on, modules need imported goods the colony can\'t make.' },
   trade_post: { name: 'Trading Post', desc: 'The colony market. Workers earn credits here, and you can trade with passing merchants: sell metal, tools, parts and nutrient, buy goods the colony can\'t make. Each level holds 100 more items in the cargo hold.', nodes: {
     prod_30: ['Night Market', 'Output +30%'], cap_2: ['More Stalls', 'Worker cap +2'] } },
   spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; rebuild the Tech Institute into a Xenology Institute to answer that mysterious signal.' },
@@ -147,7 +148,7 @@ const chapters = [
       'Helion\'s warship is still up there. So is the signal that led us here. This planet is no longer a hiding place. It is a coordinate everyone knows.',
       'Build the Orbital Beacon and find the source of the signal. Then we decide whose home this is.',
     ],
-    goals: ['Build the Governor\'s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Complete all five phases: the Orbital Beacon, or a ship built from its core'],
+    goals: ['Build the Governor\'s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Light the Orbital Beacon, or install the ship\'s interstellar drive'],
   },
 ];
 
@@ -169,8 +170,8 @@ const events: Record<string, { title: string; text: string; options: string[] }>
   },
   choice6: {
     title: 'Whose Home Is This?',
-    text: 'Everyone is here. The glimmers are guards, and every piece of xenocrystal we use comes out of what they guard. The beacon core is only enough for one thing: lighting the beacon, or powering a ship.',
-    options: ['Give up xenocrystal and build a ship to leave', 'Keep xenocrystal and stay'],
+    text: 'Everyone is here. The glimmers are guards, and every piece of xenocrystal we use comes out of what they guard. The beacon core is only enough for one thing: lighting the beacon, or powering a ship. Leaving requires the ship\'s five modules to be finished.',
+    options: ['Give up xenocrystal and build a ship to leave', 'Keep xenocrystal and stay', 'Not yet — finish the ship first'],
   },
   envoy: {
     title: 'Corporate Envoy',

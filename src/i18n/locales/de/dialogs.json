@@ -252,6 +252,24 @@
   "Mara, du zählst schon wieder, wie lange.",
   "Ich zähle, wann der Filter gewechselt werden muss."
  ], "log": "Jemand hat wieder gefragt, ob wir ein Schiff bauen können. Ines sagte: der Rumpf ja, der Antrieb nein. Mara sagte, sie zählt Filter, aber was sie in der Hand hielt, war kein Filter." },
+ "c3-shipyard": { "lines": [
+  "(Das Fundament der Werft ist gelegt. Zwischen den leeren Gerüsten weht nur der Wind.)",
+  "Hier soll irgendwann ein Schiff stehen?",
+  "Ja. Theoretisch.",
+  "Schon wieder theoretisch.",
+  "Den Rumpf kriegen wir hin. Hab ich gesagt.",
+  "(starrt lange auf die leeren Gerüste) … Erst das Gerippe."
+ ], "log": "Wir haben eine Werft gebaut. Im Moment stehen darin nur Gerüste und Wind. Ines sagt, „theoretisch“ kommt da ein Schiff hinein. Mara hat lange davorgestanden. Ich lasse diese Seite leer, bis hier wirklich etwas anlegt." },
+ "c3-hull": { "lines": [
+  "(Das Rumpfgerippe steht aufrecht. Man sieht es aus jeder Ecke des Lagers.)",
+  "Dreißig Jahre hab ich Grubenloren repariert. Zum ersten Mal repariere ich etwas, das noch gar nicht geboren ist.",
+  "Es ist riesig! … Na gut, kleiner, als ich dachte.",
+  "Klein ist, was fliegt.",
+  "Und der Antrieb?",
+  "Immer noch keine Pläne. Navigation und Lebenserhaltung kann ich bauen – wenn wir Elektronik hätten.",
+  "Und bei wem kaufen?",
+  "Keine Ahnung. Auf diesem Planeten gibt es keine Läden."
+ ], "log": "Das Gerippe des Schiffs steht. Teo sagt, er repariert zum ersten Mal etwas, das noch gar nicht geboren ist. Ines sagt, uns fehlt noch Elektronik, aber auf diesem Planeten gibt es keine Läden." },
  "c3-outpost": { "lines": [
   "Das Funkgerät im Außenposten empfängt etwas Seltsames … wie Rauschen, aber mit Rhythmus.",
   "Moment. Den Rhythmus kenne ich. Das ist das Signal, das uns nach K-7 geführt hat!",
@@ -322,6 +340,21 @@
   "Teile kann ich euch verkaufen. Das Schiff müsst ihr selbst bauen.",
   "(blickt zum Wrack) ... Verstanden."
  ], "log": "Ich habe die Elster gefragt, ob er uns mitnehmen kann. Er sagt, entlaufene Vertragsarbeiter zu fahren ist Menschenschmuggel. Er verkauft uns Teile, aber das Schiff müssen wir selbst bauen. Mara hat zum Wrack geschaut. Ich glaube, sie kannte die Antwort schon." },
+ "c4-nav": { "lines": [
+  "Die Navigation ist eingebaut. Das Schiff weiß jetzt, wo es ist.",
+  "Mehr als wir.",
+  "Weiß es auch, wohin es will?",
+  "Das musst du die Pilotin fragen.",
+  "(Mara antwortet nicht.)"
+ ] },
+ "c4-life": { "lines": [
+  "(Teo setzt einen alten Filter in die Lebenserhaltung des Schiffs ein.)",
+  "Ist das … Wheezys Filter?",
+  "Der Ersatzfilter. Er hat uns durch die schlimmsten Tage gebracht. An Bord sollte etwas sein, das man kennt.",
+  "Passt nicht zur Spezifikation.",
+  "Hab ihn umgebaut.",
+  "… Jetzt passt er."
+ ], "log": "Die Lebenserhaltung des Schiffs ist eingebaut. Teo hat auch Wheezys Ersatzfilter eingesetzt. Er sagt, an Bord sollte etwas sein, das man kennt." },
  "c4-warn": { "lines": [
   "Meldung vom Außenposten— draußen auf der Ebene … so viele Lichter. Aus jedem Kristallhaufen.",
   "Wie viele?",
@@ -536,6 +569,26 @@
   "Wenn das hier nicht mehr dem Konzern gehört. Vielleicht.",
   "... Baut euer Schiff gut."
  ], "log": "Seit wir mit Helion zusammenarbeiten, sagt die Elster, er kommt nicht mehr. Wo Helion das Sagen hat, fliegt er nicht hin. Seine letzten Worte: Baut euer Schiff gut." },
+ "c5-supplies": { "lines": [
+  "(Eine Vorratskiste nach der anderen wird an Bord getragen.)",
+  "(steckt ein dünnes Heft in die letzte Kiste)",
+  "Was ist das?",
+  "Eine Kopie des Logbuchs. Egal, wohin das Schiff fliegt – was uns passiert ist, fliegt mit.",
+  "… Leg es weiter nach oben. Damit es nicht zerdrückt wird."
+ ], "log": "Die Vorräte sind an Bord. Ich habe eine Kopie des Logbuchs in die letzte Kiste gelegt. Mara sagte, ich soll sie weiter nach oben legen, damit sie nicht zerdrückt wird." },
+ "c5-ship-ready": { "lines": [
+  "(Alle Lichter in der Werft brennen. Dem Schiff fehlt nur noch ein Antrieb.)",
+  "Rumpf, Navigation, Lebenserhaltung, Vorräte, Treibstoff. Alles da.",
+  "Fehlt nur noch ein Herz.",
+  "Heißt das … wir können wirklich weg?",
+  "Für den Antrieb gibt es immer noch keinen Plan.",
+  "(Alle sehen Mara an.)",
+  "… Wir müssen noch nicht entscheiden.",
+  "Dann können wir ihm wenigstens einen Namen geben? Die „Mara“!",
+  "Abgelehnt.",
+  "Die „Frost“!",
+  "Abgelehnt."
+ ], "log": "Dem Schiff fehlt nur noch der Antrieb. Mara sagt, wir müssen noch nicht entscheiden. Ich habe zwei Namen vorgeschlagen, beide abgelehnt. Ich denke weiter nach." },
  "c5-voss-leave": { "lines": [
   "Das Schiff des Gesandten fliegt morgen ab. Ich gehe mit.",
   "Sie könnten bleiben.",
@@ -722,7 +775,8 @@
   "Die Allianz hat geantwortet. Wenn wir gehen, können uns ihre Schiffe abholen. Wenn wir bleiben, wollen sie die Hälfte des Xenokristalls.",
   "Wenn wir ihn weiter benutzen, werden die Glimmer immer wieder kommen. Wir werden zur Lastlight.",
   "Ines, was ist mit einem Schiff?",
-  "Geht. Die Kernteile der Bake lösen das Antriebsproblem. Aber es reicht nur für eins: die Bake oder das Schiff.",
+  "Der Firstlight fehlt nur noch der Antrieb. Der Kern der Bake löst das Problem. Aber er reicht nur für eins: die Bake oder das Schiff.",
+  "Das Schiff ist noch nicht fertig. Und selbst dann kann der Antrieb nur den Kern der Bake nutzen. Er reicht nur für eins: die Bake oder das Schiff.",
   "Wenn wir zu gehen versuchen, lässt Helion uns nicht. Das Kriegsschiff ist direkt da oben im Orbit.",
   "Wenn wir zu gehen versuchen, sagt Helion, wir hätten unsere Schulden noch nicht bezahlt. Wie auf F8.",
   "Mara, du willst gehen, oder? Lia.",
@@ -736,7 +790,7 @@
  "c6-leave": { "lines": [
   "Wir gehen. Wir geben ihnen den Xenokristall zurück.",
   "(schließt die Augen) Danke.",
-  "Wir bauen den Kern der Bake aus und machen daraus den Antrieb des Schiffs. Ich brauche jeden, der ein Werkzeug halten kann.",
+  "Wir bauen den Kern der Bake aus und setzen ihn in die Firstlight ein. Ich brauche jeden, der ein Werkzeug halten kann.",
   "(reicht Juno seinen verbogenen Schraubenschlüssel) Nimm ihn. Auf dem Schiff wirst du ihn brauchen.",
   "Aber das ist doch dein …",
   "Ich bin zu alt, um ein ganzes Schiff zu reparieren. Aber ich hab dir beigebracht, wie man ihn hält.",
@@ -758,6 +812,26 @@
   "Dorothy war der Name meiner Mutter. Sie hat immer gesagt, Werkzeug gehört zu den Leuten, die damit umgehen können.",
   "… Nur dir. Bring sie zurück."
  ], "log": "Wir haben beschlossen zu bleiben. Teo hat Ines seinen Schraubenschlüssel gegeben. Ines hat Teo Dorothy geliehen und gesagt, Dorothy war der Name ihrer Mutter. Beide sagen, es ist nur vorübergehend." },
+ "c6-name": { "lines": [
+  "Ich hab einen Namen für das Schiff.",
+  "Lehne ich schon wieder einen ab?",
+  "Die Lastlight war das letzte Licht. Unser Schiff heißt Firstlight – das erste.",
+  "(Lange Stille.)",
+  "… Die Firstlight. Genehmigt.",
+  "Zum ersten Mal höre ich sie „genehmigt“ sagen."
+ ], "log": "Unser Schiff hat einen Namen: Firstlight. Die Lastlight war das letzte Licht, wir werden das erste sein. Mara hat es genehmigt. Teo sagt, er hat sie zum ersten Mal „genehmigt“ sagen hören." },
+ "c6-wait": { "lines": [
+  "Zuerst bauen wir das Schiff fertig.",
+  "Aber …",
+  "Ich will nicht bleiben, nur weil wir keine andere Wahl hatten.",
+  "Dann beeilt euch. Ich brauche Treibstoff. Und sehr viel Geduld."
+ ], "log": "Mara sagt, wir bauen erst das Schiff fertig und entscheiden dann. Sie will nicht bleiben, nur weil es keine andere Wahl gab." },
+ "c6-stay-ship": { "lines": [
+  "(Die Firstlight bleibt in der Werft, der Platz für den Antrieb ist leer.)",
+  "Und die Firstlight?",
+  "Sie bleibt, wo sie ist.",
+  "Wir wissen, dass wir jederzeit gehen könnten. Genau deshalb zählt es, dass wir bleiben."
+ ], "log": "Die Firstlight bleibt in der Werft. Mara sagt, gerade weil wir jederzeit gehen könnten, zählt es, dass wir bleiben." },
  "c6-blocked": { "lines": [
   "(Der Antrieb des Schiffs zündet zum ersten Mal. Das Funkgerät knistert.)",
   "Danke für Ihre Zeit. Laut Vertrag hat die Kolonie offene Schulden. Bis sie vollständig beglichen sind, darf niemand den Hafen verlassen.",

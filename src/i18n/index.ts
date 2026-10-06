@@ -153,6 +153,7 @@ export function tm(m: Msg | string | null | undefined): string {
   if (typeof p.c === 'string') { const [n, d] = charterText(p.c); p.c = n; p.cDesc = d; }
   if (typeof p.kind === 'string') { p.unit = t('unit.' + p.kind); p.kind = raidName(p.kind); }
   if (typeof p.bp === 'string') p.bp = t('blueprint.' + p.bp);
+  if (typeof p.mod === 'string') p.mod = t('mod.' + p.mod);
   return t(m.k, p);
 }
 
