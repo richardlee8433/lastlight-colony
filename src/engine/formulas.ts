@@ -188,7 +188,7 @@ export const clickAmount = (s: GameState, id: string) => 1 + nodeEffect(s, id, '
 export const critChance = (s: GameState, id: string) => 0.05 + nodeEffect(s, id, 'critAdd') + researchEffect(s, 'critAdd');
 export const critMult = (s: GameState, id: string) => 5 * nodeEffect(s, id, 'critMul');
 export const researchSpeed = (s: GameState) =>
-  (built(s, 'databank') ? s.b.databank.workers * levelEff(s, 'databank') : 0) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
+  (built(s, 'databank') ? s.b.databank.workers * levelEff(s, 'databank') : 0) * (1 + nodeEffect(s, 'databank', 'researchSpeed') + researchEffect(s, 'researchAdd'));
 /** 稅收：人口 × 0.02 × 稅率等級（GDD §11），受「企業合約」加成 */
 export const taxIncome = (s: GameState) => (built(s, 'admin') ? s.pop * 0.02 * (s.gov?.tax ?? 0) * (1 + resBonus(s, 'credit')) : 0);
 export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffect(s, 'admin', 'charterSlot') + (built(s, 'governor') ? 1 : 0) : 0);

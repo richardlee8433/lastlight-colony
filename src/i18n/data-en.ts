@@ -66,7 +66,6 @@ const buildings: Record<string, B> = {
 const research: Record<string, [string, string]> = {
   gather_1: ['Gathering I', 'All gathering output +10%'],
   storage_1: ['Standard Shelving', 'All storage +25%'],
-  crit_1: ['Precise Handling', 'All click crit chance +3%'],
   ration_1: ['Lean Recipes', 'Nutrient consumption −10%'],
   process_1: ['Process Tuning', 'Processing speed +20%'],
   gather_2: ['Gathering II', 'All gathering output +10%'],
@@ -75,8 +74,8 @@ const research: Record<string, [string, string]> = {
   arms_line: ['Arms Line', 'Weapon output +30%'],
   weapon_2: ['Weapon Tuning II', 'Weapon attack +2'],
   crystal_armor: ['Crystal Armor', 'Marine HP +5'],
-  crystal_ration: ['Emergency Rations', 'Nutrient consumption −10%'],
-  crystal_resonance: ['Crystal Resonance', 'All gathering output +10%'],
+  crystal_ration: ['Field Medicine', 'Injured recover 50% faster'],
+  crystal_resonance: ['Crystal Resonance', 'Research speed +25%'],
   bp_filter: ['High-Pressure Filter', 'Blueprint tech: oxygen buildings produce +50%'],
   bp_resonance: ['Resonance Tools', 'Blueprint tech: building and upgrading costs 15% less'],
   warehouse: ['Warehouse Expansion', 'All storage +50%'],

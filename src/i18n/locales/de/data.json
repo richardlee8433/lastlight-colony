@@ -56,7 +56,6 @@
  "research": {
   "gather_1": ["Sammeln I", "Alle Sammelerträge +10%"],
   "storage_1": ["Normregale", "Alle Lager +25%"],
-  "crit_1": ["Präzises Handwerk", "Volltrefferchance aller Klicks +3%"],
   "ration_1": ["Sparsame Rezepte", "Nährstoffverbrauch −10%"],
   "process_1": ["Prozessoptimierung", "Verarbeitungstempo +20%"],
   "gather_2": ["Sammeln II", "Alle Sammelerträge +10%"],
@@ -65,8 +64,8 @@
   "arms_line": ["Waffenfertigung", "Waffenertrag +30%"],
   "weapon_2": ["Waffentuning II", "Waffenangriff +2"],
   "crystal_armor": ["Kristallpanzer", "Marine-LP +5"],
-  "crystal_ration": ["Notrationen", "Nährstoffverbrauch −10%"],
-  "crystal_resonance": ["Kristallresonanz", "Alle Sammelerträge +10%"],
+  "crystal_ration": ["Feldmedizin", "Verletzte erholen sich 50 % schneller"],
+  "crystal_resonance": ["Kristallresonanz", "Forschungsgeschwindigkeit +25%"],
   "bp_filter": ["Hochdruckfilter", "Bauplan-Technik: Sauerstoffgebäude +50% Ertrag"],
   "bp_resonance": ["Resonanzwerkzeug", "Bauplan-Technik: Bauen und Aufrüsten kosten 15% weniger"],
   "warehouse": ["Lagererweiterung", "Alle Lager +50%"],

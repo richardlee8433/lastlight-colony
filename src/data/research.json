@@ -16,21 +16,6 @@
     "stage": 3
   },
   {
-    "id": "crit_1",
-    "name": "精準操作",
-    "desc": "所有點擊暴擊率 +3%",
-    "cost": {
-      "parts": 120
-    },
-    "time": 90,
-    "effect": {
-      "critAdd": 0.03
-    },
-    "branch": "prod",
-    "tier": 1,
-    "stage": 3
-  },
-  {
     "id": "gather_2",
     "name": "採集效率 II",
     "desc": "所有採集產量 +10%",
@@ -80,23 +65,20 @@
       "clickAdd": 1
     },
     "branch": "prod",
-    "tier": 2,
-    "stage": 3,
-    "requires": [
-      "crit_1"
-    ]
+    "tier": 1,
+    "stage": 3
   },
   {
     "id": "crystal_resonance",
     "name": "異晶共振",
-    "desc": "所有採集產量 +10%",
+    "desc": "研究速度 +25%",
     "cost": {
       "parts": 200,
       "crystal": 40
     },
     "time": 240,
     "effect": {
-      "gatherAdd": 0.1
+      "researchAdd": 0.25
     },
     "branch": "prod",
     "tier": 3,
@@ -159,15 +141,15 @@
   },
   {
     "id": "crystal_ration",
-    "name": "應急口糧",
-    "desc": "營養消耗 −10%",
+    "name": "戰地醫療",
+    "desc": "傷員恢復速度 +50%",
     "cost": {
       "nutrient": 400,
       "crystal": 15
     },
     "time": 120,
     "effect": {
-      "consumeMul": -0.1
+      "healAdd": 0.5
     },
     "branch": "life",
     "tier": 2,
@@ -211,8 +193,7 @@
     "tier": 3,
     "stage": 5,
     "requires": [
-      "warehouse",
-      "crystal_ration"
+      "warehouse"
     ],
     "lab": true
   },

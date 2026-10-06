@@ -91,6 +91,7 @@ function shipWork(s: GameState): boolean {
   return false;
 }
 
+const RS_FIRST = ['bp_filter', 'storage_1', 'weapon_1', 'crystal_armor', 'warehouse'];
 function decide(s: GameState) {
   // 第 6 章抉擇跳出來的那一刻（還沒選）
   if (s.events.active?.kind === 'choice6') snap(s, 'ch6-choice');
@@ -131,6 +132,8 @@ function decide(s: GameState) {
   const need = lacking(s, tgt);
   // 1. 蓋目標或必要的生產鏈
   if (tryBuy(s, tgt)) return;
+  // 第 5 章把科技研究院改建成異星研究院（解鎖異星研究線）
+  if (s.stage >= 5 && !rebuildBlock(s, 'databank')) { rebuild(s, 'databank'); return; }
   if (!rebuildBlock(s, 'algae_tank')) { rebuild(s, 'algae_tank'); rebuilt.push(`改建 ${s.b.algae_tank.form}：${fmt(s.t)}（階段 ${s.stage}、人口 ${s.pop}）`); return; }
   if (s.stage >= 6) {
     for (const id of ['governor', 'bioeng']) if (!built(s, id) && tryBuy(s, id)) return;
@@ -190,7 +193,9 @@ function decide(s: GameState) {
     if (!built(s, d.id) || nodeBlock(s, d.id, n.id)) continue;
     if (n.effect.prodAdd || n.effect.clickAdd || n.effect.buffAdd || n.effect.housingAdd || n.effect.recipeOut) { buyNode(s, d.id, n.id); return; }
   }
-  for (const r of RESEARCH_DEFS) if (!researchBlock(s, r.id)) { startResearch(s, r.id); return; }
+  // 研究：先做當章目標要的藍圖科技、倉儲（第 5 章的星城穹頂要 3,000 岩材）、第 4 章起的軍事，其餘照清單
+  const order = [...RS_FIRST.map((id) => RESEARCH_DEFS.find((r) => r.id === id)!), ...RESEARCH_DEFS];
+  for (const r of order) if (!researchBlock(s, r.id)) { startResearch(s, r.id); return; }
 }
 
 function reassign(s: GameState) {

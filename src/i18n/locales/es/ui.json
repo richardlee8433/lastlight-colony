@@ -9,7 +9,7 @@
  "colon": ": ",
  "ch.n": "Capítulo {n}",
  "app.noGL": "Este navegador no puede iniciar WebGL, así que el juego no se puede mostrar. Usa Chrome, Edge o Safari de escritorio.",
- "cost.over": "Supera el límite de almacenamiento {n}: construye o mejora primero los depósitos de suministros",
+ "cost.over": "Supera el límite de almacenamiento {n}: mejora los depósitos de suministros o investiga Estanterías estándar / Ampliación del almacén",
  "res.nutrient": "Nutrientes",
  "res.oxygen": "Oxígeno",
  "res.scrap": "Chatarra",

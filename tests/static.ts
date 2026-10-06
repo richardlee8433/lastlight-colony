@@ -12,7 +12,8 @@ import { newGame } from '../src/engine/state';
 import { levelBlock, levelUp, rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
 import { step } from '../src/engine/tick';
 import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
-import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff } from '../src/engine/formulas';
+import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff, researchSpeed } from '../src/engine/formulas';
+import { healRate } from '../src/engine/combat';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
 import { resolveEvent } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
@@ -391,6 +392,23 @@ check('S20', '升級線沒有「工人上限 +N」；生產、加工、研究建
   if (Math.abs(clickBuff(h, 'scrap_heap') - 1.25) > 1e-9) errs.push('點擊 buff 基本應為 +25%');
   h.b.scrap_heap.nodes.push('buff_10');
   if (Math.abs(clickBuff(h, 'scrap_heap') - 1.5) > 1e-9) errs.push(`買了現場督導 buff 應為 +50%，實際 ${clickBuff(h, 'scrap_heap')}`);
+  return errs;
+});
+
+
+check('S21', '科技樹（v0.70.2）：19 項、沒有精準操作；強化手套沒有前置；異晶共振＝研究速度 +25%、戰地醫療＝傷員恢復 +50%；晶格建材只要倉儲擴建；倉儲不夠的提示有提到研究', () => {
+  const errs: string[] = [];
+  const R = Object.fromEntries(RESEARCH_DEFS.map((r) => [r.id, r]));
+  if (RESEARCH_DEFS.length !== 19 || R.crit_1) errs.push(`科技數 ${RESEARCH_DEFS.length}，精準操作 ${R.crit_1 ? '還在' : '已拿掉'}`);
+  if ((R.click_1.requires ?? []).length) errs.push('強化手套還有前置');
+  if (JSON.stringify(R.xeno_hab.requires) !== '["warehouse"]') errs.push('晶格建材的前置應該只有倉儲擴建');
+  for (const r of RESEARCH_DEFS) for (const q of r.requires ?? []) if (!R[q]) errs.push(`${r.id} 的前置 ${q} 不存在`);
+  const s = newGame(0); s.b.databank.level = 1; s.b.databank.workers = 2;
+  const r0 = researchSpeed(s); s.research.done.push('crystal_resonance');
+  if (Math.abs(researchSpeed(s) / r0 - 1.25) > 1e-9) errs.push('異晶共振應讓研究速度 ×1.25');
+  const h0 = healRate(s); s.research.done.push('crystal_ration');
+  if (Math.abs(healRate(s) / h0 - 1.5) > 1e-9) errs.push('戰地醫療應讓傷員恢復 ×1.5');
+  if (!STRINGS['cost.over'][1].includes('標準化貨架')) errs.push('倉儲不夠的提示沒有提到研究');
   return errs;
 });
 

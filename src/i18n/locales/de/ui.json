@@ -9,7 +9,7 @@
  "colon": ": ",
  "ch.n": "Kapitel {n}",
  "app.noGL": "Dieser Browser kann WebGL nicht starten, daher kann das Spiel nicht angezeigt werden. Bitte nutze Chrome, Edge oder Safari am Computer.",
- "cost.over": "Übersteigt das Lagerlimit {n} — baue oder verbessere zuerst Versorgungsdepots",
+ "cost.over": "Übersteigt das Lagerlimit {n} — verbessere Versorgungsdepots oder erforsche Normregale / Lagererweiterung",
  "res.nutrient": "Nährstoffe",
  "res.oxygen": "Sauerstoff",
  "res.scrap": "Schrott",

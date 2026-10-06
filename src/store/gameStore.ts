@@ -123,6 +123,9 @@ function migrate(s: GameState) {
   if (!s.exp) { s.exp = newExp(); if (s.stage >= 4) { s.exp.count = 1; s.exp.blueprints = ['filter']; } }
   // v0.6 對話與日誌：已經過去的里程碑不補播
   migrateDialogs(s);
+  // v0.70.2 科技樹：拿掉「精準操作」（暴擊率 +3%，效果太小），研究過的移除
+  s.research.done = s.research.done.filter((r) => r !== 'crit_1');
+  if (s.research.active === 'crit_1') s.research.active = null;
   // v0.70.2 升級線拿掉「工人上限 +N」（改成每級效率 +5%）：舊存檔買過的節點移除，超過上限的工人變回閒置（人口不變）
   const capNodes: Record<string, string[]> = { scrap_heap: ['cap_1'], algae_tank: ['cap_1', 'cap_2'], o2_scrubber: ['cap_1'], rock_cutter: ['cap_1'], crystal_synth: ['cap_1'], trade_post: ['cap_2'] };
   for (const [id, gone] of Object.entries(capNodes)) {

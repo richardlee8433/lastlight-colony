@@ -56,7 +56,6 @@
  "research": {
   "gather_1": ["Recolección I", "Toda la recolección +10%"],
   "storage_1": ["Estanterías estándar", "Todo el almacén +25%"],
-  "crit_1": ["Manejo preciso", "Probabilidad de crítico de todos los clics +3%"],
   "ration_1": ["Recetas austeras", "Consumo de nutrientes −10%"],
   "process_1": ["Ajuste de procesos", "Velocidad de procesamiento +20%"],
   "gather_2": ["Recolección II", "Toda la recolección +10%"],
@@ -65,8 +64,8 @@
   "arms_line": ["Línea de armamento", "Producción de armas +30%"],
   "weapon_2": ["Ajuste de armas II", "Ataque de las armas +2"],
   "crystal_armor": ["Armadura de cristal", "PV de los marines +5"],
-  "crystal_ration": ["Raciones de emergencia", "Consumo de nutrientes −10%"],
-  "crystal_resonance": ["Resonancia cristalina", "Toda la recolección +10%"],
+  "crystal_ration": ["Medicina de campaña", "Los heridos se recuperan un 50 % más rápido"],
+  "crystal_resonance": ["Resonancia cristalina", "Velocidad de investigación +25%"],
   "bp_filter": ["Filtro de alta presión", "Tecnología de plano: los edificios de oxígeno producen +50%"],
   "bp_resonance": ["Herramientas de resonancia", "Tecnología de plano: construir y mejorar cuesta un 15% menos"],
   "warehouse": ["Ampliación del almacén", "Todo el almacén +50%"],

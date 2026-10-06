@@ -14,7 +14,8 @@ export const INJURY = 180;
 
 /** 醫療艙：每級 2 張病床（加護病床 +1/級）；躺在病床上的傷員，每位醫護員讓復原速度 +60%（自動診斷再 ×1.5） */
 export const medBeds = (s: GameState) => (built(s, 'med_bay') ? s.b.med_bay.level * (2 + nodeEffect(s, 'med_bay', 'bedAdd')) : 0);
-export const healRate = (s: GameState) => (built(s, 'med_bay') ? (1 + s.b.med_bay.workers * 0.6 * (1 + nodeEffect(s, 'med_bay', 'healAdd'))) * (medActive(s) ? MED_BOOST : 1) : 1);
+// 科技「戰地醫療」：不論有沒有醫療艙，傷員恢復都快 50%
+export const healRate = (s: GameState) => (built(s, 'med_bay') ? (1 + s.b.med_bay.workers * 0.6 * (1 + nodeEffect(s, 'med_bay', 'healAdd'))) * (medActive(s) ? MED_BOOST : 1) : 1) * (1 + researchEffect(s, 'healAdd'));
 // 醫療物資（v0.70 進口品）：醫療艙每用 10 單位，傷員恢復快 50%，持續 5 分鐘（可以疊加時間）。
 // 醫療物資也是船的長程補給模組的材料：現在救治、還是留給長期計畫，是個小取捨
 export const MED_LOT = 10, MED_TIME = 300, MED_BOOST = 1.5;
