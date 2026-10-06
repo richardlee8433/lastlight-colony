@@ -8,7 +8,7 @@ import { fmtTime } from './common';
 import { Modal } from './Modals';
 import { sfx, useAudio } from '../audio/audio';
 
-export const VERSION = '0.71.0';
+export const VERSION = '0.70.2';
 
 // 設定頁：語言、存檔、重新開始、關於
 export function Settings() {
