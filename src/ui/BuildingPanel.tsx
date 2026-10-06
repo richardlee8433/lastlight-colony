@@ -3,7 +3,7 @@ import { AIR_ENABLED, COMMAND_CHAIN, DEF } from '../engine/state';
 import { bDesc, bName, costText, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
-  gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap, creditsCh5 } from '../engine/formulas';
+  gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap, creditsCh5, LEVEL_EFF, hasLevelEff, levelEff } from '../engine/formulas';
 import { boostBlock, levelBlock, nextForm, nodeBlock, rebuildBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP, MED_LOT, MED_TIME, medActive, medBlock } from '../engine/combat';
 import { Governance } from './Governance';
@@ -124,6 +124,7 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
   return (
     <section className="block buildbox">
       <h3>{title ?? (d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgradeTo', { n: L + 1 }) : t('bp.build'))}</h3>
+      {L > 0 && !d.flatCost && hasLevelEff(id) && <p className="muted small">{t('bp.nextLv', { e: Math.round(LEVEL_EFF * 100), w: formOf(s, id)?.workersPerLevel ?? d.workersPerLevel ?? 0 })}</p>}
       <CostList cost={levelCost(s, id)} />
       {d.requires?.pop ? <p className={'req ' + (s.pop >= d.requires.pop ? 'ok' : '')}>{t('bp.reqPop', { n: d.requires.pop, c: s.pop })}</p> : null}
       {d.requires?.raids ? <p className={'req ' + (s.raid.won >= d.requires.raids ? 'ok' : '')}>{t('bp.reqRaids', { n: d.requires.raids, c: s.raid.won })}</p> : null}
@@ -156,6 +157,8 @@ function Stats({ id }: { id: string }) {
     if (s.b[id].paused) rows.push([t('st.status'), t('st.paused')]);
     else if (inp > 0 && s.res[d.recipe.in] < 1) rows.push([t('st.status'), t('st.dry', { r: resName(d.recipe.in) })]);
   }
+  // 等級效率：每升一級每位工人效率 +5%（採集、加工、研究）
+  if (hasLevelEff(id) && L > 0) rows.push([t('st.levelEff'), t('st.levelEffV', { n: Math.round((levelEff(s, id) - 1) * 100), e: Math.round(LEVEL_EFF * 100) })]);
   // 玩家要知道的是殖民地現在總共住得下多少人、倉庫裝得下多少，不是這棟建築單獨貢獻多少
   if (d.effects?.housing) rows.push([t('st.housing'), t('st.housingV', { c: popCap(s) })]);
   if (d.effects?.storage) rows.push([t('st.storage'), t('st.storageV', { c: storageCap(s) })]);

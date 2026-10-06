@@ -2,15 +2,15 @@
  "buildings": {
   "escape_pod": { "name": "Cápsula de escape", "desc": "Donde empezó todo. Tres supervivientes apretujados dentro: apenas habitable.", "nodes": { "beacon": ["Banda de socorro", "Búsqueda de supervivientes +10%"] } },
   "scrap_heap": { "name": "Montón de chatarra", "desc": "Restos de la cápsula esparcidos por el suelo. Mantén pulsado el botón de Chatarra encima para recoger.", "nodes": {
-   "click_1": ["Guantes magnéticos", "Rendimiento por clic +1"], "crit_1": ["Ojo avizor", "Probabilidad de crítico +5%"], "cap_1": ["Búsqueda por zonas", "Límite de trabajadores +1"],
+   "click_1": ["Guantes magnéticos", "Rendimiento por clic +1"], "crit_1": ["Ojo avizor", "Probabilidad de crítico +5%"],
    "critx": ["Instinto de tesoro", "Multiplicador de crítico ×2"], "buff_10": ["Supervisor en terreno", "La bonificación por clic dura 10 s"] } },
   "algae_tank": { "name": "Tanque de algas", "desc": "El suministro de comida de la colonia. Empieza como unos pocos tanques de algas de vidrio; desde la etapa 2 se puede reconstruir como recolector biológico y desde la etapa 4 como granja hidropónica, cada uno con más producción por trabajador. Al reconstruir se conservan el nivel y los trabajadores.", "nodes": {
-   "prod_20": ["Ajuste de luz", "Producción +20%"], "cap_1": ["Tanque extra", "Límite de trabajadores +1"], "prod_30": ["Cepa densa", "Producción +30%"],
-   "guide": ["Guía de campo", "Producción +25%"], "crit_1": ["Vista aguda", "Probabilidad de crítico +5%"], "prod_25": ["Luces de cultivo", "Producción +25%"], "cap_2": ["Estanterías verticales", "Límite de trabajadores +2"] } },
+   "prod_20": ["Ajuste de luz", "Producción +20%"], "prod_30": ["Cepa densa", "Producción +30%"],
+   "guide": ["Guía de campo", "Producción +25%"], "crit_1": ["Vista aguda", "Probabilidad de crítico +5%"], "prod_25": ["Luces de cultivo", "Producción +25%"] } },
   "algae_tank:bio": { "name": "Recolector biológico", "desc": "Junto a los tanques se añaden estanterías de cultivo que crían vida comestible recogida en la superficie. Más producción por trabajador que el tanque de algas. Al reconstruir se conservan el nivel y los trabajadores." },
   "algae_tank:hydro": { "name": "Granja hidropónica", "desc": "Toda la instalación reconstruida como un invernadero presurizado que cultiva verduras en solución nutritiva: la fuente de comida más eficiente. Al reconstruir se conservan el nivel y los trabajadores." },
   "o2_scrubber": { "name": "Depurador de oxígeno", "desc": "Un depurador de oxígeno improvisado con restos de la cápsula de escape, que separa el dióxido de carbono en aire respirable. Teo lo llama «Wheezy»; no hagas caso del ruido. Mantén pulsado el botón de encima para bombear a mano. En el capítulo 2 se puede reconstruir como estación de electrólisis.", "nodes": {
-   "filter": ["Filtros nuevos", "Producción +25%"], "cap_1": ["Ventilador extra", "Límite de trabajadores +1"], "seal": ["Juntas selladas", "Producción +30%"], "coil": ["Resistencias", "Producción +30%"] } },
+   "filter": ["Filtros nuevos", "Producción +25%"], "seal": ["Juntas selladas", "Producción +30%"], "coil": ["Resistencias", "Producción +30%"] } },
   "o2_scrubber:elec": { "name": "Estación de electrólisis", "desc": "Diseño de Ines: Wheezy recibe una broca y perfora hasta la capa de hielo, lo derrite y separa el agua en oxígeno. Cada trabajador produce más del doble de oxígeno que en el depurador. Al reconstruir se conservan el nivel y los trabajadores." },
   "emergency_camp": { "name": "Campamento de emergencia", "desc": "Mando Nv1. Cúpulas presurizadas inflables y calefactores radiantes: por fin los supervivientes pueden quitarse el casco bajo techo. Desbloquea las mejoras de edificios y las líneas de mejoras, y avanza a la etapa 2." },
   "hab_pod": { "name": "Cápsula habitacional", "desc": "Aloja a 2 personas por nivel. El límite de población decide si pueden seguir llegando nuevos colonos.", "nodes": {
@@ -21,7 +21,7 @@
   "assembly": { "name": "Taller de montaje", "desc": "Desarma la chatarra y la convierte en piezas. Se detiene cuando se acaba la chatarra.", "nodes": {
    "ratio_1": ["Línea de clasificación", "Proporción 0,4 → 0,5"], "ratio_2": ["Plantillas de precisión", "Proporción 0,5 → 0,6"] } },
   "rock_cutter": { "name": "Cortadora de roca", "desc": "Una cortadora láser rescatada de la cápsula, adaptada para sacar piedra de construcción del lecho rocoso.", "nodes": {
-   "prod_20": ["Cuidado de la hoja", "Producción +20%"], "cap_1": ["Turno de noche", "Límite de trabajadores +1"], "click_1": ["Acabado manual", "Rendimiento por clic +1"] } },
+   "prod_20": ["Cuidado de la hoja", "Producción +20%"], "click_1": ["Acabado manual", "Rendimiento por clic +1"] } },
   "central_hub": { "name": "Centro principal", "desc": "Mando Nv2. Un verdadero centro de asentamiento: vivienda para 4, +100 de almacén y avanza a la etapa 3. Requiere población 12." },
   "databank": { "name": "Instituto Tecnológico", "desc": "Reúne todo lo que recuerdan los colonos e impulsa la tecnología de la colonia. Solo se investiga con investigadores destinados aquí: cuantos más, más rápido; las mejoras dejan sitio para más. En el capítulo 5 se puede reconstruir como Instituto de Xenología.", "nodes": { "speed_50": ["Sistema de índices", "Velocidad de investigación +50%"] } },
   "rail_line": { "name": "Línea férrea", "desc": "Todos los edificios de recolección +10% de producción, los trabajadores se mueven más rápido y todos los caminos de la colonia se pavimentan con losas de piedra.", "nodes": { "double": ["Vía doble", "Recolección otro +5% y las calles pasan a placas de metal"] } },
@@ -33,7 +33,7 @@
   "outpost": { "name": "Puesto avanzado", "desc": "Mando Nv3. La torre de vigilancia ve más lejos, incluido lo que se acerca. Avanza a la etapa 4. Requiere población 22." },
   "memorial": { "name": "Salón Conmemorativo", "desc": "Para quienes no llegaron hasta aquí. Moral +10 y búsqueda de supervivientes +10% por nivel. Se construye con lo último del casco de la cápsula de escape: la cápsula se retira, y su espacio habitable (+4 de población), su almacén (+100) y su banda de socorro (búsqueda de supervivientes +10%) pasan aquí.", "nodes": { "morale_5": ["Lámpara eterna", "Moral +5"] } },
   "crystal_synth": { "name": "Sintetizador de cristal", "desc": "Disuelve los cúmulos de cristal subterráneos y los hace crecer de nuevo como xenocristal que almacena energía. La producción es diminuta, pero toda la tecnología alienígena depende de ella.", "nodes": {
-   "prod_30": ["Tanque de resonancia", "Producción +30%"], "cap_1": ["Segundo reactor", "Límite de trabajadores +1"] } },
+   "prod_30": ["Tanque de resonancia", "Producción +30%"] } },
   "security": { "name": "Cuartel de marines", "desc": "Los trabajadores destinados aquí son marines; cada uno ocupa 1 de población. Las armas en almacén se entregan automáticamente y suben el ataque de 2 a 5.", "nodes": {
    "hp_5": ["Chalecos blindados", "PV de los marines +5"], "shift": ["Turnos de médicos", "Tiempo de recuperación −50%"], "atk_2": ["Ejercicios tácticos", "Ataque de los marines +2"] } },
   "water_cycle": { "name": "Reciclador de agua", "desc": "Recupera aguas residuales y condensación. Consumo de nutrientes −10%, y cada nivel de cápsula habitacional aloja a 1 más." },
@@ -43,7 +43,7 @@
   "admin": { "name": "Centro Administrativo", "desc": "La sala del consejo de la colonia. Desbloquea los impuestos y las cartas de la colonia; los impuestos dan créditos, pero cada nivel de impuestos cuesta 5 de moral.", "nodes": { "council": ["Consejo ampliado", "Espacios para cartas +1"] } },
   "shipyard": { "name": "Astillero", "desc": "Aquí se construye la nave, módulo a módulo: casco, navegación, soporte vital, suministros de largo alcance, combustible y, por último, el motor interestelar. A partir de la navegación, los módulos necesitan importaciones que la colonia no puede fabricar." },
   "trade_post": { "name": "Puesto comercial", "desc": "El mercado de la colonia. Los trabajadores ganan créditos aquí, y puedes comerciar con mercaderes de paso: vender metal, herramientas, piezas y nutrientes, y comprar lo que la colonia no puede fabricar. Cada nivel guarda 100 artículos más en la bodega.", "nodes": {
-   "prod_30": ["Mercado nocturno", "Producción +30%"], "cap_2": ["Más puestos", "Límite de trabajadores +2"] } },
+   "prod_30": ["Mercado nocturno", "Producción +30%"] } },
   "spaceport": { "name": "Puerto espacial", "desc": "Recibe comunicaciones y lanzaderas de otras colonias. Solo en la ruta de resistencia: al construirlo, la Alianza de Colonias Libres envía encargos que la Urraca lleva a través del bloqueo, y sus metales raros y medicinas se abaratan." },
   "turret": { "name": "Torreta defensiva", "desc": "Defensa fija. Una torreta por nivel (ATQ 8, PV 40); no usa población y se repara sola tras el combate." },
   "databank:xeno": { "name": "Instituto de Xenología", "desc": "Un laboratorio dedicado al xenocristal, reconstruido a partir del Instituto Tecnológico. Desbloquea la línea de investigación xeno y admite más investigadores por nivel. Al reconstruir se conservan el nivel y los investigadores." },

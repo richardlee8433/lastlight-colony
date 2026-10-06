@@ -2,15 +2,15 @@
  "buildings": {
   "escape_pod": { "name": "Rettungskapsel", "desc": "Hier hat alles angefangen. Drei Überlebende hineingezwängt — kaum bewohnbar.", "nodes": { "beacon": ["Notfrequenz", "Überlebendensuche +10%"] } },
   "scrap_heap": { "name": "Schrotthaufen", "desc": "Trümmer der Kapsel, über den Boden verstreut. Halte den Schrott-Knopf darüber gedrückt, um zu sammeln.", "nodes": {
-   "click_1": ["Magnethandschuhe", "Klickertrag +1"], "crit_1": ["Scharfer Blick", "Volltrefferchance +5%"], "cap_1": ["Zonensuche", "Arbeiterlimit +1"],
+   "click_1": ["Magnethandschuhe", "Klickertrag +1"], "crit_1": ["Scharfer Blick", "Volltrefferchance +5%"],
    "critx": ["Schatzinstinkt", "Volltreffer-Multiplikator ×2"], "buff_10": ["Vorarbeiter vor Ort", "Klick-Bonus hält 10 s"] } },
   "algae_tank": { "name": "Algentank", "desc": "Die Nahrungsquelle der Kolonie. Anfangs nur ein paar gläserne Algentanks; ab Stufe 2 lässt er sich zum Bio-Ernter umbauen, ab Stufe 4 zur Hydrokulturfarm — jeweils mit mehr Ertrag pro Arbeiter. Beim Umbau bleiben Stufe und Arbeiter erhalten.", "nodes": {
-   "prod_20": ["Lichtabstimmung", "Ertrag +20%"], "cap_1": ["Zusatztank", "Arbeiterlimit +1"], "prod_30": ["Dichter Stamm", "Ertrag +30%"],
-   "guide": ["Sammelführer", "Ertrag +25%"], "crit_1": ["Wachsames Auge", "Volltrefferchance +5%"], "prod_25": ["Wachstumslampen", "Ertrag +25%"], "cap_2": ["Vertikalregale", "Arbeiterlimit +2"] } },
+   "prod_20": ["Lichtabstimmung", "Ertrag +20%"], "prod_30": ["Dichter Stamm", "Ertrag +30%"],
+   "guide": ["Sammelführer", "Ertrag +25%"], "crit_1": ["Wachsames Auge", "Volltrefferchance +5%"], "prod_25": ["Wachstumslampen", "Ertrag +25%"] } },
   "algae_tank:bio": { "name": "Bio-Ernter", "desc": "Neben den Tanks kommen Kulturregale dazu, in denen essbares Leben von der Oberfläche gezüchtet wird. Mehr Ertrag pro Arbeiter als der Algentank. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
   "algae_tank:hydro": { "name": "Hydrokulturfarm", "desc": "Die ganze Anlage wird zum Druckgewächshaus umgebaut, in dem Gemüse in Nährlösung wächst — die effizienteste Nahrungsquelle. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
   "o2_scrubber": { "name": "Sauerstoffwäscher", "desc": "Ein aus Kapseltrümmern zusammengeschusterter Sauerstoffwäscher, der Kohlendioxid in atembare Luft spaltet. Teo nennt ihn „Wheezy“ — stört euch nicht am Lärm. Halte den Knopf darüber gedrückt, um von Hand zu pumpen. Lässt sich in Kapitel 2 zur Elektrolysestation umbauen.", "nodes": {
-   "filter": ["Frische Filter", "Ertrag +25%"], "cap_1": ["Zusatzlüfter", "Arbeiterlimit +1"], "seal": ["Druckdichtungen", "Ertrag +30%"], "coil": ["Heizspiralen", "Ertrag +30%"] } },
+   "filter": ["Frische Filter", "Ertrag +25%"], "seal": ["Druckdichtungen", "Ertrag +30%"], "coil": ["Heizspiralen", "Ertrag +30%"] } },
   "o2_scrubber:elec": { "name": "Elektrolysestation", "desc": "Ines' Entwurf: Wheezy bekommt einen Bohrer, bohrt bis zur Eisschicht, schmilzt sie und spaltet das Wasser in Sauerstoff. Jeder Arbeiter erzeugt mehr als doppelt so viel Sauerstoff wie im Wäscher. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
   "emergency_camp": { "name": "Notlager", "desc": "Kommando Lv1. Aufblasbare Druckkuppeln und Strahlungsheizer — die Überlebenden können drinnen endlich die Helme abnehmen. Schaltet Gebäude-Upgrades und Upgrade-Linien frei und führt zu Stufe 2." },
   "hab_pod": { "name": "Wohnkapsel", "desc": "Bietet pro Stufe Platz für 2 Personen. Das Bevölkerungslimit entscheidet, ob neue Kolonisten ankommen können.", "nodes": {
@@ -21,7 +21,7 @@
   "assembly": { "name": "Montagewerkstatt", "desc": "Zerlegt Schrott und baut daraus Bauteile. Stoppt, wenn der Schrott ausgeht.", "nodes": {
    "ratio_1": ["Sortierband", "Verhältnis 0,4 → 0,5"], "ratio_2": ["Präzisionsvorrichtungen", "Verhältnis 0,5 → 0,6"] } },
   "rock_cutter": { "name": "Steinschneider", "desc": "Ein aus der Kapsel geborgener Laserschneider, umgebaut, um Bausteine aus dem Felsgrund zu schneiden.", "nodes": {
-   "prod_20": ["Klingenpflege", "Ertrag +20%"], "cap_1": ["Nachtschicht", "Arbeiterlimit +1"], "click_1": ["Handarbeit", "Klickertrag +1"] } },
+   "prod_20": ["Klingenpflege", "Ertrag +20%"], "click_1": ["Handarbeit", "Klickertrag +1"] } },
   "central_hub": { "name": "Zentrale", "desc": "Kommando Lv2. Ein echtes Siedlungszentrum: Wohnraum für 4, +100 Lager, und es geht weiter zu Stufe 3. Benötigt Bevölkerung 12." },
   "databank": { "name": "Technikinstitut", "desc": "Sammelt alles, woran sich die Kolonisten erinnern, und treibt die Technik der Kolonie voran. Geforscht wird nur mit stationierten Forschern — mehr geht schneller, Upgrades schaffen Platz für mehr. In Kapitel 5 kann es zum Xenologie-Institut umgebaut werden.", "nodes": { "speed_50": ["Indexsystem", "Forschungstempo +50%"] } },
   "rail_line": { "name": "Schienenstrecke", "desc": "Alle Sammelgebäude +10% Ertrag, Arbeiter laufen schneller, und jeder Weg der Kolonie wird mit Steinplatten gepflastert.", "nodes": { "double": ["Zweigleisig", "Sammelertrag weitere +5%, Straßen werden zu Metallplatten"] } },
@@ -33,7 +33,7 @@
   "outpost": { "name": "Außenposten", "desc": "Kommando Lv3. Der Wachturm sieht weiter — auch das, was näher kommt. Führt zu Stufe 4. Benötigt Bevölkerung 22." },
   "memorial": { "name": "Gedenkhalle", "desc": "Für alle, die es nicht bis hierher geschafft haben. Moral +10 und Überlebendensuche +10% pro Stufe. Gebaut aus dem Rest der Kapselhülle: Die Kapsel wird ausgemustert, ihr Wohnraum (+4 Bevölkerung), ihr Lager (+100) und ihre Notfrequenz (Überlebendensuche +10%) gehen hierher über.", "nodes": { "morale_5": ["Ewiges Licht", "Moral +5"] } },
   "crystal_synth": { "name": "Kristallsynthesizer", "desc": "Löst unterirdische Kristallhaufen auf und lässt sie zu energiespeicherndem Xenokristall neu wachsen. Der Ertrag ist winzig, aber alle Alien-Technik hängt davon ab.", "nodes": {
-   "prod_30": ["Resonanztank", "Ertrag +30%"], "cap_1": ["Zweiter Reaktor", "Arbeiterlimit +1"] } },
+   "prod_30": ["Resonanztank", "Ertrag +30%"] } },
   "security": { "name": "Marine-Kaserne", "desc": "Stationierte Arbeiter sind Marines; jeder belegt 1 Bevölkerung. Waffen auf Lager werden automatisch ausgegeben und erhöhen den Angriff von 2 auf 5.", "nodes": {
    "hp_5": ["Schutzwesten", "Marine-LP +5"], "shift": ["Sanitäter-Rotation", "Genesungszeit −50%"], "atk_2": ["Taktikübungen", "Marine-Angriff +2"] } },
   "water_cycle": { "name": "Wasseraufbereitung", "desc": "Gewinnt Abwasser und Kondenswasser zurück. Nährstoffverbrauch −10%, und jede Stufe einer Wohnkapsel bietet 1 Platz mehr." },
@@ -43,7 +43,7 @@
   "admin": { "name": "Verwaltungszentrum", "desc": "Der Ratssaal der Kolonie. Schaltet Steuern und Koloniechartas frei; Steuern bringen Credits, aber jede Steuerstufe kostet 5 Moral.", "nodes": { "council": ["Erweiterter Rat", "Charta-Plätze +1"] } },
   "shipyard": { "name": "Werft", "desc": "Hier wird das Schiff gebaut, Modul für Modul: Rumpf, Navigation, Lebenserhaltung, Langstreckenvorräte, Treibstoff und zuletzt der interstellare Antrieb. Ab der Navigation brauchen die Module Importwaren, die die Kolonie nicht herstellen kann." },
   "trade_post": { "name": "Handelsposten", "desc": "Der Markt der Kolonie. Arbeiter verdienen hier Credits, und du kannst mit vorbeiziehenden Händlern handeln: Metall, Werkzeug, Teile und Nährstoffe verkaufen, Waren kaufen, die die Kolonie nicht herstellen kann. Jede Stufe fasst 100 Waren mehr im Frachtraum.", "nodes": {
-   "prod_30": ["Nachtmarkt", "Ertrag +30%"], "cap_2": ["Mehr Stände", "Arbeiterlimit +2"] } },
+   "prod_30": ["Nachtmarkt", "Ertrag +30%"] } },
   "spaceport": { "name": "Raumhafen", "desc": "Empfängt Funk und Shuttles anderer Kolonien. Nur auf dem Weg des Widerstands: Danach schickt die Allianz Freier Kolonien Aufträge, die die Elster durch die Blockade bringt, und ihre seltenen Metalle und Medizin werden günstiger." },
   "turret": { "name": "Verteidigungsgeschütz", "desc": "Feste Verteidigung. Ein Geschütz pro Stufe (ANG 8, LP 40); braucht keine Bevölkerung und repariert sich nach dem Kampf selbst." },
   "databank:xeno": { "name": "Xenologie-Institut", "desc": "Ein Labor nur für Xenokristall, umgebaut aus dem Technikinstitut. Schaltet die Xeno-Forschungslinie frei und bietet pro Stufe mehr Forschern Platz. Beim Umbau bleiben Stufe und Forscher erhalten." },

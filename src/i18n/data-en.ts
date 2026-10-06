@@ -6,15 +6,15 @@ const buildings: Record<string, B> = {
   escape_pod: { name: 'Escape Pod', desc: 'Where it all began. Three survivors crammed inside — it is barely livable.', nodes: {
     beacon: ['Distress Band', 'Survivor discovery +10%'] } },
   scrap_heap: { name: 'Scrap Heap', desc: 'Wreckage from the pod, scattered across the ground. Hold the Scrap button above it to collect.', nodes: {
-    click_1: ['Magnetic Gloves', 'Click yield +1'], crit_1: ['Sharp Eyes', 'Crit chance +5%'], cap_1: ['Zoned Search', 'Worker cap +1'],
+    click_1: ['Magnetic Gloves', 'Click yield +1'], crit_1: ['Sharp Eyes', 'Crit chance +5%'],
     critx: ['Treasure Instinct', 'Crit multiplier ×2'], buff_10: ['On-site Supervisor', 'Click buff lasts 10 s'] } },
   algae_tank: { name: 'Algae Vat', desc: 'The colony\'s food supply. It starts as a few glass algae vats; from Stage 2 it can be rebuilt into a Bio Harvester, and from Stage 4 into a Hydroponic Farm, each producing more per worker. Rebuilding keeps its level and workers.', nodes: {
-    prod_20: ['Light Tuning', 'Output +20%'], cap_1: ['Extra Vat', 'Worker cap +1'], prod_30: ['Dense Strain', 'Output +30%'],
-    guide: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'], prod_25: ['Grow Lights', 'Output +25%'], cap_2: ['Vertical Racks', 'Worker cap +2'] } },
+    prod_20: ['Light Tuning', 'Output +20%'], prod_30: ['Dense Strain', 'Output +30%'],
+    guide: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'], prod_25: ['Grow Lights', 'Output +25%'] } },
   'algae_tank:bio': { name: 'Bio Harvester', desc: 'Culture racks added beside the vats raise edible life gathered from the surface. More output per worker than the Algae Vat. Rebuilding keeps its level and workers.' },
   'algae_tank:hydro': { name: 'Hydroponic Farm', desc: 'The whole facility rebuilt as a pressurized greenhouse growing vegetables in nutrient solution — the most efficient food source. Rebuilding keeps its level and workers.' },
   o2_scrubber: { name: 'Oxygen Scrubber', desc: 'An oxygen scrubber cobbled together from escape pod wreckage, splitting carbon dioxide into air you can breathe. Teo calls it “Wheezy” — don\'t mind the noise. Hold the button above it to pump by hand. Can be rebuilt into an Electrolyzer in Chapter 2.', nodes: {
-    filter: ['Fresh Filters', 'Output +25%'], cap_1: ['Extra Fan', 'Worker cap +1'], seal: ['Sealed Gaskets', 'Output +30%'], coil: ['Heating Coils', 'Output +30%'] } },
+    filter: ['Fresh Filters', 'Output +25%'], seal: ['Sealed Gaskets', 'Output +30%'], coil: ['Heating Coils', 'Output +30%'] } },
   'o2_scrubber:elec': { name: 'Electrolyzer', desc: 'Ines\'s design: Wheezy gets a drill bit and bores down to the ice layer, melting it and splitting the water into oxygen. Each worker makes more than twice the oxygen of a scrubber. Rebuilding keeps its level and workers.' },
   emergency_camp: { name: 'Emergency Camp', desc: 'Command Lv1. Inflatable pressurized domes and radiant heaters — the survivors can finally take their helmets off indoors. Unlocks building upgrades and upgrade lines, and advances to Stage 2.' },
   hab_pod: { name: 'Hab Pod', desc: 'Houses 2 people per level. The population cap decides whether new colonists can keep arriving.', nodes: {
@@ -26,7 +26,7 @@ const buildings: Record<string, B> = {
   assembly: { name: 'Assembly Shop', desc: 'Breaks scrap down and rebuilds it into parts. Stops when scrap runs out.', nodes: {
     ratio_1: ['Sorting Line', 'Ratio 0.4 → 0.5'], ratio_2: ['Precision Jigs', 'Ratio 0.5 → 0.6'] } },
   rock_cutter: { name: 'Rock Cutter', desc: 'A laser cutter salvaged from the pod, refitted to slice building stone from the bedrock.', nodes: {
-    prod_20: ['Blade Care', 'Output +20%'], cap_1: ['Night Shift', 'Worker cap +1'], click_1: ['Manual Trim', 'Click yield +1'] } },
+    prod_20: ['Blade Care', 'Output +20%'], click_1: ['Manual Trim', 'Click yield +1'] } },
   central_hub: { name: 'Central Hub', desc: 'Command Lv2. A real settlement center: housing for 4, +100 storage, and advances to Stage 3. Requires population 12.' },
   databank: { name: 'Tech Institute', desc: 'Gathers everything the colonists remember and pushes the colony\'s technology forward. Research only progresses with stationed researchers — more is faster; upgrades make room for more. Can be rebuilt into a Xenology Institute in Chapter 5.', nodes: {
     speed_50: ['Index System', 'Research speed +50%'] } },
@@ -42,7 +42,7 @@ const buildings: Record<string, B> = {
   memorial: { name: 'Memorial Hall', desc: 'For those who did not make it here. Morale +10 and survivor discovery +10% per level. Built from the last of the escape pod\'s hull: the pod retires, and its living space (+4 population), storage (+100) and distress band (survivor discovery +10%) carry over here.', nodes: {
     morale_5: ['Eternal Lamp', 'Morale +5'] } },
   crystal_synth: { name: 'Crystal Synthesizer', desc: 'Dissolves underground crystal clusters and regrows them into energy-storing xenocrystal. Output is tiny, but all alien tech depends on it.', nodes: {
-    prod_30: ['Resonance Tank', 'Output +30%'], cap_1: ['Second Reactor', 'Worker cap +1'] } },
+    prod_30: ['Resonance Tank', 'Output +30%'] } },
   security: { name: 'Marine Barracks', desc: 'Stationed workers are marines; each takes 1 population. Weapons in stock are issued automatically, raising attack from 2 to 5.', nodes: {
     hp_5: ['Armored Vests', 'Marine HP +5'], shift: ['Medic Rotation', 'Injury recovery −50%'], atk_2: ['Tactical Drills', 'Marine attack +2'] } },
   water_cycle: { name: 'Water Recycler', desc: 'Reclaims wastewater and condensation. Nutrient consumption −10%, and each Hab Pod level houses 1 more.' },
@@ -53,7 +53,7 @@ const buildings: Record<string, B> = {
     council: ['Expanded Council', 'Charter slots +1'] } },
   shipyard: { name: 'Shipyard', desc: 'Where the ship gets built, one module at a time: hull, navigation, life support, long-range supplies, fuel, and finally the interstellar drive. From navigation on, modules need imported goods the colony can\'t make.' },
   trade_post: { name: 'Trading Post', desc: 'The colony market. Workers earn credits here, and you can trade with passing merchants: sell metal, tools, parts and nutrient, buy goods the colony can\'t make. Each level holds 100 more items in the cargo hold.', nodes: {
-    prod_30: ['Night Market', 'Output +30%'], cap_2: ['More Stalls', 'Worker cap +2'] } },
+    prod_30: ['Night Market', 'Output +30%'] } },
   spaceport: { name: 'Spaceport', desc: "Receives comms and shuttles from other colonies. Resistance route only: once built, the Free Colonies Alliance sends contracts that the Magpie carries through the blockade, and his rare metals and medicine get cheaper." },
   turret: { name: 'Defense Turret', desc: 'Fixed defense. One turret per level (ATK 8, HP 40); uses no population and repairs itself after battle.' },
   governor: { name: 'Governor\'s Residence', desc: 'The administrative heart of the city, where the colony\'s first elected governor works. Morale +15, charter slots +1.' },

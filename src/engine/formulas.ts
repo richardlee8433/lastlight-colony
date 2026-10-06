@@ -160,17 +160,21 @@ export function gatherBonus(s: GameState): number {
   if (built(s, 'rail_line')) v += (DEF.rail_line.effects?.gatherAdd ?? 0) + nodeEffect(s, 'rail_line', 'gatherAdd');
   return v;
 }
+/** 等級效率：生產、加工、研究建築每升一級，每位工人效率 +5%（Lv1 為基準）。升級除了多工位，也真的變快 */
+export const LEVEL_EFF = 0.05;
+export const hasLevelEff = (id: string) => !!(DEF[id]?.produce || DEF[id]?.recipe || id === 'databank');
+export const levelEff = (s: GameState, id: string) => (hasLevelEff(id) ? 1 + LEVEL_EFF * Math.max(0, s.b[id].level - 1) : 1);
 /** 採集建築每秒產量 */
 export function gatherRate(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.produce || !built(s, id) || disabled(s, id)) return 0;
-  return s.b[id].workers * (formOf(s, id)?.rate ?? d.produce.rate) * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
+  return s.b[id].workers * (formOf(s, id)?.rate ?? d.produce.rate) * levelEff(s, id) * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
 }
 /** 加工建築每秒「最多」消耗的原料 */
 export function processInput(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.recipe || !built(s, id) || disabled(s, id) || s.b[id].paused) return 0;
-  return s.b[id].workers * 1 * (1 + researchEffect(s, 'processAdd')) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
+  return s.b[id].workers * 1 * levelEff(s, id) * (1 + researchEffect(s, 'processAdd')) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
 }
 export function recipeRatio(s: GameState, id: string): number {
   const d = DEF[id];
@@ -181,7 +185,7 @@ export const clickAmount = (s: GameState, id: string) => 1 + nodeEffect(s, id, '
 export const critChance = (s: GameState, id: string) => 0.05 + nodeEffect(s, id, 'critAdd') + researchEffect(s, 'critAdd');
 export const critMult = (s: GameState, id: string) => 5 * nodeEffect(s, id, 'critMul');
 export const researchSpeed = (s: GameState) =>
-  (built(s, 'databank') ? s.b.databank.workers : 0) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
+  (built(s, 'databank') ? s.b.databank.workers * levelEff(s, 'databank') : 0) * (1 + nodeEffect(s, 'databank', 'researchSpeed'));
 /** 稅收：人口 × 0.02 × 稅率等級（GDD §11），受「企業合約」加成 */
 export const taxIncome = (s: GameState) => (built(s, 'admin') ? s.pop * 0.02 * (s.gov?.tax ?? 0) * (1 + resBonus(s, 'credit')) : 0);
 export const charterSlots = (s: GameState) => (built(s, 'admin') ? 1 + nodeEffect(s, 'admin', 'charterSlot') + (built(s, 'governor') ? 1 : 0) : 0);

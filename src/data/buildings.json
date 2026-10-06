@@ -74,18 +74,6 @@
         }
       },
       {
-        "id": "cap_1",
-        "name": "分區搜索",
-        "desc": "工人上限 +1",
-        "minLevel": 2,
-        "cost": {
-          "scrap": 150
-        },
-        "effect": {
-          "workerCapAdd": 1
-        }
-      },
-      {
         "id": "critx",
         "name": "寶藏直覺",
         "desc": "暴擊倍率 ×2",
@@ -144,18 +132,6 @@
         }
       },
       {
-        "id": "cap_1",
-        "name": "加開一槽",
-        "desc": "工人上限 +1",
-        "minLevel": 2,
-        "cost": {
-          "scrap": 120
-        },
-        "effect": {
-          "workerCapAdd": 1
-        }
-      },
-      {
         "id": "prod_30",
         "name": "高密度藻種",
         "desc": "產量 +30%",
@@ -207,20 +183,6 @@
         },
         "effect": {
           "prodAdd": 0.25
-        },
-        "stage": 4
-      },
-      {
-        "id": "cap_2",
-        "name": "多層栽培",
-        "desc": "工人上限 +2",
-        "minLevel": 2,
-        "cost": {
-          "rock": 400,
-          "parts": 150
-        },
-        "effect": {
-          "workerCapAdd": 2
         },
         "stage": 4
       }
@@ -293,19 +255,6 @@
         },
         "effect": {
           "prodAdd": 0.25
-        }
-      },
-      {
-        "id": "cap_1",
-        "name": "加裝風扇",
-        "desc": "工人上限 +1",
-        "minLevel": 2,
-        "cost": {
-          "scrap": 120,
-          "parts": 20
-        },
-        "effect": {
-          "workerCapAdd": 1
         }
       },
       {
@@ -579,19 +528,6 @@
         },
         "effect": {
           "prodAdd": 0.2
-        }
-      },
-      {
-        "id": "cap_1",
-        "name": "夜班",
-        "desc": "工人上限 +1",
-        "minLevel": 2,
-        "cost": {
-          "rock": 120,
-          "parts": 40
-        },
-        "effect": {
-          "workerCapAdd": 1
         }
       },
       {
@@ -923,19 +859,6 @@
         "effect": {
           "prodAdd": 0.3
         }
-      },
-      {
-        "id": "cap_1",
-        "name": "第二反應爐",
-        "desc": "工人上限 +1",
-        "minLevel": 2,
-        "cost": {
-          "parts": 200,
-          "tools": 40
-        },
-        "effect": {
-          "workerCapAdd": 1
-        }
       }
     ]
   },
@@ -1151,19 +1074,6 @@
         },
         "effect": {
           "prodAdd": 0.3
-        }
-      },
-      {
-        "id": "cap_2",
-        "name": "攤位擴建",
-        "desc": "工人上限 +2",
-        "minLevel": 2,
-        "cost": {
-          "parts": 300,
-          "credit": 500
-        },
-        "effect": {
-          "workerCapAdd": 2
         }
       }
     ]

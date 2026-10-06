@@ -12,7 +12,7 @@ import { newGame } from '../src/engine/state';
 import { levelBlock, levelUp, rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
 import { step } from '../src/engine/tick';
 import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
-import { creditsCh5, artId } from '../src/engine/formulas';
+import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
 import { resolveEvent } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
@@ -362,6 +362,17 @@ check('S19', '第 5 章市場事件：航線中斷讓燃料變貴；封鎖收緊
   if (levelBlock(sp, 'spaceport')?.k !== 'why.resistOnly') errs.push('合作路線不應該能蓋太空港');
   sp.story.route = 'resist';
   if (levelBlock(sp, 'spaceport')) errs.push('抵抗路線應該能蓋太空港：' + levelBlock(sp, 'spaceport')!.k);
+  return errs;
+});
+
+
+check('S20', '升級線沒有「工人上限 +N」；生產、加工、研究建築每升一級，每位工人效率 +5%（說明與實際一致）', () => {
+  const errs: string[] = [];
+  for (const d of DEFS) for (const n of d.upgrades ?? []) if ((n.effect as any).workerCapAdd) errs.push(`${d.id}.${n.id} 還是工人上限節點`);
+  const s = newGame(0); s.b.rock_cutter.level = 1; s.b.rock_cutter.workers = 2; s.stage = 2;
+  const r1 = gatherRate(s, 'rock_cutter'); s.b.rock_cutter.level = 5; const r5 = gatherRate(s, 'rock_cutter');
+  if (Math.abs(r5 / r1 - (1 + 4 * LEVEL_EFF)) > 1e-6) errs.push(`Lv5 每位工人產量應為 Lv1 的 ${1 + 4 * LEVEL_EFF} 倍，實際 ${(r5 / r1).toFixed(3)}`);
+  if (levelEff(s, 'hab_pod') !== 1) errs.push('生活艙不該有等級效率');
   return errs;
 });
 

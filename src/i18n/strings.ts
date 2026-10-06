@@ -365,6 +365,9 @@ export const STRINGS: Record<string, [string, string]> = {
   'tr.allianceContracts': ["Alliance contracts (carried by the Magpie)", "聯盟委託（由喜鵲運送）"],
   'why.notTraded': ["Not for trade", "這不是交易品"],
   'why.noPatients': ["No patients", "沒有傷員"],
+  'st.levelEff': ["Level efficiency", "等級效率"],
+  'st.levelEffV': ["+{n}% (+{e}% per level)", "+{n}%（每級 +{e}%）"],
+  'bp.nextLv': ["Next level: worker efficiency +{e}%, worker slots +{w}", "下一級：每位工人效率 +{e}%、工人上限 +{w}"],
   // 船塢（v0.70）
   'why.shipyard': ["Build the Shipyard first", "先蓋好船塢"],
   'why.drive': ["The drive needs the beacon's core: only after the colony decides to leave (Chapter 6)", "星際引擎要用信標的核心：第 6 章決定離開之後才能裝"],

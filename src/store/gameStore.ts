@@ -123,6 +123,14 @@ function migrate(s: GameState) {
   if (!s.exp) { s.exp = newExp(); if (s.stage >= 4) { s.exp.count = 1; s.exp.blueprints = ['filter']; } }
   // v0.6 對話與日誌：已經過去的里程碑不補播
   migrateDialogs(s);
+  // v0.71 升級線拿掉「工人上限 +N」（改成每級效率 +5%）：舊存檔買過的節點移除，超過上限的工人變回閒置（人口不變）
+  const capNodes: Record<string, string[]> = { scrap_heap: ['cap_1'], algae_tank: ['cap_1', 'cap_2'], o2_scrubber: ['cap_1'], rock_cutter: ['cap_1'], crystal_synth: ['cap_1'], trade_post: ['cap_2'] };
+  for (const [id, gone] of Object.entries(capNodes)) {
+    const b = s.b[id];
+    if (!b?.nodes?.some((n) => gone.includes(n))) continue;
+    b.nodes = b.nodes.filter((n) => !gone.includes(n));
+    b.workers = Math.min(b.workers, workerCap(s, id));
+  }
   // v0.70 船塢：第 5 章以後的存檔可能沒播過 c3-ship（只在第 3～4 章觸發），視為討論過造船，船塢才蓋得了
   s.ship ??= { mods: 0 };
   const seen = (s.story.seen ??= []);
