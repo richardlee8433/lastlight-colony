@@ -5,6 +5,7 @@ const cache = new Map<string, string>();
 const files = import.meta.glob('../assets/icons/*.webp', { eager: true, import: 'default' }) as Record<string, string>;
 const PAINTED: Record<string, string> = Object.fromEntries(Object.entries(files).map(([path, url]) => [path.split('/').pop()!.replace('.webp', ''), url]));
 export const paintedIcon = (k: string) => k in PAINTED;
+export const PAINTED_ICONS: Readonly<Record<string, string>> = PAINTED;
 export function iconURL(k: string) {
   if (PAINTED[k]) return PAINTED[k];
   if (!cache.has('i:' + k)) cache.set('i:' + k, renderIcon(k).toDataURL());

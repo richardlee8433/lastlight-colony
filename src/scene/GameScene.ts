@@ -11,6 +11,7 @@ import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, canvasFont, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
+import { PAINTED_ICONS } from '../ui/assets';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
 /** 對話泡泡的小圖示（像素圖，每行一列，# 是深色、. 是空白）：…、愛心、！、？、音符、笑 */
@@ -82,6 +83,7 @@ export class GameScene {
   ambient: any = null;
   props: any[] = [];
   views = new Map<string, View>();
+  iconTex = new Map<string, Texture>();
   walkers: Walker[] = [];
   aliens: any[] = [];
   /** 擊退後倒在地上的突擊隊、微光獸：播完倒地動畫、躺一下再淡出 */
@@ -123,6 +125,11 @@ export class GameScene {
     host.appendChild(this.app.canvas);
     // 手繪小人的 sprite sheet；載入失敗就用程序化小人
     await loadSprites().catch(() => {});
+    // 手繪資源圖示（採集卡用）：先解碼好，建卡時直接拿
+    await Promise.all(Object.entries(PAINTED_ICONS).map(async ([k, url]) => {
+      const img = new Image(); img.src = url; await img.decode();
+      const tex = Texture.from(img); tex.source.scaleMode = 'linear'; this.iconTex.set(k, tex);
+    })).catch(() => {});
     this.obj.sortableChildren = true;
     this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
     this.app.stage.addChild(this.world, this.hud, this.fxL);
@@ -453,7 +460,10 @@ export class GameScene {
     const btn: any = new Container();
     const texBig = pixelTexture(renderPanel(W - 6, 14, st, 'plate')), texSmall = pixelTexture(renderPanel(CW, CH, st, 'plate'));
     const face = new Sprite(texBig); face.scale.set(Z);
-    const icon = createPixelSprite(renderIcon(res)); icon.scale.set(Z); icon.position.set(3 * Z, 1.5 * Z);
+    const painted = this.iconTex.get(res);
+    let icon: any;
+    if (painted) { icon = new Sprite(painted); icon.width = icon.height = 12 * Z; icon.position.set(2.5 * Z, 1 * Z); }
+    else { icon = createPixelSprite(renderIcon(res)); icon.scale.set(Z); icon.position.set(3 * Z, 1.5 * Z); }
     const label = txt(resName(res), fs, 0xfff8ec); label.anchor.set(0.5);
     btn.addChild(face, icon, label);
     btn.eventMode = 'static'; btn.cursor = 'pointer';
