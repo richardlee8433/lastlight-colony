@@ -89,14 +89,14 @@
       {
         "id": "buff_10",
         "name": "現場督導",
-        "desc": "點擊 buff 延長至 10 秒",
+        "desc": "點擊 buff +25% → +50%",
         "minLevel": 4,
         "cost": {
           "scrap": 300,
           "parts": 40
         },
         "effect": {
-          "buffDuration": 10
+          "buffAdd": 0.25
         }
       }
     ]
@@ -160,15 +160,15 @@
       },
       {
         "id": "crit_1",
-        "name": "識貨",
-        "desc": "暴擊率 +5%",
+        "name": "精選藻種",
+        "desc": "產量 +20%",
         "minLevel": 2,
         "cost": {
           "scrap": 160,
           "rock": 40
         },
         "effect": {
-          "critAdd": 0.05
+          "prodAdd": 0.2
         },
         "stage": 2
       },

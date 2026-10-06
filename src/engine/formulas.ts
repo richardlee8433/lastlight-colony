@@ -152,7 +152,10 @@ export const moraleMult = (s: GameState) => 0.8 + 0.4 * (s.morale / 100);
 
 export const buffDuration = (s: GameState, id: string) => nodeEffect(s, id, 'buffDuration') || 5;
 export const buffActive = (s: GameState, id: string) => s.t - s.b[id].lastClick <= buffDuration(s, id);
-export const clickBuff = (s: GameState, id: string) => (buffActive(s, id) ? 1.25 : 1);
+/** 點擊 buff：點擊後 5 秒內這棟的工人產量 +25%（殘骸堆「現場督導」再 +25%） */
+export const BUFF = 0.25;
+export const buffPower = (s: GameState, id: string) => BUFF + nodeEffect(s, id, 'buffAdd');
+export const clickBuff = (s: GameState, id: string) => (buffActive(s, id) ? 1 + buffPower(s, id) : 1);
 export const disabled = (s: GameState, id: string) => s.b[id].disabledUntil > s.t;
 
 export function gatherBonus(s: GameState): number {

@@ -3,10 +3,10 @@
   "escape_pod": { "name": "Cápsula de escape", "desc": "Donde empezó todo. Tres supervivientes apretujados dentro: apenas habitable.", "nodes": { "beacon": ["Banda de socorro", "Búsqueda de supervivientes +10%"] } },
   "scrap_heap": { "name": "Montón de chatarra", "desc": "Restos de la cápsula esparcidos por el suelo. Mantén pulsado el botón de Chatarra encima para recoger.", "nodes": {
    "click_1": ["Guantes magnéticos", "Rendimiento por clic +1"], "crit_1": ["Ojo avizor", "Probabilidad de crítico +5%"],
-   "critx": ["Instinto de tesoro", "Multiplicador de crítico ×2"], "buff_10": ["Supervisor en terreno", "La bonificación por clic dura 10 s"] } },
+   "critx": ["Instinto de tesoro", "Multiplicador de crítico ×2"], "buff_10": ["Supervisor en terreno", "Bonificación por clic +25% → +50%"] } },
   "algae_tank": { "name": "Tanque de algas", "desc": "El suministro de comida de la colonia. Empieza como unos pocos tanques de algas de vidrio; desde la etapa 2 se puede reconstruir como recolector biológico y desde la etapa 4 como granja hidropónica, cada uno con más producción por trabajador. Al reconstruir se conservan el nivel y los trabajadores.", "nodes": {
    "prod_20": ["Ajuste de luz", "Producción +20%"], "prod_30": ["Cepa densa", "Producción +30%"],
-   "guide": ["Guía de campo", "Producción +25%"], "crit_1": ["Vista aguda", "Probabilidad de crítico +5%"], "prod_25": ["Luces de cultivo", "Producción +25%"] } },
+   "guide": ["Guía de campo", "Producción +25%"], "crit_1": ["Cepa selecta", "Producción +20%"], "prod_25": ["Luces de cultivo", "Producción +25%"] } },
   "algae_tank:bio": { "name": "Recolector biológico", "desc": "Junto a los tanques se añaden estanterías de cultivo que crían vida comestible recogida en la superficie. Más producción por trabajador que el tanque de algas. Al reconstruir se conservan el nivel y los trabajadores." },
   "algae_tank:hydro": { "name": "Granja hidropónica", "desc": "Toda la instalación reconstruida como un invernadero presurizado que cultiva verduras en solución nutritiva: la fuente de comida más eficiente. Al reconstruir se conservan el nivel y los trabajadores." },
   "o2_scrubber": { "name": "Depurador de oxígeno", "desc": "Un depurador de oxígeno improvisado con restos de la cápsula de escape, que separa el dióxido de carbono en aire respirable. Teo lo llama «Wheezy»; no hagas caso del ruido. Mantén pulsado el botón de encima para bombear a mano. En el capítulo 2 se puede reconstruir como estación de electrólisis.", "nodes": {

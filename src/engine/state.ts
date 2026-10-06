@@ -9,7 +9,7 @@ export const UNCAPPED: ResKey[] = ['credit'];
 
 export type Cost = Partial<Record<ResKey, number>>;
 export type Effect = Partial<{
-  clickAdd: number; critAdd: number; critMul: number; workerCapAdd: number; buffDuration: number;
+  clickAdd: number; critAdd: number; critMul: number; workerCapAdd: number; buffDuration: number; buffAdd: number;
   prodAdd: number; housingAdd: number; birthAdd: number; moraleAdd: number; foodWindow: number;
   recipeOut: number; outMul: number; researchSpeed: number; storagePerLevel: number; gatherAdd: number;
   storageMul: number; consumeMul: number; processAdd: number; o2Add: number; costMul: number;

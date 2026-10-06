@@ -2,7 +2,7 @@ import { useGame, game } from '../store/gameStore';
 import { AIR_ENABLED, COMMAND_CHAIN, DEF } from '../engine/state';
 import { bDesc, bName, costText, kindName, nodeText, researchText, resName, t, tm } from '../i18n';
 import {
-  RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
+  RESEARCH_DEFS, buffActive, buffPower, built, clickAmount, critChance, critMult, disabled, gatherBonus,
   gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap, creditsCh5, LEVEL_EFF, hasLevelEff, levelEff } from '../engine/formulas';
 import { boostBlock, levelBlock, nextForm, nodeBlock, rebuildBlock, researchBlock } from '../engine/actions';
 import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP, MED_LOT, MED_TIME, medActive, medBlock } from '../engine/combat';
@@ -177,8 +177,7 @@ function Stats({ id }: { id: string }) {
       <dl className="stats">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       {d.clickable && (
         <div className={'clickinfo' + (buffActive(s, id) ? ' on' : '')}>
-          <span>{t('st.click', { n: clickAmount(s, id), c: Math.round(critChance(s, id) * 100), m: critMult(s, id) })}</span>
-          <span>{buffActive(s, id) ? t('st.buffOn', { n: Math.ceil(buffDuration(s, id) - (s.t - s.b[id].lastClick)) }) : t('st.buffOff', { n: buffDuration(s, id) })}</span>
+          <span>{t('st.clickLine', { n: clickAmount(s, id), c: Math.round(critChance(s, id) * 100), m: critMult(s, id), b: Math.round(buffPower(s, id) * 100) })}</span>
         </div>
       )}
     </section>

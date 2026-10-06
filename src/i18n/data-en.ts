@@ -7,10 +7,10 @@ const buildings: Record<string, B> = {
     beacon: ['Distress Band', 'Survivor discovery +10%'] } },
   scrap_heap: { name: 'Scrap Heap', desc: 'Wreckage from the pod, scattered across the ground. Hold the Scrap button above it to collect.', nodes: {
     click_1: ['Magnetic Gloves', 'Click yield +1'], crit_1: ['Sharp Eyes', 'Crit chance +5%'],
-    critx: ['Treasure Instinct', 'Crit multiplier ×2'], buff_10: ['On-site Supervisor', 'Click buff lasts 10 s'] } },
+    critx: ['Treasure Instinct', 'Crit multiplier ×2'], buff_10: ['On-site Supervisor', 'Click buff +25% → +50%'] } },
   algae_tank: { name: 'Algae Vat', desc: 'The colony\'s food supply. It starts as a few glass algae vats; from Stage 2 it can be rebuilt into a Bio Harvester, and from Stage 4 into a Hydroponic Farm, each producing more per worker. Rebuilding keeps its level and workers.', nodes: {
     prod_20: ['Light Tuning', 'Output +20%'], prod_30: ['Dense Strain', 'Output +30%'],
-    guide: ['Field Guide', 'Output +25%'], crit_1: ['Keen Eye', 'Crit chance +5%'], prod_25: ['Grow Lights', 'Output +25%'] } },
+    guide: ['Field Guide', 'Output +25%'], crit_1: ['Select Strain', 'Output +20%'], prod_25: ['Grow Lights', 'Output +25%'] } },
   'algae_tank:bio': { name: 'Bio Harvester', desc: 'Culture racks added beside the vats raise edible life gathered from the surface. More output per worker than the Algae Vat. Rebuilding keeps its level and workers.' },
   'algae_tank:hydro': { name: 'Hydroponic Farm', desc: 'The whole facility rebuilt as a pressurized greenhouse growing vegetables in nutrient solution — the most efficient food source. Rebuilding keeps its level and workers.' },
   o2_scrubber: { name: 'Oxygen Scrubber', desc: 'An oxygen scrubber cobbled together from escape pod wreckage, splitting carbon dioxide into air you can breathe. Teo calls it “Wheezy” — don\'t mind the noise. Hold the button above it to pump by hand. Can be rebuilt into an Electrolyzer in Chapter 2.', nodes: {

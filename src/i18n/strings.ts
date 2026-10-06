@@ -256,9 +256,6 @@ export const STRINGS: Record<string, [string, string]> = {
   'st.researchSpeed': ['Research speed (shared)', '研究速度（全殖民地共用）'],
   'st.researchers': ['Researchers', '研究員'],
   'st.researchersV': ['{a}', '{a} 人'],
-  'st.click': ['Hold the collect button on the map: +{n} every 0.2 s, crit {c}% ×{m}', '按住地圖上的採集按鈕：每 0.2 秒 +{n}，暴擊 {c}% ×{m}'],
-  'st.buffOn': ['Worker buff +25% active ({n} s)', '工人 buff +25% 生效中（{n} 秒）'],
-  'st.buffOff': ['Clicking gives workers +25% output for {n} s', '點擊後 {n} 秒內工人產量 +25%'],
   'fs.title': ['Production split', '產線分配'],
   'fs.weapons': ['On weapons', '做武器'],
   'fs.dec': ['Fewer on weapons', '減少做武器的工人'],
@@ -368,6 +365,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'st.levelEff': ["Level efficiency", "等級效率"],
   'st.levelEffV': ["+{n}% (+{e}% per level)", "+{n}%（每級 +{e}%）"],
   'bp.nextLv': ["Next level: worker efficiency +{e}%, worker slots +{w}", "下一級：每位工人效率 +{e}%、工人上限 +{w}"],
+  'st.clickLine': ['Click +{n} · crit {c}% ×{m} · buff +{b}%', '點擊 +{n}・暴擊 {c}% ×{m}・buff +{b}%'],
   // 船塢（v0.70）
   'why.shipyard': ["Build the Shipyard first", "先蓋好船塢"],
   'why.drive': ["The drive needs the beacon's core: only after the colony decides to leave (Chapter 6)", "星際引擎要用信標的核心：第 6 章決定離開之後才能裝"],

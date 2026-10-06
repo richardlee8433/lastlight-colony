@@ -3,10 +3,10 @@
   "escape_pod": { "name": "Cápsula de fuga", "desc": "Onde tudo começou. Três sobreviventes espremidos lá dentro: mal dá para morar.", "nodes": { "beacon": ["Faixa de socorro", "Busca por sobreviventes +10%"] } },
   "scrap_heap": { "name": "Pilha de sucata", "desc": "Destroços da cápsula espalhados pelo chão. Segure o botão de Sucata acima dela para coletar.", "nodes": {
    "click_1": ["Luvas magnéticas", "Rendimento por clique +1"], "crit_1": ["Olho clínico", "Chance de crítico +5%"],
-   "critx": ["Faro de tesouro", "Multiplicador de crítico ×2"], "buff_10": ["Supervisor no local", "O bônus de clique dura 10 s"] } },
+   "critx": ["Faro de tesouro", "Multiplicador de crítico ×2"], "buff_10": ["Supervisor no local", "Bônus de clique +25% → +50%"] } },
   "algae_tank": { "name": "Tanque de algas", "desc": "A fonte de comida da colônia. Começa como alguns tanques de algas de vidro; a partir do estágio 2 pode ser reconstruído como coletor biológico e, a partir do estágio 4, como fazenda hidropônica, cada um produzindo mais por trabalhador. Reconstruir mantém o nível e os trabalhadores.", "nodes": {
    "prod_20": ["Ajuste de luz", "Produção +20%"], "prod_30": ["Cepa densa", "Produção +30%"],
-   "guide": ["Guia de campo", "Produção +25%"], "crit_1": ["Olhar atento", "Chance de crítico +5%"], "prod_25": ["Luzes de cultivo", "Produção +25%"] } },
+   "guide": ["Guia de campo", "Produção +25%"], "crit_1": ["Cepa selecionada", "Produção +20%"], "prod_25": ["Luzes de cultivo", "Produção +25%"] } },
   "algae_tank:bio": { "name": "Coletor biológico", "desc": "Prateleiras de cultivo ao lado dos tanques criam vida comestível coletada na superfície. Mais produção por trabalhador que o tanque de algas. Reconstruir mantém o nível e os trabalhadores." },
   "algae_tank:hydro": { "name": "Fazenda hidropônica", "desc": "Toda a instalação reconstruída como uma estufa pressurizada que cultiva verduras em solução nutritiva: a fonte de comida mais eficiente. Reconstruir mantém o nível e os trabalhadores." },
   "o2_scrubber": { "name": "Purificador de oxigênio", "desc": "Um purificador de oxigênio montado com destroços da cápsula de fuga, que separa o dióxido de carbono em ar respirável. O Teo o chama de “Wheezy”; não ligue para o barulho. Segure o botão acima dele para bombear à mão. No capítulo 2 pode ser reconstruído como estação de eletrólise.", "nodes": {

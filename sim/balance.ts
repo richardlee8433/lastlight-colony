@@ -188,7 +188,7 @@ function decide(s: GameState) {
   // 3. 升級節點（產量類）與研究
   for (const d of DEFS) for (const n of d.upgrades ?? []) {
     if (!built(s, d.id) || nodeBlock(s, d.id, n.id)) continue;
-    if (n.effect.prodAdd || n.effect.clickAdd || n.effect.workerCapAdd || n.effect.housingAdd || n.effect.recipeOut) { buyNode(s, d.id, n.id); return; }
+    if (n.effect.prodAdd || n.effect.clickAdd || n.effect.buffAdd || n.effect.housingAdd || n.effect.recipeOut) { buyNode(s, d.id, n.id); return; }
   }
   for (const r of RESEARCH_DEFS) if (!researchBlock(s, r.id)) { startResearch(s, r.id); return; }
 }

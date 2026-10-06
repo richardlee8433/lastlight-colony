@@ -3,10 +3,10 @@
   "escape_pod": { "name": "Rettungskapsel", "desc": "Hier hat alles angefangen. Drei Überlebende hineingezwängt — kaum bewohnbar.", "nodes": { "beacon": ["Notfrequenz", "Überlebendensuche +10%"] } },
   "scrap_heap": { "name": "Schrotthaufen", "desc": "Trümmer der Kapsel, über den Boden verstreut. Halte den Schrott-Knopf darüber gedrückt, um zu sammeln.", "nodes": {
    "click_1": ["Magnethandschuhe", "Klickertrag +1"], "crit_1": ["Scharfer Blick", "Volltrefferchance +5%"],
-   "critx": ["Schatzinstinkt", "Volltreffer-Multiplikator ×2"], "buff_10": ["Vorarbeiter vor Ort", "Klick-Bonus hält 10 s"] } },
+   "critx": ["Schatzinstinkt", "Volltreffer-Multiplikator ×2"], "buff_10": ["Vorarbeiter vor Ort", "Klick-Bonus +25% → +50%"] } },
   "algae_tank": { "name": "Algentank", "desc": "Die Nahrungsquelle der Kolonie. Anfangs nur ein paar gläserne Algentanks; ab Stufe 2 lässt er sich zum Bio-Ernter umbauen, ab Stufe 4 zur Hydrokulturfarm — jeweils mit mehr Ertrag pro Arbeiter. Beim Umbau bleiben Stufe und Arbeiter erhalten.", "nodes": {
    "prod_20": ["Lichtabstimmung", "Ertrag +20%"], "prod_30": ["Dichter Stamm", "Ertrag +30%"],
-   "guide": ["Sammelführer", "Ertrag +25%"], "crit_1": ["Wachsames Auge", "Volltrefferchance +5%"], "prod_25": ["Wachstumslampen", "Ertrag +25%"] } },
+   "guide": ["Sammelführer", "Ertrag +25%"], "crit_1": ["Auserlesene Algen", "Ertrag +20%"], "prod_25": ["Wachstumslampen", "Ertrag +25%"] } },
   "algae_tank:bio": { "name": "Bio-Ernter", "desc": "Neben den Tanks kommen Kulturregale dazu, in denen essbares Leben von der Oberfläche gezüchtet wird. Mehr Ertrag pro Arbeiter als der Algentank. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
   "algae_tank:hydro": { "name": "Hydrokulturfarm", "desc": "Die ganze Anlage wird zum Druckgewächshaus umgebaut, in dem Gemüse in Nährlösung wächst — die effizienteste Nahrungsquelle. Beim Umbau bleiben Stufe und Arbeiter erhalten." },
   "o2_scrubber": { "name": "Sauerstoffwäscher", "desc": "Ein aus Kapseltrümmern zusammengeschusterter Sauerstoffwäscher, der Kohlendioxid in atembare Luft spaltet. Teo nennt ihn „Wheezy“ — stört euch nicht am Lärm. Halte den Knopf darüber gedrückt, um von Hand zu pumpen. Lässt sich in Kapitel 2 zur Elektrolysestation umbauen.", "nodes": {

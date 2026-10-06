@@ -12,7 +12,7 @@ import { newGame } from '../src/engine/state';
 import { levelBlock, levelUp, rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
 import { step } from '../src/engine/tick';
 import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
-import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF } from '../src/engine/formulas';
+import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
 import { resolveEvent } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
@@ -366,13 +366,20 @@ check('S19', '第 5 章市場事件：航線中斷讓燃料變貴；封鎖收緊
 });
 
 
-check('S20', '升級線沒有「工人上限 +N」；生產、加工、研究建築每升一級，每位工人效率 +5%（說明與實際一致）', () => {
+check('S20', '升級線沒有「工人上限 +N」；生產、加工、研究建築每升一級，每位工人效率 +5%；現場督導讓點擊 buff 變 +50%、藻類槽沒有暴擊升級', () => {
   const errs: string[] = [];
   for (const d of DEFS) for (const n of d.upgrades ?? []) if ((n.effect as any).workerCapAdd) errs.push(`${d.id}.${n.id} 還是工人上限節點`);
   const s = newGame(0); s.b.rock_cutter.level = 1; s.b.rock_cutter.workers = 2; s.stage = 2;
   const r1 = gatherRate(s, 'rock_cutter'); s.b.rock_cutter.level = 5; const r5 = gatherRate(s, 'rock_cutter');
   if (Math.abs(r5 / r1 - (1 + 4 * LEVEL_EFF)) > 1e-6) errs.push(`Lv5 每位工人產量應為 Lv1 的 ${1 + 4 * LEVEL_EFF} 倍，實際 ${(r5 / r1).toFixed(3)}`);
   if (levelEff(s, 'hab_pod') !== 1) errs.push('生活艙不該有等級效率');
+  // 暴擊／buff 升級（v0.70.2）：藻類槽「精選藻種」改成產量；殘骸堆「現場督導」讓點擊 buff +25% → +50%
+  const algae = DEFS.find((d) => d.id === 'algae_tank')!.upgrades!.find((n) => n.id === 'crit_1')!;
+  if (!algae.effect.prodAdd || (algae.effect as any).critAdd) errs.push('藻類槽 crit_1 應該改成產量加成');
+  const h = newGame(0); h.b.scrap_heap.level = 4; h.b.scrap_heap.lastClick = h.t;
+  if (Math.abs(clickBuff(h, 'scrap_heap') - 1.25) > 1e-9) errs.push('點擊 buff 基本應為 +25%');
+  h.b.scrap_heap.nodes.push('buff_10');
+  if (Math.abs(clickBuff(h, 'scrap_heap') - 1.5) > 1e-9) errs.push(`買了現場督導 buff 應為 +50%，實際 ${clickBuff(h, 'scrap_heap')}`);
   return errs;
 });
 
