@@ -97,7 +97,7 @@ function shipyardArt(s: GameState) { const m = s.ship?.mods ?? 0; return m >= 4 
 export const artId = (s: GameState, id: string) => (id === 'shipyard' ? shipyardArt(s) : formOf(s, id)?.art ?? id);
 /** 第 5 章開始後累計賺進的信用點 */
 export const creditsCh5 = (s: GameState) => (s.stage >= 5 ? s.gov.creditsEarned - (s.gov.credits5 ?? 0) : 0);
-/** 異星研究院：科技研究院在第 5 章改建後的形態（原本是另一棟建築，v0.70.1 合併） */
+/** 異星研究院：科技研究院在第 5 章改建後的形態（原本是另一棟建築，v0.70 合併） */
 export const hasXenoLab = (s: GameState) => built(s, 'databank') && (s.b.databank.form ?? 0) >= 1;
 export function workerCap(s: GameState, id: string): number {
   const d = DEF[id];
