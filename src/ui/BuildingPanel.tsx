@@ -306,7 +306,7 @@ function MedBay() {
       {/* 醫療物資（進口品）：傷員恢復快 50%；也是船的長程補給模組的材料 */}
       {medActive(s) && <p className="banner good">{t('md.medActive', { t: fmtTime(s.raid.medUntil! - s.t) })}</p>}
       <button type="button" className="btn wide" disabled={!!why} title={tm(why)} onClick={() => act.applyMedicine()}>
-        <Icon k="medicine" size={16} /> {t('md.medBtn', { n: MED_LOT, m: Math.round(MED_TIME / 60), c: s.cargo?.medicine ?? 0 })}
+        <Icon k="medicine" size={16} /> {t('md.medBtn', { n: MED_LOT, m: Math.round(MED_TIME / 60), c: s.cargo?.medicine ?? 0 })}{why ? t('paren', { x: tm(why) }) : ''}
       </button>
     </section>
   );

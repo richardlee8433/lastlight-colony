@@ -23,8 +23,9 @@ export function toggleCharter(s: GameState, id: string) {
   notify(s, 'n.charterOn', { c: id }, 'good');
 }
 
-// ── 貿易：以信用點計價。赫利昂匯率最好；聯盟匯率普通但完成委託會變好 ──
-export const PRICE: Partial<Record<ResKey, number>> = { nutrient: 0.5, scrap: 0.3, rock: 0.6, parts: 1.5, metal: 2, tools: 4, weapon: 5, crystal: 20 };
+// ── 大宗資源買賣（固定匯率、一次 100）：以信用點計價 ──
+// 異晶是殖民地的祕密，不是商品：任何交易對象都不能買賣（不在清單裡）
+export const PRICE: Partial<Record<ResKey, number>> = { nutrient: 0.5, scrap: 0.3, rock: 0.6, parts: 1.5, metal: 2, tools: 4, weapon: 5 };
 export type Partner = 'corp' | 'alliance';
 export function rates(s: GameState, who: Partner, k: ResKey) {
   const base = PRICE[k] ?? 1;
@@ -38,6 +39,7 @@ export function partnerOpen(s: GameState, who: Partner) {
 export const TRADE_LOT = 100;
 export function tradeBlock(s: GameState, who: Partner, k: ResKey, dir: 'sell' | 'buy', lot = TRADE_LOT): Msg | null {
   if (!partnerOpen(s, who)) return msg(who === 'corp' ? 'why.tradePost' : 'why.spaceport');
+  if (!PRICE[k]) return msg('why.notTraded');
   const r = rates(s, who, k);
   if (dir === 'sell') return s.res[k] >= lot ? null : msg('why.short', { r: k, n: lot });
   if (s.res.credit < Math.ceil(r.buy * lot)) return msg('why.credit');

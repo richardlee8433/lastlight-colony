@@ -94,13 +94,15 @@ function migrate(s: GameState) {
     if (el.nodes?.includes('prod_30') && !o.nodes.includes('coil')) o.nodes.push('coil');
   }
   delete old.electrolyzer;
-  // 研究院合併（v0.70.1）：舊存檔的異星研究院併進科技研究院，改建成異星形態，研究員一起搬過去（超過上限的人變成閒置）
+  // 研究院合併（v0.70）：舊存檔的異星研究院併進科技研究院，改建成異星形態。
+  // 等級取兩棟裡較高的，並且至少放得下兩棟原本的研究員（異星形態每級 3 人）；人口不會少，真的超過滿級上限的人變成閒置
   const xl = old.xeno_lab;
   if ((xl?.level ?? 0) > 0) {
-    const db = s.b.databank;
-    db.level = Math.max(db.level, 1);
+    const db = s.b.databank, total = db.workers + (xl.workers ?? 0);
+    const wpl = DEF.databank.forms?.[0]?.workersPerLevel ?? 3;
     db.form = Math.max(db.form ?? 0, 1);
-    db.workers = Math.min(workerCap(s, 'databank'), db.workers + (xl.workers ?? 0));
+    db.level = Math.min(DEF.databank.maxLevel, Math.max(db.level, xl.level, 1, Math.ceil(total / wpl)));
+    db.workers = Math.min(workerCap(s, 'databank'), total);
   }
   delete old.xeno_lab;
   // 目標完成紀錄從中文文字改成 id

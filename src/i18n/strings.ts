@@ -363,6 +363,8 @@ export const STRINGS: Record<string, [string, string]> = {
   'tr.event.embargo': ["Blockade tightened: imports restock slowly · {t} left", "封鎖收緊：進口品補貨變慢 · 剩 {t}"],
   'tr.event.supply': ["Alliance run: imports in good supply · {t} left", "聯盟補給：進口品貨源充足 · 剩 {t}"],
   'tr.allianceContracts': ["Alliance contracts (carried by the Magpie)", "聯盟委託（由喜鵲運送）"],
+  'why.notTraded': ["Not for trade", "這不是交易品"],
+  'why.noPatients': ["No patients", "沒有傷員"],
   // 船塢（v0.70）
   'why.shipyard': ["Build the Shipyard first", "先蓋好船塢"],
   'why.drive': ["The drive needs the beacon's core: only after the colony decides to leave (Chapter 6)", "星際引擎要用信標的核心：第 6 章決定離開之後才能裝"],

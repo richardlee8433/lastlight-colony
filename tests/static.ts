@@ -18,6 +18,7 @@ import { resolveEvent } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
 import { market } from '../src/engine/market';
 import { healRate, applyMedicine, medBlock } from '../src/engine/combat';
+import { PRICE, tradeBlock } from '../src/engine/governance';
 import { CHAPTERS as CH, goalDone } from '../src/engine/story';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
@@ -312,7 +313,7 @@ check('S18', '船塢：看過 c3-ship 才能蓋 → 模組依章節開放、進�
 });
 
 
-check('S19', '第 5 章市場事件：航線中斷讓燃料變貴；封鎖收緊只限抵抗路線、進口品不會賣光；聯盟補給要太空港且會降價。醫療物資讓恢復快 50%。太空港只限抵抗路線', () => {
+check('S19', '第 5 章市場事件：航線中斷讓燃料變貴；封鎖收緊只限抵抗路線、進口品不會賣光；聯盟補給要太空港且會降價。醫療物資要有傷員才能用、讓恢復快 50%。異晶不能交易。太空港只限抵抗路線', () => {
   const errs: string[] = [];
   const mk = (route?: 'coop' | 'resist', port = false) => {
     const s = newGame(0); s.stage = 5; s.b.trade_post.level = 1; s.res.credit = 99999;
@@ -340,12 +341,20 @@ check('S19', '第 5 章市場事件：航線中斷讓燃料變貴；封鎖收緊
   if (!(buyPrice(a, 'medicine') < m0)) errs.push('聯盟補給後進口品應該變便宜');
   // 醫療物資
   const m = newGame(0); m.b.med_bay.level = 1;
+  m.cargo.medicine = 10;
+  if (medBlock(m)?.k !== 'why.noPatients') errs.push('沒有傷員時應該不能用醫療物資：' + medBlock(m)?.k);
+  m.raid.injured = [m.t + 999]; m.cargo.medicine = 0;
   if (medBlock(m)?.k !== 'why.short') errs.push('沒有醫療物資時應該不能用');
-  m.cargo.medicine = 10; const h0 = healRate(m);
+  m.cargo.medicine = 10;
+  const h0 = healRate(m);
   if (!applyMedicine(m)) errs.push('有 10 醫療物資卻不能用');
   if (Math.abs(healRate(m) / h0 - 1.5) > 0.01) errs.push(`用了醫療物資恢復速度應為 1.5 倍：${h0} → ${healRate(m)}`);
   m.t += 301;
   if (healRate(m) !== h0) errs.push('5 分鐘後效果應該結束');
+  // 異晶不是商品：大宗清單沒有、任何對象都不能買賣
+  if (PRICE.crystal) errs.push('大宗資源清單裡不能有異晶');
+  const x = newGame(0); x.stage = 5; x.b.trade_post.level = 1; x.res.crystal = 999; x.res.credit = 99999; x.story.route = 'coop';
+  if (tradeBlock(x, 'corp', 'crystal', 'sell')?.k !== 'why.notTraded' || tradeBlock(x, 'corp', 'crystal', 'buy')?.k !== 'why.notTraded') errs.push('赫利昂市場不應該能買賣異晶');
   // 太空港
   const sp = newGame(0); sp.stage = 5; Object.assign(sp.res, { metal: 9999, credit: 9999 });
   if (levelBlock(sp, 'spaceport')?.k !== 'why.resistOnly') errs.push('還沒選路線就能蓋太空港');

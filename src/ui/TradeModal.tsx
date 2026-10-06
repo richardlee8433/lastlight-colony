@@ -37,8 +37,8 @@ function Market() {
     ? t('tr.helionInfo', { n: g.corp.relation, m: g.corp.refusals }) + (g.corp.refusals >= 3 ? t('tr.commando') : '')
     : t('tr.magpieInfo', { t: fmtTime(DROP_TIME) }) + (s.story.route === 'resist' && built(s, 'spaceport') ? t('tr.allianceTerms', { n: g.alliance.rep }) : '');
   const ev = s.market.event;
-  // 大宗資源：賣給赫利昂才看得到異晶（喜鵲不知道異晶的事）；出口品在上面的表賣
-  const bulk = RES_KEYS.filter((k) => PRICE[k] && RES_UNLOCK[k] <= s.stage && (k !== 'crystal' || who === 'helion')) as ResKey[];
+  // 大宗資源（異晶不在 PRICE 裡，任何對象都不交易）；出口品在上面的表賣
+  const bulk = RES_KEYS.filter((k) => PRICE[k] && RES_UNLOCK[k] <= s.stage) as ResKey[];
   return (
     <>
       <p className="muted small">{info}</p>

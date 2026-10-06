@@ -2,7 +2,7 @@
 // 預警 60 秒 → 回合制自動結算（最多 10 回合）→ 勝利拿戰利品；失敗被搶走某資源 15%、士氣 −10。
 // 保全不會死亡，倒下的只會「受傷」一段時間無法參戰。
 import { BattleReport, DEFS, GameState, Msg, RES_UNLOCK, ResKey, msg, notify } from './state';
-import { add, built, idle, nodeEffect, researchEffect, workerCap } from './formulas';
+import { add, built, hurtCivilians, idle, nodeEffect, researchEffect, workerCap } from './formulas';
 import { leave } from './population';
 
 export const FIRST_RAID = 480;      // （舊存檔用）進入階段 4 後幾秒發生第一次襲擊
@@ -21,6 +21,8 @@ export const MED_LOT = 10, MED_TIME = 300, MED_BOOST = 1.5;
 export const medActive = (s: GameState) => s.t < (s.raid.medUntil ?? 0);
 export function medBlock(s: GameState): Msg | null {
   if (!built(s, 'med_bay')) return msg('why.medbay');
+  // 沒有傷員就不用：醫療物資是進口品，也是船的補給模組材料
+  if (injuredCount(s) + hurtCivilians(s) === 0) return msg('why.noPatients');
   if ((s.cargo?.medicine ?? 0) < MED_LOT) return msg('why.short', { r: 'medicine', n: MED_LOT });
   return null;
 }

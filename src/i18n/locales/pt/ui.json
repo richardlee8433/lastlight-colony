@@ -325,6 +325,8 @@
  "tr.trendUp": "Preço alto",
  "tr.trendDown": "Preço baixo",
  "tr.trendFlat": "Preço estável",
+ "why.notTraded": "Não é negociável",
+ "why.noPatients": "Não há pacientes",
  "tr.allianceContracts": "Encomendas da Aliança (levadas pela Pega)",
  "tr.event.supply": "Viagem da Aliança: importados em boa oferta · faltam {t}",
  "tr.event.embargo": "Bloqueio apertado: importados demoram a repor · faltam {t}",

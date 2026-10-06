@@ -325,6 +325,8 @@
  "tr.trendUp": "Preis hoch",
  "tr.trendDown": "Preis niedrig",
  "tr.trendFlat": "Preis stabil",
+ "why.notTraded": "Kein Handelsgut",
+ "why.noPatients": "Keine Patienten",
  "tr.allianceContracts": "Aufträge der Allianz (die Elster liefert)",
  "tr.event.supply": "Allianzfahrt: Importe reichlich vorrätig · noch {t}",
  "tr.event.embargo": "Blockade verschärft: Importe kommen langsam nach · noch {t}",

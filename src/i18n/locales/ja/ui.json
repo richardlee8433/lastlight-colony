@@ -325,6 +325,8 @@
  "tr.trendUp": "価格高め",
  "tr.trendDown": "価格安め",
  "tr.trendFlat": "価格安定",
+ "why.notTraded": "取引できない品物",
+ "why.noPatients": "負傷者がいない",
  "tr.allianceContracts": "連合の依頼（カササギが運ぶ）",
  "tr.event.supply": "連合の補給：輸入品が豊富・残り {t}",
  "tr.event.embargo": "封鎖強化：輸入品の補充が遅い・残り {t}",

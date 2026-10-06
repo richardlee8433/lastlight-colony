@@ -325,6 +325,8 @@
  "tr.trendUp": "Precio alto",
  "tr.trendDown": "Precio bajo",
  "tr.trendFlat": "Precio estable",
+ "why.notTraded": "No se comercia",
+ "why.noPatients": "No hay pacientes",
  "tr.allianceContracts": "Encargos de la Alianza (los lleva la Urraca)",
  "tr.event.supply": "Viaje de la Alianza: importaciones abundantes · quedan {t}",
  "tr.event.embargo": "Bloqueo endurecido: las importaciones se reponen despacio · quedan {t}",
