@@ -5,7 +5,7 @@ import {
   RESEARCH_DEFS, buffActive, buffDuration, built, clickAmount, critChance, critMult, disabled, gatherBonus,
   gatherRate, hurtCivilians, idle, artId, formOf, moraleMult, BOOST_COST, boostActive, boostDuration, boostPower, levelCost, nodeEffect, popCap, processInput, recipeRatio, researchSpeed, storageCap, workerCap, creditsCh5 } from '../engine/formulas';
 import { boostBlock, levelBlock, nextForm, nodeBlock, rebuildBlock, researchBlock } from '../engine/actions';
-import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP } from '../engine/combat';
+import { defense, guardAtk, guardHp, healRate, injuredCount, medBeds, turretAtk, TURRET_HP, MED_LOT, MED_TIME, medActive, medBlock } from '../engine/combat';
 import { Governance } from './Governance';
 import { weaponShare, weaponRatio } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
@@ -68,7 +68,7 @@ export function BuildingPanel() {
       {L > 0 && id === 'admin' && <Governance />}
       {L > 0 && (id === 'trade_post' || id === 'spaceport') && (
         <section className="block">
-          <button type="button" className="btn wide" onClick={() => act.openTrade(id === 'trade_post' ? 'corp' : 'alliance')}>{t('bp.openTrade')}</button>
+          <button type="button" className="btn wide" onClick={() => act.openTrade('corp')}>{t('bp.openTrade')}</button>
         </section>
       )}
       {L > 0 && id === 'turret' && (
@@ -292,7 +292,7 @@ function Expedition() {
 }
 
 function MedBay() {
-  const s = game.s, beds = medBeds(s), patients = injuredCount(s) + hurtCivilians(s);
+  const s = game.s, act = useGame.getState(), beds = medBeds(s), patients = injuredCount(s) + hurtCivilians(s), why = medBlock(s);
   const rows: [string, string][] = [
     [t('md.beds'), t('md.bedsV', { n: Math.min(patients, beds), m: beds })],
     [t('md.patients'), t('md.patientsV', { a: injuredCount(s), b: hurtCivilians(s) })],
@@ -303,6 +303,11 @@ function MedBay() {
       <h3>{t('md.title')}</h3>
       <dl className="stats">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       <p className="muted small">{t('md.hint')}</p>
+      {/* 醫療物資（進口品）：傷員恢復快 50%；也是船的長程補給模組的材料 */}
+      {medActive(s) && <p className="banner good">{t('md.medActive', { t: fmtTime(s.raid.medUntil! - s.t) })}</p>}
+      <button type="button" className="btn wide" disabled={!!why} title={tm(why)} onClick={() => act.applyMedicine()}>
+        <Icon k="medicine" size={16} /> {t('md.medBtn', { n: MED_LOT, m: Math.round(MED_TIME / 60), c: s.cargo?.medicine ?? 0 })}
+      </button>
     </section>
   );
 }

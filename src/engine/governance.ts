@@ -1,6 +1,6 @@
 // 階段 5：治理（稅制、殖民憲章，GDD §11）、企業使者（§12）、貿易（§13）
 import { GameState, Msg, ResKey, msg, notify } from './state';
-import { CHARTER_DEFS, add, built, canAfford, charterSlots, hasXenoLab, pay, storageCap, taxIncome } from './formulas';
+import { CHARTER_DEFS, add, built, canAfford, charterSlots, pay, storageCap, taxIncome } from './formulas';
 
 // ── 稅與憲章 ──
 export function setTax(s: GameState, level: number) {
@@ -56,7 +56,8 @@ export function trade(s: GameState, who: Partner, k: ResKey, dir: 'sell' | 'buy'
 const CONTRACT_RES: ResKey[] = ['metal', 'parts', 'rock', 'tools', 'nutrient'];
 export function contractTick(s: GameState, rng = Math.random) {
   const a = s.gov.alliance;
-  if (!built(s, 'spaceport')) return;
+  // 聯盟只在抵抗路線出現：委託由喜鵲穿過封鎖線運送（v0.70）
+  if (!built(s, 'spaceport') || s.story.route !== 'resist') return;
   if (a.contract && s.t > a.contract.until) { a.contract = null; a.nextContract = s.t + 60; notify(s, 'n.contractLate', undefined, 'warn'); }
   if (!a.contract && s.t >= a.nextContract) {
     const res = CONTRACT_RES[Math.floor(rng() * CONTRACT_RES.length)];
@@ -71,23 +72,6 @@ export function fulfillContract(s: GameState) {
   add(s, 'credit', c.reward);
   a.rep++; a.contract = null; a.nextContract = s.t + 45;
   notify(s, 'n.contractDone', { n: c.reward, rep: a.rep }, 'good');
-}
-
-// 神秘訊號：唯一能用廢料換異晶的管道，每 10 分鐘限量 30 異晶
-export const SIGNAL_LIMIT = 30, SIGNAL_RATE = 40, SIGNAL_PERIOD = 600;
-export const signalOpen = (s: GameState) => built(s, 'spaceport') && hasXenoLab(s);
-export function signalLeft(s: GameState) {
-  if (s.t >= s.gov.signal.resetAt) return SIGNAL_LIMIT;
-  return SIGNAL_LIMIT - s.gov.signal.used;
-}
-export function signalTrade(s: GameState, n = 5) {
-  if (!signalOpen(s)) return;
-  const g = s.gov.signal;
-  if (s.t >= g.resetAt) { g.used = 0; g.resetAt = s.t + SIGNAL_PERIOD; }
-  n = Math.min(n, SIGNAL_LIMIT - g.used, Math.floor(s.res.scrap / SIGNAL_RATE));
-  if (n <= 0) return;
-  s.res.scrap -= n * SIGNAL_RATE; g.used += n; s.story.signalUsed = true;
-  add(s, 'crystal', n);
 }
 
 // ── 企業使者：階段 5 起週期性出現，要求上繳；拒絕 3 次以上會派突擊隊 ──

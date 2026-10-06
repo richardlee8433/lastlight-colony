@@ -654,13 +654,23 @@
  ] },
  "c5-alliance1": { "lines": [
   "O espaçoporto recebeu resposta! A Aliança das Colônias Livres, de um sistema vizinho!",
-  "(chiado) ...Soubemos que a Helion está com vocês. Estamos dispostos a ajudar a segurá-los.",
+  "(chiado) ...Um cargueiro chamado Pega nos contou que a Helion está com vocês. Estamos dispostos a ajudar a segurá-los.",
   "Condições?",
   "Um projeto. Soubemos que vocês têm alguns.",
   "(O Teo toca o porta-copos.)",
   "Uma cópia das ferramentas de ressonância, sim. O original fica aqui.",
   "...Fechado."
  ], "log": "Temos nosso primeiro amigo em outro planeta. O preço foi a cópia de um projeto. O Teo diz que é a primeira vez na vida que entrega projetos para alguém em vez de recebê-los." },
+ "c5-trader-run": { "lines": [
+  "(rádio) K-7, arrumei um novo patrão. A Aliança das Colônias Livres está me pagando para furar o bloqueio da Helion.",
+  "Então agora você é da Aliança?",
+  "Sou de quem paga. Encomenda é negócio.",
+  "Eles têm encomendas para vocês. Vocês entregam a carga, eu levo para fora. O dinheiro deles, eu trago para dentro.",
+  "E a nave de guerra da Helion?",
+  "Nave de guerra é grande. Faz curva devagar.",
+  "E pessoas? Se alguém quisesse ir embora...",
+  "Passageiro, não. Isso não mudou."
+ ], "log": "A Aliança contratou a Pega para furar o bloqueio da Helion. Ele diz que não é da Aliança, é de quem paga. As encomendas da Aliança vão com ele. A Ines perguntou se ele levaria pessoas. Ele disse que isso não mudou." },
  "c5-rifle": { "lines": [
   "O rifle de cristal está pronto. Ele excita o xenocristal e dispara a energia pelo cano.",
   "(Um fuzileiro faz um disparo de teste. Um raio violeta cruza a planície e deixa um buraco liso no penhasco.)",
@@ -688,7 +698,6 @@
   "Estruturalmente, eles estão subindo o preço enquanto podem. Comparado com a Helion, as condições ainda são melhores.",
   "...Vamos concordar por enquanto. Precisamos de tempo."
  ], "log": "A Aliança quer uma remessa de xenocristal todo mês. Menos do que a Helion quer. A Dra. Sefa diz que sai dos mesmos aglomerados." },
- "c5-signal": { "lines": [], "log": "Mandamos uma carga de sucata na direção daquele sinal, e ele mandou xenocristal de volta, de verdade. A Ines diz que tudo o que ele quer é metal, fiação e vedações, como se alguém estivesse consertando uma coisa muito antiga. Perguntei quem. Ninguém sabe." },
  "c5-pattern": { "lines": [
   "O microscópio do Instituto de Xenologia é dez vezes melhor que o da minha nave.",
   "Comparei os padrões dos Glimmers com o porta-copos do Teo.",

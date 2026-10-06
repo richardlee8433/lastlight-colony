@@ -16,6 +16,8 @@ import { creditsCh5, artId } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
 import { resolveEvent } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
+import { market } from '../src/engine/market';
+import { healRate, applyMedicine, medBlock } from '../src/engine/combat';
 import { CHAPTERS as CH, goalDone } from '../src/engine/story';
 import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
@@ -306,6 +308,51 @@ check('S18', '船塢：看過 c3-ship 才能蓋 → 模組依章節開放、進�
   if (!s.finished || s.ship.mods !== MODULES.length) errs.push('裝好星際引擎應該是結局');
   flush();
   if (!s.story.seen!.includes('c6-blocked')) errs.push('結局沒播 c6-blocked');
+  return errs;
+});
+
+
+check('S19', '第 5 章市場事件：航線中斷讓燃料變貴；封鎖收緊只限抵抗路線、進口品不會賣光；聯盟補給要太空港且會降價。醫療物資讓恢復快 50%。太空港只限抵抗路線', () => {
+  const errs: string[] = [];
+  const mk = (route?: 'coop' | 'resist', port = false) => {
+    const s = newGame(0); s.stage = 5; s.b.trade_post.level = 1; s.res.credit = 99999;
+    if (route) s.story.route = route;
+    if (port) s.b.spaceport.level = 1;
+    s.market.nextEvent = 0;
+    return s;
+  };
+  // 依序挑第 0、1、2 個可發生的事件
+  const pick = (i: number, n: number) => () => (i + 0.5) / n;
+  const c = mk('coop'); const f0 = buyPrice(c, 'fuel');
+  market(c, 0.2, pick(0, 1));
+  if (c.market.event?.k !== 'disrupt') errs.push('合作路線應該只會發生航線中斷，實際 ' + c.market.event?.k);
+  if (!(buyPrice(c, 'fuel') > f0 * 1.3)) errs.push(`航線中斷後燃料應該明顯變貴：${f0.toFixed(1)} → ${buyPrice(c, 'fuel').toFixed(1)}`);
+  const r = mk('resist'); const e0 = buyPrice(r, 'electronics');
+  market(r, 0.2, pick(1, 2));
+  if (r.market.event?.k !== 'embargo') errs.push('抵抗路線（沒有太空港）第二個事件應該是封鎖收緊，實際 ' + r.market.event?.k);
+  if (!(buyPrice(r, 'electronics') > e0)) errs.push('封鎖收緊後進口品應該變貴');
+  for (let i = 0; i < 40; i++) buyGood(r, 'raremetal');
+  for (let i = 0; i < 50; i++) market(r, 0.2);
+  if (!((r.market.stock.raremetal ?? 0) >= 20)) errs.push(`封鎖期間進口品庫存不應低於 20：${r.market.stock.raremetal}`);
+  const a = mk('resist', true); const m0 = buyPrice(a, 'medicine');
+  market(a, 0.2, pick(2, 3));
+  if (a.market.event?.k !== 'supply') errs.push('抵抗路線＋太空港第三個事件應該是聯盟補給，實際 ' + a.market.event?.k);
+  if (!(buyPrice(a, 'medicine') < m0)) errs.push('聯盟補給後進口品應該變便宜');
+  // 醫療物資
+  const m = newGame(0); m.b.med_bay.level = 1;
+  if (medBlock(m)?.k !== 'why.short') errs.push('沒有醫療物資時應該不能用');
+  m.cargo.medicine = 10; const h0 = healRate(m);
+  if (!applyMedicine(m)) errs.push('有 10 醫療物資卻不能用');
+  if (Math.abs(healRate(m) / h0 - 1.5) > 0.01) errs.push(`用了醫療物資恢復速度應為 1.5 倍：${h0} → ${healRate(m)}`);
+  m.t += 301;
+  if (healRate(m) !== h0) errs.push('5 分鐘後效果應該結束');
+  // 太空港
+  const sp = newGame(0); sp.stage = 5; Object.assign(sp.res, { metal: 9999, credit: 9999 });
+  if (levelBlock(sp, 'spaceport')?.k !== 'why.resistOnly') errs.push('還沒選路線就能蓋太空港');
+  sp.story.route = 'coop';
+  if (levelBlock(sp, 'spaceport')?.k !== 'why.resistOnly') errs.push('合作路線不應該能蓋太空港');
+  sp.story.route = 'resist';
+  if (levelBlock(sp, 'spaceport')) errs.push('抵抗路線應該能蓋太空港：' + levelBlock(sp, 'spaceport')!.k);
   return errs;
 });
 

@@ -10,7 +10,7 @@ import { resolveEvent } from '../src/engine/events';
 import { setTax, toggleCharter, trade, tradeBlock, partnerOpen } from '../src/engine/governance';
 import { canAfford } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, mods, shipReady } from '../src/engine/ship';
-import { GOODS, buyBlock, buyGood, cargoUsed } from '../src/engine/market';
+import { EXPORTS, GOODS, buyBlock, buyGood, cargoUsed, sellBlock, sellGood } from '../src/engine/market';
 import { airSafety, lifeSupportLeft } from '../src/engine/air';
 import { SCENE_IDS } from '../src/engine/dialog';
 import { expActive, startExpedition, EXP_TEAM } from '../src/engine/expedition';
@@ -80,6 +80,7 @@ function shipWork(s: GameState): boolean {
   if (!built(s, 'shipyard')) { const ok = tryBuy(s, 'shipyard'); if (ok) shipLog.push(`船塢：${fmt(s.t)}（階段 ${s.stage}）`); return ok; }
   const m = MODULES[mods(s)];
   if (!m) return false;
+  if (m.id === 'drive' && moduleBlock(s)?.k === 'why.afford' && !shipLog.some((x) => x.startsWith('等引擎'))) shipLog.push(`等引擎材料：${fmt(s.t)}（稀有金屬 ${s.cargo.raremetal}、異晶 ${Math.floor(s.res.crystal)}、工具 ${Math.floor(s.res.tools)}、信用點 ${Math.floor(s.res.credit)}）`);
   if (!moduleBlock(s)) { buildModule(s); shipLog.push(`模組 ${mods(s)}：${fmt(s.t)}（階段 ${s.stage}）`); return true; }
   if (m.stage > s.stage) return false;
   const pend = (k: string) => s.market.pending.filter((p) => p.k === k).reduce((a, p) => a + p.n, 0);
@@ -98,6 +99,7 @@ function decide(s: GameState) {
   s.events.report = null;   // 玩家看完事件結果（救援、探勘）
   if (s.events.active) {
     const k = s.events.active.kind;
+    if (k === 'choice6') shipLog.push(`抉擇：${fmt(s.t)}（船 ${mods(s)}/6、信標 ${s.b.orbital_beacon.level}）`);
     // ROUTE=resist：一律拒絕使者；CHOICE=leave：第 6 章放棄異晶
     resolveEvent(s, k === 'rescue_ines' ? 0 : k === 'meteor' ? 0 : k === 'choice6' ? (process.env.CHOICE === 'leave' ? (shipReady(s) ? 0 : 2) : 1)
       : k === 'envoy' ? (process.env.ROUTE !== 'resist' && s.gov.corp.demand && canAfford(s, s.gov.corp.demand) ? 0 : 1) : 1);
@@ -107,9 +109,12 @@ function decide(s: GameState) {
     if (!s.gov.charters.length) toggleCharter(s, 'double_shift');
   }
   // 賣掉快滿倉、而且目標用不到那麼多的資源
+  // 出口品賣給行商（市場價）；第 5 章起其他資源用大宗買賣
   if (partnerOpen(s, 'corp')) for (const k of ['scrap', 'nutrient', 'tools', 'parts', 'rock'] as ResKey[]) {
     const need = (levelCost(s, target(s) ?? 'star_dome') as any)[k] ?? 0;
-    if (s.res[k] > storageCap(s) * 0.9 && s.res[k] - 100 > need && !tradeBlock(s, 'corp', k, 'sell')) trade(s, 'corp', k, 'sell');
+    if (!(s.res[k] > storageCap(s) * 0.9 && s.res[k] - 100 > need)) continue;
+    if (EXPORTS.includes(k)) { if (!sellBlock(s, k)) sellGood(s, k); }
+    else if (s.stage >= 5 && !tradeBlock(s, 'corp', k, 'sell')) trade(s, 'corp', k, 'sell');
   }
   // 探勘：隊伍在家就派出去（閒置不夠時從工人最多的建築調人）
   if (built(s, 'expedition') && !expActive(s)) {
@@ -139,6 +144,12 @@ function decide(s: GameState) {
     if (s.pop >= popCap(s) - 1 && tryBuy(s, 'hab_pod')) return;
   }
   if (s.stage >= 4) {
+    // 第 4 章目標：喜鵲聯絡上之後蓋交易站，賣一批貨、買一個貨櫃
+    if (!built(s, 'trade_post') && built(s, 'crystal_synth') && tryBuy(s, 'trade_post')) return;
+    if (built(s, 'trade_post') && !s.market.drops && !s.market.pending.length) {
+      for (const k of EXPORTS) if (s.res.credit < 200 && !sellBlock(s, k)) sellGood(s, k);
+      if (!buyBlock(s, 'electronics')) buyGood(s, 'electronics');
+    }
     if (!built(s, 'security') && tryBuy(s, 'security')) return;
     // 照第 4 章的任務順序：營區之後接著蓋合成室（第一次襲擊由合成室觸發）
     if (built(s, 'security') && !built(s, 'crystal_synth') && tryBuy(s, 'crystal_synth')) return;
@@ -232,7 +243,7 @@ const rebuilt: string[] = [];
 const raids: string[] = [];
 const stageAt: Record<number, number> = {};
 const marksTime = (st: number) => (stageAt[st] ??= s.t) + 150;
-let lastStage = 1, clickAcc = 0;
+let lastStage = 1, clickAcc = 0, lastBeacon = 0, boostAt = 0;
 // v0.6 氧氣與劇情里程碑：再生器蓋好時維生系統還剩幾秒、伊涅絲何時救回、第 1～2 章空氣安全度最低點
 const expLog: string[] = [];
 let scrubberAt = -1, lsLeftAtScrubber = 0, inesAt = -1, minAir12 = 1;
@@ -265,6 +276,8 @@ for (let i = 0; i < (8 * 3600) / TICK && !s.finished && !s.failed; i++) {
   if (airSafety(s) < 0.25) lowAir += TICK;
   if (s.stage >= 2 && s.stage <= 3 && foodSafety(s) < 0.5) midFood += TICK;
   if (s.raid.report) { raids.push(`襲擊 ${s.raid.report.raid}：${fmt(s.t)} ${s.raid.report.kind} ${s.raid.report.won ? '勝' : '敗'}（敵 ${s.raid.report.enemies}，保全 ${s.raid.report.guards}，武裝 ${s.raid.report.armed}，砲塔 ${s.raid.report.turrets ?? 0}）`); s.raid.report = null; }
+  if (s.b.orbital_beacon.level !== lastBeacon) { lastBeacon = s.b.orbital_beacon.level; marks.push(`信標第 ${lastBeacon} 段：${fmt(s.t)}`); }
+  if (!boostAt && (s.boost?.uses ?? 0) > 0) { boostAt = s.t; marks.push(`第一次注入異晶：${fmt(s.t)}`); }
   if (s.stage !== lastStage) { marks.push(`階段 ${s.stage}：${fmt(s.t)}（人口 ${s.pop}）`); lastStage = s.stage; }
   // 檢查點：每章進來 2.5 分鐘、第 4 章合成室蓋好但第一次襲擊還沒來、第 4 章第一次襲擊之後
   if (SNAPDIR) {

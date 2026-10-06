@@ -654,13 +654,23 @@
  ] },
  "c5-alliance1": { "lines": [
   "¡El puerto espacial recibió respuesta! ¡La Alianza de Colonias Libres, de un sistema cercano!",
-  "(estática) ...Nos dicen que Helion está con vosotros. Estamos dispuestos a ayudaros a contenerlos.",
+  "(estática) ...Un carguero llamado la Urraca nos dijo que Helion está con vosotros. Estamos dispuestos a ayudaros a contenerlos.",
   "¿Condiciones?",
   "Un plano. Nos dicen que tenéis algunos.",
   "(Teo toca su posavasos.)",
   "Una copia de las herramientas de resonancia, sí. El original se queda aquí.",
   "...Trato hecho."
  ], "log": "Tenemos nuestro primer amigo en otro planeta. El precio fue la copia de un plano. Teo dice que es la primera vez en su vida que le entrega planos a alguien en lugar de recibirlos." },
+ "c5-trader-run": { "lines": [
+  "(comunicación) K-7, tengo un nuevo patrón. La Alianza de Colonias Libres me paga por atravesar el bloqueo de Helion.",
+  "¿Entonces ahora eres de la Alianza?",
+  "Soy de quien paga. Un encargo es un negocio.",
+  "Tienen encargos para vosotros. Vosotros entregáis la mercancía y yo la saco. Su dinero, lo traigo yo.",
+  "¿Y la nave de guerra de Helion?",
+  "Las naves de guerra son grandes. Giran despacio.",
+  "¿Y la gente? Si alguien quisiera irse...",
+  "Nada de pasajeros. Eso no ha cambiado."
+ ], "log": "La Alianza contrató a la Urraca para atravesar el bloqueo de Helion. Dice que no es de la Alianza, que es de quien paga. Él llevará los encargos de la Alianza. Ines le preguntó si llevaría gente. Dijo que eso no ha cambiado." },
  "c5-rifle": { "lines": [
   "El rifle de cristal está listo. Excita el xenocristal y dispara la energía por el cañón.",
   "(Un marine hace un disparo de prueba. Un rayo violeta cruza la llanura y deja un agujero limpio en el acantilado.)",
@@ -688,7 +698,6 @@
   "Estructuralmente, están subiendo el precio mientras pueden. Comparado con Helion, las condiciones siguen siendo mejores.",
   "...Aceptemos por ahora. Necesitamos tiempo."
  ], "log": "La Alianza quiere un envío de xenocristal cada mes. Menos de lo que quiere Helion. La Dra. Sefa dice que sale de los mismos cúmulos." },
- "c5-signal": { "lines": [], "log": "Enviamos un cargamento de chatarra hacia esa señal, y de verdad nos devolvió xenocristal. Ines dice que todo lo que pide es metal, cables y juntas, como si alguien estuviera reparando algo muy viejo. Pregunté quién. Nadie lo sabe." },
  "c5-pattern": { "lines": [
   "El microscopio del Instituto de Xenología es diez veces mejor que el de mi nave.",
   "Comparé los patrones de los Glimmers con el posavasos de Teo.",

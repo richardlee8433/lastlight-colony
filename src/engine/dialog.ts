@@ -136,10 +136,11 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c5-sefa', when: (s) => !!s.story.env2At && s.t >= s.story.env2At },
   { id: 'c5-corp-help', when: (s) => s.story.route === 'coop' && (s.story.corpHelp ?? 0) > 0 && !s.raid.report },
   { id: 'c5-alliance1', when: (s) => s.story.lean === 'alliance' && built(s, 'spaceport') },
+  // 抵抗路線：聯盟付錢請喜鵲穿過封鎖線，聯盟的委託由他運送（聯盟傾向的要先播過聯盟的第一次聯絡）
+  { id: 'c5-trader-run', when: (s) => s.story.route === 'resist' && built(s, 'spaceport') && built(s, 'trade_post') && seen(s, 'c4-trader') && (s.story.lean !== 'alliance' || seen(s, 'c5-alliance1')) },
   { id: 'c5-rifle', when: (s) => s.story.lean === 'alien' && s.research.done.includes('xeno_blade') },
   { id: 'c5-commando', when: (s) => s.story.route === 'resist' && (s.story.commandoWon ?? 0) > 0 && !s.raid.report },
   { id: 'c5-alliance2', when: (s) => seen(s, 'c5-commando') && s.story.lean === 'alliance' && built(s, 'spaceport') },
-  { id: 'c5-signal', journal: true, when: (s) => !!s.story.signalUsed },
   // 樣本來源依路線：合作路線要等赫利昂士兵打下過微光獸
   { id: 'c5-pattern', when: (s) => hasXenoLab(s) && (s.story.route === 'resist' || (s.story.route === 'coop' && seen(s, 'c5-corp-help'))) },
   { id: 'c5-supplies', when: (s) => mods(s) >= 4 },
@@ -164,7 +165,7 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c6-end', when: (s) => s.finished && s.story.choice6 !== 'leave', chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 7;
+export const DIALOG_VERSION = 8;
 /** 新版本加入的場景：還在這一章（或更早）的舊存檔照常播，不要直接標成播過 */
 const REPLAY_IF: Record<string, number> = { 'c4-trader': 4, 'c4-cargo': 4, 'c4-trader-ride': 4 };
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);

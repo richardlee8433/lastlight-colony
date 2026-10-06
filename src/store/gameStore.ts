@@ -17,6 +17,7 @@ import { resolveEvent } from '../engine/events';
 import * as G from '../engine/governance';
 import * as M from '../engine/market';
 import { MODULES, READY_MODS, buildModule } from '../engine/ship';
+import { applyMedicine } from '../engine/combat';
 import { setMood } from '../audio/audio';
 import { setFormGetter } from '../i18n';
 
@@ -161,16 +162,16 @@ interface Store {
   dismissBattle: () => void;
   setSplit: (id: string, n: number) => void;
   togglePause: (id: string) => void;
-  trade: null | 'corp' | 'alliance' | 'signal';
-  openTrade: (t: null | 'corp' | 'alliance' | 'signal') => void;
+  trade: null | 'corp';
+  openTrade: (t: null | 'corp') => void;
   doTrade: (who: G.Partner, k: any, dir: 'sell' | 'buy') => void;
   fulfill: () => void;
   buyGood: (k: M.Good) => void;
   sellGood: (k: any) => void;
   buildModule: () => void;
+  applyMedicine: () => void;
   /** 第 6 章選了「先等等」之後，從船塢面板重新打開抉擇 */
   reopenChoice: () => void;
-  signal: () => void;
   setTax: (n: number) => void;
   toggleCharter: (id: string) => void;
   restoreCheckpoint: () => void;
@@ -223,8 +224,8 @@ export const useGame = create<Store>((set, get) => {
     buyGood: (k) => run((s) => M.buyGood(s, k)),
     sellGood: (k) => run((s) => M.sellGood(s, k)),
     buildModule: () => run((s) => buildModule(s)),
+    applyMedicine: () => run((s) => applyMedicine(s)),
     reopenChoice: () => run((s) => { if (!s.story.choice6 && s.ship.wait !== undefined && !s.events.active) s.events.active = { kind: 'choice6' }; }),
-    signal: () => run((s) => G.signalTrade(s, 5)),
     setTax: (n) => run((s) => G.setTax(s, n)),
     toggleCharter: (id) => run((s) => G.toggleCharter(s, id)),
     expedition: () => run((s) => startExpedition(s)),

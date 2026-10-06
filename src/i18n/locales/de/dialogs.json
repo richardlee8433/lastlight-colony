@@ -654,13 +654,23 @@
  ] },
  "c5-alliance1": { "lines": [
   "Der Raumhafen hat eine Antwort! Die Allianz Freier Kolonien, aus einem Nachbarsystem!",
-  "(Rauschen) … Wir hören, Helion ist bei euch. Wir helfen euch, sie aufzuhalten.",
+  "(Rauschen) … Ein Frachter namens „Elster“ hat uns erzählt, dass Helion bei euch ist. Wir helfen euch, sie aufzuhalten.",
   "Bedingungen?",
   "Ein Bauplan. Wir hören, ihr habt welche.",
   "(Teo berührt seinen Untersetzer.)",
   "Eine Kopie des Resonanzwerkzeugs, ja. Das Original bleibt hier.",
   "… Abgemacht."
  ], "log": "Wir haben unseren ersten Freund auf einem anderen Planeten. Der Preis war die Kopie eines Bauplans. Teo sagt, es ist das erste Mal in seinem Leben, dass er jemandem Pläne gibt, statt sie von jemandem zu bekommen." },
+ "c5-trader-run": { "lines": [
+  "(Funk) K-7, ich hab einen neuen Auftraggeber. Die Allianz Freier Kolonien bezahlt mich dafür, Helions Blockade zu durchbrechen.",
+  "Dann gehörst du jetzt zur Allianz?",
+  "Ich gehöre dem, der zahlt. Ein Auftrag ist ein Geschäft.",
+  "Sie haben Aufträge für euch. Ihr gebt die Ware ab, ich bringe sie raus. Ihr Geld bringe ich rein.",
+  "Und Helions Kriegsschiff?",
+  "Kriegsschiffe sind groß. Sie wenden langsam.",
+  "Und Menschen? Wenn jemand weg wollte –",
+  "Keine Passagiere. Daran hat sich nichts geändert."
+ ], "log": "Die Allianz hat die Elster angeheuert, um Helions Blockade zu durchbrechen. Er sagt, er gehört nicht zur Allianz, sondern dem, der zahlt. Die Aufträge der Allianz bringt er. Ines fragte, ob er auch Menschen mitnimmt. Er sagte, daran hat sich nichts geändert." },
  "c5-rifle": { "lines": [
   "Das Kristallgewehr ist fertig. Es regt den Xenokristall an und feuert die Energie aus dem Lauf.",
   "(Ein Marine gibt einen Probeschuss ab. Ein violetter Strahl zieht über die Ebene und hinterlässt ein glattes Loch in der Klippe.)",
@@ -688,7 +698,6 @@
   "Strukturell betrachtet erhöhen sie den Preis, solange sie können. Verglichen mit Helion sind die Bedingungen trotzdem besser.",
   "… Vorerst zustimmen. Wir brauchen Zeit."
  ], "log": "Die Allianz will jeden Monat eine Lieferung Xenokristall. Weniger, als Helion will. Dr. Sefa sagt, es kommt aus denselben Kristallhaufen." },
- "c5-signal": { "lines": [], "log": "Wir haben eine Ladung Schrott in Richtung dieses Signals geschickt, und es hat tatsächlich Xenokristall zurückgeschickt. Ines sagt, alles, was es will, sind Metall, Kabel und Dichtungen, als würde jemand etwas sehr Altes reparieren. Ich habe gefragt, wer. Niemand weiß es." },
  "c5-pattern": { "lines": [
   "Das Mikroskop im Xenologie-Institut ist zehnmal besser als das auf meinem Schiff.",
   "Ich habe die Muster der Glimmer mit Teos Untersetzer verglichen.",

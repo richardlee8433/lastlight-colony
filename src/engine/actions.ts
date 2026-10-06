@@ -26,6 +26,8 @@ export function levelBlock(s: GameState, id: string): Why {
   if (d.requires?.raids && s.raid.won < d.requires.raids) return msg('why.raids', { n: d.requires.raids });
   if (d.requires?.credits && creditsCh5(s) < d.requires.credits) return msg('why.credits', { n: d.requires.credits });
   if (d.requires?.scene && !s.story.seen?.includes(d.requires.scene)) return msg('why.scene.' + d.requires.scene);
+  // 太空港只在抵抗路線需要：拒絕赫利昂之後，才跟其他殖民地聯絡
+  if (id === 'spaceport' && L === 0 && s.story.route !== 'resist') return msg('why.resistOnly');
   if (!canAfford(s, levelCost(s, id))) return msg('why.afford');
   return null;
 }

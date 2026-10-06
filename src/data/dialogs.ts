@@ -886,7 +886,7 @@ export const SCENES: Record<string, SceneText> = {
   'c5-alliance1': {
     lines: [
       ['juno', '太空港收到回覆了！是自由殖民地聯盟，在鄰近星系！', 'The spaceport got a reply! The Free Colonies Alliance, in a nearby system!'],
-      ['alliance', '（雜訊）……我們聽說赫利昂在你們那裡。我們願意幫忙牽制。', "(static) ...We hear Helion is with you. We're willing to help hold them off."],
+      ['alliance', '（雜訊）……一艘叫「喜鵲」的貨船告訴我們，赫利昂在你們那裡。我們願意幫忙牽制。', "(static) ...A freighter called the Magpie told us Helion is with you. We're willing to help hold them off."],
       ['mara', '條件？', 'Terms?'],
       ['alliance', '一張藍圖。我們聽說你們有。', 'One blueprint. We hear you have some.'],
       ['narr', '（提歐摸了摸杯墊）', '(Teo touches his coaster.)'],
@@ -894,6 +894,19 @@ export const SCENES: Record<string, SceneText> = {
       ['mara', '……成交。', '...Deal.'],
     ],
     log: ['我們有了第一個在別的星球上的朋友。代價是一張藍圖的副本。提歐說，這是他這輩子第一次把圖紙交給別人，而不是從別人手上拿來。', 'We have our first friend on another planet. The price was a copy of one blueprint. Teo says it\'s the first time in his life he has handed plans to someone else instead of taking them from someone.'],
+  },
+  'c5-trader-run': {
+    lines: [
+      ["trader", "（通訊）K-7，我有新雇主了。自由殖民地聯盟付錢，叫我穿過赫利昂的封鎖線。", "(comm) K-7, I've got a new employer. The Free Colonies Alliance is paying me to run Helion's blockade."],
+      ["juno", "所以你現在是聯盟的人？", "So you're with the Alliance now?"],
+      ["trader", "我是收錢的人。委託是生意。", "I'm with whoever pays. A contract is business."],
+      ["trader", "他們有委託要給你們。你們交貨，我帶出去；他們的錢，我帶進來。", "They've got contracts for you. You hand over the goods, I take them out. Their money, I bring in."],
+      ["mara", "赫利昂的戰艦呢？", "And Helion's warship?"],
+      ["trader", "戰艦很大，轉彎很慢。", "Warships are big. They turn slow."],
+      ["ines", "那人呢？如果有人要走——", "And people? If someone wanted to leave—"],
+      ["trader", "不載人。這條沒改。", "No passengers. That hasn't changed."],
+    ],
+    log: ["聯盟雇了喜鵲穿過赫利昂的封鎖線。他說他不是聯盟的人，是收錢的人。聯盟的委託由他運送。伊涅絲問他載不載人，他說這條沒改。", "The Alliance hired the Magpie to run Helion's blockade. He says he isn't with the Alliance, he's with whoever pays. He'll carry the Alliance's contracts. Ines asked if he'd carry people. He said that hasn't changed."],
   },
   'c5-rifle': {
     lines: [
@@ -931,10 +944,6 @@ export const SCENES: Record<string, SceneText> = {
     log: ['聯盟要我們每個月送異晶過去。比赫利昂要的少。賽法博士說，一樣是從晶簇裡拿的。', 'The Alliance wants a shipment of xenocrystal every month. Less than Helion wants. Dr. Sefa says it comes out of the same clusters.'],
   },
   // 只寫進日誌
-  'c5-signal': {
-    lines: [],
-    log: ['我們對著那個訊號送出一批廢料，它竟然回了一批異晶。伊涅絲說，它要的都是金屬、線路、密封墊，像是有人在修一艘很舊的東西。我問是誰，沒有人知道。', 'We sent a load of scrap toward that signal, and it actually sent back xenocrystal. Ines says everything it wants is metal, wiring and seals, as if someone is repairing something very old. I asked who. Nobody knows.'],
-  },
   'c5-pattern': {
     lines: [
       ['sefa', '異星研究院的顯微鏡，比我船上的好十倍。', "The Xeno Lab's microscope is ten times better than the one on my ship."],

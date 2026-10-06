@@ -168,7 +168,7 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 7 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 8 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),

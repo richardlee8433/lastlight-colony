@@ -24,7 +24,7 @@ export function medBlock(s: GameState): Msg | null {
   if ((s.cargo?.medicine ?? 0) < MED_LOT) return msg('why.short', { r: 'medicine', n: MED_LOT });
   return null;
 }
-export function useMedicine(s: GameState) {
+export function applyMedicine(s: GameState) {
   if (medBlock(s)) return false;
   s.cargo.medicine -= MED_LOT;
   s.raid.medUntil = Math.max(s.t, s.raid.medUntil ?? 0) + MED_TIME;

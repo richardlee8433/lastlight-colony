@@ -30,7 +30,7 @@ export interface MarketState {
   event?: { k: MarketEvent; until: number } | null;
   nextEvent?: number;
 }
-/** 航線中斷（兩條路線）、赫利昂禁運（抵抗路線）、聯盟補給（抵抗路線＋太空港） */
+/** 航線中斷（兩條路線）、封鎖收緊（抵抗路線）、喜鵲替聯盟跑了一趟（抵抗路線＋太空港） */
 export type MarketEvent = 'disrupt' | 'embargo' | 'supply';
 export const EVENT_TIME: Record<MarketEvent, number> = { disrupt: 180, embargo: 300, supply: 180 };
 /** 禁運期間進口品庫存的下限：只會變少、不會歸零，造船不會完全卡死 */
@@ -53,7 +53,11 @@ export function scarcity(s: GameState, k: MKey) {
 /** 路線帶來的價格修正（只作用在進口品）：合作＝赫利昂的價目；抵抗且蓋了太空港＝聯盟優惠 */
 function terms(s: GameState, k: Good) {
   if (partner(s) === 'helion') return ({ electronics: 0.85, fuel: 0.9, raremetal: 1.1, medicine: 1.1 } as Record<Good, number>)[k];
-  if (s.story.route === 'resist' && built(s, 'spaceport')) return ({ raremetal: 0.85, medicine: 0.9 } as Partial<Record<Good, number>>)[k] ?? 1;
+  // 抵抗路線：聯盟付錢請喜鵲穿過封鎖線，聯盟聲望越高，稀有金屬、醫療物資越便宜（每點 -2%，最多 5 點）
+  if (s.story.route === 'resist' && built(s, 'spaceport')) {
+    const rep = Math.min(5, s.gov.alliance.rep ?? 0) * 0.02;
+    return ({ raremetal: 0.85 - rep, medicine: 0.9 - rep } as Partial<Record<Good, number>>)[k] ?? 1;
+  }
   return 1;
 }
 /** 買一單位進口品的價格 */

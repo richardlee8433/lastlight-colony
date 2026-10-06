@@ -54,7 +54,7 @@ const buildings: Record<string, B> = {
   shipyard: { name: 'Shipyard', desc: 'Where the ship gets built, one module at a time: hull, navigation, life support, long-range supplies, fuel, and finally the interstellar drive. From navigation on, modules need imported goods the colony can\'t make.' },
   trade_post: { name: 'Trading Post', desc: 'The colony market. Workers earn credits here, and you can trade with passing merchants: sell metal, tools, parts and nutrient, buy goods the colony can\'t make. Each level holds 100 more items in the cargo hold.', nodes: {
     prod_30: ['Night Market', 'Output +30%'], cap_2: ['More Stalls', 'Worker cap +2'] } },
-  spaceport: { name: 'Spaceport', desc: 'Receives shuttles from other colonies. Opens Free Colonies Alliance trade; rebuild the Tech Institute into a Xenology Institute to answer that mysterious signal.' },
+  spaceport: { name: 'Spaceport', desc: "Receives comms and shuttles from other colonies. Resistance route only: once built, the Free Colonies Alliance sends contracts that the Magpie carries through the blockade, and his rare metals and medicine get cheaper." },
   turret: { name: 'Defense Turret', desc: 'Fixed defense. One turret per level (ATK 8, HP 40); uses no population and repairs itself after battle.' },
   governor: { name: 'Governor\'s Residence', desc: 'The administrative heart of the city, where the colony\'s first elected governor works. Morale +15, charter slots +1.' },
   sky_residence: { name: 'Skyline Residence', desc: 'High-rise homes under the dome, with the stars right outside the window. +12 population cap and +5 morale per level.' },
