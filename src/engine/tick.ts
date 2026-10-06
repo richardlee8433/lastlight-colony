@@ -26,7 +26,7 @@ export function step(s: GameState, dt = TICK, opts: { offline?: boolean; rng?: (
   combat(s, opts.offline, opts.rng, dt);
   expedition(s, opts.rng);
   governance(s, dt, opts.offline ? 0.5 : 1, opts.offline, opts.rng);
-  market(s, dt);
+  market(s, dt, opts.rng, opts.offline);
   updateStory(s);
   dialogs(s);
   s.t += dt;

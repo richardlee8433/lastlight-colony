@@ -58,6 +58,8 @@ export interface RaidState {
   injured: number[]; armed: number; report: BattleReport | null;
   /** 戰鬥中受傷的一般殖民者：復原時間、原本工作的建築（好了會回去） */
   hurt?: { until: number; b: string | null }[];
+  /** 醫療艙用了醫療物資：到這個時間之前傷員恢復快 50% */
+  medUntil?: number;
 }
 /** 階段 5：治理（稅、憲章）、企業關係、貿易 */
 export interface GovState {

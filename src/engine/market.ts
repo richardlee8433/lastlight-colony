@@ -26,7 +26,15 @@ export interface MarketState {
   pending: { k: Good; n: number; at: number }[];
   /** 落地過幾個貨櫃（第 4 章目標、c4-cargo 用） */
   drops: number;
+  /** 第 5 章的市場事件：進行中的事件與下一次的時間 */
+  event?: { k: MarketEvent; until: number } | null;
+  nextEvent?: number;
 }
+/** 航線中斷（兩條路線）、赫利昂禁運（抵抗路線）、聯盟補給（抵抗路線＋太空港） */
+export type MarketEvent = 'disrupt' | 'embargo' | 'supply';
+export const EVENT_TIME: Record<MarketEvent, number> = { disrupt: 180, embargo: 300, supply: 180 };
+/** 禁運期間進口品庫存的下限：只會變少、不會歸零，造船不會完全卡死 */
+const EMBARGO_FLOOR = 2 * 10;
 
 /** 交易對象：合作路線後赫利昂接管，喜鵲不再來 */
 export const partner = (s: GameState): 'magpie' | 'helion' => (s.story.route === 'coop' ? 'helion' : 'magpie');
@@ -95,13 +103,47 @@ function helionTraded(s: GameState) {
   if (c.traded % 10 === 0) c.relation += 1;
 }
 
-/** 每 tick：庫存回到目標值、到時間的貨櫃落地 */
-export function market(s: GameState, dt: number) {
+/** 第 5 章起每隔一段時間可能發生的市場事件（依路線挑選）。事件只改庫存，價格跟著庫存變 */
+function eventsFor(s: GameState): MarketEvent[] {
+  const out: MarketEvent[] = ['disrupt'];
+  if (s.story.route === 'resist') { out.push('embargo'); if (built(s, 'spaceport')) out.push('supply'); }
+  return out;
+}
+function startEvent(s: GameState, k: MarketEvent) {
+  const m = s.market;
+  m.event = { k, until: s.t + EVENT_TIME[k] };
+  if (k === 'disrupt') m.stock.fuel = Math.max(10, stockOf(s, 'fuel') * 0.35);
+  if (k === 'embargo') for (const g of GOODS) m.stock[g] = Math.max(EMBARGO_FLOOR, stockOf(s, g) * 0.6);
+  if (k === 'supply') for (const g of GOODS) m.stock[g] = Math.max(stockOf(s, g), TARGET[g]! * 1.8);
+  notify(s, 'n.mkt.' + k, undefined, k === 'supply' ? 'good' : 'warn');
+}
+function eventTick(s: GameState, rng: () => number) {
+  const m = s.market;
+  if (s.stage < 5 || !marketOpen(s)) return;
+  if (m.event && s.t >= m.event.until) { m.event = null; m.nextEvent = s.t + 420 + rng() * 300; }
+  if (m.event) return;
+  if (m.nextEvent === undefined) { m.nextEvent = s.t + 300; return; }
+  if (s.t < m.nextEvent) return;
+  const opts = eventsFor(s);
+  startEvent(s, opts[Math.floor(rng() * opts.length)]);
+}
+/** 事件進行中，某項商品的庫存回復變慢的倍數（航線中斷：燃料；禁運：四種進口品） */
+function slowdown(s: GameState, k: MKey) {
+  const e = s.market?.event?.k;
+  if (e === 'disrupt' && k === 'fuel') return 4;
+  if (e === 'embargo' && (GOODS as MKey[]).includes(k)) return 4;
+  return 1;
+}
+
+/** 每 tick：市場事件、庫存回到目標值、到時間的貨櫃落地 */
+export function market(s: GameState, dt: number, rng: () => number = Math.random, offline = false) {
   const m = s.market;
   if (!m) return;
+  if (!offline) eventTick(s, rng);
   for (const k of Object.keys(TARGET) as MKey[]) {
     const t = TARGET[k]!, st = m.stock[k] ?? t;
-    m.stock[k] = st + (t - st) * Math.min(1, dt / RECOVER);
+    m.stock[k] = st + (t - st) * Math.min(1, dt / (RECOVER * slowdown(s, k)));
+    if (m.event?.k === 'embargo' && (GOODS as MKey[]).includes(k)) m.stock[k] = Math.max(EMBARGO_FLOOR, m.stock[k]!);
   }
   if (!m.pending.length) return;
   const landed = m.pending.filter((p) => p.at <= s.t);

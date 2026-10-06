@@ -14,7 +14,23 @@ export const INJURY = 180;
 
 /** 醫療艙：每級 2 張病床（加護病床 +1/級）；躺在病床上的傷員，每位醫護員讓復原速度 +60%（自動診斷再 ×1.5） */
 export const medBeds = (s: GameState) => (built(s, 'med_bay') ? s.b.med_bay.level * (2 + nodeEffect(s, 'med_bay', 'bedAdd')) : 0);
-export const healRate = (s: GameState) => (built(s, 'med_bay') ? 1 + s.b.med_bay.workers * 0.6 * (1 + nodeEffect(s, 'med_bay', 'healAdd')) : 1);
+export const healRate = (s: GameState) => (built(s, 'med_bay') ? (1 + s.b.med_bay.workers * 0.6 * (1 + nodeEffect(s, 'med_bay', 'healAdd'))) * (medActive(s) ? MED_BOOST : 1) : 1);
+// 醫療物資（v0.70 進口品）：醫療艙每用 10 單位，傷員恢復快 50%，持續 5 分鐘（可以疊加時間）。
+// 醫療物資也是船的長程補給模組的材料：現在救治、還是留給長期計畫，是個小取捨
+export const MED_LOT = 10, MED_TIME = 300, MED_BOOST = 1.5;
+export const medActive = (s: GameState) => s.t < (s.raid.medUntil ?? 0);
+export function medBlock(s: GameState): Msg | null {
+  if (!built(s, 'med_bay')) return msg('why.medbay');
+  if ((s.cargo?.medicine ?? 0) < MED_LOT) return msg('why.short', { r: 'medicine', n: MED_LOT });
+  return null;
+}
+export function useMedicine(s: GameState) {
+  if (medBlock(s)) return false;
+  s.cargo.medicine -= MED_LOT;
+  s.raid.medUntil = Math.max(s.t, s.raid.medUntil ?? 0) + MED_TIME;
+  notify(s, 'n.medicine', { n: MED_LOT }, 'good');
+  return true;
+}
 /** 傷員治療：最快好的那幾位佔用病床，剩餘時間按 healRate 倒數 */
 function treat(s: GameState, dt: number) {
   const r = s.raid;
