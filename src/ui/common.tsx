@@ -2,7 +2,7 @@ import { game } from '../store/gameStore';
 import { Cost, ResKey } from '../engine/state';
 import { lang, resName, t } from '../i18n';
 import { storageCap } from '../engine/formulas';
-import { iconURL } from './assets';
+import { iconURL, paintedIcon } from './assets';
 
 export const fmt = (n: number) => {
   const a = Math.abs(n);
@@ -20,7 +20,7 @@ export const fmtTime = (sec: number) => {
 };
 
 export function Icon({ k, size = 18 }: { k: string; size?: number }) {
-  return <img className="icon" src={iconURL(k)} width={size} height={size} alt="" />;
+  return <img className={'icon' + (paintedIcon(k) ? ' painted' : '')} src={iconURL(k)} width={size} height={size} alt="" />;
 }
 
 export function CostList({ cost }: { cost: Cost }) {

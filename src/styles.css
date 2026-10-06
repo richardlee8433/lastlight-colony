@@ -33,6 +33,7 @@ html, body, #root { height: 100%; margin: 0; background: var(--ink); color: var(
 button { font: inherit; color: inherit; }
 button:focus-visible { outline: 2px solid var(--trim); outline-offset: 2px; }
 .icon { image-rendering: pixelated; vertical-align: middle; flex: none; }
+.icon.painted { image-rendering: auto; }
 .muted { color: var(--muted); }
 .warn { color: var(--warn); }
 small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
