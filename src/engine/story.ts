@@ -3,7 +3,9 @@ import STORY from '../data/story.json';
 import { AIR_ENABLED, GameState } from './state';
 import { built, creditsCh5 } from './formulas';
 
-export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research' | 'drop' | 'finish'; res?: string; id?: string; amount?: number; label: string; after?: 'raid1' }
+export interface Goal { gid: string; type: 'resource' | 'build' | 'pop' | 'assign' | 'raids' | 'charter' | 'envoy' | 'credits' | 'boost' | 'level' | 'air' | 'form' | 'expedition' | 'research' | 'drop' | 'finish'; res?: string; id?: string; amount?: number; label: string; after?: 'raid1';
+  /** 合併的目標：ids＝這幾棟都要蓋好；levels＝這幾棟都要到指定等級 */
+  ids?: string[]; levels?: Record<string, number> }
 export interface Chapter { chapter: number; title: string; subtitle: string; intro: string[]; goals: Goal[] }
 // 目標 id：原本的目標用「章-序號」（序號不算後來插入、自帶 gid 的目標），舊存檔的完成紀錄才對得上
 export const CHAPTERS = (STORY as unknown as Chapter[]).map((c) => {
@@ -30,7 +32,7 @@ export function migrateStoryDone(done: string[]): string[] {
 
 function liveDone(s: GameState, g: Goal): boolean {
   switch (g.type) {
-    case 'build': return built(s, g.id!);
+    case 'build': return (g.ids ?? [g.id!]).every((id) => built(s, id));
     case 'pop': return s.pop >= g.amount!;
     case 'resource': return (s.res as Record<string, number>)[g.res!] >= g.amount!;
     case 'assign': return s.story.assigned;
@@ -39,7 +41,7 @@ function liveDone(s: GameState, g: Goal): boolean {
     case 'envoy': return s.gov.corp.envoys > 0;
     case 'credits': return creditsCh5(s) >= g.amount!;
     case 'boost': return (s.boost?.uses ?? 0) > 0;
-    case 'level': return s.b[g.id!].level >= g.amount!;
+    case 'level': return Object.entries(g.levels ?? { [g.id!]: g.amount! }).every(([id, n]) => s.b[id].level >= n);
     case 'form': return built(s, g.id!) && (s.b[g.id!].form ?? 0) >= g.amount!;
     case 'expedition': return (s.exp?.count ?? 0) >= g.amount!;
     case 'research': return s.research.done.includes(g.id!);

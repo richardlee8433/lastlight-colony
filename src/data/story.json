@@ -13,7 +13,8 @@
         "type": "resource",
         "res": "scrap",
         "amount": 20,
-        "label": "按住殘骸堆上方的「廢料」按鈕，撿回 20 廢料"
+        "label": "按住殘骸堆上方的「廢料」按鈕，撿回 20 廢料",
+        "gid": "1-0"
       },
       {
         "type": "build",
@@ -24,37 +25,28 @@
       {
         "type": "build",
         "id": "algae_tank",
-        "label": "建造藻類槽，生產營養（還會順便產一點氧氣）"
+        "label": "建造藻類槽，生產營養（還會順便產一點氧氣）",
+        "gid": "1-1"
       },
       {
         "type": "assign",
-        "label": "把殖民者派到建築上工作"
+        "label": "把殖民者派到建築上工作",
+        "gid": "1-2"
       },
       {
         "type": "level",
-        "id": "scrap_heap",
-        "amount": 2,
-        "gid": "1-scrap2",
-        "label": "把殘骸堆升到 Lv2，拆出更多零件"
-      },
-      {
-        "type": "level",
-        "id": "o2_scrubber",
-        "amount": 3,
         "gid": "1-o2lv",
-        "label": "把氧氣再生器升到 Lv3，讓阿喘撐住所有人"
-      },
-      {
-        "type": "level",
-        "id": "algae_tank",
-        "amount": 3,
-        "gid": "1-algaelv",
-        "label": "把藻類槽升到 Lv3"
+        "label": "把氧氣再生器和藻類槽都升到 Lv3，讓阿喘撐住所有人",
+        "levels": {
+          "o2_scrubber": 3,
+          "algae_tank": 3
+        }
       },
       {
         "type": "build",
         "id": "emergency_camp",
-        "label": "建成加壓的緊急營地"
+        "label": "建成加壓的緊急營地",
+        "gid": "1-3"
       }
     ]
   },
@@ -71,7 +63,8 @@
       {
         "type": "build",
         "id": "hab_pod",
-        "label": "建造生活艙，提高人口上限"
+        "label": "建造生活艙，提高人口上限",
+        "gid": "2-0"
       },
       {
         "type": "form",
@@ -81,25 +74,22 @@
         "label": "把氧氣再生器改建成電解站，從冰層電解出氧氣"
       },
       {
-        "type": "air",
-        "amount": 60,
-        "gid": "2-air",
-        "label": "讓空氣安全度維持在 60% 以上 1 分鐘"
-      },
-      {
         "type": "build",
         "id": "assembly",
-        "label": "建造組裝工坊，把廢料做成零件"
+        "label": "建造組裝工坊，把廢料做成零件",
+        "gid": "2-1"
       },
       {
         "type": "pop",
         "amount": 12,
-        "label": "人口達到 12"
+        "label": "人口達到 12",
+        "gid": "2-2"
       },
       {
         "type": "build",
         "id": "central_hub",
-        "label": "建成中央艙"
+        "label": "建成中央艙",
+        "gid": "2-3"
       }
     ]
   },
@@ -115,25 +105,12 @@
     "goals": [
       {
         "type": "build",
-        "id": "metal_mine",
-        "label": "建造金屬礦井"
-      },
-      {
-        "type": "build",
-        "id": "forge",
-        "label": "建造鍛造廠"
-      },
-      {
-        "type": "build",
-        "id": "rail_line",
-        "gid": "3-rail",
-        "label": "建造軌道車線，把各處採集點連起來"
-      },
-      {
-        "type": "build",
-        "id": "expedition",
-        "gid": "3-exp-b",
-        "label": "建造探勘站"
+        "label": "建造金屬礦井和鍛造廠",
+        "gid": "3-0",
+        "ids": [
+          "metal_mine",
+          "forge"
+        ]
       },
       {
         "type": "expedition",
@@ -150,7 +127,7 @@
       {
         "type": "build",
         "id": "outpost",
-        "label": "建成前哨站",
+        "label": "建成前哨站（需要人口 22）",
         "gid": "3-4"
       }
     ]
@@ -177,24 +154,10 @@
         "label": "蓋好交易站，等到喜鵲的第一個貨櫃落地"
       },
       {
-        "type": "build",
-        "id": "security",
-        "gid": "4-0",
-        "after": "raid1",
-        "label": "建造陸戰隊營區並派駐陸戰隊員"
-      },
-      {
-        "type": "build",
-        "id": "med_bay",
-        "gid": "4-med",
-        "after": "raid1",
-        "label": "建造醫療艙，讓傷員有地方治療"
-      },
-      {
         "type": "raids",
         "amount": 2,
         "gid": "4-2",
-        "label": "擊退 2 次異星生物襲擊"
+        "label": "建造陸戰隊營區，擊退 2 次異星生物襲擊"
       },
       {
         "type": "pop",
@@ -223,30 +186,31 @@
       {
         "type": "build",
         "id": "admin",
-        "label": "建造行政中心"
-      },
-      {
-        "type": "charter",
-        "label": "通過第一條殖民憲章"
+        "label": "建造行政中心",
+        "gid": "5-0"
       },
       {
         "type": "envoy",
-        "label": "接待企業使者，做出選擇"
+        "label": "接待企業使者，做出選擇",
+        "gid": "5-2"
       },
       {
         "type": "credits",
         "amount": 5000,
-        "label": "第 5 章起累計賺進 5,000 信用點"
+        "label": "第 5 章起累計賺進 5,000 信用點",
+        "gid": "5-3"
       },
       {
         "type": "pop",
         "amount": 80,
-        "label": "人口達到 80"
+        "label": "人口達到 80",
+        "gid": "5-4"
       },
       {
         "type": "build",
         "id": "star_dome",
-        "label": "建成星城穹頂"
+        "label": "建成星城穹頂",
+        "gid": "5-5"
       }
     ]
   },
@@ -261,27 +225,20 @@
     ],
     "goals": [
       {
-        "type": "build",
-        "id": "governor",
-        "label": "建造總督府"
-      },
-      {
-        "type": "build",
-        "id": "sky_residence",
-        "label": "建造天幕住宅"
-      },
-      {
         "type": "boost",
-        "label": "在生物工程室注入一次異晶"
+        "label": "在生物工程室注入一次異晶",
+        "gid": "6-2"
       },
       {
         "type": "pop",
         "amount": 100,
-        "label": "人口達到 100"
+        "label": "人口達到 100（天幕住宅可以提高人口上限）",
+        "gid": "6-3"
       },
       {
         "type": "finish",
-        "label": "點亮軌道信標，或裝上船的星際引擎"
+        "label": "點亮軌道信標，或裝上船的星際引擎",
+        "gid": "6-4"
       }
     ]
   }

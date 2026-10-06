@@ -97,9 +97,7 @@
     "Baue einen Sauerstoffwäscher, bevor die Lebenserhaltung versagt",
     "Baue einen Algentank für Nährstoffe (er macht auch ein wenig Sauerstoff)",
     "Teile Kolonisten zur Arbeit an einem Gebäude ein",
-    "Rüste den Schrotthaufen auf Lv2 auf, um mehr Teile herauszuholen",
-    "Rüste den Sauerstoffwäscher auf Lv3 auf, damit Wheezy alle am Atmen hält",
-    "Rüste den Algentank auf Lv3 auf",
+    "Rüste den Sauerstoffwäscher und den Algentank auf Lv3 auf, damit Wheezy alle am Atmen hält",
     "Stelle das druckdichte Notlager fertig"
    ]
   },
@@ -114,7 +112,6 @@
    "goals": [
     "Baue eine Wohnkapsel, um das Bevölkerungslimit zu erhöhen",
     "Baue den Sauerstoffwäscher zur Elektrolysestation um, um Sauerstoff aus dem Eis zu gewinnen",
-    "Halte die Luftsicherheit 1 Minute lang über 60%",
     "Baue eine Montagewerkstatt, um Schrott zu Bauteilen zu machen",
     "Erreiche Bevölkerung 12",
     "Stelle die Zentrale fertig"
@@ -129,13 +126,10 @@
     "Abbauen, schmieden, Schienen legen, dann eine Expeditionsstation bauen und Leute auf die Suche schicken. Wir müssen nicht verstehen, wie es funktioniert. Wir müssen es nur benutzen."
    ],
    "goals": [
-    "Baue eine Metallmine",
-    "Baue eine Schmiede",
-    "Baue eine Schienenstrecke, um die Sammelstellen zu verbinden",
-    "Baue eine Expeditionsstation",
+    "Baue eine Metallmine und eine Schmiede",
     "Schließe die erste Expedition ab und bring einen Bauplan mit",
     "Erforsche die erste Bauplan-Technik: Hochdruckfilter",
-    "Stelle den Außenposten fertig"
+    "Stelle den Außenposten fertig (braucht Bevölkerung 22)"
    ]
   },
   {
@@ -149,9 +143,7 @@
    "goals": [
     "Baue einen Kristallsynthesizer",
     "Baue einen Handelsposten und empfange den ersten Container der Elster",
-    "Baue die Marine-Kaserne und stationiere Marines",
-    "Baue eine Krankenstation, damit Verwundete behandelt werden können",
-    "Wehre 2 Alien-Angriffe ab",
+    "Baue die Marine-Kaserne und wehre 2 Alien-Angriffe ab",
     "Erreiche Bevölkerung 40",
     "Stelle den Koloniekern fertig"
    ]
@@ -166,7 +158,6 @@
    ],
    "goals": [
     "Baue das Verwaltungszentrum",
-    "Beschließe deine erste Koloniecharta",
     "Empfange den Gesandten des Konzerns und triff eine Entscheidung",
     "Verdiene in Kapitel 5 insgesamt 5.000 Credits",
     "Erreiche Bevölkerung 80",
@@ -182,10 +173,8 @@
     "Bau die Orbitalbake und finde die Quelle des Signals. Dann entscheiden wir, wessen Zuhause das ist."
    ],
    "goals": [
-    "Baue die Gouverneursresidenz",
-    "Baue eine Skyline-Residenz",
     "Injiziere einmal Xenokristall im Bioingenieurlabor",
-    "Erreiche Bevölkerung 100",
+    "Erreiche Bevölkerung 100 (Skyline-Residenzen erhöhen die Obergrenze)",
     "Die Orbitalbake zum Leuchten bringen oder den interstellaren Antrieb des Schiffs einbauen"
    ]
   }

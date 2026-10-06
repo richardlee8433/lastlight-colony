@@ -97,9 +97,7 @@
     "Construa um purificador de oxigênio antes que o suporte de vida acabe",
     "Construa um tanque de algas para ter nutrientes (ele também faz um pouco de oxigênio)",
     "Coloque colonos para trabalhar numa construção",
-    "Melhore a pilha de sucata para Nv2 para tirar mais peças",
-    "Melhore o purificador de oxigênio para Nv3 para o Wheezy manter todo mundo respirando",
-    "Melhore o tanque de algas para Nv3",
+    "Melhore o purificador de oxigênio e o tanque de algas para Nv3 para o Wheezy manter todo mundo respirando",
     "Conclua o acampamento de emergência pressurizado"
    ]
   },
@@ -114,7 +112,6 @@
    "goals": [
     "Construa uma cápsula habitacional para subir o limite de população",
     "Reconstrua o purificador de oxigênio como estação de eletrólise para tirar oxigênio do gelo",
-    "Mantenha a segurança do ar acima de 60% por 1 minuto",
     "Construa uma oficina de montagem para transformar sucata em peças",
     "Chegue a uma população de 12",
     "Conclua o centro principal"
@@ -129,13 +126,10 @@
     "Minerem, forjem, assentem trilhos, depois construam uma estação de expedições e mandem gente procurar. Não precisamos entender como funciona. Só precisamos usar."
    ],
    "goals": [
-    "Construa uma mina de metal",
-    "Construa uma forja",
-    "Construa uma linha férrea para ligar os pontos de coleta",
-    "Construa uma estação de expedições",
+    "Construa uma mina de metal e uma forja",
     "Conclua a primeira expedição e traga um projeto",
     "Pesquise a primeira tecnologia de projeto: filtro de alta pressão",
-    "Conclua o posto avançado"
+    "Conclua o posto avançado (precisa de população 22)"
    ]
   },
   {
@@ -149,9 +143,7 @@
    "goals": [
     "Construa um sintetizador de cristal",
     "Construa um posto comercial e receba o primeiro contêiner da Pega",
-    "Construa o quartel dos fuzileiros e aloque fuzileiros",
-    "Construa uma enfermaria para tratar os feridos",
-    "Repila 2 ataques alienígenas",
+    "Construa o quartel dos fuzileiros e repila 2 ataques alienígenas",
     "Chegue a uma população de 40",
     "Conclua o núcleo da colônia"
    ]
@@ -166,7 +158,6 @@
    ],
    "goals": [
     "Construa o Centro Administrativo",
-    "Aprove sua primeira carta da colônia",
     "Receba o emissário da corporação e faça uma escolha",
     "Ganhe 5.000 créditos no capítulo 5",
     "Chegue a uma população de 80",
@@ -182,10 +173,8 @@
     "Construa o sinalizador orbital e encontre a origem do sinal. Depois, vamos decidir de quem é este lar."
    ],
    "goals": [
-    "Construa a Residência do Governador",
-    "Construa uma Residência Horizonte",
     "Injete xenocristal uma vez no laboratório de bioengenharia",
-    "Chegue a uma população de 100",
+    "Chegue a uma população de 100 (as Residências Horizonte aumentam o limite)",
     "Acenda o sinalizador orbital ou instale o motor interestelar da nave"
    ]
   }

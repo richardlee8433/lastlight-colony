@@ -91,20 +91,14 @@ const CJK = /[一-鿿]/;
     });
   }
 
-  await test('E03', '第 4 章：第一次襲擊前看不到營區、醫療艙目標；襲擊後出現', async () => {
+  await test('E03', '第 4 章任務欄：5 項，合成室排第一，營區併進「擊退 2 次襲擊」，沒有醫療艙目標', async () => {
     const errs = [];
-    const pre = later(snap('ch4-preraid'));
-    for (const id of ['security', 'med_bay']) pre.b[id].level = 0;
-    pre.story.done = pre.story.done.filter((g) => g !== '4-0' && g !== '4-med');
-    let { p } = await open(pre); await clear(p);
-    let q = await quest(p);
-    if (q.goals.some((g) => g.includes('營區') || g.includes('醫療艙'))) errs.push('襲擊前就出現：' + q.goals.join(' / '));
+    const { p } = await open(later(snap('ch4-preraid'))); await clear(p);
+    const q = await quest(p);
+    if (q.goals.length !== 5) errs.push('目標數量：' + q.goals.length + '（' + q.goals.join(' / ') + '）');
     if (!q.goals[0]?.includes('異晶合成室')) errs.push('第一個目標不是合成室');
-    await p.close();
-    ({ p } = await open(later(snap('ch4-postraid')))); await clear(p);
-    q = await quest(p);
-    if (!q.goals.some((g) => g.includes('營區'))) errs.push('襲擊後沒出現營區');
-    if (!q.goals.some((g) => g.includes('醫療艙'))) errs.push('襲擊後沒出現醫療艙');
+    if (!q.goals.some((g) => g.includes('營區') && g.includes('擊退'))) errs.push('沒有「建造營區、擊退襲擊」');
+    if (q.goals.some((g) => g.includes('醫療艙'))) errs.push('還有醫療艙目標');
     await p.close(); return errs;
   });
 

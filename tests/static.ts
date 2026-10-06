@@ -69,12 +69,23 @@ check('S03', '每章目標 id 不重複、英文目標數量與中文一致', ()
   });
   return errs;
 });
-check('S04', '第 4 章：合成室排第一；營區、醫療艙標記為第一次襲擊後才出現；目標 id 維持舊值', () => {
-  const g = CHAPTERS[3].goals, errs: string[] = [];
-  if (g[0].id !== 'crystal_synth') errs.push('第一個目標不是異晶合成室');
-  for (const id of ['security', 'med_bay']) if (g.find((x) => x.id === id)?.after !== 'raid1') errs.push(`${id} 沒有 after: raid1`);
-  const want: Record<string, string> = { crystal_synth: '4-1', security: '4-0', med_bay: '4-med', colony_core: '4-4' };
-  for (const [id, gid] of Object.entries(want)) if (g.find((x) => x.id === id)?.gid !== gid) errs.push(`${id} 的 id 不是 ${gid}`);
+check('S04', '章節目標精簡（v0.70.2）：各章 6／5／4／5／5／3 項；保留下來的目標 id 不變（舊存檔的打勾對得上）；合併的目標要全部達成才算', () => {
+  const errs: string[] = [];
+  const n = CHAPTERS.map((c) => c.goals.length).join('/');
+  if (n !== '6/5/4/5/5/3') errs.push('各章目標數量 ' + n);
+  const want = ['1-0', '1-o2', '1-o2lv', '1-3', '2-elec', '2-3', '3-0', '3-exp', '3-bp', '3-4', '4-1', '4-drop', '4-2', '4-4', '5-2', '5-5', '6-2', '6-4'];
+  const ids = CHAPTERS.flatMap((c) => c.goals.map((g) => g.gid));
+  for (const w of want) if (!ids.includes(w)) errs.push('少了目標 id ' + w);
+  if (CHAPTERS[3].goals[0].id !== 'crystal_synth') errs.push('第 4 章第一個目標不是合成室');
+  const s = newGame(0), g1 = CHAPTERS[0].goals.find((g) => g.gid === '1-o2lv')!, g3 = CHAPTERS[2].goals.find((g) => g.gid === '3-0')!;
+  s.b.o2_scrubber.level = 3; s.b.algae_tank.level = 2;
+  if (goalDone(s, g1)) errs.push('藻類槽還沒 Lv3 就算完成');
+  s.b.algae_tank.level = 3;
+  if (!goalDone(s, g1)) errs.push('兩棟都 Lv3 卻沒完成');
+  s.b.metal_mine.level = 1;
+  if (goalDone(s, g3)) errs.push('只蓋金屬礦井就算完成「礦井和鍛造廠」');
+  s.b.forge.level = 1;
+  if (!goalDone(s, g3)) errs.push('礦井和鍛造廠都蓋了卻沒完成');
   return errs;
 });
 

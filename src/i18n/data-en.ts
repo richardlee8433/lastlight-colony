@@ -103,7 +103,7 @@ const chapters = [
       'Three weeks ago we stole a freighter from the mines on F8. On the run, we caught a faint navigation signal saying there were old colony facilities here. I chose to change course. The ship broke apart in orbit, and we all jumped for the escape pods.',
       'This pod has six seats. Three of us are in it. The air outside is all carbon dioxide, and the life support lights are ticking down one by one. Strip the wreck and cobble together something that makes oxygen. — Mara',
     ],
-    goals: ['Hold the Scrap button above the Scrap Heap to collect 20 scrap', 'Build an Oxygen Scrubber before life support runs out', 'Build an Algae Vat for nutrients (it makes a little oxygen too)', 'Assign colonists to work at a building', 'Upgrade the Scrap Heap to Lv2 to strip more parts', 'Upgrade the Oxygen Scrubber to Lv3 so Wheezy can keep everyone breathing', 'Upgrade the Algae Vat to Lv3', 'Complete the pressurized Emergency Camp'],
+    goals: ['Hold the Scrap button above the Scrap Heap to collect 20 scrap', 'Build an Oxygen Scrubber before life support runs out', 'Build an Algae Vat for nutrients (it makes a little oxygen too)', 'Assign colonists to work at a building', 'Upgrade the Oxygen Scrubber and Algae Vat to Lv3 so Wheezy can keep everyone breathing', 'Complete the pressurized Emergency Camp'],
   },
   {
     title: 'Taking Root', subtitle: 'Enough air to go around',
@@ -112,7 +112,7 @@ const chapters = [
       'People from the other pods are alive. More are coming: more mouths, and more lungs. Wheezy alone won\'t be enough.',
       'Bring them home, build them a place to live, make enough air to share, and give them a reason to stay.',
     ],
-    goals: ['Build a Hab Pod to raise the population cap', 'Rebuild the Oxygen Scrubber into an Electrolyzer to split oxygen from the ice', 'Keep air security above 60% for 1 minute', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
+    goals: ['Build a Hab Pod to raise the population cap', 'Rebuild the Oxygen Scrubber into an Electrolyzer to split oxygen from the ice', 'Build an Assembly Shop to turn scrap into parts', 'Reach population 12', 'Complete the Central Hub'],
   },
   {
     title: 'Blueprints', subtitle: 'We can use them. We don\'t understand them.',
@@ -121,7 +121,7 @@ const chapters = [
       'The patterns on the coaster are step-by-step manufacturing instructions — just not written by humans. And every one of them needs a material we don\'t have: xenocrystal.',
       'Mine, forge, lay down rails, then build an Expedition Station and send people out to search. We don\'t need to understand how it works. We just need to use it.',
     ],
-    goals: ['Build a Metal Mine', 'Build a Forge', 'Build a Rail Line to connect the gathering sites', 'Build an Expedition Station', 'Complete the first expedition and bring back a blueprint', 'Research the first blueprint tech: High-Pressure Filter', 'Complete the Outpost'],
+    goals: ['Build a Metal Mine and a Forge', 'Complete the first expedition and bring back a blueprint', 'Research the first blueprint tech: High-Pressure Filter', 'Complete the Outpost (needs population 22)'],
   },
   {
     title: 'Xenocrystal', subtitle: 'What are they guarding?',
@@ -130,7 +130,7 @@ const chapters = [
       'Whatever we build from it will look like nothing we have ever built before.',
       'Build the Crystal Synthesizer. From today, we don\'t just use what the aliens left behind. We make it ourselves.',
     ],
-    goals: ['Build a Crystal Synthesizer', 'Build a Trading Post and receive the Magpie\'s first container', 'Build the Marine Barracks and station marines', 'Build a Med Bay so the wounded can be treated', 'Repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
+    goals: ['Build a Crystal Synthesizer', 'Build a Trading Post and receive the Magpie\'s first container', 'Build the Marine Barracks and repel 2 alien raids', 'Reach population 40', 'Complete the Colony Core'],
   },
   {
     title: 'The Corporation\'s Shadow', subtitle: 'The price of freedom',
@@ -139,7 +139,7 @@ const chapters = [
       'Helion Corp has found us. They did not open fire. They only sent a message: an envoy will be down soon.',
       'To be free, the colony has to pay its own way, and this many people have to want to stand together. Pass laws, trade, and then decide: work with the corporation, or tell them no.',
     ],
-    goals: ['Build the Administration Hall', 'Pass your first colony charter', 'Receive the corporate envoy and make a choice', 'Earn 5,000 credits in Chapter 5', 'Reach population 80', 'Complete the Star Dome'],
+    goals: ['Build the Administration Hall', 'Receive the corporate envoy and make a choice', 'Earn 5,000 credits in Chapter 5', 'Reach population 80', 'Complete the Star Dome'],
   },
   {
     title: 'The Choice', subtitle: 'Whose home is this?',
@@ -148,7 +148,7 @@ const chapters = [
       'Helion\'s warship is still up there. So is the signal that led us here. This planet is no longer a hiding place. It is a coordinate everyone knows.',
       'Build the Orbital Beacon and find the source of the signal. Then we decide whose home this is.',
     ],
-    goals: ['Build the Governor\'s Residence', 'Build a Skyline Residence', 'Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100', 'Light the Orbital Beacon, or install the ship\'s interstellar drive'],
+    goals: ['Inject xenocrystal at the Bioengineering Lab once', 'Reach population 100 (Skyline Residences raise the cap)', 'Light the Orbital Beacon, or install the ship\'s interstellar drive'],
   },
 ];
 

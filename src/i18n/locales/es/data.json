@@ -97,9 +97,7 @@
     "Construye un depurador de oxígeno antes de que se agote el soporte vital",
     "Construye un tanque de algas para tener nutrientes (también da un poco de oxígeno)",
     "Asigna colonos a trabajar en un edificio",
-    "Mejora el montón de chatarra a Nv2 para sacar más piezas",
-    "Mejora el depurador de oxígeno a Nv3 para que Wheezy mantenga a todos respirando",
-    "Mejora el tanque de algas a Nv3",
+    "Mejora el depurador de oxígeno y el tanque de algas a Nv3 para que Wheezy mantenga a todos respirando",
     "Completa el campamento de emergencia presurizado"
    ]
   },
@@ -114,7 +112,6 @@
    "goals": [
     "Construye una cápsula habitacional para subir el límite de población",
     "Reconstruye el depurador de oxígeno como estación de electrólisis para sacar oxígeno del hielo",
-    "Mantén la seguridad del aire por encima del 60% durante 1 minuto",
     "Construye un taller de montaje para convertir chatarra en piezas",
     "Alcanza una población de 12",
     "Completa el centro principal"
@@ -129,13 +126,10 @@
     "Excavad, forjad, tended raíles, luego construid una estación de expediciones y enviad gente a buscar. No necesitamos entender cómo funciona. Solo necesitamos usarlo."
    ],
    "goals": [
-    "Construye una mina de metal",
-    "Construye una forja",
-    "Construye una línea férrea para conectar los puntos de recolección",
-    "Construye una estación de expediciones",
+    "Construye una mina de metal y una forja",
     "Completa la primera expedición y trae un plano",
     "Investiga la primera tecnología de plano: filtro de alta presión",
-    "Completa el puesto avanzado"
+    "Completa el puesto avanzado (requiere una población de 22)"
    ]
   },
   {
@@ -149,9 +143,7 @@
    "goals": [
     "Construye un sintetizador de cristal",
     "Construye un puesto comercial y recibe el primer contenedor de la Urraca",
-    "Construye el cuartel de marines y destina marines",
-    "Construye una enfermería para poder tratar a los heridos",
-    "Repele 2 ataques alienígenas",
+    "Construye el cuartel de marines y repele 2 ataques alienígenas",
     "Alcanza una población de 40",
     "Completa el núcleo de la colonia"
    ]
@@ -166,7 +158,6 @@
    ],
    "goals": [
     "Construye el Centro Administrativo",
-    "Aprueba tu primera carta de la colonia",
     "Recibe al enviado de la corporación y toma una decisión",
     "Gana 5.000 créditos en el capítulo 5",
     "Alcanza una población de 80",
@@ -182,10 +173,8 @@
     "Construye la baliza orbital y encuentra el origen de la señal. Después decidiremos de quién es este hogar."
    ],
    "goals": [
-    "Construye la Residencia del Gobernador",
-    "Construye una Residencia Horizonte",
     "Inyecta xenocristal una vez en el laboratorio de bioingeniería",
-    "Alcanza una población de 100",
+    "Alcanza una población de 100 (las Residencias Horizonte suben el límite)",
     "Enciende la baliza orbital o instala el motor interestelar de la nave"
    ]
   }
