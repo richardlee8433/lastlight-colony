@@ -25,7 +25,8 @@ export function population(s: GameState, dt: number, quiet = false) {
     s.res.nutrient = 0; s.starving = true;
   }
   const cap = popCap(s);
-  if (!s.starving && s.pop < cap) {
+  // 離線時人口不增加：新來的人只會閒置，人多了耗氧耗糧，產量卻沒變（等玩家回來再分派）
+  if (!s.starving && s.pop < cap && !quiet) {
     s.arrival += dt / arrivalInterval(s);
     if (s.arrival >= 1) {
       s.arrival = 0; s.pop += 1;

@@ -14,6 +14,8 @@ import { step } from '../src/engine/tick';
 import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
 import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff, researchSpeed } from '../src/engine/formulas';
 import { healRate } from '../src/engine/combat';
+import { applyOffline } from '../src/engine/offline';
+import { popCap } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
 import { resolveEvent } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
@@ -409,6 +411,18 @@ check('S21', '科技樹（v0.70.2）：19 項、沒有精準操作；強化手�
   const h0 = healRate(s); s.research.done.push('crystal_ration');
   if (Math.abs(healRate(s) / h0 - 1.5) > 1e-9) errs.push('戰地醫療應讓傷員恢復 ×1.5');
   if (!STRINGS['cost.over'][1].includes('標準化貨架')) errs.push('倉儲不夠的提示沒有提到研究');
+  return errs;
+});
+
+
+check('S22', '離線時人口不增加（新來的人只會閒置、多耗氧耗糧）；上線時照常增加', () => {
+  const errs: string[] = [];
+  const s = newGame(0); s.res.nutrient = 5000; s.res.oxygen = 5000; s.air!.elapsed = 0;
+  if (!(s.pop < popCap(s))) return '測試前提不成立：人口已滿';
+  const p0 = s.pop, r = applyOffline(s, 1800);
+  if (s.pop !== p0 || r?.pop) errs.push(`離線 30 分鐘人口從 ${p0} 變成 ${s.pop}`);
+  for (let i = 0; i < 5 * 600; i++) step(s);
+  if (!(s.pop > p0)) errs.push('上線 10 分鐘人口沒有增加');
   return errs;
 });
 
