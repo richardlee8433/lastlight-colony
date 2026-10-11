@@ -84,6 +84,12 @@ export class GameScene {
   weatherG = new Graphics();
   wParts: { x: number; y: number; v: number; r: number; p: number }[] = [];
   wAmt = 0; wKind: string | null = null; nightAmt = 0;
+  // 隕石雨（v0.70.2）：事件視窗開著時天空劃過火光；選了之後砸下來（加固＝屋頂幾道火花，硬撐＝重擊＋停工期間冒煙）
+  meteorG = new Graphics(); smokeG = new Graphics();
+  rocks: { x0: number; y0: number; x1: number; y1: number; t: number; d: number; big: boolean; hit?: string; small?: boolean }[] = [];
+  bits: { x: number; y: number; vx: number; vy: number; t: number; d: number; r: number; c: number; smoke?: boolean }[] = [];
+  flashes: { x: number; y: number; t: number; d: number; r: number }[] = [];
+  mTarget: string | null = null; mNext = 0; shake = 0; smokeNext = 0;
   ambient: any = null;
   props: any[] = [];
   views = new Map<string, View>();
@@ -135,10 +141,11 @@ export class GameScene {
       const tex = Texture.from(img); tex.source.scaleMode = 'linear'; this.iconTex.set(k, tex);
     })).catch(() => {});
     this.obj.sortableChildren = true;
-    this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
+    this.world.addChild(this.obj, this.shotG, this.smokeG, this.overlay, this.lightL, this.meteorG);
+    this.meteorG.blendMode = 'add';
     this.app.stage.addChild(this.world, this.weatherG, this.hud, this.fxL);
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
-    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL, this.weatherG]) c.eventMode = 'none';
+    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL, this.weatherG, this.meteorG, this.smokeG]) c.eventMode = 'none';
     // 斜射光：一張斜向漸層（左上亮、往右下淡出），用加亮混合疊在環境光上
     { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d')!;
       const gr = g.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.25)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
@@ -1259,6 +1266,86 @@ export class GameScene {
       }
     }
   }
+  /** 隕石雨畫面。事件視窗開著時遊戲是暫停的，所以用真實時間（rdt）跑；設定頁關掉「天氣特效」就不畫 */
+  meteorFx(rdt: number) {
+    const s = game.s, g = this.meteorG, sg = this.smokeG, a = s.events.active;
+    const on = useSettings.getState().weatherFx;
+    const at = (id: string) => { const v = [...this.views.values()].find((x) => x.bid === id); return v ? { x: v.x, y: v.y, top: v.building?.art.ay ?? 30 } : null; };
+    const target = a?.kind === 'meteor' && !s.story.queue?.length ? a.target ?? null : null;
+    // 事件剛結束：看結果決定怎麼砸下來
+    if (this.mTarget && this.mTarget !== target) {
+      const p = at(this.mTarget);
+      if (p && on) {
+        if (disabled(s, this.mTarget)) {
+          this.rocks.push({ x0: p.x + 150, y0: p.y - 260, x1: p.x, y1: p.y - p.top * 0.35, t: 0, d: 0.55, big: true, hit: this.mTarget });
+        } else {
+          for (let i = 0; i < 3; i++) this.rocks.push({ x0: p.x + 120 + i * 30, y0: p.y - 240 - i * 20, x1: p.x + (i - 1) * 14, y1: p.y - p.top * 0.7, t: -i * 0.18, d: 0.5, big: false, hit: this.mTarget, small: true });
+        }
+        sfx('meteor');
+      }
+    }
+    this.mTarget = target;
+    // 視窗開著：整片看得到的天空不斷有火光劃過（右上往左下），落在畫面裡的空地上
+    if (target && on) {
+      this.mNext -= rdt;
+      if (this.mNext <= 0) {
+        this.mNext = 0.25 + Math.random() * 0.35;
+        const vw = this.app.screen.width / this.Z, vh = this.app.screen.height / this.Z;
+        const x1 = this.cam.x + vw * (0.05 + 0.9 * Math.random()), y1 = this.cam.y + vh * (0.3 + 0.65 * Math.random());
+        const len = 160 + Math.random() * 120;
+        this.rocks.push({ x0: x1 + len * 0.6, y0: y1 - len, x1, y1, t: 0, d: 0.6 + Math.random() * 0.4, big: false });
+        sfx('meteor');
+      }
+    }
+    g.clear(); sg.clear();
+    if (!on) { this.rocks = []; this.bits = []; this.flashes = []; this.shake = 0; return; }
+    // 隕石本體：亮點＋往後拖的尾巴
+    for (const r of this.rocks) {
+      r.t += rdt;
+      if (r.t < 0) continue;
+      const k = Math.min(1, r.t / r.d), x = r.x0 + (r.x1 - r.x0) * k, y = r.y0 + (r.y1 - r.y0) * k;
+      const tail = r.big ? 0.35 : 0.22, kx = Math.max(0, k - tail), tx = r.x0 + (r.x1 - r.x0) * kx, ty = r.y0 + (r.y1 - r.y0) * kx;
+      const w = r.big ? 5 : r.small ? 2.2 : 2.6;
+      g.moveTo(tx, ty).lineTo(x, y).stroke({ width: w * 1.8, color: 0xff7a2a, alpha: 0.35 });
+      g.moveTo((tx + x) / 2, (ty + y) / 2).lineTo(x, y).stroke({ width: w, color: 0xffd28a, alpha: 0.8 });
+      g.circle(x, y, w * 1.3).fill({ color: 0xfff4d0, alpha: 0.95 });
+      if (k >= 1) {
+        // 落地：閃光＋碎石火花
+        const big = r.big, n = big ? 26 : r.hit ? 6 : 8;
+        this.flashes.push({ x: r.x1, y: r.y1, t: 0, d: big ? 0.6 : 0.35, r: big ? 60 : r.small ? 14 : 22 });
+        for (let i = 0; i < n; i++) {
+          const ang = -Math.PI * (0.1 + 0.8 * Math.random()), sp = (big ? 60 : 30) + Math.random() * (big ? 90 : 40);
+          this.bits.push({ x: r.x1, y: r.y1, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, t: 0, d: 0.5 + Math.random() * 0.5, r: big ? 1.6 : 1.1, c: Math.random() < 0.5 ? 0xffb050 : 0xffe0a0 });
+        }
+        if (big) { this.shake = 6; sfx('impact'); for (let i = 0; i < 10; i++) this.bits.push({ x: r.x1 + (Math.random() - 0.5) * 30, y: r.y1, vx: (Math.random() - 0.5) * 30, vy: -10 - Math.random() * 20, t: 0, d: 2 + Math.random(), r: 8 + Math.random() * 8, c: 0x5a504a, smoke: true }); }
+        else if (r.hit) sfx('thud');
+      }
+    }
+    this.rocks = this.rocks.filter((r) => r.t < r.d);
+    for (const f of this.flashes) {
+      f.t += rdt; const k = f.t / f.d;
+      g.circle(f.x, f.y, f.r * (0.4 + 0.6 * k)).fill({ color: 0xffb860, alpha: 0.5 * (1 - k) });
+      g.circle(f.x, f.y, f.r * 0.35 * (1 - k)).fill({ color: 0xffffff, alpha: 0.8 * (1 - k) });
+    }
+    this.flashes = this.flashes.filter((f) => f.t < f.d);
+    // 停工中的建築冒煙（隕石砸中的那 60 秒）
+    this.smokeNext -= rdt;
+    if (this.smokeNext <= 0) {
+      this.smokeNext = 0.35;
+      for (const v of this.views.values()) if (v.bid && built(s, v.bid) && disabled(s, v.bid)) {
+        const top = v.building?.art.ay ?? 30;
+        this.bits.push({ x: v.x + (Math.random() - 0.5) * 16, y: v.y - top * 0.55, vx: 4 + Math.random() * 6, vy: -12 - Math.random() * 8, t: 0, d: 2.6, r: 4 + Math.random() * 3, c: 0x4a4440, smoke: true });
+      }
+    }
+    for (const b of this.bits) {
+      b.t += rdt; b.x += b.vx * rdt; b.y += b.vy * rdt;
+      const k = b.t / b.d;
+      if (b.smoke) { b.vx *= 0.99; sg.circle(b.x, b.y, b.r * (1 + 1.5 * k)).fill({ color: b.c, alpha: 0.45 * (1 - k) }); }
+      else { b.vy += 160 * rdt; g.circle(b.x, b.y, b.r * (1 - 0.5 * k)).fill({ color: b.c, alpha: 1 - k }); }
+    }
+    this.bits = this.bits.filter((b) => b.t < b.d);
+    this.shake = Math.max(0, this.shake - rdt * 14);
+  }
   /** 腳印：小人每走 7 像素在腳下留一個（左右腳交錯），每人身後保持 3 個；
    *  第 4 個出現時最舊的那個不是瞬間消失，而是 0.6 秒淡出；停下來 4 秒後也慢慢淡掉。鋪過的路面上不留 */
   footprints() {
@@ -1335,6 +1422,7 @@ export class GameScene {
     this.visDt = dt;
     this.dayLight();
     this.weatherFx(dt);
+    this.meteorFx(rdt);
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
       this.cam.x += (this.camGoal.x - this.cam.x) * Math.min(1, rdt * 6);
@@ -1343,6 +1431,7 @@ export class GameScene {
     }
     this.world.scale.set(Z);
     this.world.position.set(-Math.round(this.cam.x) * Z, -Math.round(this.cam.y) * Z);
+    if (this.shake > 0.05) this.world.position.set(this.world.x + (Math.random() - 0.5) * this.shake * Z, this.world.y + (Math.random() - 0.5) * this.shake * Z);
     for (const p of this.props) p.update(this.T, dt);
     this.ambient?.update(this.T, dt);
     const labels: { pl: any; x: number; y: number; w: number; h: number; prio: number }[] = [];

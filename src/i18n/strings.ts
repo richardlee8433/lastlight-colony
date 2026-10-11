@@ -384,7 +384,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'wb.eff.frost': ["Electrolyzer +25% · nutrient use +10%", "電解站產氧 +25%・營養消耗 +10%"],
   'wb.eff.aurora': ["Crystal Synthesizer +30% · no glimmer raids", "合成室產量 +30%・微光獸不會來襲"],
   'set.weather': ["Weather effects", "天氣特效"],
-  'set.weatherHint': ["Visual only: blowing dust, snow and auroras. Weather still affects production when it's off.", "純畫面效果：風沙、飄雪與極光。關掉後天氣的數值效果照算。"],
+  'set.weatherHint': ["Visual only: blowing dust, snow, auroras and falling meteors. Weather still affects production when it's off.", "純畫面效果：風沙、飄雪、極光與墜落的隕石。關掉後天氣的數值效果照算。"],
   // 船塢（v0.70）
   'why.shipyard': ["Build the Shipyard first", "先蓋好船塢"],
   'why.drive': ["The drive needs the beacon's core: only after the colony decides to leave (Chapter 6)", "星際引擎要用信標的核心：第 6 章決定離開之後才能裝"],

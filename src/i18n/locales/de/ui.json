@@ -339,7 +339,7 @@
  "wb.eff.frost": "Elektrolysestation +25 % · Nährstoffverbrauch +10 %",
  "wb.eff.aurora": "Kristallsynthesizer +30 % · keine Glimmer-Angriffe",
  "set.weather": "Wettereffekte",
- "set.weatherHint": "Nur optisch: Staub, Schnee und Polarlichter. Ausgeschaltet wirkt das Wetter trotzdem auf die Produktion.",
+ "set.weatherHint": "Nur optisch: Staub, Schnee, Polarlichter und Meteore. Ausgeschaltet wirkt das Wetter trotzdem auf die Produktion.",
  "st.clickLine": "Klick +{n} · Volltreffer {c}% ×{m} · Bonus +{b}%",
  "st.levelEff": "Stufeneffizienz",
  "st.levelEffV": "+{n} % (+{e} % pro Stufe)",

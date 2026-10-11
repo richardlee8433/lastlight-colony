@@ -339,7 +339,7 @@
  "wb.eff.frost": "Estación de electrólisis +25 % · consumo de nutrientes +10 %",
  "wb.eff.aurora": "Sintetizador de cristal +30 % · sin ataques de Glimmers",
  "set.weather": "Efectos del clima",
- "set.weatherHint": "Solo visual: polvo, nieve y auroras. Aunque lo desactives, el clima sigue afectando a la producción.",
+ "set.weatherHint": "Solo visual: polvo, nieve, auroras y meteoritos. Aunque lo desactives, el clima sigue afectando a la producción.",
  "st.clickLine": "Clic +{n} · crítico {c}% ×{m} · bonificación +{b}%",
  "st.levelEff": "Eficiencia por nivel",
  "st.levelEffV": "+{n} % (+{e} % por nivel)",

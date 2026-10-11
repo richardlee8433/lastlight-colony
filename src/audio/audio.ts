@@ -250,11 +250,15 @@ class Engine {
       case 'win': [0, 0.12, 0.24].forEach((d, i) => this.blip([523, 784, 1047][i], [523, 784, 1047][i], 0.6, 'triangle', 0.14, true, d)); break;
       case 'lose': [0, 0.2].forEach((d, i) => this.blip([330, 247][i], [320, 220][i], 0.6, 'sawtooth', 0.06, false, d)); break;
       case 'boost': this.blip(300, 1200, 0.6, 'sine', 0.12, true); this.noise(0.5, 0.05, 2500, 4); break;
+      // 隕石：劃過天空的嘶聲；硬撐時砸中建築的重擊；加固後打在屋頂的悶響
+      case 'meteor': if (this.gate(name, 0.25)) { this.noise(0.7, 0.05, 1400 * r, 1.5, 0, 'bandpass'); this.blip(1200, 300, 0.6, 'sine', 0.025); } break;
+      case 'impact': this.noise(0.9, 0.3, 380, 0.7, 0, 'lowpass'); this.blip(140, 40, 0.6, 'sine', 0.22); this.noise(0.4, 0.08, 2600, 1, 0.05); break;
+      case 'thud': if (this.gate(name, 0.12)) { this.noise(0.25, 0.12, 600, 0.8, 0, 'lowpass'); this.blip(220, 90, 0.15, 'sine', 0.08); } break;
       case 'finale': [0, 0.2, 0.4, 0.6, 0.9].forEach((d, i) => this.blip([523, 659, 784, 1047, 1319][i], [523, 659, 784, 1047, 1319][i], 1.6, 'triangle', 0.13, true, d)); break;
     }
   }
 }
-export type Sfx = 'collect' | 'crit' | 'empty' | 'ui' | 'assign' | 'build' | 'stage' | 'research' | 'good' | 'warn' | 'alarm' | 'shot' | 'laser' | 'spit' | 'win' | 'lose' | 'boost' | 'finale';
+export type Sfx = 'collect' | 'crit' | 'empty' | 'ui' | 'assign' | 'build' | 'stage' | 'research' | 'good' | 'warn' | 'alarm' | 'shot' | 'laser' | 'spit' | 'win' | 'lose' | 'boost' | 'finale' | 'meteor' | 'impact' | 'thud';
 
 /** 建立曲目的 audio 元素：首頁主題曲在頁面載入時就預先下載，其他章等需要時才下載 */
 function songElement(k: SongKey) {
