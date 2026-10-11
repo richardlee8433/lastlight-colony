@@ -366,7 +366,7 @@ export const STRINGS: Record<string, [string, string]> = {
   'st.levelEffV': ["+{n}% (+{e}% per level)", "+{n}%（每級 +{e}%）"],
   'bp.nextLv': ["Next level: worker efficiency +{e}%, worker slots +{w}", "下一級：每位工人效率 +{e}%、工人上限 +{w}"],
   'st.clickLine': ['Click +{n} · crit {c}% ×{m} · buff +{b}%', '點擊 +{n}・暴擊 {c}% ×{m}・buff +{b}%'],
-  // 天氣（v0.70.2）
+  // 天氣（v0.70.3）
   'n.weather.warn.dust': ["Dust storm in {s} s: oxygen output will drop", "沙塵暴 {s} 秒後到來：產氧會下降"],
   'n.weather.warn.frost': ["Frost night in {s} s", "霜夜 {s} 秒後到來"],
   'n.weather.warn.aurora': ["Xeno aurora in {s} s", "異晶極光 {s} 秒後出現"],

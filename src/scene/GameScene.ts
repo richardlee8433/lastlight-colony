@@ -80,11 +80,11 @@ export class GameScene {
   fxL = new Container();
   ground: (Container & { roads?: Sprite | null; paved?: (x: number, y: number) => boolean }) | null = null;
   overlay = new Graphics();
-  // 天氣（v0.70.2）：畫在地圖上、介面卡片下面的螢幕層（風沙、飄雪、極光）
+  // 天氣（v0.70.3）：畫在地圖上、介面卡片下面的螢幕層（風沙、飄雪、極光）
   weatherG = new Graphics();
   wParts: { x: number; y: number; v: number; r: number; p: number }[] = [];
   wAmt = 0; wKind: string | null = null; nightAmt = 0;
-  // 隕石雨（v0.70.2）：事件視窗開著時天空劃過火光；選了之後砸下來（加固＝屋頂幾道火花，硬撐＝重擊＋停工期間冒煙）
+  // 隕石雨（v0.70.3）：事件視窗開著時天空劃過火光；選了之後砸下來（加固＝屋頂幾道火花，硬撐＝重擊＋停工期間冒煙）
   meteorG = new Graphics(); smokeG = new Graphics(); craterG = new Graphics();
   rocks: { x0: number; y0: number; x1: number; y1: number; t: number; d: number; big: boolean; hit?: string; small?: boolean; sky?: boolean; crater?: boolean }[] = [];
   craters: { x: number; y: number; r: number; t: number }[] = [];

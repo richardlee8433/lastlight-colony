@@ -1133,7 +1133,7 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ["曙光號留在船塢。瑪拉說，正因為隨時可以走，留下來才算數。", "The Firstlight stays in the shipyard. Mara says that because we could leave any time, staying counts."],
   },
-  // 天氣（v0.70.2）：每種天氣第一次出現時的小對話
+  // 天氣（v0.70.3）：每種天氣第一次出現時的小對話
   'w-dust': {
     lines: [
       ["narr", "（風沙從地平線那頭捲過來，天空變成鐵鏽色）", "(Dust rolls in from the horizon, and the sky turns the color of rust.)"],

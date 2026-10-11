@@ -148,7 +148,7 @@ export interface GameState {
   cargo: Record<Good, number>;
   /** 船塢（v0.70）：完成幾個模組（0～6）；wait＝第 6 章選了「先等等」時已完成的模組數 */
   ship: ShipState;
-  /** 天氣（v0.70.2）：沙塵暴、霜夜、異晶極光（見 weather.ts）；舊存檔沒有，第一次 tick 補上 */
+  /** 天氣（v0.70.3）：沙塵暴、霜夜、異晶極光（見 weather.ts）；舊存檔沒有，第一次 tick 補上 */
   weather?: WeatherState;
   /** 讀檔轉換時要顯示的通知（轉換後才加進 notices） */
   pendingNotice?: string;
