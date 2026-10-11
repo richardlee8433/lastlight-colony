@@ -1260,13 +1260,23 @@ export class GameScene {
     } else {
       // 極光：畫面上方三條會飄動的光帶（綠、紫交錯），異晶建築跟著脈動發光
       setNight(Math.max(this.nightAmt, a * (0.75 + 0.2 * Math.sin(T * 1.7))));
+      // 每條光帶是平滑的漸層簾幕：下緣一道亮邊，往上分八層越來越淡（不用一根根直線，避免梳子狀的條紋）
       for (let i = 0; i < 3; i++) {
-        const base = H * (0.06 + 0.1 * i), color = i % 2 ? 0xc070ff : 0x7dffb0;
-        for (let x = 0; x <= W; x += 10) {
-          const y = base + Math.sin(x * 0.004 + T * 0.5 + i * 1.3) * 34 + Math.sin(x * 0.011 - T * 0.8) * 10;
-          const len = 50 + 40 * (0.5 + 0.5 * Math.sin(x * 0.007 + T * 1.1 + i));
-          g.moveTo(x, y).lineTo(x, y + len).stroke({ width: 8, color, alpha: 0.07 * a });
+        const base = H * (0.16 + 0.1 * i), color = i % 2 ? 0xc070ff : 0x6dffb8;
+        const hem: [number, number, number][] = [];
+        for (let x = -10; x <= W + 10; x += 8) {
+          const y = base + Math.sin(x * 0.004 + T * 0.5 + i * 1.3) * 30 + Math.sin(x * 0.011 - T * 0.8 + i) * 9;
+          hem.push([x, y, 40 + 50 * (0.5 + 0.5 * Math.sin(x * 0.007 + T * 1.1 + i))]);
         }
+        for (let j = 0; j < 8; j++) {
+          const f = 1 - j * 0.12, pts: number[] = [];
+          for (const [x, y] of hem) pts.push(x, y);
+          for (let q = hem.length - 1; q >= 0; q--) pts.push(hem[q][0], hem[q][1] - hem[q][2] * f);
+          g.poly(pts).fill({ color, alpha: 0.026 * a });
+        }
+        g.moveTo(hem[0][0], hem[0][1]);
+        for (const [x, y] of hem) g.lineTo(x, y);
+        g.stroke({ width: 3, color, alpha: 0.3 * a });
       }
     }
   }
