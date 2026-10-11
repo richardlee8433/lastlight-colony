@@ -15,6 +15,7 @@ export function Settings() {
   useGame((st) => st.v);
   useLang();   // 換語言時重畫
   const dayNight = useSettings((st) => st.dayNight), setDayNight = useSettings((st) => st.setDayNight);
+  const weatherFx = useSettings((st) => st.weatherFx), setWeatherFx = useSettings((st) => st.setWeatherFx);
   const analytics = useSettings((st) => st.analytics), setAnalytics = useSettings((st) => st.setAnalytics);
   const open = useGame((st) => st.settings), [confirm, setConfirm] = useState(false);
   const act = useGame.getState(), s = game.s;
@@ -82,6 +83,8 @@ export function Settings() {
             <h3>{t('set.display')}</h3>
             <label className="check"><input type="checkbox" checked={dayNight} onChange={(e) => setDayNight(e.target.checked)} /> {t('set.dayNight')}</label>
             <p className="muted small">{t('set.dayNightHint')}</p>
+            <label className="check"><input type="checkbox" checked={weatherFx} onChange={(e) => setWeatherFx(e.target.checked)} /> {t('set.weather')}</label>
+            <p className="muted small">{t('set.weatherHint')}</p>
           </section>
 
           <section className="block">

@@ -1,5 +1,6 @@
 // 手動點擊：暴擊、點擊 buff（GDD §6）
 import { DEF, GameState, ResKey } from './state';
+import { clearFilter } from './weather';
 import { add, built, clickAmount, critChance, critMult, disabled, nodeEffect, recipeRatio, weaponShare, weaponRatio } from './formulas';
 
 export interface ClickResult { res: ResKey; amount: number; crit: boolean; bonus?: ResKey; bonusAmount?: number }
@@ -14,6 +15,8 @@ export function click(s: GameState, id: string, rng = Math.random): ClickResult 
   if (crit) s.stats.crits++;
   if (d.produce) {
     add(s, d.produce.res, n);
+    // 沙塵暴：在產氧建築上按住採集，順便把濾網的沙清掉
+    if (d.produce.res === 'oxygen') clearFilter(s);
     // 金屬礦井「晶脈感應」：點擊時有機率掉異晶碎片
     const pc = nodeEffect(s, id, 'clickCrystal');
     if (pc && rng() < pc) { add(s, 'crystal', 1); return { res: 'crystal', amount: 1, crit: false, bonus: d.produce.res, bonusAmount: n }; }

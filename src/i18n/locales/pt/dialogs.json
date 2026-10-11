@@ -841,6 +841,24 @@
   "Fica lá.",
   "A gente sabe que pode ir embora a qualquer hora. É por isso que ficar vale."
  ], "log": "A Firstlight fica no estaleiro. A Mara diz que, justamente porque a gente pode ir embora a qualquer hora, ficar vale." },
+ "w-dust": { "lines": [
+  "(A poeira vem rolando do horizonte e o céu fica cor de ferrugem.)",
+  "O Wheezy está tossindo de novo. Os filtros estão cheios de areia.",
+  "Quer que eu vá dar uns tapinhas nele?",
+  "Vai. Com cuidado. Ele já está velho."
+ ], "log": "Nossa primeira tempestade de poeira. O céu inteiro ficou cor de ferrugem e o Wheezy não parava de tossir. O Teo me mandou dar uns tapinhas nos filtros. Com cuidado, porque ele já está velho." },
+ "w-frost": { "lines": [
+  "(A temperatura despenca durante a noite e a geada cobre os telhados.)",
+  "Está nevando! ...Tá, é geada de gás carbônico.",
+  "Com esse frio, o gelo fica mais perto da superfície. A estação de eletrólise escava mais rápido.",
+  "O pessoal também fica com mais fome. Cozinhem um pouco mais."
+ ], "log": "Nossa primeira noite de geada. Achei que era neve, mas era geada de gás carbônico. A Ines diz que o gelo fica mais perto da superfície, então a estação de eletrólise escava mais rápido. A Mara mandou a gente cozinhar um pouco mais." },
+ "w-aurora": { "lines": [
+  "(Uma faixa violeta e verde acende o céu, e cada xenocristal da colônia pulsa junto.)",
+  "Que lindo...",
+  "O posto avançado diz que todos os Glimmers lá na planície pararam. Todos olhando para cima.",
+  "As leituras do sintetizador dispararam. Não sei quem está carregando quem."
+ ], "log": "Nossa primeira aurora xeno. O céu e cada xenocristal da colônia brilharam juntos. O posto avançado diz que todos os Glimmers da planície pararam para olhar para cima. Foi uma noite tranquila." },
  "c6-blocked": { "lines": [
   "(O motor da nave liga pela primeira vez. O rádio chia.)",
   "Obrigado pelo seu tempo. De acordo com o contrato, a colônia tem dívidas pendentes. Até que sejam quitadas por completo, ninguém pode deixar o porto.",

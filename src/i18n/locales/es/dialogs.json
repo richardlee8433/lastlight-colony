@@ -841,6 +841,24 @@
   "Se queda ahí.",
   "Sabemos que podemos irnos cuando queramos. Por eso quedarnos cuenta."
  ], "log": "La Firstlight se queda en el astillero. Mara dice que, precisamente porque podríamos irnos cuando quisiéramos, quedarnos cuenta." },
+ "w-dust": { "lines": [
+  "(El polvo llega rodando desde el horizonte y el cielo se vuelve color óxido.)",
+  "Wheezy vuelve a toser. Los filtros están llenos de arena.",
+  "¿Quieres que le dé unas palmaditas?",
+  "Ve. Con cuidado. Ya está viejo."
+ ], "log": "Nuestra primera tormenta de polvo. Todo el cielo se volvió color óxido y Wheezy no paraba de toser. Teo me mandó a darle palmaditas a los filtros. Con cuidado, que ya está viejo." },
+ "w-frost": { "lines": [
+  "(La temperatura cae en picado durante la noche y la escarcha cubre los tejados.)",
+  "¡Está nevando! ...Vale, es escarcha de dióxido de carbono.",
+  "Con este frío, el hielo sube más cerca de la superficie. La estación de electrólisis excava más rápido.",
+  "La gente también tiene más hambre. Cocinad un poco más."
+ ], "log": "Nuestra primera noche de escarcha. Creí que nevaba, pero era escarcha de dióxido de carbono. Ines dice que el hielo sube más cerca de la superficie, así que la estación de electrólisis excava más rápido. Mara nos dijo que cocináramos un poco más." },
+ "w-aurora": { "lines": [
+  "(Una franja violeta y verde ilumina el cielo, y cada xenocristal de la colonia late con ella.)",
+  "Qué bonito...",
+  "El puesto avanzado dice que todos los Glimmers de la llanura se han detenido. Todos miran hacia arriba.",
+  "Las lecturas del sintetizador se han disparado. No sé quién está cargando a quién."
+ ], "log": "Nuestra primera aurora xeno. El cielo y cada xenocristal de la colonia brillaron a la vez. El puesto avanzado dice que todos los Glimmers de la llanura se detuvieron a mirar hacia arriba. Fue una noche tranquila." },
  "c6-blocked": { "lines": [
   "(El motor de la nave se enciende por primera vez. La radio crepita.)",
   "Gracias por su tiempo. Según el contrato, la colonia tiene deudas pendientes. Hasta que se salden por completo, nadie puede salir del puerto.",

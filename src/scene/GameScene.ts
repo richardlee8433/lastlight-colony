@@ -80,6 +80,10 @@ export class GameScene {
   fxL = new Container();
   ground: (Container & { roads?: Sprite | null; paved?: (x: number, y: number) => boolean }) | null = null;
   overlay = new Graphics();
+  // 天氣（v0.70.2）：畫在地圖上、介面卡片下面的螢幕層（風沙、飄雪、極光）
+  weatherG = new Graphics();
+  wParts: { x: number; y: number; v: number; r: number; p: number }[] = [];
+  wAmt = 0; wKind: string | null = null; nightAmt = 0;
   ambient: any = null;
   props: any[] = [];
   views = new Map<string, View>();
@@ -132,9 +136,9 @@ export class GameScene {
     })).catch(() => {});
     this.obj.sortableChildren = true;
     this.world.addChild(this.obj, this.shotG, this.overlay, this.lightL);
-    this.app.stage.addChild(this.world, this.hud, this.fxL);
+    this.app.stage.addChild(this.world, this.weatherG, this.hud, this.fxL);
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
-    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL]) c.eventMode = 'none';
+    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL, this.weatherG]) c.eventMode = 'none';
     // 斜射光：一張斜向漸層（左上亮、往右下淡出），用加亮混合疊在環境光上
     { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d')!;
       const gr = g.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.25)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
@@ -1188,6 +1192,7 @@ export class GameScene {
     const mix = (a: number, b: number, sh: number) => Math.round(((a >> sh) & 255) + (((b >> sh) & 255) - ((a >> sh) & 255)) * f);
     this.overlay.tint = (mix(c0, c1, 16) << 16) | (mix(c0, c1, 8) << 8) | mix(c0, c1, 0);
     const night = n0 + (n1 - n0) * f;
+    this.nightAmt = night;
     setNight(night);
     // 太陽：白天（p 0～0.68）從東升到西落。影子一律落在右下（跟手繪圖左上打光一致），只改角度與長短：
     // 清晨長、往右斜很多；中午短；黃昏長、幾乎往正下方
@@ -1206,6 +1211,53 @@ export class GameScene {
     // 斜射光：清晨、黃昏比較明顯，中午和夜晚幾乎沒有；顏色跟著環境光
     this.sunRay.alpha = 0.16 * low * (1 - night);
     this.sunRay.tint = this.overlay.tint;
+  }
+  /** 天氣畫面：強度前後 3 秒淡入淡出；環境光往天氣的顏色偏；設定頁關掉「天氣特效」就不畫（數值照算） */
+  weatherFx(dt: number) {
+    const g = this.weatherG, w = game.s.weather, k = w?.k ?? null;
+    let target = 0;
+    if (k && useSettings.getState().weatherFx) { const t = game.s.t; target = clampN(Math.min((t - w!.at) / 3, (w!.until - t) / 3), 0, 1); }
+    if (k && k !== this.wKind) { this.wKind = k; this.wParts = []; }
+    this.wAmt += (target - this.wAmt) * Math.min(1, dt * 2);
+    g.clear();
+    const a = this.wAmt, kind = this.wKind;
+    if (a < 0.01 || !kind) return;
+    // 環境光：沙塵暴偏鐵鏽色、霜夜偏冷藍、極光偏紫（像入夜）
+    const COL: Record<string, [number, number]> = { dust: [0xe0a070, 0.55], frost: [0xa8c8ff, 0.35], aurora: [0x6a5aa8, 0.6] };
+    const [col, str] = COL[kind], f = a * str, c0 = this.overlay.tint as number;
+    const ch = (sh: number) => Math.round(((c0 >> sh) & 255) + (((col >> sh) & 255) - ((c0 >> sh) & 255)) * f);
+    this.overlay.tint = (ch(16) << 16) | (ch(8) << 8) | ch(0);
+    const W = this.app.screen.width, H = this.app.screen.height, T = this.T;
+    const N = kind === 'dust' ? 140 : kind === 'frost' ? 160 : 0;
+    while (this.wParts.length < N) this.wParts.push({ x: Math.random() * W, y: Math.random() * H, v: Math.random(), r: Math.random(), p: Math.random() * 6.28 });
+    g.blendMode = kind === 'aurora' ? 'add' : 'normal';
+    if (kind === 'dust') {
+      g.rect(0, 0, W, H).fill({ color: 0xc87a40, alpha: 0.2 * a });
+      for (const q of this.wParts) {
+        q.x += (520 + 420 * q.v) * dt; q.y += Math.sin(T * 2 + q.p) * 30 * dt;
+        if (q.x > W + 40) { q.x = -40; q.y = Math.random() * H; }
+        const len = 16 + 26 * q.r;
+        g.moveTo(q.x, q.y).lineTo(q.x - len, q.y - len * 0.08).stroke({ width: 1 + q.r, color: 0xf3c89a, alpha: (0.25 + 0.25 * q.v) * a });
+      }
+    } else if (kind === 'frost') {
+      g.rect(0, 0, W, H).fill({ color: 0xdfefff, alpha: 0.07 * a });
+      for (const q of this.wParts) {
+        q.y += (28 + 40 * q.v) * dt; q.x += Math.sin(T * 0.9 + q.p) * 14 * dt;
+        if (q.y > H + 4) { q.y = -4; q.x = Math.random() * W; }
+        g.circle(q.x, q.y, 1 + 1.6 * q.r).fill({ color: 0xffffff, alpha: (0.5 + 0.4 * q.v) * a });
+      }
+    } else {
+      // 極光：畫面上方三條會飄動的光帶（綠、紫交錯），異晶建築跟著脈動發光
+      setNight(Math.max(this.nightAmt, a * (0.75 + 0.2 * Math.sin(T * 1.7))));
+      for (let i = 0; i < 3; i++) {
+        const base = H * (0.06 + 0.1 * i), color = i % 2 ? 0xc070ff : 0x7dffb0;
+        for (let x = 0; x <= W; x += 10) {
+          const y = base + Math.sin(x * 0.004 + T * 0.5 + i * 1.3) * 34 + Math.sin(x * 0.011 - T * 0.8) * 10;
+          const len = 50 + 40 * (0.5 + 0.5 * Math.sin(x * 0.007 + T * 1.1 + i));
+          g.moveTo(x, y).lineTo(x, y + len).stroke({ width: 8, color, alpha: 0.07 * a });
+        }
+      }
+    }
   }
   /** 腳印：小人每走 7 像素在腳下留一個（左右腳交錯），每人身後保持 3 個；
    *  第 4 個出現時最舊的那個不是瞬間消失，而是 0.6 秒淡出；停下來 4 秒後也慢慢淡掉。鋪過的路面上不留 */
@@ -1282,6 +1334,7 @@ export class GameScene {
     this.T += dt;
     this.visDt = dt;
     this.dayLight();
+    this.weatherFx(dt);
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
       this.cam.x += (this.camGoal.x - this.cam.x) * Math.min(1, rdt * 6);

@@ -1,5 +1,6 @@
 import BUILDINGS from '../data/buildings.json';
 import type { Good, MarketState } from './market';
+import type { WeatherState } from './weather';
 
 export type ResKey = 'nutrient' | 'oxygen' | 'scrap' | 'rock' | 'parts' | 'metal' | 'tools' | 'weapon' | 'crystal' | 'credit';
 export const RES_KEYS: ResKey[] = ['nutrient', 'oxygen', 'scrap', 'rock', 'parts', 'metal', 'tools', 'weapon', 'crystal', 'credit'];
@@ -145,6 +146,8 @@ export interface GameState {
   cargo: Record<Good, number>;
   /** 船塢（v0.70）：完成幾個模組（0～6）；wait＝第 6 章選了「先等等」時已完成的模組數 */
   ship: ShipState;
+  /** 天氣（v0.70.2）：沙塵暴、霜夜、異晶極光（見 weather.ts）；舊存檔沒有，第一次 tick 補上 */
+  weather?: WeatherState;
   /** 讀檔轉換時要顯示的通知（轉換後才加進 notices） */
   pendingNotice?: string;
 }
@@ -168,14 +171,14 @@ export function newGame(now = Date.now()): GameState {
     b, pop: 3, arrival: 0, morale: 60, starving: false, starveTime: 0, failed: false, checkpoint: null,
     research: { done: [], active: null, progress: 0 },
     events: { nextAt: 300, active: null, rescue: null },
-    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 8 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
+    story: { seenIntro: 0, assigned: false, done: [], seen: [], queue: [], dlgV: 9 },   // dlgV 要跟 dialog.ts 的 DIALOG_VERSION 一致
     stats: { clicks: 0, crits: 0 },
     raid: newRaid(),
     gov: newGov(),
     air: newAir(),
     exp: { until: 0, team: 0, count: 0, frags: 0, blueprints: [] },
     boost: { until: 0, uses: 0 },
-    market: newMarket(), cargo: newCargo(), ship: { mods: 0 },
+    market: newMarket(), cargo: newCargo(), ship: { mods: 0 }, weather: { k: null, at: 0, until: 0, next: -1 },
     lastSaved: now,
     notices: [],
   };

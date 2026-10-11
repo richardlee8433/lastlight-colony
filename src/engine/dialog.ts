@@ -147,6 +147,10 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c5-ship-ready', when: (s) => mods(s) >= READY_MODS },
   { id: 'c5-end', when: (s) => s.stage >= 6, chapterEnd: true },
   // 第 6 章
+  // 天氣（v0.70.2）：每種天氣第一次出現時播一次
+  { id: 'w-dust', when: (s) => s.weather?.k === 'dust' },
+  { id: 'w-frost', when: (s) => s.weather?.k === 'frost' },
+  { id: 'w-aurora', when: (s) => s.weather?.k === 'aurora' },
   { id: 'c6-open', when: (s) => s.stage === 6 && s.story.seenIntro >= 6 },
   { id: 'c6-wheezy', journal: true, when: (s) => seen(s, 'c6-open') },
   { id: 'c6-governor', when: (s) => built(s, 'governor') },
@@ -165,7 +169,7 @@ const TRIGGERS: { id: string; when: (s: GameState) => boolean; chapterEnd?: bool
   { id: 'c6-end', when: (s) => s.finished && s.story.choice6 !== 'leave', chapterEnd: true },
 ];
 /** 對話腳本版本：新增場景時加一，舊存檔讀進來時已經過去的場景標記為播過 */
-export const DIALOG_VERSION = 8;
+export const DIALOG_VERSION = 9;
 /** 新版本加入的場景：還在這一章（或更早）的舊存檔照常播，不要直接標成播過 */
 const REPLAY_IF: Record<string, number> = { 'c4-trader': 4, 'c4-cargo': 4, 'c4-trader-ride': 4 };
 export const SCENE_IDS = TRIGGERS.map((x) => x.id);

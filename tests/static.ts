@@ -15,6 +15,9 @@ import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, D
 import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff, researchSpeed } from '../src/engine/formulas';
 import { healRate } from '../src/engine/combat';
 import { applyOffline } from '../src/engine/offline';
+import { WEATHER_GAP, WEATHER_TIME, WEATHER_WARN, CLEAR_CLICKS, weather } from '../src/engine/weather';
+import { click } from '../src/engine/click';
+import { consumption } from '../src/engine/formulas';
 import { popCap } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
 import { resolveEvent } from '../src/engine/events';
@@ -423,6 +426,50 @@ check('S22', '離線時人口不增加（新來的人只會閒置、多耗氧耗
   if (s.pop !== p0 || r?.pop) errs.push(`離線 30 分鐘人口從 ${p0} 變成 ${s.pop}`);
   for (let i = 0; i < 5 * 600; i++) step(s);
   if (!(s.pop > p0)) errs.push('上線 10 分鐘人口沒有增加');
+  return errs;
+});
+
+
+check('S23', '天氣：第 2 章起每 15 分鐘一次、每次 60 秒、前 30 秒預告、不連續同一種；沙塵暴產氧 −25%（點產氧建築清濾網就恢復）、霜夜電解站 +25% 營養 +10%、極光合成室 +30% 且延後微光獸襲擊；離線沒有天氣', () => {
+  const errs: string[] = [];
+  const s = newGame(0); s.stage = 2; s.story.ines = true; Object.assign(s.res, { nutrient: 1e6, oxygen: 1e6 });
+  s.b.o2_scrubber.level = 2; s.b.o2_scrubber.workers = 2;
+  const run = (sec: number) => { for (let i = 0; i < sec * 5; i++) step(s, 0.2, { rng: () => 0.1 }); };
+  run(1);
+  const w = s.weather!;
+  if (Math.abs(w.next - (s.t + WEATHER_GAP)) > 2) errs.push('第一次天氣應排在 15 分鐘後：' + (w.next - s.t));
+  run(WEATHER_GAP - WEATHER_WARN + 1);
+  if (!w.pending || w.k) errs.push('開始前 30 秒應該預告：' + JSON.stringify(w));
+  const first = w.pending;
+  run(WEATHER_WARN + 1);
+  if (w.k !== first) errs.push('預告後應該開始 ' + first + '，實際 ' + w.k);
+  run(WEATHER_TIME + 1);
+  if (w.k) errs.push('60 秒後應該結束');
+  run(WEATHER_GAP);
+  if (w.k === first) errs.push('連續兩次同一種天氣');
+  // 效果
+  const d = newGame(0); d.stage = 2; d.b.o2_scrubber.level = 2; d.b.o2_scrubber.workers = 2;
+  const o0 = gatherRate(d, 'o2_scrubber');
+  d.weather = { k: 'dust', at: d.t, until: d.t + 60, next: -1, cleared: 0 };
+  if (Math.abs(gatherRate(d, 'o2_scrubber') / o0 - 0.75) > 1e-9) errs.push('沙塵暴產氧應 ×0.75');
+  for (let i = 0; i < CLEAR_CLICKS; i++) click(d, 'o2_scrubber', () => 0.99);
+  d.b.o2_scrubber.lastClick = -99;   // 不算點擊 buff
+  if (Math.abs(gatherRate(d, 'o2_scrubber') / o0 - 1) > 1e-9) errs.push(`點 ${CLEAR_CLICKS} 下產氧建築後應該恢復`);
+  const f = newGame(0); f.stage = 2; f.b.o2_scrubber.level = 2; f.b.o2_scrubber.workers = 2; f.b.o2_scrubber.form = 1;
+  const e0 = gatherRate(f, 'o2_scrubber'), c0 = consumption(f);
+  f.weather = { k: 'frost', at: f.t, until: f.t + 60, next: -1 };
+  if (Math.abs(gatherRate(f, 'o2_scrubber') / e0 - 1.25) > 1e-9 || Math.abs(consumption(f) / c0 - 1.1) > 1e-9) errs.push('霜夜：電解站 ×1.25、營養消耗 ×1.1');
+  const a = newGame(0); a.stage = 4; a.b.crystal_synth.level = 1; a.b.crystal_synth.workers = 2;
+  const x0 = gatherRate(a, 'crystal_synth');
+  a.weather = { k: 'aurora', at: a.t, until: a.t + 60, next: -1 };
+  if (Math.abs(gatherRate(a, 'crystal_synth') / x0 - 1.3) > 1e-9) errs.push('極光：合成室 ×1.3');
+  a.raid.count = 1; a.raid.nextAt = a.t + 10;
+  step(a, 0.2, { rng: () => 0.5 });
+  if (a.raid.incoming) errs.push('極光期間不應該有微光獸襲擊');
+  // 離線
+  const o = newGame(0); o.stage = 2; o.weather = { k: 'dust', at: 0, until: 60, next: o.t + 10, pending: 'dust' };
+  applyOffline(o, 3600);
+  if (o.weather!.k || o.weather!.pending) errs.push('離線時不應該有天氣');
   return errs;
 });
 

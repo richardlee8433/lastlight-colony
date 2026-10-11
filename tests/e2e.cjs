@@ -287,7 +287,8 @@ const CJK = /[一-鿿]/;
     const box = p.locator('label.check', { hasText: '日夜變化' }).locator('input');
     if (!(await box.count())) { await p.close(); return ['設定頁沒有「日夜變化」']; }
     if (!(await box.isChecked())) errs.push('預設不是打開');
-    await box.click({ timeout: 5000 }).catch((e) => { throw new Error(e.message.split('\n').filter((l) => /intercept|visible|stable|enabled/.test(l)).slice(0, 3).join(' | ') || e.message.slice(0, 200)); }); await p.waitForTimeout(300);
+    // 第 6 章夜晚的畫面在測試用的軟體繪圖（swiftshader）下只有幾 fps，點擊要等下一幀才算完成：等久一點
+    await box.click({ timeout: 20000 }).catch((e) => { throw new Error(e.message.split('\n').filter((l) => /intercept|visible|stable|enabled/.test(l)).slice(0, 3).join(' | ') || e.message.slice(0, 200)); }); await p.waitForTimeout(300);
     await p.evaluate(() => document.querySelector('.close')?.click()); await p.waitForTimeout(500);
     const after = await lum();
     if (!(before < 140 && after > 200)) errs.push(`關掉後環境光 ${before.toFixed(0)} → ${after.toFixed(0)}`);

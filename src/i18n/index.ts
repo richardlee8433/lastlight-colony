@@ -21,36 +21,34 @@ export const LANGS: { id: Lang; label: string; short: string; tag: string }[] = 
 export const langTag = (l: Lang) => LANGS.find((x) => x.id === l)?.tag ?? 'en';
 const SETTINGS_KEY = 'lastlight-colony-settings';
 
-function loadSettings(): { lang: Lang; dayNight: boolean; analytics: boolean } {
-  let lang: Lang = 'en', dayNight = true, analytics = true;
+function loadSettings(): { lang: Lang; dayNight: boolean; weatherFx: boolean; analytics: boolean } {
+  let lang: Lang = 'en', dayNight = true, weatherFx = true, analytics = true;
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) { const v = JSON.parse(raw); if (LANGS.some((x) => x.id === v.lang)) lang = v.lang; if (v.dayNight === false) dayNight = false; if (v.analytics === false) analytics = false; }
+    if (raw) { const v = JSON.parse(raw); if (LANGS.some((x) => x.id === v.lang)) lang = v.lang; if (v.dayNight === false) dayNight = false; if (v.weatherFx === false) weatherFx = false; if (v.analytics === false) analytics = false; }
   } catch { /* 沒有設定：用預設 */ }
-  return { lang, dayNight, analytics };
+  return { lang, dayNight, weatherFx, analytics };
 }
 
-/** dayNight：日夜變化（純畫面效果，關掉時永遠是白天）；analytics：傳送匿名遊玩數據 */
-interface Settings { lang: Lang; dayNight: boolean; analytics: boolean; setLang: (l: Lang) => void; setDayNight: (on: boolean) => void; setAnalytics: (on: boolean) => void }
-const saveSettings = (v: { lang: Lang; dayNight: boolean; analytics: boolean }) => {
+/** dayNight：日夜變化（純畫面效果，關掉時永遠是白天）；weatherFx：天氣特效（純畫面，數值照算）；analytics：傳送匿名遊玩數據 */
+type SettingsData = { lang: Lang; dayNight: boolean; weatherFx: boolean; analytics: boolean };
+interface Settings extends SettingsData { setLang: (l: Lang) => void; setDayNight: (on: boolean) => void; setWeatherFx: (on: boolean) => void; setAnalytics: (on: boolean) => void }
+const saveSettings = (v: SettingsData) => {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(v)); } catch { /* 無法儲存時只在本次生效 */ }
 };
-export const useSettings = create<Settings>((set, get) => ({
-  ...loadSettings(),
-  setLang: (lang) => {
-    saveSettings({ lang, dayNight: get().dayNight, analytics: get().analytics });
-    applyDocLang(lang);
-    set({ lang });
-  },
-  setDayNight: (dayNight) => {
-    saveSettings({ lang: get().lang, dayNight, analytics: get().analytics });
-    set({ dayNight });
-  },
-  setAnalytics: (analytics) => {
-    saveSettings({ lang: get().lang, dayNight: get().dayNight, analytics });
-    set({ analytics });
-  },
-}));
+export const useSettings = create<Settings>((set, get) => {
+  const save = (patch: Partial<SettingsData>) => {
+    const g = get(), v = { lang: g.lang, dayNight: g.dayNight, weatherFx: g.weatherFx, analytics: g.analytics, ...patch };
+    saveSettings(v); set(patch);
+  };
+  return {
+    ...loadSettings(),
+    setLang: (lang) => { applyDocLang(lang); save({ lang }); },
+    setDayNight: (dayNight) => save({ dayNight }),
+    setWeatherFx: (weatherFx) => save({ weatherFx }),
+    setAnalytics: (analytics) => save({ analytics }),
+  };
+});
 export const lang = () => useSettings.getState().lang;
 export const useLang = () => useSettings((s) => s.lang);
 

@@ -1133,6 +1133,34 @@ export const SCENES: Record<string, SceneText> = {
     ],
     log: ["曙光號留在船塢。瑪拉說，正因為隨時可以走，留下來才算數。", "The Firstlight stays in the shipyard. Mara says that because we could leave any time, staying counts."],
   },
+  // 天氣（v0.70.2）：每種天氣第一次出現時的小對話
+  'w-dust': {
+    lines: [
+      ["narr", "（風沙從地平線那頭捲過來，天空變成鐵鏽色）", "(Dust rolls in from the horizon, and the sky turns the color of rust.)"],
+      ["teo", "阿喘又在咳了。濾網塞滿沙。", "Wheezy's coughing again. The filters are full of sand."],
+      ["juno", "要我去拍一拍嗎？", "Want me to go give it a pat?"],
+      ["teo", "去。拍輕一點，它年紀大了。", "Go on. Gently. It's getting old."],
+    ],
+    log: ["第一次遇到沙塵暴。整片天空變成鐵鏽色，阿喘咳個不停。提歐叫我去拍一拍濾網，要拍輕一點，因為它年紀大了。", "Our first dust storm. The whole sky turned the color of rust and Wheezy wouldn't stop coughing. Teo sent me to pat the filters. Gently, because it's getting old."],
+  },
+  'w-frost': {
+    lines: [
+      ["narr", "（夜裡氣溫驟降，屋頂結了一層白霜）", "(The temperature plunges overnight, and frost coats the rooftops.)"],
+      ["juno", "下雪了！……好吧，是二氧化碳結的霜。", "It's snowing! ...Okay, it's carbon dioxide frost."],
+      ["ines", "天這麼冷，冰層會離地表更近。電解站挖得比較快。", "When it's this cold, the ice comes closer to the surface. The electrolyzer digs faster."],
+      ["mara", "人也會比較餓。多煮一點。", "People get hungrier too. Cook a bit more."],
+    ],
+    log: ["第一次霜夜。我以為下雪了，其實是二氧化碳結的霜。伊涅絲說冰層會離地表更近，電解站挖得更快。瑪拉叫大家多煮一點。", "Our first frost night. I thought it was snow, but it was carbon dioxide frost. Ines says the ice comes closer to the surface, so the electrolyzer digs faster. Mara told us to cook a bit more."],
+  },
+  'w-aurora': {
+    lines: [
+      ["narr", "（夜空亮起一道紫綠色的光帶，殖民地裡的異晶跟著一起脈動）", "(A violet-green ribbon lights up the sky, and every xenocrystal in the colony pulses along with it.)"],
+      ["juno", "好漂亮……", "It's beautiful..."],
+      ["teo", "前哨站說，荒原上的微光獸都停下來了。全部抬頭看天。", "The outpost says the glimmers out on the flats have all stopped. Every one of them is looking up."],
+      ["ines", "合成室的讀數衝上去了。不知道是誰在給誰充電。", "The synthesizer readings just spiked. I can't tell who's charging whom."],
+    ],
+    log: ["第一次看到異晶極光。天空和殖民地裡的異晶一起發光。前哨站說，荒原上的微光獸全都停下來看天空。今晚很安靜。", "Our first xeno aurora. The sky and every xenocrystal in the colony glowed together. The outpost says the glimmers out on the flats all stopped to look up. It was a quiet night."],
+  },
   // 放棄異晶的結尾（船的星際引擎第一次點火）
   'c6-blocked': {
     lines: [

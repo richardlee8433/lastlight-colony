@@ -841,6 +841,24 @@
   "Sie bleibt, wo sie ist.",
   "Wir wissen, dass wir jederzeit gehen könnten. Genau deshalb zählt es, dass wir bleiben."
  ], "log": "Die Firstlight bleibt in der Werft. Mara sagt, gerade weil wir jederzeit gehen könnten, zählt es, dass wir bleiben." },
+ "w-dust": { "lines": [
+  "(Staub rollt vom Horizont heran, und der Himmel färbt sich rostrot.)",
+  "Wheezy hustet schon wieder. Die Filter sind voller Sand.",
+  "Soll ich ihm einen Klaps geben?",
+  "Geh. Aber sanft. Er wird alt."
+ ], "log": "Unser erster Staubsturm. Der ganze Himmel wurde rostrot, und Wheezy hörte nicht auf zu husten. Teo schickte mich, die Filter abzuklopfen. Sanft, weil er alt wird." },
+ "w-frost": { "lines": [
+  "(Über Nacht fällt die Temperatur, und Reif überzieht die Dächer.)",
+  "Es schneit! … Na gut, es ist Kohlendioxid-Reif.",
+  "Bei dieser Kälte kommt das Eis näher an die Oberfläche. Die Elektrolysestation gräbt schneller.",
+  "Die Leute werden auch hungriger. Kocht etwas mehr."
+ ], "log": "Unsere erste Frostnacht. Ich dachte, es schneit, aber es war Kohlendioxid-Reif. Ines sagt, das Eis kommt näher an die Oberfläche, deshalb gräbt die Elektrolysestation schneller. Mara meinte, wir sollen etwas mehr kochen." },
+ "w-aurora": { "lines": [
+  "(Ein violett-grünes Band leuchtet am Himmel auf, und jeder Xenokristall in der Kolonie pulsiert mit.)",
+  "Wunderschön …",
+  "Der Außenposten meldet, dass alle Glimmer draußen auf der Ebene stehen geblieben sind. Alle schauen nach oben.",
+  "Die Werte des Synthesizers sind gerade hochgeschossen. Ich weiß nicht, wer hier wen auflädt."
+ ], "log": "Unser erstes Xeno-Polarlicht. Der Himmel und jeder Xenokristall in der Kolonie leuchteten zusammen. Der Außenposten sagt, alle Glimmer auf der Ebene sind stehen geblieben und haben nach oben geschaut. Es war eine ruhige Nacht." },
  "c6-blocked": { "lines": [
   "(Der Antrieb des Schiffs zündet zum ersten Mal. Das Funkgerät knistert.)",
   "Danke für Ihre Zeit. Laut Vertrag hat die Kolonie offene Schulden. Bis sie vollständig beglichen sind, darf niemand den Hafen verlassen.",

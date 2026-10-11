@@ -140,6 +140,9 @@ export function combat(s: GameState, offline = false, rng = Math.random, dt = 0.
     r.nextAt = s.t + (r.count === 0 ? SYNTH_RAID : FIRST_RAID);
   }
   if (offline) { if (r.nextAt < s.t + WARNING + 30) r.nextAt = s.t + WARNING + 30; r.incoming = null; return; }
+  // 異晶極光的夜晚：微光獸都在看天空，不會來襲（延到極光結束後）
+  const w = s.weather;
+  if (!r.incoming && w?.k === 'aurora' && s.t >= r.nextAt - WARNING && raidFor(s).kind === 'alien') r.nextAt = w.until + WARNING + 5;
   if (!r.incoming && s.t >= r.nextAt - WARNING) {
     // 強度只隨「擊退次數」成長：輸了不會越打越難，避免死亡螺旋（GDD 原本按總襲擊次數）
     const e = raidFor(s);

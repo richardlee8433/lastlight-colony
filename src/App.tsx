@@ -7,6 +7,7 @@ import { BuildingPanel } from './ui/BuildingPanel';
 import { QuickBar } from './ui/QuickBar';
 import { Toasts } from './ui/Toasts';
 import { RaidBanner } from './ui/RaidBanner';
+import { WeatherBanner } from './ui/WeatherBanner';
 import { TradeModal } from './ui/TradeModal';
 import { TechTree } from './ui/TechTree';
 import { Modals } from './ui/Modals';
@@ -40,7 +41,10 @@ export function App() {
       <ColonyPanel />
       <BuildingPanel />
       <QuickBar />
-      <RaidBanner />
+      <div className="banners">
+        <RaidBanner />
+        <WeatherBanner />
+      </div>
       <Toasts />
       <Settings />
       <TradeModal />

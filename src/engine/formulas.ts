@@ -3,6 +3,7 @@ import RESEARCH from '../data/research.json';
 import { AIR_ENABLED, DEF, DEFS, GameState, ResKey, RES_KEYS, UNCAPPED, Cost, Effect, BuildingForm } from './state';
 import { HYPOXIA_PROD, lifeSupportRate, oxygenByproduct, oxygenUse } from './air';
 import CHARTERS from '../data/charters.json';
+import { CLEAR_CLICKS } from './weather';
 
 export const CHARTER_DEFS = CHARTERS as unknown as { id: string; name: string; desc: string; cost: string; effect: Record<string, number> }[];
 const CDEF = Object.fromEntries(CHARTER_DEFS.map((c) => [c.id, c]));
@@ -120,7 +121,8 @@ export const setFoodPerPop = (v: number) => { FOOD_PER_POP = v; };
 export const consumption = (s: GameState) => {
   let mul = researchEffect(s, 'consumeMul') + charterEffect(s, 'consumeMul');
   for (const d of DEFS) if (d.effects?.consumeMul && built(s, d.id)) mul += d.effects.consumeMul;
-  return s.pop * FOOD_PER_POP * Math.max(0.3, 1 + mul);
+  // 霜夜：天冷，大家吃得多一點（+10%）
+  return s.pop * FOOD_PER_POP * Math.max(0.3, 1 + mul) * (s.weather?.k === 'frost' ? 1.1 : 1);
 };
 export function foodWindow(s: GameState) {
   return nodeEffect(s, 'lounge', 'foodWindow') || 120;
@@ -167,11 +169,20 @@ export function gatherBonus(s: GameState): number {
 export const LEVEL_EFF = 0.05;
 export const hasLevelEff = (id: string) => !!(DEF[id]?.produce || DEF[id]?.recipe || id === 'databank');
 export const levelEff = (s: GameState, id: string) => (hasLevelEff(id) ? 1 + LEVEL_EFF * Math.max(0, s.b[id].level - 1) : 1);
+/** 天氣對單一建築產量的倍率（沙塵暴：產氧 −25%，清過濾網就恢復；霜夜：電解站 +25%；異晶極光：合成室 +30%） */
+export function weatherMul(s: GameState, id: string) {
+  const w = s.weather;
+  if (!w?.k) return 1;
+  if (w.k === 'dust' && DEF[id].produce?.res === 'oxygen' && (w.cleared ?? 0) < CLEAR_CLICKS) return 0.75;
+  if (w.k === 'frost' && id === 'o2_scrubber' && (s.b[id].form ?? 0) >= 1) return 1.25;
+  if (w.k === 'aurora' && id === 'crystal_synth') return 1.3;
+  return 1;
+}
 /** 採集建築每秒產量 */
 export function gatherRate(s: GameState, id: string): number {
   const d = DEF[id];
   if (!d.produce || !built(s, id) || disabled(s, id)) return 0;
-  return s.b[id].workers * (formOf(s, id)?.rate ?? d.produce.rate) * levelEff(s, id) * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
+  return s.b[id].workers * (formOf(s, id)?.rate ?? d.produce.rate) * levelEff(s, id) * weatherMul(s, id) * (1 + nodeEffect(s, id, 'prodAdd') + gatherBonus(s) + resBonus(s, d.produce.res)) * moraleMult(s) * clickBuff(s, id) * prodMul(s);
 }
 /** 加工建築每秒「最多」消耗的原料 */
 export function processInput(s: GameState, id: string): number {
