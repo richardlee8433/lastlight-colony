@@ -1472,7 +1472,8 @@ export class GameScene {
     this.T += dt;
     this.visDt = dt;
     this.dayLight();
-    this.weatherFx(dt);
+    // 天氣畫面用真實時間：第一次天氣的對話會暫停遊戲，背景的風沙、雪、極光照樣在動
+    this.weatherFx(rdt);
     this.meteorFx(rdt);
     const s = game.s, Z = this.Z;
     if (this.camGoal) {
