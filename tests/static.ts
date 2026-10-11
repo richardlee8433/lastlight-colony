@@ -15,12 +15,12 @@ import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, D
 import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff, researchSpeed } from '../src/engine/formulas';
 import { healRate } from '../src/engine/combat';
 import { applyOffline } from '../src/engine/offline';
-import { WEATHER_GAP, WEATHER_TIME, WEATHER_WARN, CLEAR_CLICKS, weather } from '../src/engine/weather';
+import { WEATHER_GAP, WEATHER_TIME, WEATHER_WARN, WEATHER_FIRST, CLEAR_CLICKS, weather } from '../src/engine/weather';
 import { click } from '../src/engine/click';
 import { consumption } from '../src/engine/formulas';
 import { popCap } from '../src/engine/formulas';
 import { MODULES, buildModule, moduleBlock, shipReady } from '../src/engine/ship';
-import { resolveEvent } from '../src/engine/events';
+import { resolveEvent, METEOR_FIRST } from '../src/engine/events';
 import { lineOk } from '../src/engine/dialog';
 import { market } from '../src/engine/market';
 import { healRate, applyMedicine, medBlock } from '../src/engine/combat';
@@ -430,21 +430,23 @@ check('S22', '離線時人口不增加（新來的人只會閒置、多耗氧耗
 });
 
 
-check('S23', '天氣：第 2 章起每 15 分鐘一次、每次 60 秒、前 30 秒預告、不連續同一種；沙塵暴產氧 −25%（點產氧建築清濾網就恢復）、霜夜電解站 +25% 營養 +10%、極光合成室 +30% 且延後微光獸襲擊；離線沒有天氣', () => {
+check('S23', '天氣：第 2 章 3 分鐘後第一場（一定是沙塵暴），之後每 15 分鐘一次、每次 60 秒、前 30 秒預告、不連續同一種；沙塵暴產氧 −25%（點產氧建築清濾網就恢復）、霜夜電解站 +25% 營養 +10%、極光合成室 +30% 且延後微光獸襲擊；離線沒有天氣', () => {
   const errs: string[] = [];
   const s = newGame(0); s.stage = 2; s.story.ines = true; Object.assign(s.res, { nutrient: 1e6, oxygen: 1e6 });
   s.b.o2_scrubber.level = 2; s.b.o2_scrubber.workers = 2;
   const run = (sec: number) => { for (let i = 0; i < sec * 5; i++) step(s, 0.2, { rng: () => 0.1 }); };
   run(1);
   const w = s.weather!;
-  if (Math.abs(w.next - (s.t + WEATHER_GAP)) > 2) errs.push('第一次天氣應排在 15 分鐘後：' + (w.next - s.t));
-  run(WEATHER_GAP - WEATHER_WARN + 1);
+  if (Math.abs(w.next - (s.t + WEATHER_FIRST)) > 2) errs.push('第 2 章第一場天氣應排在 3 分鐘後：' + (w.next - s.t));
+  run(WEATHER_FIRST - WEATHER_WARN + 1);
   if (!w.pending || w.k) errs.push('開始前 30 秒應該預告：' + JSON.stringify(w));
   const first = w.pending;
+  if (first !== 'dust') errs.push('第一場天氣應該是沙塵暴，實際 ' + first);
   run(WEATHER_WARN + 1);
   if (w.k !== first) errs.push('預告後應該開始 ' + first + '，實際 ' + w.k);
   run(WEATHER_TIME + 1);
   if (w.k) errs.push('60 秒後應該結束');
+  if (Math.abs(w.next - (s.t + WEATHER_GAP)) > 5) errs.push('之後應該每 15 分鐘一次：' + (w.next - s.t));
   run(WEATHER_GAP);
   if (w.k === first) errs.push('連續兩次同一種天氣');
   // 效果
@@ -470,6 +472,28 @@ check('S23', '天氣：第 2 章起每 15 分鐘一次、每次 60 秒、前 30 
   const o = newGame(0); o.stage = 2; o.weather = { k: 'dust', at: 0, until: 60, next: o.t + 10, pending: 'dust' };
   applyOffline(o, 3600);
   if (o.weather!.k || o.weather!.pending) errs.push('離線時不應該有天氣');
+  // 第 3 章以後才開始排程的舊存檔：照常 15 分鐘後
+  const l = newGame(0); l.stage = 3; weather(l);
+  if (Math.abs(l.weather!.next - (l.t + WEATHER_GAP)) > 2) errs.push('第 3 章才開始排程時應該 15 分鐘後');
+  return errs;
+});
+
+check('S24', '第 2 章一定遇得到隕石雨：伊涅絲回來後 90 秒內，第一個隨機事件必定是隕石雨；遇過之後照常隨機', () => {
+  const errs: string[] = [];
+  for (const roll of [0.1, 0.9]) {
+    const s = newGame(0); s.stage = 2; s.b.algae_tank.level = 1; s.res.oxygen = 1e6; s.res.nutrient = 1e6;
+    s.story.seen = ['c2-open']; s.pop = 8; s.events.nextAt = s.t + 2000;
+    s.events.rescue = { until: s.t + 1, workers: 0, ines: true };
+    let met = -1;
+    for (let i = 0; i < 5 * (METEOR_FIRST + 5) && met < 0; i++) {
+      step(s, 0.2, { rng: () => roll });
+      if (s.events.active?.kind === 'meteor') met = s.t;
+      else if (s.events.active) s.events.active = null;
+    }
+    if (met < 0) errs.push(`rng=${roll}：伊涅絲回來後 ${METEOR_FIRST} 秒內沒有隕石雨（${JSON.stringify(s.events.active)}）`);
+    resolveEvent(s, 1);
+    if (s.events.meteors !== 1) errs.push('隕石雨次數沒有記下來');
+  }
   return errs;
 });
 

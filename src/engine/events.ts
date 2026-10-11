@@ -10,6 +10,8 @@ export function scheduleNext(s: GameState, rng = Math.random) {
 
 /** 伊涅絲的求救訊號多久後響（第 2 章開場對話後），拒絕後多久再響一次 */
 export const INES_DELAY = 60, INES_RETRY = 90, INES_TRIP = 120;
+/** 伊涅絲回來後多久下第一場隕石雨（第 2 章一定遇得到） */
+export const METEOR_FIRST = 90;
 
 export function events(s: GameState, rng = Math.random) {
   const ev = s.events;
@@ -18,6 +20,7 @@ export function events(s: GameState, rng = Math.random) {
     ev.rescue = null;
     s.story.ines = true;
     s.pop += 1;
+    if (s.stage === 2 && !ev.meteors) ev.nextAt = Math.min(ev.nextAt, s.t + METEOR_FIRST);
     add(s, 'parts', 25);
     const gains: Msg[] = [msg('g.ines'), msg('l.gain', { r: 'parts', n: 25 })];
     if (s.pop > popCap(s)) gains.push(msg('g.overcap'));
@@ -63,7 +66,7 @@ export function events(s: GameState, rng = Math.random) {
   if (s.stage >= 2 && producers.length) options.push('meteor');
   if (s.stage >= 2 && !ev.rescue && idle(s) >= 2) options.push('rescue');
   if (!options.length) { scheduleNext(s, rng); return; }
-  const kind = options[Math.floor(rng() * options.length)];
+  const kind = s.stage === 2 && !ev.meteors && options.includes('meteor') ? 'meteor' : options[Math.floor(rng() * options.length)];
   if (kind === 'meteor') {
     const target = producers[Math.floor(rng() * producers.length)].id;
     ev.active = { kind, target, cost: 30 + 20 * s.stage };
@@ -82,6 +85,7 @@ export function resolveEvent(s: GameState, choice: number) {
     s.events.active = null; return;
   }
   if (a.kind === 'meteor') {
+    s.events.meteors = (s.events.meteors ?? 0) + 1;
     if (choice === 0) {
       if (!canAfford(s, { rock: a.cost! })) return;
       pay(s, { rock: a.cost! });

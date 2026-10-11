@@ -107,6 +107,8 @@ export interface GameState {
   research: { done: string[]; active: string | null; progress: number };
   events: {
     nextAt: number; active: ActiveEvent | null; rescue: { until: number; workers: number; ines?: boolean } | null;
+    /** 遇過幾次隕石雨（第 2 章第一次隨機事件必定是隕石雨） */
+    meteors?: number;
     /** 事件結果（例如救援隊回來），UI 以對話框顯示，玩家關閉後清除 */
     report?: { title: Msg | string; text: Msg | string; gains: (Msg | string)[] } | null;
   };

@@ -18,6 +18,8 @@ export interface WeatherState {
   cleared?: number;
 }
 export const WEATHER_GAP = 900, WEATHER_TIME = 60, WEATHER_WARN = 30;
+/** 第 2 章的第一場天氣（一定是沙塵暴）在進入第 2 章後這麼久開始：第 2 章通常不到 15 分鐘 */
+export const WEATHER_FIRST = 180;
 /** 沙塵暴時在產氧建築上按住採集，點這麼多下（約 3 秒）就把濾網清乾淨 */
 export const CLEAR_CLICKS = 15;
 
@@ -56,11 +58,11 @@ export function weather(s: GameState, offline = false, rng = Math.random) {
   }
   const kinds = weatherKinds(s);
   if (!kinds.length) return;
-  if (w.next < 0) { w.next = s.t + WEATHER_GAP; return; }
+  if (w.next < 0) { w.next = s.t + (s.stage === 2 ? WEATHER_FIRST : WEATHER_GAP); return; }
   // 襲擊預警期間不開始（也不預告），延後 1 分鐘
   if (s.raid?.incoming && s.t >= w.next - WEATHER_WARN) { w.next = Math.max(w.next, s.t + 60); return; }
   if (!w.pending && s.t >= w.next - WEATHER_WARN) {
-    const pick = kinds.length > 1 ? kinds.filter((k) => k !== w.last) : kinds;
+    const pick = !w.last ? ['dust' as const] : kinds.length > 1 ? kinds.filter((k) => k !== w.last) : kinds;
     w.pending = pick[Math.floor(rng() * pick.length)];
     notify(s, 'n.weather.warn.' + w.pending, { s: Math.max(0, Math.ceil(w.next - s.t)) }, w.pending === 'aurora' ? 'info' : 'warn');
   }
