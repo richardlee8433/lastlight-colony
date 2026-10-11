@@ -8,7 +8,7 @@ English
 
 Hello, commanders!
 
-v0.70.2 is a balance update. We played through the whole game many times in our simulator and looked at which upgrades, research and goals actually help. Some didn't, so we changed them.
+v0.70.2 is a balance update. We played through the game many more times to find details we could improve. If you feel it's gotten better, please be sure to let us know!
 
 🏗️ Every level counts
 
@@ -52,11 +52,11 @@ The last light is still burning. See you in the next update! ✨
 
 各位指揮官好！
 
-v0.70.2 是一次平衡更新。我們用模擬器把整場遊戲跑了很多次，看哪些升級、研究和目標真的有幫助。沒幫助的，這次都改了。
+v0.70.2 是一次平衡更新。我們又玩了很多次，想知道哪些細節可以優化。如果你覺得有進步，請一定要告訴我們！
 
 🏗️ 每一級都有感
 
-- 拿掉了「工人上限 +N」的升級。模擬整場遊戲，殖民地的工位一直比人多，這些升級其實從來用不到。
+- 拿掉了「工人上限 +N」的升級。整場玩下來，殖民地的工位一直比人多，這些升級其實從來用不到。
 - 改成每升一級就提高效率：建築每比 Lv1 高一級，每位工人的產量就多 5%。採集、加工和研究建築都適用。
 - 建築面板會顯示目前的等級效率，升級區塊也會寫出下一級的效果。
 - 舊存檔：已經買過的工人上限升級會移除，多出來的工人回到閒置，不會有人離開殖民地。
