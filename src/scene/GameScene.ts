@@ -2,7 +2,7 @@
 import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import {
   STAGES, RES, planMap, createGround, createBuilding, createProp, createWorker, createBuffRing,
-  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, loadSprites, hasTerrain, setCharZoom,
+  createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, setWind, loadSprites, hasTerrain, setCharZoom,
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
@@ -1231,6 +1231,7 @@ export class GameScene {
     this.wAmt += (target - this.wAmt) * Math.min(1, dt * 2);
     g.clear();
     const a = this.wAmt, kind = this.wKind;
+    setWind(kind === 'dust' ? a : 0);
     if (a < 0.01 || !kind) return;
     // 環境光：沙塵暴偏鐵鏽色、霜夜偏冷藍、極光偏紫（像入夜）
     const COL: Record<string, [number, number]> = { dust: [0xe0a070, 0.55], frost: [0xa8c8ff, 0.35], aurora: [0x6a5aa8, 0.6] };
@@ -1269,6 +1270,8 @@ export class GameScene {
       }
     }
   }
+  /** 沙塵暴的風力（0～1），建築的煙跟著往右吹 */
+  windNow() { return this.wKind === 'dust' ? this.wAmt : 0; }
   /** 隕石雨畫面。事件視窗開著時遊戲是暫停的，所以用真實時間（rdt）跑；設定頁關掉「天氣特效」就不畫。
    *  視窗開著：整個畫面不斷有火光劃過，一部分落在空地上砸出坑洞；選了之後雨再下 3 秒，
    *  最後砸向目標建築（加固＝屋頂幾道火花，硬撐＝重擊＋停工期間冒煙）。坑洞 90 秒後淡掉 */
@@ -1378,7 +1381,7 @@ export class GameScene {
     for (const b of this.bits) {
       b.t += rdt; b.x += b.vx * rdt; b.y += b.vy * rdt;
       const k = b.t / b.d;
-      if (b.smoke) { b.vx *= 0.99; sg.circle(b.x, b.y, b.r * (1 + 1.5 * k)).fill({ color: b.c, alpha: 0.45 * (1 - k) }); }
+      if (b.smoke) { b.vx *= 0.99; b.x += this.windNow() * 34 * rdt; sg.circle(b.x, b.y, b.r * (1 + 1.5 * k)).fill({ color: b.c, alpha: 0.45 * (1 - k) }); }
       else { b.vy += 160 * rdt; g.circle(b.x, b.y, b.r * (1 - 0.5 * k)).fill({ color: b.c, alpha: 1 - k }); }
     }
     this.bits = this.bits.filter((b) => b.t < b.d);

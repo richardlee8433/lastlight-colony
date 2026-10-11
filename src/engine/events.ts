@@ -64,7 +64,8 @@ export function events(s: GameState, rng = Math.random) {
   const producers = DEFS.filter((d) => (d.produce || d.recipe) && built(s, d.id));
   const options: ('meteor' | 'rescue')[] = [];
   if (s.stage >= 2 && producers.length) options.push('meteor');
-  if (s.stage >= 2 && !ev.rescue && idle(s) >= 2) options.push('rescue');
+  // 一般求救訊號（派閒置殖民者）第 3 章起才有：第 2 章的求救只有伊涅絲那一次，免得兩種求救搞混
+  if (s.stage >= 3 && !ev.rescue && idle(s) >= 2) options.push('rescue');
   if (!options.length) { scheduleNext(s, rng); return; }
   const kind = s.stage === 2 && !ev.meteors && options.includes('meteor') ? 'meteor' : options[Math.floor(rng() * options.length)];
   if (kind === 'meteor') {

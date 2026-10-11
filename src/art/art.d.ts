@@ -38,3 +38,4 @@ export const CHAR_SCALE: number;
 export function setCharZoom(z: number): void;
 export function hasTerrain(): boolean;
 export const setNight: any;
+export const setWind: any;

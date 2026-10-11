@@ -478,7 +478,7 @@ check('S23', '天氣：第 2 章 3 分鐘後第一場（一定是沙塵暴），
   return errs;
 });
 
-check('S24', '第 2 章一定遇得到隕石雨：伊涅絲回來後 90 秒內，第一個隨機事件必定是隕石雨；遇過之後照常隨機', () => {
+check('S24', '第 2 章沒有一般求救訊號（只有伊涅絲那一次）；第 2 章一定遇得到隕石雨：伊涅絲回來後 90 秒內，第一個隨機事件必定是隕石雨；遇過之後照常隨機', () => {
   const errs: string[] = [];
   for (const roll of [0.1, 0.9]) {
     const s = newGame(0); s.stage = 2; s.b.algae_tank.level = 1; s.res.oxygen = 1e6; s.res.nutrient = 1e6;
@@ -493,6 +493,14 @@ check('S24', '第 2 章一定遇得到隕石雨：伊涅絲回來後 90 秒內�
     if (met < 0) errs.push(`rng=${roll}：伊涅絲回來後 ${METEOR_FIRST} 秒內沒有隕石雨（${JSON.stringify(s.events.active)}）`);
     resolveEvent(s, 1);
     if (s.events.meteors !== 1) errs.push('隕石雨次數沒有記下來');
+  }
+  // 第 2 章閒置很多人、跑很久也只會有隕石雨；第 3 章起才會有一般求救訊號
+  for (const [stage, want] of [[2, false], [3, true]] as const) {
+    const s = newGame(0); s.stage = stage; s.story.ines = true; s.story.seen = ['c2-open']; s.b.algae_tank.level = 1; s.pop = 30;
+    Object.assign(s.res, { oxygen: 1e6, nutrient: 1e6 }); s.events.meteors = 1;
+    let seen = false;
+    for (let i = 0; i < 40; i++) { s.events.active = null; s.events.nextAt = s.t; step(s, 0.2, { rng: () => (i % 2 ? 0.9 : 0.1) }); if (s.events.active?.kind === 'rescue') seen = true; }
+    if (seen !== want) errs.push(`第 ${stage} 章${want ? '應該' : '不應該'}有一般求救訊號`);
   }
   return errs;
 });

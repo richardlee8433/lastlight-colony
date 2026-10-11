@@ -1290,6 +1290,9 @@ const paintedArt = (id) => PAINTED.get(id);
 // 夜晚用加亮混合疊上去，再加一層模糊的光暈。NIGHT（0 白天～1 深夜）由 GameScene 依時間設定。
 let NIGHT = 0;
 export const setNight = (n) => { NIGHT = n; };
+/** 風力 0～1（沙塵暴時由場景設定）：建築冒出的煙往右吹斜、壓低 */
+let WIND = 0;
+export const setWind = (w) => { WIND = w; };
 const HALO_PAD = 8;   // 光暈外擴的空間（地圖像素）
 function emissiveCanvas(cv) {
   const w = cv.width, h = cv.height, src = cv.getContext('2d').getImageData(0, 0, w, h).data;
@@ -2024,10 +2027,12 @@ function fromArt(art) {
     }
     for (let i = puffs.length - 1; i >= 0; i--) {
       const q = puffs[i]; q.life += dt;
-      q.p.y -= 7 * dt; q.p.x += q.vx * dt;
+      q.p.y -= 7 * (1 - 0.6 * WIND) * dt; q.p.x += (q.vx + WIND * 34) * dt;
       // 柔邊蒸氣：一邊上升一邊慢慢變大變淡（直徑約 4 → 12 像素）；方塊煙維持原本兩段大小
       if (q.soft) q.p.scale.set(0.25 + q.life * 0.22);
       else q.p.scale.set(q.life < 1.2 ? 1 : 2);
+      // 沙塵暴：煙被風拉長
+      if (WIND > 0.01) q.p.scale.x *= 1 + WIND * 0.9;
       q.p.alpha = Math.max(0, (q.soft ? 0.9 : 0.7) - q.life * (q.soft ? 0.34 : 0.28));
       if (q.life > 2.5) { q.p.destroy(); puffs.splice(i, 1); }
     }
