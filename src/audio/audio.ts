@@ -1,8 +1,9 @@
 // 錄好的曲目放在 music/ 資料夾（和 index.html 同一層，不包進單一檔案），需要時才下載；
 // 下載好之前（或找不到檔案時）先播程序化配樂，開始播放後才交叉淡入。
-const MUSIC_DIR = 'music/';
+// 入口網站版（CrazyGames 等）：音檔全部放在 index.html 旁邊、不分資料夾——上傳介面不一定保留資料夾結構
+const MUSIC_DIR = PORTAL_BUILD ? '' : 'music/';
 /** 台詞配音：放在 voice/ 資料夾，跟配樂一樣不包進單一檔案，播到那句才下載 */
-const VOICE_DIR = 'voice/';
+const VOICE_DIR = PORTAL_BUILD ? '' : 'voice/';
 
 /** 錄好的曲目：首頁主題曲、第 1～6 章配樂（通關後繼續播第 6 章） */
 const SONGS = { title: 'alien-sky.mp3', ch1: 'ch1.mp3', ch2: 'ch2.mp3', ch3: 'ch3.mp3', ch4: 'ch4.mp3', ch5: 'ch5.mp3', ch6: 'ch6.mp3' } as const;
@@ -13,6 +14,7 @@ type SongKey = keyof typeof SONGS;
 // 音樂：慢速的太空氛圍——長音 pad、低音、帶回音的琶音；章節不同調性，襲擊預警時加入低頻脈動。
 // 音效：採集、暴擊、建造、研究、通知、警報、槍聲、雷射、酸液、按鈕。
 import { create } from 'zustand';
+import { PORTAL_BUILD } from '../portal';
 
 const KEY = 'lastlight-colony-audio';
 interface AudioSettings { music: number; sfx: number; voice: number; muted: boolean }

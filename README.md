@@ -140,7 +140,7 @@ npm install
 npm run dev      # 開發伺服器
 npm run build    # 輸出 dist/index.html（單一檔案，含全部 JS/CSS）
 npm run package:viverse   # 打包成 VIVERSE 可上傳的 ZIP（release/，根目錄只有 index.html）
-npm run package:crazygames   # 入口網站版（VITE_PORTAL=crazygames → dist-crazygames/）：不送匿名數據、沒有隱私開關與 GitHub 連結，其他跟一般版一樣（src/portal.ts）
+npm run package:crazygames   # 入口網站版（VITE_PORTAL=crazygames → dist-crazygames/）：不送匿名數據、沒有隱私開關與 GitHub 連結；配樂與配音攤平放在 index.html 旁邊（CrazyGames 不收壓縮檔，拖曳上傳不一定保留資料夾），其他跟一般版一樣（src/portal.ts）
 npm run sim      # 數值模擬：貪婪策略玩完 MVP，列出各階段抵達時間
 npm run sim -- 0.15   # 參數＝按住點擊的時間比例（預設 0.5）
 ```
