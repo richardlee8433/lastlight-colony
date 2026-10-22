@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-crazygames/
 lastlight-colony-game.html
 tools/art-preview/art-preview.html
 tools/art-preview/local-test.html

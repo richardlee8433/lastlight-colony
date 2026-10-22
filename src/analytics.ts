@@ -4,6 +4,7 @@
 import type { GameState } from './engine/state';
 import { useSettings } from './i18n';
 import { VERSION } from './ui/Settings';
+import { PORTAL_BUILD } from './portal';
 
 const GA_ID = 'G-1E6L28ZG6Z';
 const HEARTBEAT = 600;   // 每玩 10 分鐘（遊戲時間）送一次「還在玩」
@@ -12,11 +13,12 @@ declare global { interface Window { dataLayer?: unknown[]; gtag?: (...a: unknown
 
 const allowedHost = () =>
   /^https?:$/.test(location.protocol) && !/claude|localhost|127\.0\.0\.1|^$/.test(location.hostname) && !navigator.webdriver;
-const on = () => allowedHost() && useSettings.getState().analytics;
+// 入口網站版完全不送（也不載入 GA）
+const on = () => !PORTAL_BUILD && allowedHost() && useSettings.getState().analytics;
 
 let loaded = false;
 function load() {
-  if (loaded || !on()) return;
+  if (PORTAL_BUILD || loaded || !on()) return;
   loaded = true;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() { window.dataLayer!.push(arguments); };

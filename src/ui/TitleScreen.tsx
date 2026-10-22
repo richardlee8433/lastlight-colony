@@ -1,6 +1,7 @@
 import { LangPicker } from './LangPicker';
 import { useEffect, useMemo, useState } from 'react';
 import { trackStart } from '../analytics';
+import { PORTAL_BUILD } from '../portal';
 import { useGame, game } from '../store/gameStore';
 import { CHAPTERS } from '../engine/story';
 import { dayOf } from '../engine/dialog';
@@ -88,7 +89,7 @@ export function TitleScreen() {
           </header>
           <p>{t('title.about')}</p>
           <p className="small">{t('set.aboutText', { v: VERSION })}</p>
-          <p className="small"><a href="https://github.com/richardlee8433/lastlight-colony" target="_blank" rel="noreferrer">github.com/richardlee8433/lastlight-colony</a></p>
+          {!PORTAL_BUILD && <p className="small"><a href="https://github.com/richardlee8433/lastlight-colony" target="_blank" rel="noreferrer">github.com/richardlee8433/lastlight-colony</a></p>}
           <button type="button" className="btn wide" onClick={() => setAbout(false)}>{t('ok')}</button>
         </Modal>
       )}

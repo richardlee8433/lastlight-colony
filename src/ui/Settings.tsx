@@ -7,6 +7,7 @@ import { t, useLang, useSettings } from '../i18n';
 import { fmtTime } from './common';
 import { Modal } from './Modals';
 import { sfx, useAudio } from '../audio/audio';
+import { PORTAL_BUILD } from '../portal';
 
 export const VERSION = '0.70.3';
 
@@ -87,11 +88,12 @@ export function Settings() {
             <p className="muted small">{t('set.weatherHint')}</p>
           </section>
 
-          <section className="block">
+          {/* 入口網站版不送匿名數據，隱私開關也不顯示 */}
+          {!PORTAL_BUILD && <section className="block">
             <h3>{t('set.privacy')}</h3>
             <label className="check"><input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} /> {t('set.analytics')}</label>
             <p className="muted small">{t('set.analyticsHint')}</p>
-          </section>
+          </section>}
 
           <section className="block">
             <h3>{t('set.save')}</h3>
@@ -120,7 +122,7 @@ export function Settings() {
           <section className="block about">
             <h3>{t('set.about')}</h3>
             <p className="small">{t('set.aboutText', { v: VERSION })}</p>
-            <p className="small"><a href="https://github.com/richardlee8433/lastlight-colony" target="_blank" rel="noreferrer">github.com/richardlee8433/lastlight-colony</a></p>
+            {!PORTAL_BUILD && <p className="small"><a href="https://github.com/richardlee8433/lastlight-colony" target="_blank" rel="noreferrer">github.com/richardlee8433/lastlight-colony</a></p>}
           </section>
         </Modal>
       )}
