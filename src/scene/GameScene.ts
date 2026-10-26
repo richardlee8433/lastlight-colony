@@ -12,6 +12,7 @@ import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, canvasFont, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 import { PAINTED_ICONS } from '../ui/assets';
+import { isMobile } from '../ui/mobile';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
 /** 對話泡泡的小圖示（像素圖，每行一列，# 是深色、. 是空白）：…、愛心、！、？、音符、笑 */
@@ -92,6 +93,7 @@ export class GameScene {
   bits: { x: number; y: number; vx: number; vy: number; t: number; d: number; r: number; c: number; smoke?: boolean }[] = [];
   flashes: { x: number; y: number; t: number; d: number; r: number }[] = [];
   mTarget: string | null = null; mNext = 0; shake = 0; smokeNext = 0;
+  tapHand: Text | null = null;
   ambient: any = null;
   props: any[] = [];
   views = new Map<string, View>();
@@ -547,6 +549,22 @@ export class GameScene {
     const [cx, cy] = this.toScreen(v.x, v.y - b.art.ay / 2);
     this.fx.burst(cx, cy, RES[r.res].color, r.crit ? 14 : 4);
     if (r.crit) b.flash();
+  }
+
+  /** 手機（v0.70.4）：第 1 章還沒手動採集過時，殘骸堆的採集按鈕下面有一隻上下擺動的手指，取代開場的操作說明 */
+  tapHint() {
+    const s = game.s, v = [...this.views.values()].find((x) => x.bid === 'scrap_heap');
+    const pl: any = v?.plate;
+    const on = !!pl && pl.isCard && s.stage === 1 && (s.stats?.clicks ?? 0) === 0 && !gamePaused() && isMobile();
+    if (!on) { if (this.tapHand) this.tapHand.visible = false; return; }
+    if (!this.tapHand) {
+      this.tapHand = new Text({ text: '👆', style: { fontSize: 34 } });
+      this.tapHand.anchor.set(0.5, 0); this.tapHand.eventMode = 'none';
+      this.hud.addChild(this.tapHand);
+    }
+    const h = this.tapHand, Z = this.Z;
+    h.visible = true; h.zIndex = 1e6;
+    h.position.set(pl.x + (pl.pw * Z) / 2, pl.y + pl.ph * Z + 4 + Math.abs(Math.sin(performance.now() / 260)) * 10);
   }
 
   /** 名稱牌與採集卡防重疊：優先度高的（展開中、採集卡）先放，其餘遇到重疊就往上錯開 */
@@ -1508,6 +1526,7 @@ export class GameScene {
       }
     }
     this.resolveLabels(labels);
+    this.tapHint();
     for (const w of this.walkers) this.moveWalker(w, dt);
     this.moveAliens(dt);
     this.moveDefenders(dt);

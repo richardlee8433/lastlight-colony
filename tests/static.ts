@@ -418,9 +418,13 @@ check('S21', '科技樹（v0.70.2）：19 項、沒有精準操作；強化手�
 });
 
 
-check('S22', '離線時人口不增加（新來的人只會閒置、多耗氧耗糧）；上線時照常增加', () => {
+check('S22', '離線時人口不增加（新來的人只會閒置、多耗氧耗糧）；上線時照常增加；第 1 章一直是三個人', () => {
   const errs: string[] = [];
-  const s = newGame(0); s.res.nutrient = 5000; s.res.oxygen = 5000; s.air!.elapsed = 0;
+  // 第 1 章：逃生艙住得下 4 人，但沒有人會抵達
+  const c1 = newGame(0); c1.res.nutrient = 5000; c1.res.oxygen = 5000; c1.b.emergency_camp.level = 1;
+  for (let i = 0; i < 5 * 600; i++) step(c1);
+  if (c1.pop !== 3) errs.push(`第 1 章玩 10 分鐘人口變成 ${c1.pop}（應該一直是 3）`);
+  const s = newGame(0); s.stage = 2; s.res.nutrient = 5000; s.res.oxygen = 5000; s.air!.elapsed = 0;
   if (!(s.pop < popCap(s))) return '測試前提不成立：人口已滿';
   const p0 = s.pop, r = applyOffline(s, 1800);
   if (s.pop !== p0 || r?.pop) errs.push(`離線 30 分鐘人口從 ${p0} 變成 ${s.pop}`);

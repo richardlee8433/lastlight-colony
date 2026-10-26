@@ -9,7 +9,7 @@ import { Modal } from './Modals';
 import { sfx, useAudio } from '../audio/audio';
 import { PORTAL_BUILD } from '../portal';
 
-export const VERSION = '0.70.3';
+export const VERSION = '0.70.4';
 
 // 設定頁：語言、存檔、重新開始、關於
 export function Settings() {

@@ -7,6 +7,10 @@ import { sceneLine, t, useLang } from '../i18n';
 import { sfx, playVoice } from '../audio/audio';
 import { voiceFile } from '../data/voices';
 import { lineMood } from '../data/moods';
+import { isMobile } from './mobile';
+
+/** 手機（v0.70.4）上略過的台詞（原始編號）：第一段對話從 6 句縮成 4 句，早點開始玩 */
+const MOBILE_SKIP: Record<string, number[]> = { 'c1-open': [1, 2] };
 
 const CPS = { zh: 28, en: 55 };   // 每秒打出幾個字
 
@@ -23,7 +27,8 @@ export function Dialog() {
 function Scene({ id, day }: { id: string; day: number }) {
   const lang = useLang(), act = useGame.getState();
   // 只播符合目前路線的台詞（第 5～6 章的分支）
-  const lines = SCENES[id].lines.filter((l) => lineOk(game.s, l[3]));
+  const [skip] = useState(() => (isMobile() ? MOBILE_SKIP[id] ?? [] : []));
+  const lines = SCENES[id].lines.filter((l, k) => lineOk(game.s, l[3]) && !skip.includes(k));
   const [i, setI] = useState(0), [shown, setShown] = useState(0);
   const [who] = lines[i];
   // 原始台詞編號（路線過濾掉的不影響）：翻譯與配音都用它對應

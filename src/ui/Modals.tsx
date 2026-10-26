@@ -10,6 +10,7 @@ import { playVoice } from '../audio/audio';
 import { introVoiceFile } from '../data/voices';
 import { mods, shipReady } from '../engine/ship';
 import { shipLabel } from './ShipPanel';
+import { useMobile } from './mobile';
 
 export function Modal({ children, label, className = '', pause = true }: { children: React.ReactNode; label: string; className?: string; pause?: boolean }) {
   // 訊息視窗開著時遊戲暫停；pause=false 的視窗（例如科技樹）開著時時間照常走
@@ -68,8 +69,7 @@ export function Modals() {
         <p className="eyebrow">{t('ch.n', { n: ch.chapter })}</p>
         <h2>{tx.title}<small>{tx.subtitle}</small></h2>
         <IntroVoice chapter={ch.chapter} />
-        {tx.intro.map((p) => <p key={p}>{p}</p>)}
-        {ch.chapter === 1 && <p className="hint">{t('intro.hint')}</p>}
+        <IntroText paras={tx.intro} hint={ch.chapter === 1} />
         <button type="button" className="btn wide" onClick={act.seenIntro}>{t(ch.chapter === 1 ? 'intro.start' : 'intro.next')}</button>
       </Modal>
     );
@@ -170,6 +170,18 @@ export function Modals() {
     );
   }
   return null;
+}
+
+/** 章節開場說明的內文。手機（v0.70.4）只先顯示第一段，其餘按「看更多」才展開；操作說明改由地圖上的手指提示 */
+function IntroText({ paras, hint }: { paras: string[]; hint: boolean }) {
+  const mobile = useMobile(), [more, setMore] = useState(false);
+  if (!mobile) return <>{paras.map((p) => <p key={p}>{p}</p>)}{hint && <p className="hint">{t('intro.hint')}</p>}</>;
+  return (
+    <>
+      {(more ? paras : paras.slice(0, 1)).map((p) => <p key={p}>{p}</p>)}
+      {!more && paras.length > 1 && <button type="button" className="linkish" onClick={() => setMore(true)}>{t('ui.more')} ▾</button>}
+    </>
+  );
 }
 
 /** 章節開場說明出現時播旁白配音（有錄的章才有），按開始、關掉就停 */

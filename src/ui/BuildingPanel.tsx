@@ -11,12 +11,15 @@ import { weaponShare, weaponRatio } from '../engine/formulas';
 import { CostList, Icon, Bar, fmt, fmtTime } from './common';
 import { buildingURL } from './assets';
 import { ShipPanel } from './ShipPanel';
+import { useMobile } from './mobile';
 import { EXP_TEAM, EXP_TIME, FRAGS_PER_BP, expBlock, fragChance, nextBlueprint } from '../engine/expedition';
 
 export function BuildingPanel() {
   useGame((st) => st.v);
   const id = useGame((st) => st.selected);
   const act = useGame.getState();
+  // 手機：說明文字收起來，先看到工人 −／＋、產量與升級（hook 要在提早 return 之前）
+  const mobile = useMobile();
   if (!id) return null;
   const s = game.s, d = DEF[id], b = s.b[id], L = b.level;
   const isCmd = d.kind === 'command';
@@ -33,7 +36,9 @@ export function BuildingPanel() {
         </div>
         <button type="button" className="close" onClick={() => act.select(null)} aria-label={t('close')}>×</button>
       </header>
-      <p className="desc">{bDesc(id)}</p>
+      {mobile
+        ? <details className="desc-more"><summary>{t('ui.more')}</summary><p className="desc">{bDesc(id)}</p></details>
+        : <p className="desc">{bDesc(id)}</p>}
       {L > 0 && disabled(s, id) && <div className="banner warn">{t('bp.damaged', { n: Math.ceil(b.disabledUntil - s.t) })}</div>}
 
       {L > 0 && d.workersPerLevel ? (

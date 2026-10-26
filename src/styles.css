@@ -89,6 +89,19 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 
 /* 殖民地狀態 */
 .colony { position: absolute; left: 8px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); width: 230px; padding: 10px 12px; z-index: 3; display: grid; gap: 6px; }
+/* 手機（v0.70.4）：殖民地面板收成一條膠囊，點一下展開 */
+.colony-chip { position: absolute; left: 8px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 3; display: flex; align-items: center; gap: 10px; padding: 7px 10px; font: inherit; font-size: 13px; color: inherit; cursor: pointer; font-variant-numeric: tabular-nums; max-width: calc(100% - 16px); }
+.colony-chip b { font-size: 14px; }
+.colony-chip small { color: var(--muted); }
+.colony-chip .hl { color: var(--trim); }
+.colony-chip .warn { color: var(--warn, #ffb347); white-space: nowrap; }
+.colony-chip i { font-style: normal; color: var(--muted); font-size: 11px; }
+.colony-chip.urgent { box-shadow: 0 0 0 2px #e0484a, 0 0 16px rgba(224, 72, 74, 0.6); animation: chipPulse 1.2s ease-in-out infinite; }
+@keyframes chipPulse { 50% { box-shadow: 0 0 0 2px #e0484a, 0 0 4px rgba(224, 72, 74, 0.2); } }
+@media (prefers-reduced-motion: reduce) { .colony-chip.urgent { animation: none; } }
+/* 手機：建築說明與開場說明的「看更多」 */
+.desc-more summary { cursor: pointer; color: var(--muted); font-size: 13px; padding: 2px 0 6px; }
+.linkish { appearance: none; background: none; border: 0; padding: 0; font: inherit; font-size: 14px; color: #b9a4ff; cursor: pointer; justify-self: start; }
 .colony .row { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
 .colony .row b { font-size: 15px; }
 .colony .row b.hl { color: var(--trim); }
@@ -252,6 +265,10 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
   .res { min-width: 86px; }
   .quest { top: calc(62px + env(safe-area-inset-top, 0px)); width: calc(100% - 16px); }
   .colony { width: 190px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); padding: 8px 10px; }
+  .colony-chip { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  /* 建築面板：佔下半畫面就好，上半部還看得到建築；圖示縮小 */
+  .panel { max-height: 50%; }
+  .panel .panel-head img { width: 48px; height: 48px; }
   .panel { left: 8px; right: 8px; width: auto; top: auto; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); max-height: 58%; }
   .qb { width: 48px; height: 48px; }
 }
@@ -434,6 +451,11 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
   .dlg-box p { font-size: 14.5px; min-height: 3.2em; }
   .dlg-name { left: 154px; }
   .colony { max-height: calc(100% - 150px); overflow-y: auto; }
+}
+/* 橫式手機（v0.70.4）：任務清單太長時自己捲動，不要往下蓋到殖民地膠囊 */
+@media (max-height: 500px) {
+  .quest ul { max-height: calc(100vh - 190px); overflow-y: auto; }
+  .colony-chip { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 }
 /* 船塢：六個模組 */
 .ship h3 { margin: 0 0 6px; }

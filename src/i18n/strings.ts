@@ -425,6 +425,8 @@ export const STRINGS: Record<string, [string, string]> = {
   'off.ok': ['Collect', '收下'],
   'intro.hint': ['Controls: hold the resource button above a building to collect by hand, and use − / + below it to send idle colonists to work. Tap a building for upgrades and details. Drag the ground to move the view.', '操作：按住建築上方的資源按鈕可以手動採集，用下方的 − ／ + 派閒置的殖民者去工作。點建築本身可以看升級與詳細資訊。拖曳地面可以移動視角。'],
   'intro.start': ['Begin', '開始'],
+  // 手機版（v0.70.4）：開場說明與建築說明預設收起來
+  'ui.more': ['Read more', '看更多'],
   'intro.next': ['Continue', '繼續'],
   'fin.eyebrow': ['Finale', '終章'],
   'fin.title': ['Someone knocked', '有人來敲門了'],

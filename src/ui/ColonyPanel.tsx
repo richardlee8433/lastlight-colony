@@ -1,7 +1,8 @@
 import { useGame, game } from '../store/gameStore';
 import { arrivalInterval, foodSafety, hurtCivilians, idle, moraleMult, netRates, popCap, rescueWorkers } from '../engine/formulas';
 import { Bar, fmtTime } from './common';
-import { t } from '../i18n';
+import { resName, t } from '../i18n';
+import { useMobile, useMobilePanel } from './mobile';
 import { AIR_ENABLED } from '../engine/state';
 import { COLLAPSE_EVERY, HYPOXIA_FAIL, HYPOXIA_GRACE, LIFE_SUPPORT, airSafety, lifeSupportLeft, lifeSupportRate } from '../engine/air';
 
@@ -12,8 +13,26 @@ export function ColonyPanel() {
   const eta = full || s.starving ? null : (1 - s.arrival) * arrivalInterval(s);
   const rates = netRates(s), food = rates.nutrient, oxy = rates.oxygen, as = airSafety(s), a = s.air;
   const ls = lifeSupportLeft(s);
+  const mobile = useMobile(), panel = useMobilePanel();
+  // 手機：平常收成一條膠囊（人口・閒置・最急的警告），點一下才展開完整面板
+  if (mobile && panel.open !== 'colony') {
+    const warn = AIR_ENABLED && a.hypoxic ? `${resName('oxygen')} 0`
+      : s.starving ? `${resName('nutrient')} 0`
+      : AIR_ENABLED && oxy < -0.01 ? `${resName('oxygen')} ${fmtTime(s.res.oxygen / -oxy)}`
+      : food < -0.01 ? `${resName('nutrient')} ${fmtTime(s.res.nutrient / -food)}`
+      : AIR_ENABLED && ls > 0 && ls < 120 ? fmtTime(ls) : '';
+    const urgent = (AIR_ENABLED && a.hypoxic) || s.starving;
+    return (
+      <button type="button" className={'colony-chip px' + (urgent ? ' urgent' : '')} onClick={() => panel.toggle('colony')} aria-expanded={false} aria-label={t('cp.colonists')}>
+        <span>👥 <b>{s.pop}</b><small>/{cap}</small></span>
+        {idle(s) > 0 && <span className="hl">{t('cp.idle')} {idle(s)}</span>}
+        {warn && <span className="warn">⚠ {warn}</span>}
+        <i aria-hidden="true">▴</i>
+      </button>
+    );
+  }
   return (
-    <div className="colony px">
+    <div className="colony px" onClick={mobile ? () => panel.toggle('colony') : undefined}>
       <div className="row"><span>{t('cp.colonists')}</span><b>{s.pop}<small>/{cap}</small></b></div>
       <div className="row"><span>{t('cp.idle')}</span><b className={idle(s) > 0 ? 'hl' : ''}>{idle(s)}</b></div>
       {hurtCivilians(s) > 0 && <div className="row"><span>{t('cp.hurt')}</span><b className="warn">{hurtCivilians(s)}</b></div>}
@@ -36,8 +55,8 @@ export function ColonyPanel() {
       {!s.starving && food < -0.01 && (
         <div className="arrival"><span className="warn">{t('cp.foodOut', { n: food.toFixed(1), t: fmtTime(s.res.nutrient / -food) })}</span></div>
       )}
-      {/* 人口已滿的提示要蓋生活艙；生活艙還沒解鎖（第 1 章）時不顯示 */}
-      {(s.starving || !full || s.stage >= 2) && (
+      {/* 人口已滿的提示要蓋生活艙；第 1 章不會有人抵達（只有逃生艙的三個人），下一位殖民者與人口已滿都不顯示 */}
+      {(s.starving || s.stage >= 2) && (
         <div className="arrival">
           {s.starving ? <span className="warn">{s.starveTime < 60 ? t('cp.starve1', { n: Math.floor(s.starveTime), m: Math.ceil(60 - s.starveTime) }) : t('cp.starve2')}</span>
             : full ? <span className="muted">{t('cp.full')}</span>

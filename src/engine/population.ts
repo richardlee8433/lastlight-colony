@@ -26,7 +26,8 @@ export function population(s: GameState, dt: number, quiet = false) {
   }
   const cap = popCap(s);
   // 離線時人口不增加：新來的人只會閒置，人多了耗氧耗糧，產量卻沒變（等玩家回來再分派）
-  if (!s.starving && s.pop < cap && !quiet) {
+  // 第 1 章只有逃生艙裡的三個人：其他艙的倖存者第 2 章才會找到殖民地（v0.70.4）
+  if (!s.starving && s.pop < cap && !quiet && s.stage >= 2) {
     s.arrival += dt / arrivalInterval(s);
     if (s.arrival >= 1) {
       s.arrival = 0; s.pop += 1;
