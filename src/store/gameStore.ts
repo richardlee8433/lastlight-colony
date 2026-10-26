@@ -1,5 +1,6 @@
 // Zustand store：遊戲狀態本身是可變物件（引擎直接修改），store 只用版本號通知 React 重繪。
 import { create } from 'zustand';
+import { PORTAL_BUILD } from '../portal';
 import { observe } from '../analytics';
 import { AIR_ENABLED, DEF, DEFS, GameState, makeCheckpoint, newAir, newCargo, newGame, newGov, newMarket, newRaid, notify } from '../engine/state';
 import { LIFE_SUPPORT } from '../engine/air';
@@ -244,7 +245,8 @@ export const useGame = create<Store>((set, get) => {
     expedition: () => run((s) => startExpedition(s)),
     dialogNext: () => run((s) => { s.story.queue?.shift(); }),
     journal: false,
-    title: true,
+    // 入口網站版（CrazyGames）：按平台的 Play 就直接進遊戲，不顯示遊戲自己的首頁（語言在設定頁切換）
+    title: !PORTAL_BUILD,
     closeTitle: () => set({ title: false }),
     settings: false,
     openSettings: (o) => set({ settings: o }),

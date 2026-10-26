@@ -48,7 +48,7 @@ const hz = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 
 class Engine {
   ctx: AudioContext | null = null;
-  master!: GainNode; music!: GainNode; sfx!: GainNode; voice!: GainNode; duck!: GainNode; voiceEl: HTMLAudioElement | null = null; delay!: DelayNode; noiseBuf!: AudioBuffer;
+  master!: GainNode; music!: GainNode; sfx!: GainNode; voice!: GainNode; duck!: GainNode; voiceEl: HTMLAudioElement | null = null; pendingVoice: string | null = null; delay!: DelayNode; noiseBuf!: AudioBuffer;
   mood: MusicMood = { stage: 1, raid: false, finished: false };
   private nextBar = 0; private bar = 0; private timer: number | null = null;
   /** 首頁開著時播首頁主題曲（Alien Sky）；第 1～6 章播錄好的配樂（CHAPTER_SONG，通關後繼續播第 6 章）；音樂還沒開始播時用程序化配樂。切換時交叉淡入淡出 */
@@ -90,6 +90,7 @@ class Engine {
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     this.applyVolume();
     this.updateTrack();
+    if (this.pendingVoice) { const f = this.pendingVoice; this.pendingVoice = null; setTimeout(() => this.playVoice(f), 0); }
     this.nextBar = ctx.currentTime + 0.1;
     this.timer = window.setInterval(() => this.schedule(), 200);
   }
@@ -132,6 +133,8 @@ class Engine {
   playVoice(file: string | null) {
     if (this.voiceEl) { this.voiceEl.pause(); this.voiceEl = null; }
     if (this.ctx) this.duck.gain.setTargetAtTime(1, this.ctx.currentTime, 0.4);
+    // 還沒互動過（瀏覽器不讓出聲）：先記著，第一次點擊解鎖後再播（例如入口網站版跳過首頁，開場旁白一出現就要播）
+    this.pendingVoice = this.ctx ? null : file;
     if (!file || !this.ctx) return;
     const el = new Audio(VOICE_DIR + file);
     this.ctx.createMediaElementSource(el).connect(this.voice);
