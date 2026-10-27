@@ -2,7 +2,7 @@ import { useGame, game } from '../store/gameStore';
 import { arrivalInterval, foodSafety, hurtCivilians, idle, moraleMult, netRates, popCap, rescueWorkers } from '../engine/formulas';
 import { Bar, fmtTime } from './common';
 import { resName, t } from '../i18n';
-import { useMobile, useMobilePanel } from './mobile';
+import { useMobile, useMobilePanel, useShort } from './mobile';
 import { AIR_ENABLED } from '../engine/state';
 import { COLLAPSE_EVERY, HYPOXIA_FAIL, HYPOXIA_GRACE, LIFE_SUPPORT, airSafety, lifeSupportLeft, lifeSupportRate } from '../engine/air';
 
@@ -13,9 +13,12 @@ export function ColonyPanel() {
   const eta = full || s.starving ? null : (1 - s.arrival) * arrivalInterval(s);
   const rates = netRates(s), food = rates.nutrient, oxy = rates.oxygen, as = airSafety(s), a = s.air;
   const ls = lifeSupportLeft(s);
-  const mobile = useMobile(), panel = useMobilePanel();
-  // 手機：平常收成一條膠囊（人口・閒置・最急的警告），點一下才展開完整面板
-  if (mobile && panel.open !== 'colony') {
+  // 第 1 章只有逃生艙的三個人、不會有人抵達：不顯示住房上限（「3/4」看起來像還有一個人會來）
+  const capText = s.stage >= 2 ? `/${cap}` : '';
+  const mobile = useMobile(), short = useShort(), panel = useMobilePanel();
+  // 手機：平常收成一條膠囊（人口・閒置・最急的警告），點一下才展開完整面板。
+  // 矮畫面的電腦版：平常完整顯示，任務清單展開時才暫時收成膠囊（不然兩個疊在一起）
+  if ((mobile && panel.open !== 'colony') || (!mobile && short && panel.open === 'quest')) {
     const warn = AIR_ENABLED && a.hypoxic ? `${resName('oxygen')} 0`
       : s.starving ? `${resName('nutrient')} 0`
       : AIR_ENABLED && oxy < -0.01 ? `${resName('oxygen')} ${fmtTime(s.res.oxygen / -oxy)}`
@@ -24,7 +27,7 @@ export function ColonyPanel() {
     const urgent = (AIR_ENABLED && a.hypoxic) || s.starving;
     return (
       <button type="button" className={'colony-chip px' + (urgent ? ' urgent' : '')} onClick={() => panel.toggle('colony')} aria-expanded={false} aria-label={t('cp.colonists')}>
-        <span>👥 <b>{s.pop}</b><small>/{cap}</small></span>
+        <span>👥 <b>{s.pop}</b><small>{capText}</small></span>
         {idle(s) > 0 && <span className="hl">{t('cp.idle')} {idle(s)}</span>}
         {warn && <span className="warn">⚠ {warn}</span>}
         <i aria-hidden="true">▴</i>
@@ -33,7 +36,7 @@ export function ColonyPanel() {
   }
   return (
     <div className="colony px" onClick={mobile ? () => panel.toggle('colony') : undefined}>
-      <div className="row"><span>{t('cp.colonists')}</span><b>{s.pop}<small>/{cap}</small></b></div>
+      <div className="row"><span>{t('cp.colonists')}</span><b>{s.pop}<small>{capText}</small></b></div>
       <div className="row"><span>{t('cp.idle')}</span><b className={idle(s) > 0 ? 'hl' : ''}>{idle(s)}</b></div>
       {hurtCivilians(s) > 0 && <div className="row"><span>{t('cp.hurt')}</span><b className="warn">{hurtCivilians(s)}</b></div>}
       {rescueWorkers(s) > 0 && <div className="row"><span>{t('cp.rescue')}</span><b>{rescueWorkers(s)}</b></div>}

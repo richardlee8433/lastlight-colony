@@ -3,15 +3,16 @@ import { useGame, game } from '../store/gameStore';
 import { CHAPTERS, currentChapter, goalDone, goalVisible } from '../engine/story';
 import { endingChapter } from '../engine/dialog';
 import { chapterText, t } from '../i18n';
-import { useMobile, useMobilePanel } from './mobile';
+import { useMobile, useMobilePanel, useShort } from './mobile';
 
 export function QuestLog() {
   useGame((st) => st.v);
   const [own, setOwn] = useState(() => window.innerWidth > 640 && window.innerHeight > 640);
   // 手機：任務欄和殖民地面板同時只展開一個（橫式時兩個疊在一起會蓋住彼此）
-  const mobile = useMobile(), panel = useMobilePanel();
-  const open = mobile ? panel.open === 'quest' : own;
-  const setOpen = (v: boolean) => (mobile ? panel.toggle('quest') : setOwn(v));
+  const mobile = useMobile(), short = useShort(), panel = useMobilePanel();
+  const shared = mobile || short;   // 手機與矮畫面：跟殖民地面板共用「同時只展開一個」
+  const open = shared ? panel.open === 'quest' : own;
+  const setOpen = (v: boolean) => (shared ? panel.toggle('quest') : setOwn(v));
   const s = game.s, ending = endingChapter(s);
   // 章末對話還沒播完：任務欄繼續顯示剛結束的那一章（標成完成），播完才換到下一章
   const closing = ending < Math.min(s.stage, CHAPTERS.length);
