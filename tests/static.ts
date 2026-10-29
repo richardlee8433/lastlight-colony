@@ -31,6 +31,7 @@ import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
 import { PACKS } from '../src/i18n/locales';
 import { MOOD_TABLES } from '../src/data/moods';
 import { ch1Hint } from '../src/ui/tutorial';
+import { raidFor, combat, SIEGE_GAP, SIEGE_EXTRA } from '../src/engine/combat';
 import { existsSync } from 'fs';
 
 const results: { id: string; name: string; ok: boolean; info: string }[] = [];
@@ -525,6 +526,24 @@ check('S25', '第 1 章引導（v0.70.8）：手指依序指向殘骸堆 → 快
   want('o2_scrubber', null, '蓋好之後');
   const s2 = newGame(0); s2.stage = 2;
   if (ch1Hint(s2, null) !== null) errs.push('第 2 章不應該有引導');
+  return errs;
+});
+
+check('S26', '第 6 章抵抗路線：每次襲擊都是突擊隊、人數 +2，下一次襲擊最晚 5 分鐘內；合作路線與第 5 章不變', () => {
+  const errs: string[] = [];
+  const mk = (route: 'resist' | 'coop', stage: number) => {
+    const s = newGame(0); s.stage = stage; s.story.route = route; s.raid.won = 5; s.raid.count = 4; s.gov.corp.refusals = 3; return s;
+  };
+  const r6 = raidFor(mk('resist', 6)), c6 = raidFor(mk('coop', 6)), r5 = raidFor(mk('resist', 5));
+  if (r6.kind !== 'commando') errs.push('第 6 章抵抗路線偶數次襲擊應該也是突擊隊：' + r6.kind);
+  if (r6.enemies !== c6.enemies + SIEGE_EXTRA) errs.push(`人數應該比合作路線多 ${SIEGE_EXTRA}：${r6.enemies} vs ${c6.enemies}`);
+  if (r5.kind !== 'alien' || r5.enemies !== c6.enemies) errs.push('第 5 章抵抗路線不應該受影響：' + JSON.stringify(r5));
+  const s = mk('resist', 6); s.raid.nextAt = s.t + 2000;
+  combat(s, false, () => 0.5);
+  if (s.raid.nextAt > s.t + SIEGE_GAP[1] + 0.01) errs.push('第 5 章排好的下一次襲擊應該提前到 5 分鐘內：' + (s.raid.nextAt - s.t));
+  const c = mk('coop', 6); c.raid.nextAt = c.t + 2000;
+  combat(c, false, () => 0.5);
+  if (c.raid.nextAt !== c.t + 2000) errs.push('合作路線不應該提前襲擊');
   return errs;
 });
 

@@ -10,6 +10,11 @@ export const FIRST_RAID = 480;      // （舊存檔用）進入階段 4 後幾�
 export const SYNTH_RAID = 120;
 export const RAID_GAP: [number, number] = [360, 540];
 export const WARNING = 60;
+/** 第 6 章抵抗路線：赫利昂全力圍攻，每次都是突擊隊、間隔 3～5 分鐘（第 5 章排好的下一次也提前到 5 分鐘內）、人數 +2 */
+export const SIEGE_GAP: [number, number] = [180, 300];
+export const SIEGE_EXTRA = 2;
+export const siege = (s: GameState) => s.story.route === 'resist' && s.stage >= 6;
+const nextGap = (s: GameState, rng: () => number) => { const g = siege(s) ? SIEGE_GAP : RAID_GAP; return g[0] + rng() * (g[1] - g[0]); };
 export const INJURY = 180;
 
 /** 醫療艙：每級 2 張病床（加護病床 +1/級）；躺在病床上的傷員，每位醫護員讓復原速度 +60%（自動診斷再 ×1.5） */
@@ -98,11 +103,11 @@ export const enemyStats = (n: number) => ({ enemies: 3 + 2 * n, atk: 2 * Math.po
 export function raidFor(s: GameState) {
   const e = enemyStats(s.raid.won);
   if (s.stage < 5) return { ...e, kind: 'alien' as const };
-  const commando = s.gov.corp.refusals >= 3 && s.raid.count % 2 === 1;
+  const commando = siege(s) || (s.gov.corp.refusals >= 3 && s.raid.count % 2 === 1);
   const m = commando ? 1.5 : 1;
   // 強度從階段 5 重新起算（假設階段 4 大約擊退 3 次）：3 隻起跳，每次擊退 +1、數值 ×1.1
   const n = Math.max(0, s.raid.won - 3);
-  return { enemies: 3 + n, atk: 5 * Math.pow(1.1, n) * m, hp: 18 * Math.pow(1.1, n) * m, kind: commando ? ('commando' as const) : ('alien' as const) };
+  return { enemies: 3 + n + (siege(s) ? SIEGE_EXTRA : 0), atk: 5 * Math.pow(1.1, n) * m, hp: 18 * Math.pow(1.1, n) * m, kind: commando ? ('commando' as const) : ('alien' as const) };
 }
 export const turrets = (s: GameState) => (built(s, 'turret') ? s.b.turret.level : 0);
 export const turretAtk = (s: GameState) => 8 + researchEffect(s, 'turretAtk');
@@ -139,6 +144,7 @@ export function combat(s: GameState, offline = false, rng = Math.random, dt = 0.
     if (r.count === 0 && !built(s, 'crystal_synth')) return;
     r.nextAt = s.t + (r.count === 0 ? SYNTH_RAID : FIRST_RAID);
   }
+  if (siege(s) && !r.incoming && r.nextAt > s.t + SIEGE_GAP[1]) r.nextAt = s.t + SIEGE_GAP[1];
   if (offline) { if (r.nextAt < s.t + WARNING + 30) r.nextAt = s.t + WARNING + 30; r.incoming = null; return; }
   // 異晶極光的夜晚：微光獸都在看天空，不會來襲（延到極光結束後）
   const w = s.weather;
@@ -161,7 +167,7 @@ function fight(s: GameState, rng: () => number) {
     r.count++; r.won++; s.story.corpHelp = (s.story.corpHelp ?? 0) + 1;
     notify(s, 'n.corpHelp', undefined, 'good');
     r.report = { won: true, raid: r.count, enemies: inc.enemies, guards: 0, armed: 0, turrets: 0, kind: inc.kind ?? 'alien', rounds: [], injured: 0, civHurt: 0, lines: [msg('l.corpHelp')] };
-    r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
+    r.nextAt = s.t + nextGap(s, rng);
     return;
   }
   r.incoming = null;
@@ -226,5 +232,5 @@ function fight(s: GameState, rng: () => number) {
     notify(s, 'tip.medTitle', undefined, 'info');
   }
   r.report = { won, raid: r.count, enemies: inc.enemies, guards: ready, armed: armedReady, turrets: nt, kind: inc.kind ?? 'alien', rounds, injured: down, civHurt: civ, lines };
-  r.nextAt = s.t + RAID_GAP[0] + rng() * (RAID_GAP[1] - RAID_GAP[0]);
+  r.nextAt = s.t + nextGap(s, rng);
 }
