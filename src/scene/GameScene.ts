@@ -5,6 +5,7 @@ import {
   createAmbient, createFx, createPixelSprite, renderPanel, renderIcon, pixelTexture, tierOf, createAlien, createCommando, createMarine, setNight, setWind, loadSprites, hasTerrain, setCharZoom,
 } from '../art/art.js';
 import { game, gamePaused, useGame } from '../store/gameStore';
+import { TICK } from '../engine/tick';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { artId, buffActive, built, disabled, idle, retired, workerCap } from '../engine/formulas';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
@@ -669,7 +670,7 @@ export class GameScene {
   }
   moveDefenders(dt: number) {
     const inc = game.s.raid?.incoming;
-    const p0 = inc ? 1 - (inc.at - game.s.t) / WARNING : 1;
+    const p0 = inc ? 1 - (inc.at - this.raidT) / WARNING : 1;
     for (const d of [...this.defenders]) {
       let p: number;
       if (d.back != null) {
@@ -989,7 +990,7 @@ export class GameScene {
     }
     const inc = game.s.raid?.incoming;
     if (!inc) return;
-    const p0 = 1 - (inc.at - game.s.t) / WARNING;
+    const p0 = 1 - (inc.at - this.raidT) / WARNING;
     for (const a of this.aliens) {
       const p = Math.max(0, Math.min(1, (p0 - a.lag) / (1 - a.lag)));
       const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
@@ -1145,6 +1146,7 @@ export class GameScene {
   dayP = 0.2;
   visT: number | null = null;
   visDt = 0;
+  raidT = 0;
   /** 作息（純畫面）：白天工作、傍晚去休閒艙、晚上回生活艙睡覺、清晨出門。jit 讓每個人出發時間錯開 */
   schedule(jit: number): 'work' | 'evening' | 'night' {
     const p = (this.dayP - jit + 1) % 1;
@@ -1569,6 +1571,10 @@ export class GameScene {
     this.resolveLabels(labels);
     this.tapHint();
     for (const w of this.walkers) this.moveWalker(w, dt);
+    // 襲擊動畫用的時鐘：game.s.t 只在 tick（每 0.2 秒）前進，直接用會讓陸戰隊和敵群一格一格跳；
+    // 每幀照經過時間往前推，夾在 game.s.t 與下一個 tick 之間（暫停時 dt 是 0，不會跑到前面去）
+    const gt = game.s.t;
+    this.raidT = Math.min(gt + TICK, Math.max(gt, this.raidT + dt));
     this.moveAliens(dt);
     this.moveDefenders(dt);
     this.movePatrols(dt);
