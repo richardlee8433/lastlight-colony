@@ -6,4 +6,6 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
   build: { chunkSizeWarningLimit: 4000 },
+  // 輸出純 ASCII（中文等字元寫成 \uXXXX）：有些平台（例如 CrazyGames）處理上傳檔時會把多位元組的 UTF-8 字元切壞，變成「���」
+  esbuild: { charset: 'ascii' },
 });

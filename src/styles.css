@@ -64,9 +64,13 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 
 /* 資源列 */
 .topbar {
-  position: absolute; top: calc(8px + env(safe-area-inset-top, 0px)); left: 290px; right: 52px; margin-inline: auto; width: fit-content;
-  display: flex; gap: 4px; padding: 5px 6px; overflow-x: auto; z-index: 3;
+  /* 右邊界避開右上角的按鈕（--set-w 由 TopBar 量）；放不下時橫向捲動（v0.70.7：以前 width: fit-content 會整條撐出畫面、捲不動） */
+  --tb-l: 290px; --tb-r: calc(var(--set-w, 44px) + 16px);
+  position: absolute; top: calc(8px + env(safe-area-inset-top, 0px)); left: var(--tb-l); right: var(--tb-r); margin-inline: auto; width: fit-content;
+  max-width: calc(100% - var(--tb-l) - var(--tb-r)); min-width: 0;
+  display: flex; gap: 4px; padding: 5px 6px; overflow-x: auto; z-index: 3; scrollbar-width: thin;
 }
+.topbar .res { flex: none; }
 .res { display: flex; align-items: center; gap: 6px; background: var(--inset); padding: 3px 8px 3px 6px; box-shadow: inset 2px 2px 0 #07080d; min-width: 96px; }
 .res-num { display: grid; line-height: 1.15; font-variant-numeric: tabular-nums; }
 .res-num b { font-size: 14px; white-space: nowrap; }
@@ -257,11 +261,11 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 
 @media (max-width: 860px) {
   .quest { width: 220px; }
-  .topbar { left: 240px; right: 48px; }
+  .topbar { --tb-l: 240px; }
 }
 @media (max-width: 640px) {
   .banners { top: calc(116px + env(safe-area-inset-top, 0px)); left: 8px; right: 8px; transform: none; max-width: none; min-width: 0; }
-  .topbar { left: 8px; right: 48px; width: auto; top: calc(8px + env(safe-area-inset-top, 0px)); }
+  .topbar { --tb-l: 8px; --tb-r: calc(var(--set-w, 44px) + 14px); margin-inline: 0; top: calc(8px + env(safe-area-inset-top, 0px)); }
   .res { min-width: 86px; }
   .quest { top: calc(62px + env(safe-area-inset-top, 0px)); width: calc(100% - 16px); }
   .colony { width: 190px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); padding: 8px 10px; }

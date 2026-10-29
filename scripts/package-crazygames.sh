@@ -7,6 +7,8 @@ cd "$(dirname "$0")/.."
 VITE_PORTAL=crazygames npx vite build --outDir dist-crazygames --emptyOutDir >/dev/null
 # 檢查：入口網站版不能有 GA 與 GitHub 連結
 if grep -q "googletagmanager\|github.com/richardlee8433" dist-crazygames/index.html; then echo "入口網站版還有 GA 或 GitHub 連結" >&2; exit 1; fi
+# 檢查：檔案必須是純 ASCII（CrazyGames 處理上傳檔時會把多位元組的 UTF-8 字元切壞成「���」；vite.config 的 esbuild charset: 'ascii'）
+if LC_ALL=C grep -q '[^[:print:][:space:]]' dist-crazygames/index.html; then echo "入口網站版的 index.html 含非 ASCII 字元" >&2; exit 1; fi
 # 攤平：music/*.mp3、voice/*.mp3 → 根目錄
 mv dist-crazygames/music/*.mp3 dist-crazygames/voice/*.mp3 dist-crazygames/
 rmdir dist-crazygames/music dist-crazygames/voice

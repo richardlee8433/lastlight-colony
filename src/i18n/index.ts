@@ -160,7 +160,8 @@ type Pattern = { re: RegExp; key: string; names: string[]; lit: number };
 let patterns: Pattern[] | null = null;
 const rev = (prefix: string) => Object.fromEntries(Object.entries(STRINGS).filter(([k]) => k.startsWith(prefix)).map(([k, v]) => [v[1], k.slice(prefix.length)]));
 function fromLegacy(str: string): Msg | null {
-  str = str.replace(/保全/g, '陸戰隊員');
+  // 正規表示式裡的中文寫成跳脫字元：打包時其他字串會轉成純 ASCII，但打包工具不會轉正規表示式（\u4FDD\u5168＝保全）
+  str = str.replace(/\u4FDD\u5168/g, '陸戰隊員');
   if (!patterns) {
     patterns = Object.entries(STRINGS)
       .filter(([k]) => /^(l|g|rescue|n)\./.test(k))
