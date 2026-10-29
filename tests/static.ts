@@ -30,6 +30,7 @@ import { stepFacing } from '../src/art/facing.js';
 import { patrolAt, ROUTES as ROADS } from '../src/scene/layout';
 import { PACKS } from '../src/i18n/locales';
 import { MOOD_TABLES } from '../src/data/moods';
+import { ch1Hint } from '../src/ui/tutorial';
 import { existsSync } from 'fs';
 
 const results: { id: string; name: string; ok: boolean; info: string }[] = [];
@@ -506,6 +507,24 @@ check('S24', '第 2 章沒有一般求救訊號（只有伊涅絲那一次）；
     for (let i = 0; i < 40; i++) { s.events.active = null; s.events.nextAt = s.t; step(s, 0.2, { rng: () => (i % 2 ? 0.9 : 0.1) }); if (s.events.active?.kind === 'rescue') seen = true; }
     if (seen !== want) errs.push(`第 ${stage} 章${want ? '應該' : '不應該'}有一般求救訊號`);
   }
+  return errs;
+});
+
+check('S25', '第 1 章引導（v0.70.8）：手指依序指向殘骸堆 → 快捷列的氧氣再生器 → 建造按鈕；廢料不夠時回到殘骸堆，蓋好或第 2 章就消失', () => {
+  const errs: string[] = [];
+  const s = newGame(0);
+  const want = (sel: string | null, w: string | null, what: string) => { const h = ch1Hint(s, sel); if (h !== w) errs.push(`${what}：應該是 ${w}，實際 ${h}`); };
+  want(null, 'scrap', '新遊戲');
+  s.stats.clicks = 3; s.res.scrap = 5;
+  want(null, 'scrap', '採集過但廢料不夠');
+  s.res.scrap = 100;
+  want(null, 'quickbar', '廢料夠了、還沒選');
+  want('scrap_heap', 'quickbar', '選了別的建築');
+  want('o2_scrubber', 'build', '選了氧氣再生器');
+  levelUp(s, 'o2_scrubber');
+  want('o2_scrubber', null, '蓋好之後');
+  const s2 = newGame(0); s2.stage = 2;
+  if (ch1Hint(s2, null) !== null) errs.push('第 2 章不應該有引導');
   return errs;
 });
 

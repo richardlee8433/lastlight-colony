@@ -13,7 +13,7 @@ import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, canvasFont, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 import { PAINTED_ICONS } from '../ui/assets';
-import { isMobile } from '../ui/mobile';
+import { ch1Hint } from '../ui/tutorial';
 import crateURL from '../assets/sprites/cargo_crate.png';
 import chuteURL from '../assets/sprites/cargo_chute.png';
 
@@ -174,6 +174,11 @@ export class GameScene {
     this.sync();
     this.cam.x = CENTER.x - this.app.screen.width / this.Z / 2;
     this.cam.y = CENTER.y - this.app.screen.height / this.Z / 2;
+    // 手機直式（v0.70.8）：第 1 章還沒採集過時，鏡頭往殘骸堆偏（畫面窄，置中的話殘骸堆有一半在畫面外，逃生艙露出一部分）
+    if (game.s.stage === 1 && !game.s.stats?.clicks && this.app.screen.width < this.app.screen.height) {
+      const heap = SITES.find((x) => x.id === 'scrap_heap')!;
+      this.cam.x = heap.x - 40 - this.app.screen.width / this.Z / 2;
+    }
     this.clampCam();
     this.unsub = useGame.subscribe((st, prev) => {
       if (st.v !== prev.v || st.selected !== prev.selected) this.sync();
@@ -559,11 +564,11 @@ export class GameScene {
     if (r.crit) b.flash();
   }
 
-  /** 手機（v0.70.4）：第 1 章還沒手動採集過時，殘骸堆的採集按鈕下面有一隻上下擺動的手指，取代開場的操作說明 */
+  /** 第 1 章引導：殘骸堆的採集按鈕下面有一隻上下擺動的手指（v0.70.4 只有手機；v0.70.8 起電腦也有，廢料不夠蓋氧氣再生器時會回來，見 ui/tutorial.ts） */
   tapHint() {
     const s = game.s, v = [...this.views.values()].find((x) => x.bid === 'scrap_heap');
     const pl: any = v?.plate;
-    const on = !!pl && pl.isCard && s.stage === 1 && (s.stats?.clicks ?? 0) === 0 && !gamePaused() && isMobile();
+    const on = !!pl && pl.isCard && ch1Hint(s, useGame.getState().selected) === 'scrap' && !gamePaused();
     if (!on) { if (this.tapHand) this.tapHand.visible = false; return; }
     if (!this.tapHand) {
       this.tapHand = new Text({ text: '👆', style: { fontSize: 34 } });

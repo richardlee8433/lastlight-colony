@@ -21,6 +21,7 @@ export function QuestLog() {
   // 還沒出現的目標不算在分母裡（例如第 4 章第一次襲擊前的營區、醫療艙）
   const shown = ch.goals.filter((g) => goalVisible(s, g));
   const done = shown.filter((g) => goalDone(s, g)).length, tx = chapterText(ch);
+  const next = s.finished || closing ? undefined : shown.find((g) => !goalDone(s, g));
   return (
     <div className="quest px">
       <button type="button" className="quest-head" onClick={() => setOpen(!open)} aria-expanded={open}>
@@ -28,6 +29,10 @@ export function QuestLog() {
         <b>{tx.title}</b>
         <span className="quest-count">{s.finished || closing ? t('ql.done') : `${done}/${shown.length}`}</span>
       </button>
+      {/* 收起時（v0.70.8）：下面固定顯示一行目前該做的目標，點一下展開整張清單 */}
+      {!open && next && (
+        <button type="button" className="quest-next" onClick={() => setOpen(true)}>{tx.goals[ch.goals.indexOf(next)]}</button>
+      )}
       {open && (
         <ul>
           {ch.goals.map((g, i) => {

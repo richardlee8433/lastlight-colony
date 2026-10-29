@@ -12,6 +12,7 @@ import { CostList, Icon, Bar, fmt, fmtTime } from './common';
 import { buildingURL } from './assets';
 import { ShipPanel } from './ShipPanel';
 import { useMobile } from './mobile';
+import { ch1Hint } from './tutorial';
 import { EXP_TEAM, EXP_TIME, FRAGS_PER_BP, expBlock, fragChance, nextBlueprint } from '../engine/expedition';
 
 export function BuildingPanel() {
@@ -126,6 +127,7 @@ export function BuildingPanel() {
 function BuildBox({ id, title }: { id: string; title?: string }) {
   const s = game.s, d = DEF[id], L = s.b[id].level, why = levelBlock(s, id);
   const act = useGame.getState();
+  const hint = id === 'o2_scrubber' && ch1Hint(s, id) === 'build';
   return (
     <section className="block buildbox">
       <h3>{title ?? (d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgradeTo', { n: L + 1 }) : t('bp.build'))}</h3>
@@ -134,8 +136,9 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
       {d.requires?.pop ? <p className={'req ' + (s.pop >= d.requires.pop ? 'ok' : '')}>{t('bp.reqPop', { n: d.requires.pop, c: s.pop })}</p> : null}
       {d.requires?.raids ? <p className={'req ' + (s.raid.won >= d.requires.raids ? 'ok' : '')}>{t('bp.reqRaids', { n: d.requires.raids, c: s.raid.won })}</p> : null}
       {d.requires?.credits ? <p className={'req ' + (creditsCh5(s) >= d.requires.credits ? 'ok' : '')}>{t('bp.reqCredits', { n: d.requires.credits, c: Math.floor(creditsCh5(s)) })}</p> : null}
-      <button type="button" className="btn wide" disabled={!!why} onClick={() => act.levelUp(id)}>
+      <button type="button" className={'btn wide' + (hint ? ' hint' : '')} disabled={!!why} onClick={() => act.levelUp(id)}>
         {why && why.k !== 'why.afford' ? tm(why) : d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgrade') : t('bp.buildX', { b: bName(id) })}
+        {hint && <i className="hint-finger" aria-hidden="true">👈</i>}
       </button>
     </section>
   );

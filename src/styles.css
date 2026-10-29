@@ -90,6 +90,19 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .quest li i { flex: none; width: 14px; height: 14px; margin-top: 2px; background: var(--inset); box-shadow: inset 1px 1px 0 #07080d; font-style: normal; font-size: 11px; font-weight: 900; display: grid; place-items: center; color: var(--trim-ink); }
 .quest li.ok { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(167, 162, 182, 0.5); }
 .quest li.ok i { background: var(--good); }
+/* 任務欄收起時固定顯示的目前目標（v0.70.8） */
+.quest-next { appearance: none; background: none; border: 0; width: 100%; display: block; padding: 0 8px 6px 14px; text-indent: -8px; font: inherit; font-size: 13px; line-height: 1.4; color: var(--text); text-align: left; cursor: pointer; }
+.quest-next::before { content: '▸ '; color: var(--trim); }
+/* 第 1 章引導（v0.70.8）：快捷列的氧氣再生器、面板的建造按鈕會發光，手指擺動 */
+.hint { animation: hint-pulse 1s ease-in-out infinite; }
+.btn.hint { position: relative; }
+@keyframes hint-pulse { 50% { box-shadow: 0 0 0 3px #ffd36a, 0 0 12px 2px rgba(255, 211, 106, 0.6); } }
+.hint-finger { position: absolute; pointer-events: none; font-style: normal; font-size: 22px; line-height: 1; }
+.qb .hint-finger { top: 0; left: 50%; margin-left: -11px; animation: hint-bob-y 0.5s ease-in-out infinite alternate; }
+.btn .hint-finger { right: 10px; top: 50%; margin-top: -11px; animation: hint-bob-x 0.5s ease-in-out infinite alternate; }
+@keyframes hint-bob-y { to { transform: translateY(8px); } }
+@keyframes hint-bob-x { to { transform: translateX(-8px); } }
+@media (prefers-reduced-motion: reduce) { .hint, .hint-finger { animation: none !important; } }
 
 /* 殖民地狀態 */
 .colony { position: absolute; left: 8px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); width: 230px; padding: 10px 12px; z-index: 3; display: grid; gap: 6px; }

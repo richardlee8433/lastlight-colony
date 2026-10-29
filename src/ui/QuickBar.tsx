@@ -3,6 +3,7 @@ import { COMMAND_CHAIN, DEFS } from '../engine/state';
 import { artId, built, retired, workerCap } from '../engine/formulas';
 import { buildingURL } from './assets';
 import { bName, t } from '../i18n';
+import { ch1Hint } from './tutorial';
 
 // 建築快捷列（GDD §6）：一鍵跳到指定建築
 export function QuickBar() {
@@ -11,6 +12,7 @@ export function QuickBar() {
   const s = game.s;
   // 指揮建築：已蓋的最高級；還沒蓋就顯示第一級（緊急營地），不然地圖上看不到也點不到
   const cmd = [...COMMAND_CHAIN].reverse().find((id) => built(s, id)) ?? COMMAND_CHAIN[0];
+  const hint = ch1Hint(s, sel) === 'quickbar' ? 'o2_scrubber' : null;
   const list = DEFS.filter((d) => d.kind !== 'command' && d.stage <= s.stage && !retired(s, d.id));
   return (
     <nav className="quickbar px" aria-label={t('qb.aria')}>
@@ -21,10 +23,11 @@ export function QuickBar() {
   function qb(id: string) {
     const b = s.b[id], cap = workerCap(s, id);
     return (
-      <button key={id} type="button" className={'qb' + (sel === id ? ' on' : '') + (b.level ? '' : ' ghost')} onClick={() => focusOn(id)} title={bName(id)}>
+      <button key={id} type="button" className={'qb' + (sel === id ? ' on' : '') + (b.level ? '' : ' ghost') + (hint === id ? ' hint' : '')} onClick={() => focusOn(id)} title={bName(id)}>
         <img src={buildingURL(artId(s, id), b.level)} alt="" />
         {cap > 0 && <span className="qb-w">{b.workers}/{cap}</span>}
         {!b.level && <span className="qb-new">{t('qb.new')}</span>}
+        {hint === id && <i className="hint-finger" aria-hidden="true">👇</i>}
       </button>
     );
   }
