@@ -13,6 +13,8 @@ import { bName, canvasFont, lang, resName, t, useSettings } from '../i18n';
 import { sfx } from '../audio/audio';
 import { PAINTED_ICONS } from '../ui/assets';
 import { isMobile } from '../ui/mobile';
+import crateURL from '../assets/sprites/cargo_crate.png';
+import chuteURL from '../assets/sprites/cargo_chute.png';
 
 type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
 /** 對話泡泡的小圖示（像素圖，每行一列，# 是深色、. 是空白）：…、愛心、！、？、音符、笑 */
@@ -144,12 +146,17 @@ export class GameScene {
       const img = new Image(); img.src = url; await img.decode();
       const tex = Texture.from(img); tex.source.scaleMode = 'linear'; this.iconTex.set(k, tex);
     })).catch(() => {});
+    // 喜鵲號空投的貨櫃與降落傘（手繪，每個地圖像素 4 個圖像素）
+    await Promise.all([['crate', crateURL], ['chute', chuteURL]].map(async ([k, url]) => {
+      const img = new Image(); img.src = url; await img.decode();
+      const tex = Texture.from(img); tex.source.scaleMode = 'linear'; this.dropTex.set(k, tex);
+    })).catch(() => {});
     this.obj.sortableChildren = true;
-    this.world.addChild(this.obj, this.shotG, this.smokeG, this.overlay, this.lightL, this.meteorG);
+    this.world.addChild(this.obj, this.dropL, this.shotG, this.smokeG, this.overlay, this.lightL, this.meteorG);
     this.meteorG.blendMode = 'add';
     this.app.stage.addChild(this.world, this.weatherG, this.hud, this.fxL);
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
-    for (const c of [this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL, this.weatherG, this.meteorG, this.smokeG, this.craterG]) c.eventMode = 'none';
+    for (const c of [this.dropL, this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL, this.weatherG, this.meteorG, this.smokeG, this.craterG]) c.eventMode = 'none';
     // 斜射光：一張斜向漸層（左上亮、往右下淡出），用加亮混合疊在環境光上
     { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d')!;
       const gr = g.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.25)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
@@ -792,11 +799,25 @@ export class GameScene {
       if (u.hitT > 0) { u.hitT -= dt; u.alpha = 0.55; } else u.alpha = 1;
     }
   }
-  /** 正在落下的貨櫃：落地前 DROP_FALL 秒出現在交易站旁上空，掛著降落傘慢慢落下；用畫面時間播放（遊戲時間一 tick 0.2 秒會一頓一頓） */
+  /** 正在落下的貨櫃：落地前 DROP_FALL 秒出現在交易站旁上空，掛著降落傘慢慢落下；用畫面時間播放（遊戲時間一 tick 0.2 秒會一頓一頓）。
+   *  落地後降落傘往一邊塌下、淡掉，貨櫃在地上停一下再淡掉（貨已經進貨艙） */
   drops = new Map<string, number>();
+  landed: { x: number; y: number; t: number; side: number }[] = [];
+  dropTex = new Map<string, Texture>();
+  dropL = new Container();
+  dropPool: Sprite[] = [];
   drawDrops(dt: number) {
-    const s = game.s, g = this.shotG, site = SITES.find((x) => x.id === 'trade_post');
-    if (!site || !s.market) return;
+    const s = game.s, g = this.shotG, site = SITES.find((x) => x.id === 'trade_post'), L = this.dropL;
+    const crateT = this.dropTex.get('crate'), chuteT = this.dropTex.get('chute');
+    for (const c of L.children) c.visible = false;
+    let used = 0;
+    const spr = (t: Texture, ax: number, ay: number) => {
+      let sp = this.dropPool[used];
+      if (!sp) { sp = new Sprite(); sp.scale.set(1 / 4); this.dropPool.push(sp); L.addChild(sp); }
+      used++; sp.texture = t; sp.anchor.set(ax, ay); sp.visible = true; sp.alpha = 1; sp.rotation = 0; sp.scale.set(1 / 4);
+      return sp;
+    };
+    if (!site || !s.market) { this.landed = []; return; }
     const FALL = 4, live = new Set<string>();
     const gx = site.x + 38, gy = site.y + 8;
     for (const p of s.market.pending) {
@@ -806,16 +827,22 @@ export class GameScene {
       const el = (this.drops.get(key) ?? 0) + dt;
       this.drops.set(key, el);
       // 畫面時間播得順；畫面卡頓（每幀時間有上限）時改跟遊戲時間，不會落後到貨櫃已經進貨艙還在天上
-      const k = Math.min(1, Math.max(el / FALL, 1 - (p.at - s.t) / FALL)), x = Math.round(gx + Math.sin(el * 2.2) * 2), y = Math.round(gy - 90 * (1 - k));
-      // 降落傘：半圓頂＋四條繩
-      g.ellipse(x, y - 16, 9, 5).fill({ color: 0xf2efe6 });
-      g.rect(x - 9, y - 16, 18, 2).fill({ color: 0xd8573a });
-      for (const dx of [-8, -3, 3, 8]) g.moveTo(x + dx, y - 15).lineTo(x + Math.sign(dx) * 3, y - 5).stroke({ color: 0x3a3440, width: 0.6 });
-      // 貨櫃：橘色鐵箱＋兩條深色邊
-      g.rect(x - 5, y - 5, 10, 7).fill({ color: 0xc8742e });
-      g.rect(x - 5, y - 5, 10, 1).fill({ color: 0xe8a050 });
-      g.rect(x - 2, y - 5, 1, 7).fill({ color: 0x8a4a1e });
-      g.rect(x + 2, y - 5, 1, 7).fill({ color: 0x8a4a1e });
+      const k = Math.min(1, Math.max(el / FALL, 1 - (p.at - s.t) / FALL)), sway = Math.sin(el * 2.2), x = gx + sway * 2, y = gy - 90 * (1 - k);
+      if (crateT && chuteT) {
+        // 貨櫃掛在降落傘繩子收束的點下面，整組以那一點為中心輕輕擺動
+        const c = spr(crateT, 0.5, 1); c.position.set(x, y); c.rotation = -sway * 0.06;
+        const ch = spr(chuteT, 0.5, 1); ch.position.set(x, y - 9); ch.rotation = sway * 0.08;
+        continue;
+      }
+      // 手繪圖沒載入：程式畫的降落傘與貨櫃
+      const rx = Math.round(x), ry = Math.round(y);
+      g.ellipse(rx, ry - 16, 9, 5).fill({ color: 0xf2efe6 });
+      g.rect(rx - 9, ry - 16, 18, 2).fill({ color: 0xd8573a });
+      for (const dx of [-8, -3, 3, 8]) g.moveTo(rx + dx, ry - 15).lineTo(rx + Math.sign(dx) * 3, ry - 5).stroke({ color: 0x3a3440, width: 0.6 });
+      g.rect(rx - 5, ry - 5, 10, 7).fill({ color: 0xc8742e });
+      g.rect(rx - 5, ry - 5, 10, 1).fill({ color: 0xe8a050 });
+      g.rect(rx - 2, ry - 5, 1, 7).fill({ color: 0x8a4a1e });
+      g.rect(rx + 2, ry - 5, 1, 7).fill({ color: 0x8a4a1e });
     }
     // 落地了（從 pending 裡消失）：揚起灰塵、播音效
     for (const key of [...this.drops.keys()]) if (!live.has(key)) {
@@ -823,7 +850,21 @@ export class GameScene {
       const [sx, sy] = this.toScreen(gx, gy);
       this.fx.burst(sx, sy, 0xcdb892, 10);
       sfx('collect');
+      if (crateT && chuteT && this.landed.length < 6) this.landed.push({ x: gx, y: gy, t: 0, side: Math.random() < 0.5 ? -1 : 1 });
     }
+    // 落地後：降落傘 0.9 秒內往一邊倒、壓扁成一攤布再淡掉；貨櫃停 1.5 秒後 0.5 秒淡掉
+    if (!crateT || !chuteT) { this.landed = []; return; }
+    for (const d of this.landed) {
+      d.t += dt;
+      const c = spr(crateT, 0.5, 1); c.position.set(d.x, d.y); c.alpha = Math.max(0, Math.min(1, (2 - d.t) / 0.5));
+      const q = Math.min(1, d.t / 0.9), e = 1 - (1 - q) * (1 - q);
+      const ch = spr(chuteT, 0.5, 1);
+      ch.position.set(d.x + d.side * 10 * e, d.y - 9 * (1 - e) + 2 * e);
+      ch.rotation = d.side * 1.1 * e;
+      ch.scale.set(1 / 4 * (1 + 0.15 * e), 1 / 4 * (1 - 0.75 * e));
+      ch.alpha = Math.max(0, Math.min(1, (1.6 - d.t) / 0.6));
+    }
+    this.landed = this.landed.filter((d) => d.t < 2);
   }
   /** 傷員去的地方：有醫療艙就去醫療艙，否則回營區 */
   clinicDoor() {
