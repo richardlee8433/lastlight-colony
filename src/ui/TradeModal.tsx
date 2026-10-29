@@ -4,7 +4,7 @@ import { resName, t, tm } from '../i18n';
 import { PRICE, Partner, TRADE_LOT, partnerOpen, rates, tradeBlock } from '../engine/governance';
 import { Icon, fmt, fmtTime } from './common';
 import { built } from '../engine/formulas';
-import { DROP_TIME, EXPORTS, EXPORT_LOT, GOODS, IMPORT_LOT, buyBlock, buyPrice, cargoCap, cargoUsed, partner, sellBlock, sellPrice, trend } from '../engine/market';
+import { DROP_TIME, EXPORTS, EXPORT_LOT, GOODS, IMPORT_LOT, buyBlock, buyPrice, cargoCap, cargoUsed, partner, priceWhy, sellBlock, sellPrice, trend } from '../engine/market';
 
 // 貿易：交易站的市場。每條路線只有一個交易對象：喜鵲（抵抗路線上也替聯盟運送委託），合作路線後是赫利昂
 export function TradeModal() {
@@ -42,7 +42,6 @@ function Market() {
   return (
     <>
       <p className="muted small">{info}</p>
-      {ev && <p className={'banner ' + (ev.k === 'supply' ? 'good' : 'warn')}>{t('tr.event.' + ev.k, { t: fmtTime(Math.max(0, ev.until - s.t)) })}</p>}
       <div className="cargo">
         <b>{t('tr.cargo', { n: cargoUsed(s), m: cargoCap(s) })}</b>
         {GOODS.map((k) => <span key={k}><Icon k={k} size={16} /> {fmt(s.cargo[k])}</span>)}
@@ -58,7 +57,7 @@ function Market() {
               <tr key={k}>
                 <td><Icon k={k} size={16} /> {resName(k)}</td>
                 <td>{fmt(s.res[k])}</td>
-                <td><span className={'trend ' + tr} title={t(TREND[tr])}>{p.toFixed(p < 10 ? 2 : 1)} {ARROW[tr]}</span></td>
+                <td><span className={'trend ' + tr} title={t(TREND[tr])}>{p.toFixed(p < 10 ? 2 : 1)} {ARROW[tr]}</span><Why k={k} /></td>
                 <td><button type="button" className="btn" disabled={!!b} title={tm(b)} onClick={() => act.sellGood(k)}>+{Math.floor(p * EXPORT_LOT)}</button></td>
               </tr>
             );
@@ -66,6 +65,8 @@ function Market() {
         </tbody>
       </table>
       <h3>{t('tr.imports')}</h3>
+      {/* 市場事件放在訂購貨物這裡：價格為什麼變了，就在價格旁邊看得到 */}
+      {ev && <p className={'banner ' + (ev.k === 'supply' ? 'good' : 'warn')}>{t('tr.event.' + ev.k, { t: fmtTime(Math.max(0, ev.until - s.t)) })}<small className="paused-note">{t('tr.pausedNote')}</small></p>}
       <table className="market">
         <thead><tr><th>{t('tr.res')}</th><th>{t('tr.stock')}</th><th>{t('tr.price')}</th><th>{t('tr.buy', { n: IMPORT_LOT })}</th></tr></thead>
         <tbody>
@@ -75,7 +76,7 @@ function Market() {
               <tr key={k}>
                 <td><Icon k={k} size={16} /> {resName(k)}</td>
                 <td>{fmt(s.cargo[k])}</td>
-                <td><span className={'trend ' + tr} title={t(TREND[tr])}>{p.toFixed(1)} {ARROW[tr]}</span></td>
+                <td><span className={'trend ' + tr} title={t(TREND[tr])}>{p.toFixed(1)} {ARROW[tr]}</span><Why k={k} /></td>
                 <td><button type="button" className="btn alt" disabled={!!b} title={tm(b)} onClick={() => act.buyGood(k)}>−{Math.ceil(p * IMPORT_LOT)}</button></td>
               </tr>
             );
@@ -86,6 +87,12 @@ function Market() {
       {s.stage >= 5 && <><h3>{t('tr.bulk')}</h3><Bulk who="corp" goods={bulk} /></>}
     </>
   );
+}
+
+/** 價格底下的一行小字：這個價格為什麼偏高或偏低 */
+function Why({ k }: { k: Parameters<typeof priceWhy>[1] }) {
+  const w = priceWhy(game.s, k);
+  return w ? <small className={'why why-' + w}>{t('tr.why.' + w)}</small> : null;
 }
 
 /** 大宗資源買賣（固定匯率、一次 100，第 5 章起）：出口品在上面的表賣 */

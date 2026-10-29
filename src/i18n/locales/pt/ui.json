@@ -525,5 +525,13 @@
  "ex.allFound": "Todos os projetos desta região já foram encontrados, por enquanto.",
  "ex.trips": "Expedições",
  "cp.exp": "Em expedição",
- "tt.bp": "Projeto"
+ "tt.bp": "Projeto",
+ "tr.why.disrupt": "Rota interrompida",
+ "tr.why.embargo": "Bloqueio reforçado",
+ "tr.why.supply": "Envio da Aliança",
+ "tr.why.bought": "Pouco estoque · repondo",
+ "tr.why.stocked": "Bem abastecido",
+ "tr.why.short": "Em falta · paga mais",
+ "tr.why.sold": "Estoque alto · paga menos",
+ "tr.pausedNote": "O tempo para enquanto esta janela está aberta."
 }

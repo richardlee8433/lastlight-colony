@@ -525,5 +525,13 @@
  "ex.allFound": "この地域の設計図はすべて見つかった。今のところは。",
  "ex.trips": "探索回数",
  "cp.exp": "探索中",
- "tt.bp": "設計図"
+ "tt.bp": "設計図",
+ "tr.why.disrupt": "航路の寸断",
+ "tr.why.embargo": "封鎖強化",
+ "tr.why.supply": "同盟の補給",
+ "tr.why.bought": "在庫少・補充中",
+ "tr.why.stocked": "在庫十分",
+ "tr.why.short": "品薄・買値高め",
+ "tr.why.sold": "在庫過多・買値安め",
+ "tr.pausedNote": "このウィンドウを開いている間は時間が止まります。"
 }

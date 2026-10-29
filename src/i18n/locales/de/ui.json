@@ -525,5 +525,13 @@
  "ex.allFound": "Alle Baupläne dieser Gegend wurden gefunden — vorerst.",
  "ex.trips": "Expeditionen",
  "cp.exp": "Auf Expedition",
- "tt.bp": "Bauplan"
+ "tt.bp": "Bauplan",
+ "tr.why.disrupt": "Routenstörung",
+ "tr.why.embargo": "Blockade verschärft",
+ "tr.why.supply": "Allianzlieferung",
+ "tr.why.bought": "Wenig Vorrat · füllt auf",
+ "tr.why.stocked": "Gut bevorratet",
+ "tr.why.short": "Knapp · zahlt mehr",
+ "tr.why.sold": "Überfüllt · zahlt weniger",
+ "tr.pausedNote": "Solange dieses Fenster offen ist, steht die Zeit still."
 }

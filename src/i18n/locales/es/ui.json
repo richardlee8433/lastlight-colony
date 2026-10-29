@@ -525,5 +525,13 @@
  "ex.allFound": "Ya se encontraron todos los planos de esta zona, por ahora.",
  "ex.trips": "Expediciones",
  "cp.exp": "De expedición",
- "tt.bp": "Plano"
+ "tt.bp": "Plano",
+ "tr.why.disrupt": "Ruta interrumpida",
+ "tr.why.embargo": "Bloqueo reforzado",
+ "tr.why.supply": "Envío de la Alianza",
+ "tr.why.bought": "Poco stock · reponiendo",
+ "tr.why.stocked": "Bien abastecido",
+ "tr.why.short": "Escasea · paga más",
+ "tr.why.sold": "Sobra stock · paga menos",
+ "tr.pausedNote": "El tiempo se detiene mientras esta ventana está abierta."
 }

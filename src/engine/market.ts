@@ -70,6 +70,18 @@ export function trend(s: GameState, k: MKey): 'up' | 'down' | 'flat' {
   return f > 1.08 ? 'up' : f < 0.92 ? 'down' : 'flat';
 }
 
+/** 價格變動的原因（交易視窗每一列價格底下顯示）：市場事件優先，其次是庫存偏低／偏高；價格穩定時沒有 */
+export type PriceWhy = MarketEvent | 'bought' | 'stocked' | 'short' | 'sold';
+export function priceWhy(s: GameState, k: MKey): PriceWhy | null {
+  const e = s.market?.event?.k, good = (GOODS as MKey[]).includes(k);
+  if (e === 'disrupt' && k === 'fuel') return e;
+  if ((e === 'embargo' || e === 'supply') && good) return e;
+  const tr = trend(s, k);
+  if (tr === 'flat') return null;
+  // 進口品：庫存少＝玩家買得多；出口品：庫存多＝玩家賣得多
+  return good ? (tr === 'up' ? 'bought' : 'stocked') : (tr === 'up' ? 'short' : 'sold');
+}
+
 export function buyBlock(s: GameState, k: Good, lot = IMPORT_LOT): Msg | null {
   if (!marketOpen(s)) return msg('why.tradePost');
   if (stockOf(s, k) < lot) return msg('why.soldOut');
