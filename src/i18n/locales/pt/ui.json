@@ -317,7 +317,6 @@
  "tr.imports": "Encomendar mercadorias",
  "tr.price": "Preço",
  "tr.cargo": "Porão de carga {n}/{m}",
- "tr.inbound": "A caminho: {n} de {r} · {t}",
  "tr.bulk": "Recursos a granel",
  "tr.trendUp": "Preço alto",
  "tr.trendDown": "Preço baixo",

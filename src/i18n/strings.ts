@@ -343,7 +343,6 @@ export const STRINGS: Record<string, [string, string]> = {
   'tr.imports': ["Order goods", "訂購貨物"],
   'tr.price': ["Price", "單價"],
   'tr.cargo': ["Cargo hold {n}/{m}", "貨艙 {n}/{m}"],
-  'tr.inbound': ["Inbound: {n} {r} · {t}", "運送中：{n} {r} · 剩 {t}"],
   'tr.bulk': ["Bulk resources", "大宗資源"],
   'tr.trendUp': ["Price high", "價格偏高"],
   'tr.trendDown': ["Price low", "價格偏低"],

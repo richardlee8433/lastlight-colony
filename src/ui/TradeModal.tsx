@@ -46,7 +46,6 @@ function Market() {
         <b>{t('tr.cargo', { n: cargoUsed(s), m: cargoCap(s) })}</b>
         {GOODS.map((k) => <span key={k}><Icon k={k} size={16} /> {fmt(s.cargo[k])}</span>)}
       </div>
-      {s.market.pending.map((p, i) => <p key={i} className="muted small inbound">{t('tr.inbound', { n: p.n, r: resName(p.k), t: fmtTime(p.at - s.t) })}</p>)}
       <h3>{t('tr.exports')}</h3>
       <table className="market">
         <thead><tr><th>{t('tr.res')}</th><th>{t('tr.stock')}</th><th>{t('tr.price')}</th><th>{t('tr.sell', { n: EXPORT_LOT })}</th></tr></thead>

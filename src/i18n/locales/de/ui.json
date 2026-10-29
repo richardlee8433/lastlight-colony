@@ -317,7 +317,6 @@
  "tr.imports": "Waren bestellen",
  "tr.price": "Preis",
  "tr.cargo": "Frachtraum {n}/{m}",
- "tr.inbound": "Unterwegs: {n} {r} · {t}",
  "tr.bulk": "Massengüter",
  "tr.trendUp": "Preis hoch",
  "tr.trendDown": "Preis niedrig",

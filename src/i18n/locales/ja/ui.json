@@ -317,7 +317,6 @@
  "tr.imports": "品物を注文する",
  "tr.price": "単価",
  "tr.cargo": "貨物室 {n}/{m}",
- "tr.inbound": "輸送中：{r}{n}個・残り{t}",
  "tr.bulk": "大口の資源",
  "tr.trendUp": "価格高め",
  "tr.trendDown": "価格安め",
