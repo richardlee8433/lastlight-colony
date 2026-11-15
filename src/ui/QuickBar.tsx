@@ -4,6 +4,7 @@ import { artId, built, retired, workerCap } from '../engine/formulas';
 import { buildingURL } from './assets';
 import { bName, t } from '../i18n';
 import { ch1Hint } from './tutorial';
+import { buildProgress } from '../engine/build';
 
 // 建築快捷列（GDD §6）：一鍵跳到指定建築
 export function QuickBar() {
@@ -23,10 +24,11 @@ export function QuickBar() {
   function qb(id: string) {
     const b = s.b[id], cap = workerCap(s, id);
     return (
-      <button key={id} type="button" className={'qb' + (sel === id ? ' on' : '') + (b.level ? '' : ' ghost') + (hint === id ? ' hint' : '')} onClick={() => focusOn(id)} title={bName(id)}>
+      <button key={id} type="button" className={'qb' + (sel === id ? ' on' : '') + (b.level ? '' : ' ghost') + (b.build ? ' wip' : '') + (hint === id ? ' hint' : '')} onClick={() => focusOn(id)} title={bName(id)}>
         <img src={buildingURL(artId(s, id), b.level)} alt="" />
         {cap > 0 && <span className="qb-w">{b.workers}/{cap}</span>}
-        {!b.level && <span className="qb-new">{t('qb.new')}</span>}
+        {!b.level && !b.build && <span className="qb-new">{t('qb.new')}</span>}
+        {b.build && <span className="qb-build" aria-label={t('bp.building', { b: bName(id) })}><i style={{ width: `${Math.round(buildProgress(s, id) * 100)}%` }} /></span>}
         {hint === id && <i className="hint-finger" aria-hidden="true">👇</i>}
       </button>
     );

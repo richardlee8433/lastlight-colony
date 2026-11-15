@@ -1,6 +1,7 @@
 // 玩家操作：建造／升級、升級節點、工人指派、研究
-import { COMMAND_CHAIN, DEF, GameState, Msg, makeCheckpoint, msg, notify } from './state';
-import { formOf, creditsCh5, hasXenoLab, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, retirePod, workerCap } from './formulas';
+import { COMMAND_CHAIN, DEF, GameState, Msg, msg, notify } from './state';
+import { formOf, creditsCh5, hasXenoLab, BOOST_COST, RESEARCH_DEFS, boostActive, boostDuration, built, canAfford, idle, levelCost, pay, workerCap } from './formulas';
+import { activeBuilds, buildSlots, startBuild } from './build';
 
 export type Why = Msg | null;
 
@@ -28,27 +29,18 @@ export function levelBlock(s: GameState, id: string): Why {
   if (d.requires?.scene && !s.story.seen?.includes(d.requires.scene)) return msg('why.scene.' + d.requires.scene);
   // 太空港只在抵抗路線需要：拒絕赫利昂之後，才跟其他殖民地聯絡
   if (id === 'spaceport' && L === 0 && s.story.route !== 'resist') return msg('why.resistOnly');
+  // 施工中（v0.71）：這棟還在蓋，或工地已經有別的建築在蓋（同時只能有 buildSlots 個工地）
+  if (s.b[id].build) return msg('why.inProgress');
+  const busy = activeBuilds(s);
+  if (busy.length >= buildSlots(s)) return msg('why.building', { b: busy[0] });
   if (!canAfford(s, levelCost(s, id))) return msg('why.afford');
   return null;
 }
+/** 建造／升級：付材料、開工。等級要等工地蓋好（build.ts 的 construction）才會加上去 */
 export function levelUp(s: GameState, id: string): boolean {
   if (levelBlock(s, id)) return false;
-  const d = DEF[id];
   pay(s, levelCost(s, id));
-  s.b[id].level++;
-  if (d.kind === 'command') {
-    s.stage = d.commandLevel! + 1;
-    if (s.stage === 5) s.gov.credits5 = s.gov.creditsEarned;
-    notify(s, 'n.cmdBuilt', { b: id, n: s.stage }, 'good'); makeCheckpoint(s);
-  } else if (id === 'orbital_beacon') {
-    // 分段建造：第五段完成就是結局（離開的路線改在船塢裝星際引擎，見 ship.ts）
-    if (s.b[id].level >= d.maxLevel) { s.finished = true; notify(s, 'n.beaconDone', undefined, 'good'); }
-    else notify(s, 'n.beaconPhase', { n: s.b[id].level, m: d.maxLevel }, 'good');
-  } else notify(s, s.b[id].level === 1 ? 'n.built' : 'n.levelUp', { b: id, n: s.b[id].level }, 'good');
-  // 紀念堂蓋好：逃生艙退役（最後的外殼用在紀念堂上）
-  if (id === 'memorial' && s.b[id].level === 1) { retirePod(s); notify(s, 'n.podRetired', undefined, 'good'); }
-  // 軌道車線：蓋好後整個殖民地的道路鋪上石磚（地圖由 GameScene 依此重畫）
-  if (id === 'rail_line' && s.b[id].level === 1) notify(s, 'n.paveStone', undefined, 'good');
+  startBuild(s, id);
   return true;
 }
 

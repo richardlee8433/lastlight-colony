@@ -394,9 +394,11 @@ const CJK = /[一-鿿]/;
       const r = await scene(p, () => {
         const s = window.__scene, st = JSON.parse(localStorage.getItem('lastlight-colony-save-v1')), pop = st.pop;
         const want = pop <= 10 ? pop : 10 + Math.floor((pop - 10) / 10);
-        const by = {}; for (const w of s.walkers) { const k = w.ai.bid ?? '__idle'; by[k] = (by[k] ?? 0) + 1; }
+        // 工程隊（v0.71，每個工地 2 人）是額外的，不算在名額裡
+        const crew = s.walkers.filter((w) => !w.ai.builder);
+        const by = {}; for (const w of crew) { const k = w.ai.bid ?? '__idle'; by[k] = (by[k] ?? 0) + 1; }
         const staffed = Object.entries(st.b).filter(([id, b]) => id !== 'security' && b.level > 0 && b.workers > 0 && [...s.views.values()].some((v) => v.bid === id)).map(([id]) => id);
-        return { pop, want, shown: s.walkers.length, staffed: staffed.length, covered: staffed.filter((id) => by[id]).length };
+        return { pop, want, shown: crew.length, staffed: staffed.length, covered: staffed.filter((id) => by[id]).length };
       });
       await p.close();
       rows.push(`${n} 人口 ${r.pop} → ${r.shown}`);

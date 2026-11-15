@@ -14,6 +14,7 @@ import { ShipPanel } from './ShipPanel';
 import { useMobile } from './mobile';
 import { ch1Hint } from './tutorial';
 import { EXP_TEAM, EXP_TIME, FRAGS_PER_BP, expBlock, fragChance, nextBlueprint } from '../engine/expedition';
+import { buildLeft, buildProgress, buildTime, isBuilding } from '../engine/build';
 
 export function BuildingPanel() {
   useGame((st) => st.v);
@@ -41,6 +42,7 @@ export function BuildingPanel() {
         ? <details className="desc-more"><summary>{t('ui.more')}</summary><p className="desc">{bDesc(id)}</p></details>
         : <p className="desc">{bDesc(id)}</p>}
       {L > 0 && disabled(s, id) && <div className="banner warn">{t('bp.damaged', { n: Math.ceil(b.disabledUntil - s.t) })}</div>}
+      {b.build && <Construction id={id} />}
 
       {L > 0 && d.workersPerLevel ? (
         <section className="block">
@@ -93,12 +95,12 @@ export function BuildingPanel() {
           <ol className="chain">
             {COMMAND_CHAIN.map((c) => <li key={c} className={built(s, c) ? 'ok' : c === nextCmd ? 'next' : ''}>{bName(c)}<small>Lv{DEF[c].commandLevel}</small></li>)}
           </ol>
-          {nextCmd && nextCmd !== id && <BuildBox id={nextCmd} title={t('bp.nextCmd', { b: bName(nextCmd) })} />}
+          {nextCmd && nextCmd !== id && (isBuilding(s, nextCmd) ? <Construction id={nextCmd} /> : <BuildBox id={nextCmd} title={t('bp.nextCmd', { b: bName(nextCmd) })} />)}
           {!nextCmd && <p className="muted">{t('bp.endContent')}</p>}
         </section>
       )}
 
-      {!(isCmd && L > 0) && L < d.maxLevel && <BuildBox id={id} />}
+      {!(isCmd && L > 0) && L < d.maxLevel && !b.build && <BuildBox id={id} />}
       {L > 0 && d.forms && <Rebuild id={id} />}
 
       {L > 0 && d.upgrades?.length ? (
@@ -133,6 +135,7 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
       <h3>{title ?? (d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgradeTo', { n: L + 1 }) : t('bp.build'))}</h3>
       {L > 0 && !d.flatCost && hasLevelEff(id) && <p className="muted small">{t('bp.nextLv', { e: Math.round(LEVEL_EFF * 100), w: formOf(s, id)?.workersPerLevel ?? d.workersPerLevel ?? 0 })}</p>}
       <CostList cost={levelCost(s, id)} />
+      <p className="muted small build-time">⏱ {t('bp.buildTime', { t: fmtTime(buildTime(s, id)) })}</p>
       {d.requires?.pop ? <p className={'req ' + (s.pop >= d.requires.pop ? 'ok' : '')}>{t('bp.reqPop', { n: d.requires.pop, c: s.pop })}</p> : null}
       {d.requires?.raids ? <p className={'req ' + (s.raid.won >= d.requires.raids ? 'ok' : '')}>{t('bp.reqRaids', { n: d.requires.raids, c: s.raid.won })}</p> : null}
       {d.requires?.credits ? <p className={'req ' + (creditsCh5(s) >= d.requires.credits ? 'ok' : '')}>{t('bp.reqCredits', { n: d.requires.credits, c: Math.floor(creditsCh5(s)) })}</p> : null}
@@ -140,6 +143,19 @@ function BuildBox({ id, title }: { id: string; title?: string }) {
         {why && why.k !== 'why.afford' ? tm(why) : d.flatCost ? t('bc.next', { n: L + 1 }) : L ? t('bp.upgrade') : t('bp.buildX', { b: bName(id) })}
         {hint && <i className="hint-finger" aria-hidden="true">👈</i>}
       </button>
+    </section>
+  );
+}
+
+/** 施工中（v0.71）：進度條與剩餘時間 */
+function Construction({ id }: { id: string }) {
+  const s = game.s, b = s.b[id].build!;
+  return (
+    <section className="block buildbox building" data-build={id}>
+      <h3>{b.to > 1 ? t('bp.upgrading', { n: b.to }) : t('bp.building', { b: bName(id) })}</h3>
+      <Bar value={buildProgress(s, id)} tone="build" />
+      <p className="muted small">{t('bp.buildLeft', { t: fmtTime(buildLeft(s, id)) })} · {Math.round(buildProgress(s, id) * 100)}%</p>
+      <p className="muted small">{t('bp.buildPaused')}</p>
     </section>
   );
 }

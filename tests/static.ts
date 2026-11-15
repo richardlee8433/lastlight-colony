@@ -7,9 +7,10 @@ import { CHAPTERS } from '../src/engine/story';
 import { STRINGS } from '../src/i18n/strings';
 import EN from '../src/i18n/data-en';
 import { DEFS } from '../src/engine/state';
-import { RESEARCH_DEFS, hasXenoLab, workerCap } from '../src/engine/formulas';
+import { RESEARCH_DEFS, built, hasXenoLab, workerCap } from '../src/engine/formulas';
 import { newGame } from '../src/engine/state';
 import { levelBlock, levelUp, rebuild, rebuildBlock, researchBlock } from '../src/engine/actions';
+import { activeBuilds, buildLeft, buildTime, finishAllBuilds, hurryBuild, HURRY_CAP } from '../src/engine/build';
 import { step } from '../src/engine/tick';
 import { buyBlock, buyGood, buyPrice, cargoUsed, partner, sellGood, sellPrice, DROP_TIME } from '../src/engine/market';
 import { creditsCh5, artId, gatherRate, levelEff, LEVEL_EFF, clickBuff, researchSpeed } from '../src/engine/formulas';
@@ -237,7 +238,7 @@ check('S15', '第 4 章貿易：合成室開機後喜鵲來聯絡 → 貿易站�
   step(s);
   if (!s.story.seen!.includes('c4-trader')) errs.push('合成室開機後沒有觸發 c4-trader');
   if (levelBlock(s, 'trade_post')) errs.push('看過 c4-trader 仍然不能蓋貿易站：' + levelBlock(s, 'trade_post')!.k);
-  levelUp(s, 'trade_post');
+  levelUp(s, 'trade_post'); finishAllBuilds(s);
   if (buyBlock(s, 'electronics')?.k !== 'why.credit') errs.push('沒錢時應該不能買');
   const p0 = sellPrice(s, 'metal');
   for (let i = 0; i < 6; i++) sellGood(s, 'metal');
@@ -285,7 +286,7 @@ check('S18', '船塢：看過 c3-ship 才能蓋 → 模組依章節開放、進�
   if (levelBlock(s, 'shipyard')?.k !== 'why.scene.c3-ship') errs.push('沒看過 c3-ship 就能蓋船塢');
   s.story.seen!.push('c3-ship');
   if (!levelUp(s, 'shipyard')) errs.push('看過 c3-ship 仍蓋不了船塢：' + levelBlock(s, 'shipyard')?.k);
-  flush();
+  finishAllBuilds(s); flush();
   if (!s.story.seen!.includes('c3-shipyard')) errs.push('蓋好船塢沒播 c3-shipyard');
   if (artId(s, 'shipyard') !== 'shipyard') errs.push('空船塢的圖不對');
   if (!buildModule(s)) errs.push('第 3 章裝不了船體：' + moduleBlock(s)?.k);
@@ -523,6 +524,8 @@ check('S25', '第 1 章引導（v0.70.8）：手指依序指向殘骸堆 → 快
   want('scrap_heap', 'quickbar', '選了別的建築');
   want('o2_scrubber', 'build', '選了氧氣再生器');
   levelUp(s, 'o2_scrubber');
+  want('o2_scrubber', null, '開工之後（手指不再指建造按鈕）');
+  finishAllBuilds(s);
   want('o2_scrubber', null, '蓋好之後');
   const s2 = newGame(0); s2.stage = 2;
   if (ch1Hint(s2, null) !== null) errs.push('第 2 章不應該有引導');
@@ -544,6 +547,46 @@ check('S26', '第 6 章抵抗路線：每次襲擊都是突擊隊、人數 +2，
   const c = mk('coop', 6); c.raid.nextAt = c.t + 2000;
   combat(c, false, () => 0.5);
   if (c.raid.nextAt !== c.t + 2000) errs.push('合作路線不應該提前襲擊');
+  return errs;
+});
+
+check('S27', '建造計時（v0.71）：付了材料要等工期；第 1 章前幾棟幾秒、指揮建築最長 2.5 分鐘；同時只有一個工地；點擊催工最多省一半；離線照常施工；蓋好才算建成、指揮建築才推進章節', () => {
+  const errs: string[] = [];
+  const s = newGame(0); s.res.scrap = 5000; s.res.nutrient = 5000;
+  if (buildTime(s, 'o2_scrubber') > 3) errs.push(`氧氣再生器第一次要等太久：${buildTime(s, 'o2_scrubber')} 秒`);
+  if (buildTime(s, 'algae_tank') > 5) errs.push(`藻類槽第一次要等太久：${buildTime(s, 'algae_tank')} 秒`);
+  if (buildTime(s, 'emergency_camp') > 15) errs.push(`緊急營地工期太長：${buildTime(s, 'emergency_camp')} 秒`);
+  for (const d of DEFS) { const n = buildTime(s, d.id); if (n < 1 || n > 180) errs.push(`${d.id} 工期 ${n} 秒超出 1～180`); }
+  const scrap0 = s.res.scrap;
+  if (!levelUp(s, 'o2_scrubber')) errs.push('蓋不了氧氣再生器：' + levelBlock(s, 'o2_scrubber')?.k);
+  if (s.res.scrap >= scrap0) errs.push('開工時沒有付材料');
+  if (built(s, 'o2_scrubber')) errs.push('開工就算建成了');
+  if (activeBuilds(s).join() !== 'o2_scrubber') errs.push('工地清單不對：' + activeBuilds(s).join());
+  if (levelBlock(s, 'algae_tank')?.k !== 'why.building') errs.push('有工地時應該不能再開第二個：' + levelBlock(s, 'algae_tank')?.k);
+  if (levelBlock(s, 'o2_scrubber')?.k !== 'why.inProgress') errs.push('施工中的建築應該顯示施工中：' + levelBlock(s, 'o2_scrubber')?.k);
+  const need = s.b.o2_scrubber.build!.need;
+  for (let i = 0; i < 4 && s.b.o2_scrubber.build; i++) step(s);
+  if (!s.b.o2_scrubber.build || Math.abs(need - buildLeft(s, 'o2_scrubber') - 0.8) > 1e-6) errs.push('施工進度沒有跟著 tick 走');
+  while (s.b.o2_scrubber.build) step(s);
+  if (!built(s, 'o2_scrubber')) errs.push('工期到了沒有建成');
+  if (!s.notices.some((n) => n.msg.k === 'n.built')) errs.push('建成沒有通知');
+  // 催工：最多省一半
+  levelUp(s, 'algae_tank');
+  const job = s.b.algae_tank.build!;
+  let saved = 0, g = 0, guard = 0;
+  while ((g = hurryBuild(s, 'algae_tank')) > 0 && guard++ < 1000) saved += g;
+  if (Math.abs(saved - job.need * HURRY_CAP) > 1e-6) errs.push(`催工上限應該是工期的一半：省了 ${saved}／工期 ${job.need}`);
+  if (s.b.algae_tank.build!.done < job.need * HURRY_CAP - 1e-6) errs.push('催工沒有推進進度');
+  finishAllBuilds(s);
+  // 指揮建築：蓋好才推進章節；離線也會施工
+  s.b.o2_scrubber.level = 3; s.b.algae_tank.level = 3; s.b.scrap_heap.level = 2;
+  if (!levelUp(s, 'emergency_camp')) errs.push('蓋不了緊急營地：' + levelBlock(s, 'emergency_camp')?.k);
+  if (s.stage !== 1) errs.push('開工就進第 2 章了');
+  const n0 = s.b.emergency_camp.build!.need;
+  for (let k = 0; k < 5; k++) step(s, 1, { offline: true });
+  if (Math.abs(buildLeft(s, 'emergency_camp') - (n0 - 5)) > 1e-6) errs.push('離線施工應該是全速：' + buildLeft(s, 'emergency_camp'));
+  while (s.b.emergency_camp.build) step(s, 1, { offline: true });
+  if (s.stage !== 2 || !built(s, 'emergency_camp')) errs.push('營地蓋好應該進第 2 章');
   return errs;
 });
 

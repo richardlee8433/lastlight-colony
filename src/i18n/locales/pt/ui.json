@@ -532,5 +532,14 @@
  "tr.why.stocked": "Bem abastecido",
  "tr.why.short": "Em falta · paga mais",
  "tr.why.sold": "Estoque alto · paga menos",
- "tr.pausedNote": "O tempo para enquanto esta janela está aberta."
+ "tr.pausedNote": "O tempo para enquanto esta janela está aberta.",
+ "why.inProgress": "Em construção",
+ "why.building": "A equipe está construindo {b}",
+ "bp.building": "Em construção: {b}",
+ "bp.upgrading": "Melhorando para Nv{n}",
+ "bp.buildLeft": "Faltam {t}",
+ "bp.buildPaused": "A obra pausa enquanto houver janelas abertas",
+ "bp.buildTime": "Tempo de obra {t}",
+ "sc.building": "Em obra: {b}",
+ "sc.upgrading": "{b} → Nv{n}"
 }

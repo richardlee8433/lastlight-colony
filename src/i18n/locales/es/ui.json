@@ -532,5 +532,14 @@
  "tr.why.stocked": "Bien abastecido",
  "tr.why.short": "Escasea · paga más",
  "tr.why.sold": "Sobra stock · paga menos",
- "tr.pausedNote": "El tiempo se detiene mientras esta ventana está abierta."
+ "tr.pausedNote": "El tiempo se detiene mientras esta ventana está abierta.",
+ "why.inProgress": "En construcción",
+ "why.building": "La cuadrilla está construyendo {b}",
+ "bp.building": "En construcción: {b}",
+ "bp.upgrading": "Mejorando a Nv{n}",
+ "bp.buildLeft": "Faltan {t}",
+ "bp.buildPaused": "La obra se pausa mientras haya ventanas abiertas",
+ "bp.buildTime": "Tiempo de obra {t}",
+ "sc.building": "En obra: {b}",
+ "sc.upgrading": "{b} → Nv{n}"
 }

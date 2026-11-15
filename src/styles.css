@@ -130,6 +130,7 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .bar i.bad { background: var(--bad); }
 .bar i.morale { background: #c890ff; }
 .bar i.air { background: #8fd8ff; }
+.bar i.build { background: repeating-linear-gradient(135deg, #ffd24a 0 6px, #e0a830 6px 12px); }
 
 /* 建築面板 */
 .panel {
@@ -187,6 +188,9 @@ small { font-size: 0.78em; color: var(--muted); font-weight: 500; }
 .qb.on { box-shadow: inset 0 0 0 2px var(--trim); }
 .qb.ghost img { opacity: 0.35; }
 .qb-w { position: absolute; right: 2px; bottom: 1px; font-size: 10px; font-weight: 900; background: rgba(12, 13, 20, 0.85); padding: 0 3px; font-variant-numeric: tabular-nums; }
+.qb-build { position: absolute; left: 4px; right: 4px; bottom: 3px; height: 5px; background: rgba(12, 13, 20, 0.85); box-shadow: inset 1px 1px 0 #07080d; }
+.qb-build i { display: block; height: 100%; background: repeating-linear-gradient(135deg, #ffd24a 0 4px, #e0a830 4px 8px); transition: width 0.2s linear; }
+.qb.wip img { opacity: 0.6; }
 .qb-new { position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%); font-size: 10px; font-weight: 900; background: var(--trim); color: var(--trim-ink); padding: 0 4px; white-space: nowrap; }
 
 /* 襲擊預警 */
