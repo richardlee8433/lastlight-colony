@@ -532,5 +532,14 @@
  "tr.why.stocked": "在庫十分",
  "tr.why.short": "品薄・買値高め",
  "tr.why.sold": "在庫過多・買値安め",
- "tr.pausedNote": "このウィンドウを開いている間は時間が止まります。"
+ "tr.pausedNote": "このウィンドウを開いている間は時間が止まります。",
+ "why.inProgress": "建設中",
+ "why.building": "作業班は{b}を建設中",
+ "bp.building": "建設中：{b}",
+ "bp.upgrading": "Lv{n}へ増築中",
+ "bp.buildLeft": "残り {t}",
+ "bp.buildPaused": "ウィンドウを開いている間は工事が止まります",
+ "bp.buildTime": "工期 {t}",
+ "sc.building": "建設中：{b}",
+ "sc.upgrading": "{b} → Lv{n}"
 }

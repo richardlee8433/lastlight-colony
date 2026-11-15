@@ -8,6 +8,8 @@ import { game, gamePaused, useGame } from '../store/gameStore';
 import { TICK } from '../engine/tick';
 import { COMMAND_CHAIN, DEF } from '../engine/state';
 import { artId, buffActive, built, disabled, idle, retired, workerCap } from '../engine/formulas';
+import { activeBuilds, buildProgress } from '../engine/build';
+import { createProgressRing, createSite, SiteView } from './construction';
 import { MW, MH, CENTER, SITES, HOME, Site, RAID_SPAWN, RAID_RALLY, ROUTES, POD_DOOR, routeFromPod, PATROL, PATROL_TOTAL, patrolAt, pathBetween, along } from './layout';
 import { WARNING, defense, injuredCount, medBeds } from '../engine/combat';
 import { bName, canvasFont, lang, resName, t, useSettings } from '../i18n';
@@ -17,7 +19,9 @@ import { ch1Hint } from '../ui/tutorial';
 import crateURL from '../assets/sprites/cargo_crate.png';
 import chuteURL from '../assets/sprites/cargo_chute.png';
 
-type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask } };
+type View = Container & { key: string; site: Site; bid: string | null; plate?: Container; ring?: any; sel?: any; building?: any; lights?: Container; shadow?: Sprite & { smask?: ShadowMask };
+  /** 施工中（v0.71）：工地畫面、進度環、正在蓋的建築 id；born＝完工的時間（彈一下＋閃光） */
+  wip?: SiteView; wipRing?: any; wipId?: string; born?: number };
 /** 對話泡泡的小圖示（像素圖，每行一列，# 是深色、. 是空白）：…、愛心、！、？、音符、笑 */
 const BUBBLE_ICONS = [
   ['.....', '.....', '#.#.#', '.....'],
@@ -123,6 +127,8 @@ export class GameScene {
   camGoal: { x: number; y: number } | null = null;
   drag: any = null;
   hold: { id: string; next: number } | null = null;
+  /** 工地的進度條（名牌下面，每幀重畫） */
+  buildG = new Graphics();
   pressed: string | null = null;
   hover: string | null = null;
   fx: any;
@@ -156,6 +162,7 @@ export class GameScene {
     this.world.addChild(this.obj, this.dropL, this.shotG, this.smokeG, this.overlay, this.lightL, this.meteorG);
     this.meteorG.blendMode = 'add';
     this.app.stage.addChild(this.world, this.weatherG, this.hud, this.fxL);
+    this.hud.addChild(this.buildG); this.buildG.eventMode = 'none';
     // 舞台是 static（拖曳用），子層會繼承互動模式；不需要點擊的層一律關掉，避免擋住建築
     for (const c of [this.dropL, this.overlay, this.lightL, this.fxL, this.shotG, this.shadowL, this.weatherG, this.meteorG, this.smokeG, this.craterG]) c.eventMode = 'none';
     // 斜射光：一張斜向漸層（左上亮、往右下淡出），用加亮混合疊在環境光上
@@ -306,14 +313,22 @@ export class GameScene {
     for (const site of SITES) {
       let bid = this.siteBuilding(site);
       const lvl = bid ? s.b[bid].level : 0;
-      // 還沒蓋的建築不出現在地圖上；在建造列選取時才顯示半透明預覽（會蓋在這裡）
+      // 施工中（v0.71）：指揮艙格子看的是「下一級指揮建築」的工地
+      const wipId = site.id === 'command' ? COMMAND_CHAIN.find((c) => s.b[c].build) ?? null : bid && s.b[bid].build ? bid : null;
+      // 還沒蓋的建築不出現在地圖上；在建造列選取時才顯示半透明預覽（會蓋在這裡）；開工了就是工地
       const picked = !!bid && (selected === bid || (site.id === 'command' && !!selected && COMMAND_CHAIN.includes(selected)));
-      if (bid && lvl === 0 && !picked) bid = null;
-      const key = !bid ? 'none' : lvl > 0 ? `${artId(s, bid)}:${tierOf(lvl)}:${this.Z}` : `site:${bid}:${this.Z}`;
+      if (bid && lvl === 0 && !picked && !wipId) bid = null;
+      const key = !bid ? 'none' : (lvl > 0 ? `${artId(s, bid)}:${tierOf(lvl)}:${this.Z}` : `site:${bid}:${this.Z}`) + (wipId ? `|wip:${wipId}` : '');
       let v = this.views.get(site.id);
-      if (!v || v.key !== key) { if (v) this.dropView(v); v = this.makeView(site, bid, key) ?? undefined; if (v) this.views.set(site.id, v); else this.views.delete(site.id); }
+      if (!v || v.key !== key) {
+        // 工地剛蓋好：新的建築彈一下、閃光、揚起塵土
+        const finished = !!v?.wip && !wipId && !!bid && lvl > 0;
+        if (v) this.dropView(v); v = this.makeView(site, bid, key, wipId) ?? undefined; if (v) this.views.set(site.id, v); else this.views.delete(site.id);
+        if (v && finished) this.popIn(v);
+      }
       if (!v || !bid) continue;
       let text = lvl > 0 ? (DEF[bid].kind === 'command' || DEF[bid].maxLevel === 1 ? bName(bid) : `${bName(bid)} Lv${lvl}`) : t('sc.build', { b: bName(bid) });
+      if (wipId) text = lvl > 0 && wipId === bid ? t('sc.upgrading', { b: bName(bid), n: s.b[bid].build!.to }) : t('sc.building', { b: bName(wipId) });
       // 醫療艙（沒有醫療艙時是陸戰隊營區）名稱牌顯示室內休養的傷員人數
       if (lvl > 0 && (bid === 'med_bay' || (bid === 'security' && !built(s, 'med_bay')))) {
         const n = bid === 'med_bay' ? this.patientSplit().inside : Math.max(0, injuredCount(s) - this.defenders.filter((d) => d.patient).length);
@@ -410,7 +425,7 @@ export class GameScene {
     return c as Container;
   }
 
-  makeView(site: Site, bid: string | null, key: string): View | null {
+  makeView(site: Site, bid: string | null, key: string, wipId: string | null = null): View | null {
     if (!bid) return null;
     const s = game.s;
     const v = new Container() as View;
@@ -419,7 +434,14 @@ export class GameScene {
     const L = s.b[bid].level;
     const b: any = createBuilding(artId(s, bid), Math.max(1, L));
     v.building = L > 0 ? b : null;
-    if (L > 0) {
+    if (wipId) v.wipId = wipId;
+    if (wipId && L === 0) {
+      // 新建的工地：地基、鷹架、預覽，建築隨進度長出來
+      const box = { w: b.art.w, h: b.art.h, ax: b.art.ax, ay: b.art.ay };
+      b.lights.destroy({ children: true });
+      v.wip = createSite(b, box, false);
+      v.addChild(v.wip);
+    } else if (L > 0) {
       v.addChild(b);
       b.lights.position.set(site.x, site.y);
       this.lightL.addChild(b.lights);
@@ -435,6 +457,8 @@ export class GameScene {
         // 小人影子那層要在建築影子之上
         this.shadowL.addChildAt(sh, Math.max(0, this.shadowL.children.length - 1)); v.shadow = sh;
       }
+      // 升級（或指揮艙格子蓋下一級）：既有建築外面搭鷹架
+      if (wipId) { v.wip = createSite(null, { w: b.art.w, h: b.art.h, ax: b.art.ax, ay: b.art.ay }, true); v.addChild(v.wip); }
     } else {
       b.alpha = 0.35;
       b.sprite.tint = 0xb8c0d8;
@@ -450,9 +474,7 @@ export class GameScene {
     v.eventMode = 'static'; v.cursor = 'pointer';
     v.on('pointerdown', (e) => {
       e.stopPropagation();
-      const id = v.bid!;
       this.pressed = site.id;
-      void id;
     });
     v.on('pointerover', () => { this.hover = site.id; });
     v.on('pointerout', () => { if (this.hover === site.id) this.hover = null; });
@@ -461,11 +483,25 @@ export class GameScene {
     v.sel = createBuffRing(Math.round(w * 0.46) + 6, Math.round(w * 0.18) + 4, 0x9fe8ff);
     v.sel.position.set(site.x, site.y - 1); v.sel.visible = false;
     this.lightL.addChild(v.ring, v.sel);
+    if (v.wip) {
+      v.wipRing = createProgressRing(Math.round(w * 0.42) + 4, Math.round(w * 0.16) + 3);
+      v.wipRing.position.set(site.x, site.y - 2);
+      this.lightL.addChild(v.wipRing);
+    }
     this.obj.addChild(v);
     return v;
   }
+  /** 完工：建築彈一下、閃一下，腳邊揚起塵土 */
+  popIn(v: View) {
+    v.born = this.T;
+    v.building?.flash?.();
+    const [sx, sy] = this.toScreen(v.x, v.y - 2);
+    this.fx.burst(sx, sy, 0xb8a890, 10);
+    this.fx.burst(sx, sy - 6 * this.Z, 0xffe08a, 6);
+  }
   dropView(v: View) {
     v.shadow?.destroy();
+    v.wipRing?.destroy();
     v.lights?.destroy({ children: true });
     v.ring?.destroy(); v.sel?.destroy();
     v.plate?.destroy({ children: true });
@@ -1025,7 +1061,9 @@ export class GameScene {
       if (bid && bid !== 'security' && built(s, bid) && s.b[bid].workers > 0) raw.push([bid, s.b[bid].workers]);
     }
     raw.push(['__idle', Math.max(0, idle(s))]);
-    const want = new Map<string, number>(raw.map(([k]) => [k, 0]));
+    // 工程隊（v0.71）：每個工地 2 個人，不算在名額裡（純畫面，不佔人口）
+    const crews = activeBuilds(s).filter((id) => SITES.some((x) => x.id === id || (x.id === 'command' && COMMAND_CHAIN.includes(id)))).map((id) => '__build:' + id);
+    const want = new Map<string, number>([...raw.map(([k]) => [k, 0] as [string, number]), ...crews.map((k) => [k, 2] as [string, number])]);
     const people = raw.reduce((n, [, v]) => n + v, 0);
     let budget = Math.min(people, walkerBudget(s.pop));
     const order = raw.filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]);
@@ -1037,17 +1075,17 @@ export class GameScene {
       want.set(best, want.get(best)! + 1); budget--;
     }
     const have = new Map<string, Walker[]>();
-    for (const w of this.walkers) { const k = w.ai.bid ?? '__idle'; if (!have.has(k)) have.set(k, []); have.get(k)!.push(w); }
+    for (const w of this.walkers) { const k = w.ai.key ?? w.ai.bid ?? '__idle'; if (!have.has(k)) have.set(k, []); have.get(k)!.push(w); }
     for (const [k, list] of have) {
       const n = want.get(k) ?? 0;
       for (const w of list.slice(n)) { this.walkers.splice(this.walkers.indexOf(w), 1); w.destroy({ children: true }); }
     }
     for (const [k, n] of want) {
       const cur = have.get(k)?.length ?? 0;
-      for (let i = cur; i < n; i++) this.addWalker(k === '__idle' ? null : k);
+      for (let i = cur; i < n; i++) this.addWalker(k === '__idle' ? null : k.startsWith('__build:') ? k.slice(8) : k, k.startsWith('__build:'));
     }
   }
-  addWalker(bid: string | null) {
+  addWalker(bid: string | null, builder = false) {
     const w = (bid === 'security' ? createMarine(true) : createWorker(Math.min(6, game.s.stage))) as Walker;
     const j = () => Math.round((Math.random() - 0.5) * 18);
     const site = bid ? SITES.find((x) => x.id === bid || (x.id === 'command' && COMMAND_CHAIN.includes(bid)))! : null;
@@ -1061,6 +1099,7 @@ export class GameScene {
     w.ai = bid
       ? { bid, phase: 'out', via, queue: [...via], wait: Math.random() * 2, home: { x: home.x + j(), y: home.y + (j() >> 2) }, site: { x: site!.x + (j() >> 1), y: site!.y + 6 } }
       : { bid: null, wait: Math.random() * 2, home: { x: home.x + j() * 2, y: home.y + (j() >> 1) } };
+    if (builder) { w.ai.key = '__build:' + bid; w.ai.builder = true; }
     w.ai.target = w.ai.queue?.length ? w.ai.queue.shift() : w.ai.site ?? w.ai.home;
     w.px = w.ai.home.x; w.py = w.ai.home.y;
     w.position.set(w.px, w.py);
@@ -1091,11 +1130,21 @@ export class GameScene {
       a.wait -= dt; w.setMoving(false); w.setWork?.(!!a.working);
       // 進建築：前 0.3 秒淡出、最後 0.3 秒淡入
       if (a.inside > 0) { const el = a.inside - a.wait; w.alpha = Math.max(0, Math.min(1, Math.max(1 - el / 0.3, 1 - a.wait / 0.3))); if (a.wait <= 0) { a.inside = 0; w.alpha = 1; } }
-      // 在建築旁工作完，扛著產出走回家
+      // 工程隊敲打：火花與塵土
+      if (a.builder && a.working && dt > 0) {
+        a.sparkT = (a.sparkT ?? 0.2) - dt;
+        if (a.sparkT <= 0) {
+          a.sparkT = 0.3 + Math.random() * 0.3;
+          const [sx, sy] = this.toScreen(w.px + (Math.random() - 0.5) * 6, w.py - 9);
+          this.fx.burst(sx, sy, 0xffd27a, 3);
+          if (Math.random() < 0.5) { const [dx, dy] = this.toScreen(w.px + (Math.random() - 0.5) * 8, w.py - 1); this.fx.burst(dx, dy, 0x9a8a78, 2); }
+        }
+      }
+      // 在建築旁工作完，扛著產出走回家（工程隊空手回去）
       if (a.wait <= 0 && a.working) {
         a.working = false; w.setWork?.(false);
         const d = DEF[a.bid];
-        const res = d.produce?.res ?? d.recipe?.out;
+        const res = a.builder ? null : d.produce?.res ?? d.recipe?.out;
         w.setCarry(res ? RES[res].color : null);
       }
     }
@@ -1110,9 +1159,9 @@ export class GameScene {
           a.target = !built(game.s, 'rail_line') || this.ground?.paved?.(q.x, q.y) ? q : { x: w.px, y: w.py };
         }
         else if (a.target === a.site) {
-          a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = 2.5 + Math.random() * 2; a.working = true;
-          // 一半的機會走進建築裡做事（淡出），做完再出來
-          a.inside = Math.random() < 0.5 ? a.wait : 0;
+          a.queue = [...a.via].reverse(); a.queue.push(a.home); a.target = a.queue.shift(); a.wait = (a.builder ? 4 : 2.5) + Math.random() * 2; a.working = true;
+          // 一半的機會走進建築裡做事（淡出），做完再出來；工程隊一直在外面敲
+          a.inside = !a.builder && Math.random() < 0.5 ? a.wait : 0;
         } else { a.queue = [...a.via, a.site]; a.target = a.queue.shift(); a.wait = 0.4; w.setCarry(null); }
       } else {
         const st = Math.min(d, speed * dt);
@@ -1553,8 +1602,20 @@ export class GameScene {
     for (const p of this.props) p.update(this.T, dt);
     this.ambient?.update(this.T, dt);
     const labels: { pl: any; x: number; y: number; w: number; h: number; prio: number }[] = [];
+    this.buildG.clear();
     for (const v of this.views.values()) {
       const b = v.building;
+      if (v.wip && v.wipId) {
+        const p = buildProgress(s, v.wipId);
+        v.wip.setProgress(p, this.T);
+        v.wipRing?.update(p, this.T);
+      }
+      // 剛完工：往上彈一下再回來
+      if (b && v.born !== undefined) {
+        const k = this.T - v.born;
+        if (k > 0.7) { v.born = undefined; b.scale.set(1); }
+        else { const e = 0.22 * Math.sin(k * 14) * Math.exp(-k * 4); b.scale.set(1 - e * 0.5, 1 + e); }
+      }
       if (b) {
         b.update(this.T, dt);
         const on = !!v.bid && built(s, v.bid) && DEF[v.bid].clickable && buffActive(s, v.bid);
@@ -1574,6 +1635,15 @@ export class GameScene {
       }
     }
     this.resolveLabels(labels);
+    // 工地名牌下面的進度條
+    for (const v of this.views.values()) {
+      const pl: any = v.plate;
+      if (!v.wipId || !pl) continue;
+      const p = buildProgress(s, v.wipId), w = pl.pw * Z, h = Math.max(2, Z), x = pl.x, y = pl.y + pl.ph * Z;
+      this.buildG.rect(x, y, w, h).fill({ color: 0x120e18 });
+      this.buildG.rect(x + 1, y, Math.round((w - 2) * p), h - 1).fill({ color: 0xffd24a });
+    }
+    this.buildG.zIndex = 1e6 - 1;
     this.tapHint();
     for (const w of this.walkers) this.moveWalker(w, dt);
     // 襲擊動畫用的時鐘：game.s.t 只在 tick（每 0.2 秒）前進，直接用會讓陸戰隊和敵群一格一格跳；

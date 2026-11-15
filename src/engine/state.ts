@@ -42,7 +42,9 @@ export const DEF: Record<string, BuildingDef> = Object.fromEntries(DEFS.map((d) 
 export const COMMAND_CHAIN = DEFS.filter((d) => d.kind === 'command').sort((a, b) => a.commandLevel! - b.commandLevel!).map((d) => d.id);
 
 export interface ShipState { mods: number; wait?: number }
-export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean; form?: number }
+/** 施工中（v0.71）：to＝蓋好後的等級、need＝工期秒數、done＝已施工秒數（含加速）、hurried＝點擊加速累計省下的秒數 */
+export interface BuildJob { to: number; need: number; done: number; hurried: number }
+export interface BState { level: number; workers: number; nodes: string[]; disabledUntil: number; lastClick: number; split?: number; paused?: boolean; form?: number; build?: BuildJob }
 export interface ActiveEvent { kind: 'meteor' | 'rescue' | 'rescue_ines' | 'envoy' | 'choice6'; target?: string; cost?: number }
 export interface BattleReport {
   won: boolean; raid: number; enemies: number; guards: number; armed: number; turrets?: number; kind?: string;

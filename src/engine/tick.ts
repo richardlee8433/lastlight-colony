@@ -1,4 +1,4 @@
-// 200ms 時間步進：產出 → 消耗與人口 → 研究 → 事件 → 主線
+// 200ms 時間步進：產出 → 消耗與人口 → 研究 → 施工 → 事件 → 主線
 import { GameState } from './state';
 import { produce } from './production';
 import { population } from './population';
@@ -13,6 +13,7 @@ import { dialogs } from './dialog';
 import { expedition } from './expedition';
 import { market } from './market';
 import { weather } from './weather';
+import { construction } from './build';
 
 export const TICK = 0.2;
 
@@ -23,6 +24,7 @@ export function step(s: GameState, dt = TICK, opts: { offline?: boolean; rng?: (
   air(s, dt, opts.offline);
   population(s, dt, opts.offline);
   research(s, dt, researchSpeed(s), opts.offline);
+  construction(s, dt, opts.offline);
   if (!opts.offline) events(s, opts.rng);
   combat(s, opts.offline, opts.rng, dt);
   expedition(s, opts.rng);

@@ -532,5 +532,14 @@
  "tr.why.stocked": "Gut bevorratet",
  "tr.why.short": "Knapp · zahlt mehr",
  "tr.why.sold": "Überfüllt · zahlt weniger",
- "tr.pausedNote": "Solange dieses Fenster offen ist, steht die Zeit still."
+ "tr.pausedNote": "Solange dieses Fenster offen ist, steht die Zeit still.",
+ "why.inProgress": "Im Bau",
+ "why.building": "Der Bautrupp baut gerade {b}",
+ "bp.building": "Im Bau: {b}",
+ "bp.upgrading": "Ausbau auf Lv{n}",
+ "bp.buildLeft": "Noch {t}",
+ "bp.buildPaused": "Der Bau pausiert, solange Fenster offen sind",
+ "bp.buildTime": "Bauzeit {t}",
+ "sc.building": "Im Bau: {b}",
+ "sc.upgrading": "{b} → Lv{n}"
 }
